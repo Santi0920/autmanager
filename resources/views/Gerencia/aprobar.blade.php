@@ -1,45 +1,3 @@
-@if (session('correcto'))
-    <div>
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: "¡Correcto!",
-                html: "{!! session('correcto') !!}",
-                confirmButtonColor: '#005E56'
-            });
-        </script>
-    </div>
-@endif
-
-@if (session('incorrecto'))
-    <div>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: "{{ session('incorrecto') }}",
-                text: '',
-                confirmButtonColor: '#005E56',
-                timer: 10000
-
-            });
-        </script>
-    </div>
-@endif
-
-@error('message')
-    <div>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: "Error al registrar!\n{{ $message }}",
-                text: '',
-                confirmButtonColor: '#005E56'
-
-            });
-        </script>
-    </div>
-@enderror
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -67,6 +25,33 @@
 
 <body class="antialiased">
     @include('layouts/nav')
+    @if (session('correcto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: "¡Correcto!",
+                    html: "{!! session('correcto') !!}",
+                    confirmButtonColor: '#005E56'
+                });
+            </script>
+        </div>
+    @endif
+
+    @if (session('incorrecto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: "{{ session('incorrecto') }}",
+                    text: '',
+                    confirmButtonColor: '#005E56',
+                    timer: 10000
+
+                });
+            </script>
+        </div>
+    @endif
     {{-- FECHA --}}
     <div class="col-11" style="margin-left:3.5%">
         <div class="">
@@ -142,7 +127,7 @@
 
     <script>
         var table = $('#personas').DataTable({
-            "ajax": "{{ route('datacoor.solicitudes') }}",
+            "ajax": "{{ route('datager.solicitudes') }}",
             "order": [
                 [0, 'desc']
             ],
@@ -204,24 +189,15 @@
                     data: 'Estado',
                     render: function(data, type, row) {
                         // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
-                        if (row.Estado == 0) {
-                            var Estado =
-                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
-                        } else if (row.Estado == 1) {
-                            var Estado = `<div class="btn btn-info shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
-                                    REMITIDO A GERENCIA</label></div>`
-                        } else if (row.Estado == 2) {
-                            var Estado =
-                                '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;" class="blink">EN TRAMITE</div>'
-                        } else if (row.Estado == 3) {
-                            var Estado =
-                                '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
+                        if (row.Estado == 1) {
+                            var Estado = `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
+                                <i class="fa-solid fa-check"></i> VALIDADO</label></div>`
                         } else if (row.Estado == 4) {
                             var Estado =
-                                '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
+                                '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO</div>'
                         } else {
                             var Estado =
-                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO POR GERENCIA</div>'
+                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                         }
 
                         return Estado;
@@ -244,7 +220,7 @@
                                                             <td id="aprobado_por" class="fw-bold text-primary">${row.SolicitadoPor}</td>
                                                         </tr>`
                         } else {
-                            var solicitadopor = `<th scope="row" class="text-start">SOLICITADO POR:</th>
+                            var solicitadopor = `<th scope="row"  class="text-start">SOLICITADO POR:</th>
                                                             <td id="aprobado_por" class="fw-bold text-dark">Pendiente...</td>
                                                         </tr>`
                         }
@@ -256,7 +232,7 @@
 
                         //TRAE LA CUENTA SI ES 11D QUE ES AUTORIZACION POR SCORE BAJO CREDITO
                         if (row.CodigoAutorizacion == '11D') {
-                            var cuenta = `<th scope="row" class="text-start">CUENTA:</th>
+                            var cuenta = `<th scope="row"  class="text-start">CUENTA:</th>
                                                     <td id="aprobado_por" class="text-dark">${row.CuentaAsociada}</td>
                                                 </tr>`
                         } else {
@@ -264,145 +240,49 @@
                         }
 
 
-                        if (row.Estado == 0) {
+
+                        if (row.Estado == 1) {
                             var RadioEstado = `
-                                    <label class="label">
-                                        <input value="0" type="radio" name="Estado" id="Estado" checked>
-                                        <span>ANULADO</span>
+                                    <label class="label" >
+                                        <input value="4" type="radio" name="Estado" id="Estado">
+                                        <span>APROBAR</span>
                                     </label>
 
-                                    <label class="label" >
-                                        <input value="1" type="radio" name="Estado" id="Estado">
-                                        <span>VALIDAR</span>
-                                    </label>
-                                    <label class="label">
-                                        <input value="2" type="radio" name="Estado" id="Estado" >
-                                        <span>EN TRAMITE</span>
-                                    </label>
-                                    <label class="label" >
-                                        <input value="3" type="radio" name="Estado" id="Estado">
-                                        <span>CORREGIR</span>
-                                    </label>
-                                    `
-                        } else if (row.Estado == 1) {
-                            var RadioEstado = `
-                                    <label class="label">
-                                        <input value="0" type="radio" name="Estado" id="Estado" >
-                                        <span>ANULADO</span>
-                                    </label>
 
-                                    <label class="label" >
-                                        <input value="1" type="radio" name="Estado" id="Estado" checked>
-                                        <span>VALIDAR</span>
-                                    </label>
-                                    <label class="label">
-                                        <input value="2" type="radio" name="Estado" id="Estado" >
-                                        <span>EN TRAMITE</span>
-                                    </label>
-                                    <label class="label" >
-                                        <input value="3" type="radio" name="Estado" id="Estado">
-                                        <span>CORREGIR</span>
-                                    </label>
-                                    `
-                        } else if (row.Estado == 2) {
-                            var RadioEstado = `
-                                    <label class="label">
-                                        <input value="0" type="radio" name="Estado" id="Estado">
-                                        <span>ANULADO</span>
-                                    </label>
-
-                                    <label class="label" >
-                                        <input value="1" type="radio" name="Estado" id="Estado">
-                                        <span>VALIDAR</span>
-                                    </label>
-                                    <label class="label">
-                                        <input value="2" type="radio" name="Estado" id="Estado" checked>
-                                        <span>EN TRAMITE</span>
-                                    </label>
-                                    <label class="label" >
-                                        <input value="3" type="radio" name="Estado" id="Estado">
-                                        <span>CORREGIR</span>
-                                    </label>
-                                    `
-                        } else if (row.Estado == 3) {
-                            var RadioEstado = `
-                                    <label class="label">
-                                        <input value="0" type="radio" name="Estado" id="Estado" >
-                                        <span>ANULADO</span>
-                                    </label>
-
-                                    <label class="label" >
-                                        <input value="1" type="radio" name="Estado" id="Estado">
-                                        <span>VALIDAR</span>
-                                    </label>
-                                    <label class="label">
-                                        <input value="2" type="radio" name="Estado" id="Estado" >
-                                        <span>EN TRAMITE</span>
-                                    </label>
-                                    <label class="label" >
-                                        <input value="3" type="radio" name="Estado" id="Estado" checked>
-                                        <span>CORREGIR</span>
+                                <label class="label">
+                                        <input value="5" type="radio" name="Estado" id="Estado">
+                                        <span>ANULAR</span>
                                     </label>
                                     `
                         } else if (row.Estado == 4) {
                             var RadioEstado = `
-                                    <label class="label">
-                                        <input value="0" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>ANULADO</span>
+                            <label class="label" >
+                                        <input value="4" type="radio" name="Estado" id="Estado" checked>
+                                        <span>APROBADO</span>
                                     </label>
 
-                                    <label class="label" >
-                                        <input value="1" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>VALIDAR</span>
+
+                                <label class="label">
+                                        <input value="5" type="radio" name="Estado" id="Estado">
+                                        <span>ANULAR</span>
                                     </label>
-                                    <label class="label">
-                                        <input value="2" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>EN TRAMITE</span>
-                                    </label>
-                                    <label class="label" >
-                                        <input value="3" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>CORREGIR</span>
-                                    </label>
-                                    <div class="d-none">
-                                        <label class="label" >
-                                            <input value="4" type="radio" name="Estado" id="Estado" disabled checked>
-                                            <span>APROBADO POR GERENCIA</span>
-                                        </label>
-                                        <label class="label" class="d-none">
-                                            <input value="5" type="radio" name="Estado" id="Estado" disabled>
-                                            <span>ANULADO POR GERENCIA</span>
-                                        </label>
-                                    </div>
+
+
+
                                     `
                         } else if (row.Estado == 5) {
                             var RadioEstado = `
+
                             <label class="label">
-                                        <input value="0" type="radio" name="Estado" id="Estado" disabled>
+                                        <input value="5" type="radio" name="Estado" id="Estado" checked>
                                         <span>ANULADO</span>
                                     </label>
 
                                     <label class="label" >
-                                        <input value="1" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>VALIDAR</span>
+                                        <input value="4" type="radio" name="Estado" id="Estado">
+                                        <span>APROBAR</span>
                                     </label>
-                                    <label class="label">
-                                        <input value="2" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>EN TRAMITE</span>
-                                    </label>
-                                    <label class="label" >
-                                        <input value="3" type="radio" name="Estado" id="Estado" disabled>
-                                        <span>CORREGIR</span>
-                                    </label>
-                                    <div class="d-none">
-                                        <label class="label" >
-                                            <input value="4" type="radio" name="Estado" id="Estado" disabled >
-                                            <span>APROBADO POR GERENCIA</span>
-                                        </label>
-                                        <label class="label" class="d-none">
-                                            <input value="5" type="radio" name="Estado" id="Estado" disabled checked>
-                                            <span>ANULADO POR GERENCIA</span>
-                                        </label>
-                                    </div>
+
                                     `
                         }
 
@@ -484,6 +364,7 @@
                             var estadocuenta = ``
                         }
 
+
                         var Detalle = `<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
                                         <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
@@ -520,40 +401,42 @@
                                                                         <td id="" style="font-size: 30px" class="text-danger">${id}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <th scope="row" class="text-start">AGENCIA:</th>
+                                                                            <th scope="row"  class="text-start">AGENCIA:</th>
                                                                             <td id="tipo">${row.NumAgencia} - ${row.NomAgencia}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                        <th scope="row" class="text-start">CODIGO:</th>
+                                                                        <th scope="row"  class="text-start">CODIGO:</th>
                                                                         <td id="tipo">${row.CodigoAutorizacion}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                        <th scope="row" class="text-start">CONCEPTO:</th>
+                                                                        <th scope="row"  class="text-start">CONCEPTO:</th>
                                                                         <td id="motivo">${row.Concepto}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                        <th scope="row" class="text-start">FECHA DE LA SOLICITUD:</th>
+                                                                        <th scope="row"  class="text-start">FECHA DE LA SOLICITUD:</th>
                                                                         <td id="fe_ho_in">${row.Fecha}</td>
                                                                         </tr>
                                                                         <tr>
-                                                                        <th scope="row" class="text-start">CÉDULA</th>
+                                                                        <th scope="row"  class="text-start">CÉDULA</th>
                                                                         <td id="fe_ho_fi">${row.Cedula}</td>
                                                                         </tr>
                                                                         <tr>
                                                                         ` + estadocuenta + nombre + cuenta + score + `
-
                                                                         <tr>
-                                                                        <th scope="row" class="text-start">DETALLE:</th>
+                                                                        <th scope="row"  class="text-start">DETALLE:</th>
                                                                         <td id="estado" style="text-align: center">${row.Detalle}</td>
                                                                         </tr>
                                                                         ` + DocumentoSoporte + `
                                                                         ` + solicitadopor + `
-                                                                        <th scope="row" class="text-start">CAMBIAR ESTADO:<br><br><br><br>OBSERVACIONES:</th>
+                                                                        <tr>
+                                                                        <th scope="row"  class="text-start">VALIDADO POR:</th>
+                                                                        <td id="estado" class="text-primary fw-bold" style="text-align: center">${row.ValidadoPor}</td>
+                                                                        </tr>
+                                                                        <th scope="row"  class="text-start">CAMBIAR ESTADO:
                                                                         <td id="estado" style="text-align: center">
                                                                             <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                                                 @csrf
                                                                                 ` + RadioEstado + `
-                                                                                <input class="input text-center" name="Observaciones" id="Observaciones" type="text" value="${row.Observaciones}"></input>
                                                                             </form>
                                                                         </td>
                                                                     </tbody>
@@ -676,7 +559,7 @@
 
             // Realizar la solicitud AJAX para actualizar la autorización
             $.ajax({
-                url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                url: "{{ route('updateger.autorizacion', ['id' => ':id']) }}".replace(':id', id),
                 type: "POST",
                 data: {
                     Observaciones: observaciones,

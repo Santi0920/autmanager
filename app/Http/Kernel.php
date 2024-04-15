@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
@@ -53,19 +53,11 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
 
-     protected $routeMiddleware = [
+    protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.nuevoempleado' => \App\Http\Middleware\NuevoEmpleado::class,
-        'auth.admin' => \App\Http\Middleware\AdminAuth::class,
-        'auth.jefatura' => \App\Http\Middleware\AuthJefatura::class,
-        'auth.controlmasivo' => \App\Http\Middleware\AuthControlMasivo::class,
-        'auth.control' => \App\Http\Middleware\ControlAuth::class,
-        'auth.credito' => \App\Http\Middleware\CreditoAuth::class,
-        'auth.consultante' => \App\Http\Middleware\ConsultanteAuth::class,
-        'auth.thumano' => \App\Http\Middleware\ThumanoAuth::class,
-        'auth.gerencia' => \App\Http\Middleware\GerenciaAuth::class,
-        'auth.coordinacion' => \App\Http\Middleware\AuthCoordinacion::class,
-        'auth.asociacion' => \App\Http\Middleware\AsociacionAuth::class,
+        'auth.director' => \App\Http\Middleware\DirectorMiddleware::class,
+        'auth.coord' => \App\Http\Middleware\CoordinacionMiddleware::class,
+        'auth.gerencia' => \App\Http\Middleware\GerenciaMiddleware::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
@@ -76,21 +68,21 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
-/*
-    protected $middlewareAliases = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.admin' => \App\Http\Middleware\AdminAuth::class,
-        'consultante' => \App\Http\Middleware\ConsultanteAuth::class,
-        'auth.credito' => \App\Http\Middleware\CreditoAuth::class,
-        'auth.asociacion' => \App\Http\Middleware\AsociacionAuth::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
-        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-        'signed' => \App\Http\Middleware\ValidateSignature::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-    ];*/
+    /*
+        protected $middlewareAliases = [
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'auth.admin' => \App\Http\Middleware\AdminAuth::class,
+            'consultante' => \App\Http\Middleware\ConsultanteAuth::class,
+            'auth.credito' => \App\Http\Middleware\CreditoAuth::class,
+            'auth.asociacion' => \App\Http\Middleware\AsociacionAuth::class,
+            'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+            'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+            'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+            'can' => \Illuminate\Auth\Middleware\Authorize::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+            'signed' => \App\Http\Middleware\ValidateSignature::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        ];*/
 }
