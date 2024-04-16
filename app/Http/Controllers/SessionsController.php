@@ -106,7 +106,9 @@ class SessionsController extends Controller
 
 
         } else {
-            return redirect()->to('/');
+            return back()->withErrors([
+                'message' => 'El usuario o la contraseña es incorrecto!'
+            ]);
         }
     }
 

@@ -212,7 +212,6 @@
                 "order": [
                     [0, 'desc']
                 ],
-                scrollY: 420,
 
                 "columns": [{
                         data: 'IDAutorizacion',

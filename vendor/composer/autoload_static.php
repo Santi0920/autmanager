@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
+class ComposerStaticInited37ce532e25d4fba4cff197e216f98f
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -89,7 +89,6 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
             'Symfony\\Component\\ErrorHandler\\' => 31,
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
-            'SimpleSoftwareIO\\QrCode\\' => 24,
         ),
         'R' => 
         array (
@@ -330,10 +329,6 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'SimpleSoftwareIO\\QrCode\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src',
-        ),
         'Ramsey\\Uuid\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
@@ -360,8 +355,8 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -578,37 +573,19 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
-        'App\\Http\\Controllers\\ApiDatacredito' => __DIR__ . '/../..' . '/app/Http/Controllers/ApiDatacredito.php',
-        'App\\Http\\Controllers\\CRUDAdmin' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDAdmin.php',
-        'App\\Http\\Controllers\\CRUDControlMasivo' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDControlMasivo.php',
-        'App\\Http\\Controllers\\CRUDCoordinacion' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDCoordinacion.php',
-        'App\\Http\\Controllers\\CRUDCoordinador' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDCoordinador.php',
-        'App\\Http\\Controllers\\CRUDCredito' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDCredito.php',
-        'App\\Http\\Controllers\\CRUDGerencia' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDGerencia.php',
-        'App\\Http\\Controllers\\CRUDJefatura' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDJefatura.php',
-        'App\\Http\\Controllers\\CRUDThumano' => __DIR__ . '/../..' . '/app/Http/Controllers/CRUDThumano.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
-        'App\\Http\\Controllers\\ControllerConsultante' => __DIR__ . '/../..' . '/app/Http/Controllers/ControllerConsultante.php',
-        'App\\Http\\Controllers\\ControllerNuevoEmpleado' => __DIR__ . '/../..' . '/app/Http/Controllers/ControllerNuevoEmpleado.php',
+        'App\\Http\\Controllers\\CoordinacionController' => __DIR__ . '/../..' . '/app/Http/Controllers/CoordinacionController.php',
+        'App\\Http\\Controllers\\DirectorController' => __DIR__ . '/../..' . '/app/Http/Controllers/DirectorController.php',
+        'App\\Http\\Controllers\\GerenciaController' => __DIR__ . '/../..' . '/app/Http/Controllers/GerenciaController.php',
         'App\\Http\\Controllers\\SessionsController' => __DIR__ . '/../..' . '/app/Http/Controllers/SessionsController.php',
-        'App\\Http\\Controllers\\ViewControl' => __DIR__ . '/../..' . '/app/Http/Controllers/ViewControl.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
-        'App\\Http\\Middleware\\AdminAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/AdminAuth.php',
-        'App\\Http\\Middleware\\AsociacionAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/AsociacionAuth.php',
-        'App\\Http\\Middleware\\AuthControlMasivo' => __DIR__ . '/../..' . '/app/Http/Middleware/AuthControlMasivo.php',
-        'App\\Http\\Middleware\\AuthCoordinacion' => __DIR__ . '/../..' . '/app/Http/Middleware/AuthCoordinacion.php',
-        'App\\Http\\Middleware\\AuthJefatura' => __DIR__ . '/../..' . '/app/Http/Middleware/AuthJefatura.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
-        'App\\Http\\Middleware\\ConsultanteAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/ConsultanteAuth.php',
-        'App\\Http\\Middleware\\ControlAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/ControlAuth.php',
-        'App\\Http\\Middleware\\CreditoAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/CreditoAuth.php',
+        'App\\Http\\Middleware\\CoordinacionMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/CoordinacionMiddleware.php',
+        'App\\Http\\Middleware\\DirectorMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/DirectorMiddleware.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
-        'App\\Http\\Middleware\\GerenciaAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/GerenciaAuth.php',
-        'App\\Http\\Middleware\\NuevoEmpleado' => __DIR__ . '/../..' . '/app/Http/Middleware/NuevoEmpleado.php',
+        'App\\Http\\Middleware\\GerenciaMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/GerenciaMiddleware.php',
         'App\\Http\\Middleware\\PreventRequestsDuringMaintenance' => __DIR__ . '/../..' . '/app/Http/Middleware/PreventRequestsDuringMaintenance.php',
-        'App\\Http\\Middleware\\ProveedorAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/ProveedorAuth.php',
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
-        'App\\Http\\Middleware\\ThumanoAuth' => __DIR__ . '/../..' . '/app/Http/Middleware/ThumanoAuth.php',
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\TrustHosts' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustHosts.php',
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
@@ -634,6 +611,7 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
         'App\\Mail\\EnviarCorreo8' => __DIR__ . '/../..' . '/app/Mail/EnviarCorreo8.php',
         'App\\Mail\\EnviarCorreo9' => __DIR__ . '/../..' . '/app/Mail/EnviarCorreo9.php',
         'App\\Mail\\VerificationEmail' => __DIR__ . '/../..' . '/app/Mail/VerificationEmail.php',
+        'App\\Models\\Autorizacion' => __DIR__ . '/../..' . '/app/Models/Autorizacion.php',
         'App\\Models\\Pagare' => __DIR__ . '/../..' . '/app/Models/Pagare.php',
         'App\\Models\\Persona' => __DIR__ . '/../..' . '/app/Models/Persona.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
@@ -5166,18 +5144,6 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
         'SebastianBergmann\\Type\\UnknownType' => __DIR__ . '/..' . '/sebastian/type/src/type/UnknownType.php',
         'SebastianBergmann\\Type\\VoidType' => __DIR__ . '/..' . '/sebastian/type/src/type/VoidType.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\BTC' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/BTC.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\DataTypeInterface' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/DataTypeInterface.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\Email' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/Email.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\Geo' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/Geo.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\PhoneNumber' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/PhoneNumber.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\SMS' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/SMS.php',
-        'SimpleSoftwareIO\\QrCode\\DataTypes\\WiFi' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/DataTypes/WiFi.php',
-        'SimpleSoftwareIO\\QrCode\\Facades\\QrCode' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/Facades/QrCode.php',
-        'SimpleSoftwareIO\\QrCode\\Generator' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/Generator.php',
-        'SimpleSoftwareIO\\QrCode\\Image' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/Image.php',
-        'SimpleSoftwareIO\\QrCode\\ImageMerge' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/ImageMerge.php',
-        'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider' => __DIR__ . '/..' . '/simplesoftwareio/simple-qrcode/src/QrCodeServiceProvider.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/..' . '/symfony/console/Application.php',
         'Symfony\\Component\\Console\\Attribute\\AsCommand' => __DIR__ . '/..' . '/symfony/console/Attribute/AsCommand.php',
@@ -6235,10 +6201,10 @@ class ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit98cecc8bb760319e9f875a1d2768e0e3::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInited37ce532e25d4fba4cff197e216f98f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInited37ce532e25d4fba4cff197e216f98f::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInited37ce532e25d4fba4cff197e216f98f::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInited37ce532e25d4fba4cff197e216f98f::$classMap;
 
         }, null, ClassLoader::class);
     }
