@@ -150,7 +150,7 @@ class DirectorController extends Controller
             ->update([
                 'Detalle' => $request->input('Detalle'),
                 'Estado' => 2,
-                'DocumentoSoporte' => $file->getClientOriginalName()
+                'DocumentoSoporte' => 'putica'
             ]);
 
         return response()->json(['success' => 'Usuario actualizado correctamente']);
