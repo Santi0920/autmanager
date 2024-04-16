@@ -606,6 +606,7 @@
 
         <script>
             function formEditarAutorizacion(id, event) {
+
                 var form = $("#formEditarAutorizacion" + id);
 
                 // Verificar si el formulario ya ha sido enviado
@@ -617,26 +618,30 @@
                 // Marcar el formulario como enviado
                 form.data('submitted', true);
 
-                // Crear un objeto FormData para enviar los datos del formulario
-                var formData = new FormData(form[0]);
+                var formDataArray = form.serializeArray();
+                // Almacenar los valores en variables
+                var Detalle;
+                var Soporte;
+                console.log(formDataArray);
 
-                // Obtener el archivo seleccionado
-                var fileInput = $('input[name="Soporte"]')[0].files[0];
+                // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
+                formDataArray.forEach(function(input) {
+                    if (input.name === "Detalle") {
+                        Detalle = input.value;
 
-                // Agregar el archivo al objeto FormData
-                formData.append('Soporte', fileInput);
+                    }
+                });
 
-                // Agregar el Detalle y el token al objeto FormData
-                formData.append('Detalle', $('input[name="Detalle"]').val());
-                formData.append('_token', $('input[name="_token"]').val());
 
                 // Realizar la solicitud AJAX para actualizar la autorización
                 $.ajax({
-                    url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                    url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
                     type: "POST",
-                    data: formData,
-                    processData: false, // Evitar que jQuery procese los datos
-                    contentType: false, // Evitar que jQuery establezca el tipo de contenido
+                    data: {
+                        Detalle: Detalle,
+                        Soporte: Soporte,
+                        _token: $('input[name="_token"]').val()
+                    },
                     success: function(response) {
                         if (response) {
                             $(`#exampleModal_${id}`).modal('hide');
@@ -655,6 +660,7 @@
                         console.log('Error');
                     }
                 });
+
             }
 
             function disableEnterKey(event) {
