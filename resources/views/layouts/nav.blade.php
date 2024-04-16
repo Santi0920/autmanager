@@ -29,6 +29,8 @@
                             <label style="margin-bottom: 0px;">
                                 @if (auth()->user()->rol == 'Consultante')
                                     Director
+                                @elseif(auth()->user()->rol == 'Jefatura')
+                                    Gerencia
                                 @else
                                     {{ auth()->user()->rol }}
                                 @endif
@@ -51,8 +53,13 @@
                                 </strong></div>
                     </span>
                 </li>
+
             </ul>
             <div class="text-white m-1 p-3">
+                <button class="buttontroll me-3" data-text="Awesome">
+                    <span class="actual-text">&nbsp;Software Autorizaciones&nbsp;</span>
+                    <span aria-hidden="true" class="hover-text">&nbsp;Software&nbsp;Autorizaciones&nbsp;</span>
+                </button>
                 <a onclick="return csesion()" href="{{ route('login.destroy') }}"><button class="btn btn-light"><b
                             style="font-size: 18px;">Cerrar Sesión</b></button></a>
             </div>
@@ -65,6 +72,57 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <style>
+    /* === removing default button style ===*/
+    .buttontroll {
+        margin: 0;
+        cursor: default;
+        height: auto;
+        background: transparent;
+        padding: 0;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* button styling */
+    .buttontroll {
+        cursor: default;
+        --border-right: 6px;
+        --text-stroke-color: rgba(255, 255, 255, 0.6);
+        --animation-color: #ffffff;
+        --fs-size: 2em;
+        letter-spacing: 3px;
+        text-decoration: none;
+        font-size: 25px;
+        font-family: "Arial";
+        position: relative;
+        text-transform: uppercase;
+        color: transparent;
+        -webkit-text-stroke: 1px var(--text-stroke-color);
+    }
+
+    /* this is the text, when you hover on button */
+    .hover-text {
+        position: absolute;
+        cursor: default;
+        box-sizing: border-box;
+        content: attr(data-text);
+        color: var(--animation-color);
+        width: 0%;
+        inset: 0;
+        border-right: var(--border-right) solid var(--animation-color);
+        overflow: hidden;
+        transition: 0.5s;
+        -webkit-text-stroke: 1px var(--animation-color);
+    }
+
+    /* hover */
+    .buttontroll:hover .hover-text {
+        cursor: default;
+        width: 100%;
+        filter: drop-shadow(0 0 23px var(--animation-color))
+    }
+
+
     body {
         font-family: "Poppins", sans-serif;
     }
