@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class DirectorController extends Controller
@@ -140,20 +141,47 @@ class DirectorController extends Controller
 
     public function actualizardetalle(Request $request, $id)
     {
+        if ($request->hasFile('Soporte')) {
+
+            $soporte = $request->file('Soporte');
+
+            $dir = 'Storage/files/soporteautorizaciones/';
+
+            $soporte->move($dir, $soporte->getClientOriginalName());
+
+            return response()->json(['message' => 'Datos recibidos correctamente']);
+        }
+
+        // Devuelve un mensaje de error si no se proporcionó ningún archivo
+        return response()->json(['error' => 'No se proporcionó ningún archivo'], 400);
+
+        // $file = $request->file('Soporte');
+        // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
+        // $cedula = $existingCedula[0]->Cedula;
+        // Log::info('Archivo: ' . $file);
+
+        // // Contar archivos existentes y crear nuevo nombre de archivo
+        // // $existingSoporte = DB::select('autorizaciones')
+        // //     ->where('Cedula', $cedula)
+        // //     ->where('DocumentoSoporte', 'like', 'Soporte-' . $cedula . '%');
+
+        // //$Documento = $existingSoporte[0]->DocumentoSoporte;
 
 
-        $file = $request->file('Soporte');
+        // // Subir el archivo
+        // $dir = 'Storage/files/soporteautorizaciones/';
+        // $file->move($dir, $newFilename);
 
 
-        $update = DB::table('autorizaciones')
-            ->where('ID', $id)
-            ->update([
-                'Detalle' => $request->input('Detalle'),
-                'Estado' => 2,
-                'DocumentoSoporte' => 'putica'
-            ]);
+        // $update = DB::table('autorizaciones')
+        //     ->where('ID', $id)
+        //     ->update([
+        //         'Detalle' => $request->input('Detalle'),
+        //         'Estado' => 2,
+        //         'DocumentoSoporte' => 'asd'
+        //     ]);
 
-        return response()->json(['success' => 'Usuario actualizado correctamente']);
+        // return response()->json(['success' => 'Usuario actualizado correctamente']);
     }
 
 
