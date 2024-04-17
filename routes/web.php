@@ -24,7 +24,6 @@ Route::post('/', [SessionsController::class, 'login_post'])
     ->name('login');
 
 Route::get('logout', [SessionsController::class, 'destroy'])
-    ->middleware('auth')
     ->name('login.destroy');
 
 
