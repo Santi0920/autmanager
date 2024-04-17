@@ -9,7 +9,6 @@
 
     <!-- Fonts -->
     <link href="ResourcesAll/Bootstrap/Bootstrap.css" rel="stylesheet">
-    <link type="text/css" href="css/datacredito.css" rel="stylesheet">
     <link rel="shortcut icon" href="img/logoo.png" type="image/png">
     <script src="ResourcesAll/jquery/jquery-3.6.0.js"></script>
     <script src="ResourcesAll/jquery/jquery-ui.js"></script>
@@ -413,7 +412,7 @@
                                             <tr>
                                                 <th scope="row"  class="text-start">SOPORTE:</th>
                                                 <td id="tipo">
-                                                    <input type="file" class="form-control" name="Soporte" id="SoporteScore" accept=".pdf">
+                                                    <input type="file" class="form-control" name="Soporte" id="Soporte" accept=".pdf">
                                                 </td>
                                             </tr>
                                             </form>
@@ -607,43 +606,24 @@
         <script>
             function formEditarAutorizacion(id, event) {
 
-                var form = $("#formEditarAutorizacion" + id);
+                var _token = $('input[name="_token"]').val()
+                var Detalle = $('input[name="Detalle"]').val()
+                var Soporte = $('#Soporte')[0].files[0];
 
-                // Verificar si el formulario ya ha sido enviado
-                if (form.data('submitted')) {
-                    // Si el formulario ya ha sido enviado, no hacer nada
-                    return;
-                }
+                var formData = new FormData();
+                formData.append('_token', _token);
+                formData.append('Detalle', Detalle);
+                formData.append('Soporte', Soporte);
 
-                // Marcar el formulario como enviado
-                form.data('submitted', true);
-
-                var formDataArray = form.serializeArray();
-                // Almacenar los valores en variables
-                var Detalle;
-                var Soporte;
-                console.log(formDataArray);
-
-                // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
-                formDataArray.forEach(function(input) {
-                    if (input.name === "Detalle") {
-                        Detalle = input.value;
-
-                    }
-                });
-
-
-                // Realizar la solicitud AJAX para actualizar la autorización
                 $.ajax({
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
                     type: "POST",
-                    data: {
-                        Detalle: Detalle,
-                        Soporte: Soporte,
-                        _token: $('input[name="_token"]').val()
-                    },
+                    data: formData,
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
-                        if (response) {
+                        console.log(response);
+                        if (response.message === "Datos recibidos correctamente") {
                             $(`#exampleModal_${id}`).modal('hide');
                             console.log('¡Éxito!');
                             $('#personas').DataTable().ajax.reload();
@@ -655,12 +635,19 @@
                                 confirmButtonColor: '#646464'
                             });
                         }
+                        //     $(`#exampleModal_${id}`).modal('hide');
+                        //     console.log('¡Éxito!');
+                        //     $('#personas').DataTable().ajax.reload();
+                        // Swal.fire({
+                        //     icon: 'success',
+                        //     title: "¡ACTUALIZADO!",
+                        //     html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                        //         id + "</span></span>",
+                        //     confirmButtonColor: '#646464'
+                        // });
+                        // }
                     },
-                    error: function(error) {
-                        console.log('Error');
-                    }
                 });
-
             }
 
             function disableEnterKey(event) {
