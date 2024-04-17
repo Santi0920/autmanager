@@ -13,7 +13,6 @@ namespace Symfony\Component\HttpKernel\DataCollector;
 
 use Symfony\Component\VarDumper\Caster\CutStub;
 use Symfony\Component\VarDumper\Caster\ReflectionCaster;
-use Symfony\Component\VarDumper\Cloner\ClonerInterface;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\Stub;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
@@ -33,7 +32,7 @@ abstract class DataCollector implements DataCollectorInterface
      */
     protected $data = [];
 
-    private ClonerInterface $cloner;
+    private $cloner;
 
     /**
      * Converts the variable into a serializable Data instance.
@@ -82,9 +81,6 @@ abstract class DataCollector implements DataCollectorInterface
         return ['data'];
     }
 
-    /**
-     * @return void
-     */
     public function __wakeup()
     {
     }
@@ -92,22 +88,14 @@ abstract class DataCollector implements DataCollectorInterface
     /**
      * @internal to prevent implementing \Serializable
      */
-    final protected function serialize(): void
+    final protected function serialize()
     {
     }
 
     /**
      * @internal to prevent implementing \Serializable
      */
-    final protected function unserialize(string $data): void
+    final protected function unserialize(string $data)
     {
-    }
-
-    /**
-     * @return void
-     */
-    public function reset()
-    {
-        $this->data = [];
     }
 }
