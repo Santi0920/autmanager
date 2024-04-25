@@ -31,7 +31,7 @@
                     icon: 'success',
                     title: "¡Correcto!",
                     html: "{!! session('correcto') !!}",
-                    confirmButtonColor: '#005E56'
+                    confirmButtonColor: '#646464'
                 });
             </script>
         </div>
@@ -44,7 +44,7 @@
                     icon: 'error',
                     title: "{{ session('incorrecto') }}",
                     text: '',
-                    confirmButtonColor: '#005E56',
+                    confirmButtonColor: '#646464',
                     timer: 10000
 
                 });
@@ -300,252 +300,346 @@
                         data: 'IDAutorizacion',
                         render: function(data, type, row) {
 
-                            //para traer por quien fue el que valido COORDINACION
-                            if (row.Validacion == 1) {
-                                var validadopor = `<th scope="row" class="text-start">VALIDADO POR:</th>
-                                                                <td id="aprobado_por" class="fw-bold text-primary">${row.ValidadoPor}</td>
-                                                            </tr>`
-                            } else {
-                                var validadopor = `<th scope="row" class="text-start">VALIDADO POR:</th>
-                                                                <td id="aprobado_por" class="fw-bold text-dark">Pendiente...</td>
-                                                            </tr>`
-                            }
-
-                            //añadir observaciones
-                            if (row.Observaciones !== "Ninguna.") {
-                                var Observaciones = `<th scope="row"  class="text-start">OBSERVACIONES:</th>
-                                                                <td id="aprobado_por" class="fw-semibold">${row.Observaciones}</td>
-                                                            </tr>`
-                            } else {
-                                var Observaciones = `
-                                                            <tr>
-                                                                <th scope="row"  class="text-start">OBSERVACIONES:</th>
-                                                                <td id="aprobado_por" class="fw-semibold">Ninguna.</td>
-                                                            </tr>`
-                            }
-
-
-
-                            //TRAE LA CUENTA SI ES 11D QUE ES AUTORIZACION POR SCORE BAJO CREDITO
-                            if (row.CodigoAutorizacion == '11D') {
-                                var cuenta = `<th scope="row"  class="text-start">CUENTA:</th>
-                                                                <td id="aprobado_por" class="text-dark">${row.CuentaAsociada}</td>
-                                                            </tr>`
-                            } else {
-                                var cuenta = ``
-                            }
-
-                            //para traer el score en badge Y SI SON LOS CODIGOS DE ABAJO QUE NO TRAIGA SCORE
-                            if (row.CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G' || row
-                                .CodigoAutorizacion == '19B') {
-                                var score = ``
-                            } else {
-                                if (row.Score == 'S/E') {
-                                    //SIN EXPERIENCIA
-                                    var score =
-                                        `
-                                        <tr>
-                                            <th scope="row" class="text-start">SCORE:</th>
-                                            <td id="observacion"><div class="btn btn-warning" title="sin experiencia" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 15px;"><label style="margin-bottom: 0px;">${row.Score}</label></div></td>
-                                            </tr>
-                                        <tr>
-                                       `
-                                } else if (row.Score >= 650) {
-                                    //NORMAL
-                                    var score =
-                                        `
-                                        <tr>
-                                            <th scope="row" class="text-start">SCORE:</th>
-                                            <td id="observacion"><div class="btn btn-success" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 17px;"><label style="margin-bottom: 0px;">${row.Score}</label></div></td>
-                                            </tr>
-                                        <tr>
-                                        `
-
-                                } else {
-                                    //BAJO
-                                    var score =
-                                        `
-                                        <tr>
-                                            <th scope="row" class="text-start">SCORE:</th>
-                                            <td id="observacion"><div class="btn btn-danger" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 15px;"><label style="margin-bottom: 0px;">${row.Score}</label></div></td>
-                                            </tr>
-                                        <tr>
-
-                                        `
-                                }
-                            }
-
-                            //AQUI TRAE EL ESTADO EN EL MODAL
-                            if (row.Estado == 0) {
-                                var Estado =
-                                    '<div class="btn btn-danger" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
-                            } else if (row.Estado == 1 || row.Estado == 2) {
-                                var Estado =
-                                    `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
-                            } else if (row.Estado == 3) {
-                                var Estado =
-                                    '<div class="btn btn-primary" style="padding: 0.4rem 1.5rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
-                            } else if (row.Estado == 4) {
-                                var Estado =
-                                    '<div class="btn btn-success" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">APROBADO POR GERENCIA</div>';
-
-                            } else if (row.Estado == 5) {
-                                var Estado =
-                                    '<div class="btn btn-danger" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO POR GERENCIA</div>';
-
-                            }
-
-
-
                             var id = row.IDAutorizacion; // Obtener el ID de la fila
                             var url = "{{ route('update.autorizacion', ':id') }}";
                             url = url.replace(':id', id);
 
-                            //PARA EDITAR
-                            if (row.Estado == 3) {
-                                var detalleEditar = `
-                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}">
-                                            @csrf
-                                            <input class="input text-center" name="Detalle" id="Detalle" type="text" value="${row.Detalle}" onkeydown="disableEnterKey(event)"></input>
-
-
-                                            <tr>
-                                                <th scope="row"  class="text-start">SOPORTE:</th>
-                                                <td id="tipo">
-                                                    <input type="file" class="form-control" name="Soporte" id="Soporte" accept=".pdf">
-                                                </td>
-                                            </tr>
-                                            </form>
-
-                                            `
-                                var boton = `
-                                <div class="text-center">
-
-                                    <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-primary fs-5 fw-bold" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)"
-                                                style="background-color: #646464;">GUARDAR</button>
-                                    </div>
-                                    `
-                            } else {
-                                var detalleEditar = `${row.Detalle}
-                                <tr>
-                                            <th scope="row"  class="text-start">SOPORTE:</th>
-                                            <td id="tipo"><a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download><img src="img/pdf.png" style="height: 2.5rem"></a></td>
-                                        </tr>`
-                                var boton = ``
-                            }
-
-                            //nombre DE LA PERSONA O SI NO EXISTE EN DATACRÉDTIO ES VACIO
-                            if (row.CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G' || row
-                                .CodigoAutorizacion == '19B') {
-                                var nombre = ``
-                            } else {
-                                var nombre =
-                                    `<tr>
-                                            <th scope="row" class="text-start">NOMBRE:</th>
-                                            <td id="fe_ho_so">${row.Nombre} ${row.Apellidos}</td>
-                                        </tr>`
-
-                            }
-
-
-                            //ESTADO DE CUENTA EN COOPSERP
-                            if (row.CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G') {
-                                var estadocuenta = `
-                                <tr>
-                                    <th scope="row" class="text-start">ESTADO CUENTA:</th>
-                                    <td>${row.Cedula}</td>
-                                </tr>
-                                `
-                            } else {
-                                var estadocuenta = ``
-                            }
-
-
-
                             var modalEditar = `
-                                        <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
-                                            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-                                        </svg>
-                                        </a>
+                            <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                                </svg>
+                            </a>
 
-                                        <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}" data-id="${id}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" color="black" class="bi bi-eye" viewBox="0 0 16 16">
-                                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
-                                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
-                                            </svg> Ver detallado
-                                            </a>
-                                        </li></ul>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
+                                        data-id="${id}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" color="black"
+                                        class="bi bi-eye" viewBox="0 0 16 16">
+                                        <path
+                                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                        </svg> Ver detallado
+                                    </a>
+                                </li>
+                            </ul>
 
 
-                                        {{-- MODAL --}}
-                                        <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-width: 700px;">
-                                                <div class="modal-content" style="padding: 2% 5% 5% 5%">
-                                                    <div class="modal-header text-center">
-                                                        <h6 class="modal-title" id="exampleModalLongTitle" style="color: #005E56;font-weight: 700;font-size: 22px">DETALLES AUTORIZACIÓN</h6>
-                                                        <button type="button" class="btn-close fs-5" data-bs-dismiss="modal" aria-label="Close" style="outline: none; border: none; font-size:18px">
-                                                        </button>
+                            {{-- MODAL --}}
+                            <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header text-center">
+                                        <h6 class="modal-title" id="exampleModalLongTitle"
+                                            style="color: #646464;font-weight: 700;font-size: 22px">DETALLE DE LA AUTORIZACIÓN</h6>
+                                        <button type="button" class="btn-close fs-5" data-bs-dismiss="modal" aria-label="Close"
+                                            style="outline: none; border: none; font-size:18px">
+                                        </button>
+                                        </div>
+                                        <div class="modal-body p-1">
+
+                                        <div class="row g-0 text-center">
+                                            <div class="col-sm-none col-md-none col-lg-2 bg-primary-subtle">
+
+                                            </div>
+                                            <div class="col-md-12 col-lg-10">
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-3">
+                                                        <span class="h2 fw-bold">SOLICITUD</span>
+                                                    </div>
+                                                    <div class="col-md-5 col-lg-3">
+                                                    <div class="row g-0 justify-content-center border p-2">
+                                                        <span class="h3 fw-bold mb-0 text-danger">No.${row.IDAutorizacion}</span>
                                                     </div>
 
-                                                    <div class="d-flex position-relative" style="max-height: 1000px; overflow-y: auto;">
-                                                        <div style="margin-top: 4%;width: 100%;">
-                                                            <table class="table table-bordered" style="color: #111 !important; font-size: 17px;">
-
-                                                            <tbody>
-                                                            <tr>
-                                                            <th scope="row" style="width: 50%;"  class="text-start">CONSECUTIVO:</th>
-                                                            <td id="" style="font-size: 30px" class="text-danger">${id}</td>
-                                                            <input class="input text-center"  name="id" id="id" type="text" value="${row.IDAutorizacion}" style="display: none"></input>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row"  class="text-start">AGENCIA:</th>
-                                                                <td id="tipo">${row.NumAgencia} - ${row.NomAgencia}</td>
-                                                                <input class="d-none" name="cedulaNone" value="${row.Cedula}">
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row" class="text-start">CODIGO:</th>
-                                                            <td id="tipo">${row.CodigoAutorizacion}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row" class="text-start">CONCEPTO:</th>
-                                                            <td id="motivo">${row.Concepto}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row" class="text-start">FECHA DE LA SOLICITUD:</th>
-                                                            <td id="fe_ho_in">${row.Fecha}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row" class="text-start">CÉDULA</th>
-                                                            <td id="fe_ho_fi">${row.Cedula}</td>
-                                                            </tr>
-
-                                                            ` + estadocuenta + nombre + cuenta + score + `
-
-
-                                                            <tr>
-                                                            ` + validadopor + `
-                                                            <th scope="row" class="text-start">ESTADO:</th>
-                                                                        <td id="estado" style="text-align: center">` +
-                                Estado + `</</td>
-                                                            </tr>
-                                                            <th scope="row" class="text-start">DETALLE:</th>
-                                                            <td id="estado" style="text-align: center">` +
-                                detalleEditar + `</td>
-                                                            </tr>
-                                                            ` + Observaciones + `
-
-                                                        </tbody>
-                                                        </table>
-                                                        ` + boton + `
+                                                    <div class="row g-0 align-items-center justify-content-center border p-2">
+                                                        ${row.Estado == 0 ?
+                                                            `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">A - ANULADO</button>` :
+                                                            row.Estado == 1 || row.Estado == 2 ?
+                                                            `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
+                                                            row.Estado == 3 ?
+                                                            `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
+                                                            row.Estado == 4 ?
+                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
+                                                            row.Estado == 5 ?
+                                                            `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
+                                                            '<h1>nada</h1>'
+                                                        }
+                                                    </div>
+                                                    </div>
                                                 </div>
-                                                </div>
-                                            </div>
                                             </div>
                                         </div>
-                                        </div>`;
+
+                                        <div class="row g-0 text-center">
+                                            <div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
+                                                <span class="h1 fw-bold mb-0">S</span>
+                                            </div>
+
+                                            <div class="col-sm-12 col-md-12 col-lg-10">
+                                                <div class="row g-0 justify-content-start">
+                                                    <div class="row g-0 row-cols-2 justify-content-center">
+                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} <b>${row.SolicitadoPor}</b></span>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                        <span class="mb-0 fs-5">${row.Fecha}</span>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0 row-cols-2 d-flex justify-content-start">
+                                                    <div
+                                                    class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
+                                                    <span class="fs-5">${row.CodigoAutorizacion} - ${row.Concepto}</span>
+                                                    </div>
+                                                    <div
+                                                    class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
+                                                    ${row.CodigoAutorizacion == "19B" ?
+                                                    `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
+                                                    }
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0">
+                                                    <div class="col-md-12 d-flex justify-content-start border p-2">
+                                                        <span class="fs-5">${row.Cedula}
+                                                            ${row.CodigoAutorizacion !== '11A' ?
+                                                            `- ${row.CuentaAsociado} `
+                                                            : ``}- ${row.NombrePersona}</span>
+
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0">
+                                                    ${row.Estado == 3 ?
+                                                        `
+
+
+                                                            <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}">
+                                                                @csrf
+                                                                <input class="mb-0 w-100" style="resize: horizontal;" id="Detalle" name="Detalle" value="${row.Detalle}"></input>
+                                                            </div>
+                                                            <div
+                                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
+                                                                <label for="file" class="labelFile">
+                                                                    <span><svg
+                                                                    xml:space="preserve"
+                                                                    viewBox="0 0 184.69 184.69"
+                                                                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    id="Capa_1"
+                                                                    version="1.1"
+                                                                    width="60px"
+                                                                    height="60px"
+                                                                    >
+                                                                    <g>
+                                                                        <g>
+                                                                        <g>
+                                                                            <path
+                                                                            d="M149.968,50.186c-8.017-14.308-23.796-22.515-40.717-19.813
+                                                                                C102.609,16.43,88.713,7.576,73.087,7.576c-22.117,0-40.112,17.994-40.112,40.115c0,0.913,0.036,1.854,0.118,2.834
+                                                                                C14.004,54.875,0,72.11,0,91.959c0,23.456,19.082,42.535,42.538,42.535h33.623v-7.025H42.538
+                                                                                c-19.583,0-35.509-15.929-35.509-35.509c0-17.526,13.084-32.621,30.442-35.105c0.931-0.132,1.768-0.633,2.326-1.392
+                                                                                c0.555-0.755,0.795-1.704,0.644-2.63c-0.297-1.904-0.447-3.582-0.447-5.139c0-18.249,14.852-33.094,33.094-33.094
+                                                                                c13.703,0,25.789,8.26,30.803,21.04c0.63,1.621,2.351,2.534,4.058,2.14c15.425-3.568,29.919,3.883,36.604,17.168
+                                                                                c0.508,1.027,1.503,1.736,2.641,1.897c17.368,2.473,30.481,17.569,30.481,35.112c0,19.58-15.937,35.509-35.52,35.509H97.391
+                                                                                v7.025h44.761c23.459,0,42.538-19.079,42.538-42.535C184.69,71.545,169.884,53.901,149.968,50.186z"
+                                                                            style="fill:#010002;"
+                                                                            ></path>
+                                                                        </g>
+                                                                        <g>
+                                                                            <path
+                                                                            d="M108.586,90.201c1.406-1.403,1.406-3.672,0-5.075L88.541,65.078
+                                                                                c-0.701-0.698-1.614-1.045-2.534-1.045l-0.064,0.011c-0.018,0-0.036-0.011-0.054-0.011c-0.931,0-1.85,0.361-2.534,1.045
+                                                                                L63.31,85.127c-1.403,1.403-1.403,3.672,0,5.075c1.403,1.406,3.672,1.406,5.075,0L82.296,76.29v97.227
+                                                                                c0,1.99,1.603,3.597,3.593,3.597c1.979,0,3.59-1.607,3.59-3.597V76.165l14.033,14.036
+                                                                                C104.91,91.608,107.183,91.608,108.586,90.201z"
+                                                                            style="fill:#010002;"
+                                                                            ></path>
+                                                                        </g>
+                                                                        </g>
+                                                                    </g></svg></span>
+                                                                <p id="uploadMessage">Adjunta el archivo aquí!</p></label
+                                                                >
+                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file" type="file" onchange="fileUploaded()" />
+                                                                </form>
+                                                            </div>
+
+                                                        ` :
+                                                        `<div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                            <span class="mb-0">${row.Detalle}</span>
+                                                        </div>
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}.pdf" download
+                                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
+                                                            <span class="h1 fw-bold mb-0">
+                                                                <img src="img/pdf.png" style="height: 4.5rem">
+                                                            </span>
+                                                        </a>`
+                                                    }
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        ${row.Validacion == 0 && row.Estado == 3 ?
+                                            //esta validacion es si la validacion esta 0 y estado en corregir
+                                            `<div class="row g-0 text-center">
+                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">C</span>
+                                                </div>
+
+                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                        </div>
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-10 w-100">
+                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones}
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>`:``
+
+                                        }
+
+                                        ${row.Validacion == 0 && row.Estado == 0 ?
+                                            //esta validacion es si la validacion esta 0 y estado esta en rechazado
+                                            `<div class="row g-0 text-center">
+                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">R</span>
+                                                </div>
+
+                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                        </div>
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-10 w-100">
+                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones}
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>`:``
+
+                                        }
+
+
+                                        ${row.Validacion == 1 ?
+                                        `<div class="row g-0 text-center">
+                                            ${row.Estado == 0 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="ANULADO">
+                                                <span class="h1 fw-bold mb-0">A</span>
+                                            </div>`:``
+                                            }
+
+                                            ${row.Aprobacion != 1 ?
+                                                (row.Estado == 3 && row.Validacion == 1 ?
+                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+                                                        <span class="h1 fw-bold mb-0">V</span>
+                                                    </div>` :
+                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">T</span>
+                                                    </div>`
+                                                ) :
+                                                ``
+                                            }
+
+
+
+                                            ${row.Estado == 4 || row.Estado == 5 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                <span class="h1 fw-bold mb-0">V</span>
+                                            </div>`:
+                                            row.Estado == 1 &&  row.Aprobacion == 1 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+                                                <span class="h1 fw-bold mb-0">T</span>
+                                            </div>`:
+                                            row.Validacion == 1 && row.Estado == 3 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-${row.Validacion == 1 ?`success`:`danger`}-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                <span class="h1 fw-bold mb-0">${row.Validacion == 1 ?`V`:`R`}</span>
+                                            </div>`:
+                                            ``
+                                            }
+
+
+
+                                            <div class="col-sm-12 col-md-12 col-lg-10">
+                                                <div class="row g-0">
+                                                    <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                        <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                    <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>` : ``}
+
+                                        ${row.Aprobacion == 1 ?
+                                            `<div class="row g-0 text-center">
+                                                ${row.Estado == 4 ?
+                                                `<div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
+                                                    <span class="h1 fw-bold mb-0">A</span>
+                                                </div>`:
+                                                row.Estado == 5 ?
+                                                `<div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
+                                                    <span class="h1 fw-bold mb-0">R</span>
+                                                </div>`:
+                                                row.Estado == 3 ?
+                                                `<div
+                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
+                                                    <span class="h1 fw-bold mb-0">C</span>
+                                                </div>`:
+                                                ``
+                                                }
+                                                <div class="col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-9 d-flex text-start border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                        </div>
+                                                        <div class="col-md-3 border p-2">
+                                                            <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                        </div>
+                                                    </div>
+                                                    ${row.Estado == 5 || row.Estado ==3 ?
+                                                        `<div class="row g-0 border text-start p-2">
+                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer}</p>
+                                                        </div>`:
+                                                        ``
+                                                    }
+                                                </div>
+                                            </div>`:``
+                                        }
+
+                                        </div>
+                                        ${row.Estado == 3 ?
+                                        `<div class=" text-center p-3">
+                                            <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)"
+                                            >GUARDAR</button>`:``
+                                        }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
 
                             return modalEditar;
 
@@ -573,7 +667,7 @@
                 },
                 "language": {
                     "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen Autorizaciones Disponibles!</span>",
+                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen autorizaciones disponibles!</span>",
                     "info": "Mostrando la página _PAGE_ de _PAGES_",
                     "infoEmpty": "No hay registros disponibles",
                     "infoFiltered": "(Filtrado de _MAX_ registros totales)",
@@ -605,15 +699,19 @@
 
         <script>
             function formEditarAutorizacion(id, event) {
+                var _token = $('input[name="_token"]').val();
+                var Detalle = $('input[name="Detalle"]').val();
+                var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
 
-                var _token = $('input[name="_token"]').val()
-                var Detalle = $('input[name="Detalle"]').val()
-                var Soporte = $('#Soporte')[0].files[0];
 
                 var formData = new FormData();
                 formData.append('_token', _token);
                 formData.append('Detalle', Detalle);
-                formData.append('Soporte', Soporte);
+
+                // Verificar si hay un archivo adjunto
+                if (Soporte) {
+                    formData.append('Soporte', Soporte);
+                }
 
                 $.ajax({
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
@@ -635,18 +733,7 @@
                                 confirmButtonColor: '#646464'
                             });
                         }
-                        //     $(`#exampleModal_${id}`).modal('hide');
-                        //     console.log('¡Éxito!');
-                        //     $('#personas').DataTable().ajax.reload();
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: "¡ACTUALIZADO!",
-                        //     html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                        //         id + "</span></span>",
-                        //     confirmButtonColor: '#646464'
-                        // });
-                        // }
-                    },
+                    }
                 });
             }
 
@@ -700,7 +787,6 @@
 
                         </div>
 
-
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
                                     class="text-danger" style="font-size:20px;">*</span></label>
@@ -708,7 +794,7 @@
 
                         </div>
                         <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS<span
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS Y CAPTURA DE ESTADO DE CUENTA F6<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
                             <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
                         </div>
@@ -723,6 +809,16 @@
                             <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
                                     style="font-size:20px;">*</span></label>
                             <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="Cuenta" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
                                 required>
 
                         </div>
@@ -761,6 +857,15 @@
                             <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
 
                         </div>
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
+
+                        </div>
+
+
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
@@ -773,12 +878,54 @@
                         `);
                 }
             });
+
+            function fileUploaded() {
+    // Obtiene el elemento input de tipo file
+    var fileInput = document.getElementById("file");
+
+    // Obtiene el nombre del archivo
+    var fileName = "";
+    if (fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+    }
+
+    // Muestra el mensaje de confirmación con el nombre del archivo
+    document.getElementById("uploadMessage").innerHTML = fileName + "' subido.";
+    document.getElementById("uploadMessage").style.display = "block";
+}
         </script>
 
     </div>
 
     </div>
     <style>
+        .input {
+        max-width: 190px;
+        display: none;
+        }
+
+        .labelFile {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 250px;
+        height: 100px;
+        border: 2px dashed #ccc;
+        align-items: center;
+        text-align: center;
+        padding: 5px;
+        color: #404040;
+        cursor: pointer;
+        }
+
+        #uploadMessage {
+                display: none;
+                color: green;
+                font-weight: bold;
+            }
+
+
+
         .custom-buttons {
             display: inline-block;
             margin-right: 10px;

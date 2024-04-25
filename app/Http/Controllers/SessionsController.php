@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class SessionsController extends Controller
 {
@@ -16,100 +18,109 @@ class SessionsController extends Controller
     public function login_post(Request $request)
     {
 
-        if (auth()->attempt(request(['email', 'password'])) == false) {
+        $password = $request->input('password');
 
-            return back()->withErrors([
-                'message' => 'El usuario o la contraseña es incorrecto!'
-            ]);
+        // Obtener todos los usuarios
+        $users = User::all();
+
+        // Iterar sobre los usuarios y verificar si alguna contraseña coincide
+        foreach ($users as $user) {
+
+            if (Hash::check($password, $user->password)) {
+
+                // La contraseña coincide, autenticar al usuario manualmente
+                Auth::login($user);
+
+
+
+
+                if ($user->rol == 'Consultante') {
+                    $usuarioActual = Auth::user();
+                    $nombre = $usuarioActual->name;
+                    $rol = $usuarioActual->rol;
+
+                    date_default_timezone_set('America/Bogota');
+
+                    $fechaHoraActual = date('Y-m-d H:i:s');
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    // $agencia = $usuarioActual->agenciau;
+        // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
+        //                 null,
+        //                 $nombre,
+        //                 $rol,
+        //                 $agencia,
+        //                 $fechaHoraActual,
+        //                 null,
+        //                 null,
+        //                 $ip
+        //             ]);
+
+                    return redirect()->to('/solicitudes');
+
+
+                } else if ($user->rol == 'Coordinacion') {
+                    $usuarioActual = Auth::user();
+                    $nombre = $usuarioActual->name;
+                    $rol = $usuarioActual->rol;
+
+                    date_default_timezone_set('America/Bogota');
+
+                    $fechaHoraActual = date('Y-m-d H:i:s');
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    // $agencia = $usuarioActual->agenciau;
+        // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
+        //                 null,
+        //                 $nombre,
+        //                 $rol,
+        //                 $agencia,
+        //                 $fechaHoraActual,
+        //                 null,
+        //                 null,
+        //                 $ip
+        //             ]);
+
+                    return redirect()->to('/validar');
+
+
+                } else if ($user->rol == 'Jefatura') {
+                    $usuarioActual = Auth::user();
+                    $nombre = $usuarioActual->name;
+                    $rol = $usuarioActual->rol;
+
+                    date_default_timezone_set('America/Bogota');
+
+                    $fechaHoraActual = date('Y-m-d H:i:s');
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    // $agencia = $usuarioActual->agenciau;
+        // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
+        //                 null,
+        //                 $nombre,
+        //                 $rol,
+        //                 $agencia,
+        //                 $fechaHoraActual,
+        //                 null,
+        //                 null,
+        //                 $ip
+        //             ]);
+
+                    return redirect()->to('/aprobar');
+
+
+                } else {
+                    return back()->withErrors([
+                        'message' => 'La contraseña es incorrecta!'
+                    ]);
+                }
+            }
         }
 
-
-        $user = auth()->user();
-
-        if ($user->activo == 0) {
             return back()->withErrors([
-                'message' => 'Tu cuenta está desactivada. Por favor, contacta al administrador.'
+                'message' => 'La contraseña es incorrecta!'
             ]);
-        }
 
 
-        if ($user->rol == 'Consultante') {
-            $usuarioActual = Auth::user();
-            $nombre = $usuarioActual->name;
-            $rol = $usuarioActual->rol;
-
-            date_default_timezone_set('America/Bogota');
-
-            $fechaHoraActual = date('Y-m-d H:i:s');
-            $ip = $_SERVER['REMOTE_ADDR'];
-            // $agencia = $usuarioActual->agenciau;
-// $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
-//                 null,
-//                 $nombre,
-//                 $rol,
-//                 $agencia,
-//                 $fechaHoraActual,
-//                 null,
-//                 null,
-//                 $ip
-//             ]);
-
-            return redirect()->to('/solicitudes');
 
 
-        } else if ($user->rol == 'Coordinacion') {
-            $usuarioActual = Auth::user();
-            $nombre = $usuarioActual->name;
-            $rol = $usuarioActual->rol;
-
-            date_default_timezone_set('America/Bogota');
-
-            $fechaHoraActual = date('Y-m-d H:i:s');
-            $ip = $_SERVER['REMOTE_ADDR'];
-            // $agencia = $usuarioActual->agenciau;
-// $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
-//                 null,
-//                 $nombre,
-//                 $rol,
-//                 $agencia,
-//                 $fechaHoraActual,
-//                 null,
-//                 null,
-//                 $ip
-//             ]);
-
-            return redirect()->to('/validar');
-
-
-        } else if ($user->rol == 'Jefatura') {
-            $usuarioActual = Auth::user();
-            $nombre = $usuarioActual->name;
-            $rol = $usuarioActual->rol;
-
-            date_default_timezone_set('America/Bogota');
-
-            $fechaHoraActual = date('Y-m-d H:i:s');
-            $ip = $_SERVER['REMOTE_ADDR'];
-            // $agencia = $usuarioActual->agenciau;
-// $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
-//                 null,
-//                 $nombre,
-//                 $rol,
-//                 $agencia,
-//                 $fechaHoraActual,
-//                 null,
-//                 null,
-//                 $ip
-//             ]);
-
-            return redirect()->to('/aprobar');
-
-
-        } else {
-            return back()->withErrors([
-                'message' => 'El usuario o la contraseña es incorrecto!'
-            ]);
-        }
     }
 
     public function destroy(Request $request)

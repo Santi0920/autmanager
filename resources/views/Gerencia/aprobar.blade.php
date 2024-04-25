@@ -9,7 +9,6 @@
 
     <!-- Fonts -->
     <link href="ResourcesAll/Bootstrap/Bootstrap.css" rel="stylesheet">
-    <link type="text/css" href="css/datacredito.css" rel="stylesheet">
     <link rel="shortcut icon" href="img/logoo.png" type="image/png">
     <script src="ResourcesAll/jquery/jquery-3.6.0.js"></script>
     <script src="ResourcesAll/jquery/jquery-ui.js"></script>
@@ -32,7 +31,7 @@
                     icon: 'success',
                     title: "¡Correcto!",
                     html: "{!! session('correcto') !!}",
-                    confirmButtonColor: '#005E56'
+                    confirmButtonColor: '#646464'
                 });
             </script>
         </div>
@@ -45,7 +44,7 @@
                     icon: 'error',
                     title: "{{ session('incorrecto') }}",
                     text: '',
-                    confirmButtonColor: '#005E56',
+                    confirmButtonColor: '#646464',
                     timer: 10000
 
                 });
@@ -103,11 +102,9 @@
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
-                        <th scope="col" class="text-center" style="width: 15%">CÉDULA</th>
-                        <th scope="col" class="text-center" style="width: 30%">CONCEPTO</th>
-                        <th scope="col" class="text-center">FECHA SOLICITUD</th>
-                        <th scope="col" class="text-center" style="width: 17%">ESTADO</th>
-                        <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
+                        <th scope="col" class="text-center">CONCEPTO</th>
+                        <th scope="col" class="text-center">ESTADO</th>
+                        <th scope="col" class="text-center">DETALLE</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -147,16 +144,6 @@
                         });
                     }
                 },
-                {
-                    data: 'Cedula',
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'center'
-                        });
-                    }
-                },
 
                 {
                     data: 'CodigoAutorizacion',
@@ -175,16 +162,6 @@
                     }
                 },
 
-                {
-                    data: 'Fecha',
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'center'
-                        });
-                    }
-                },
                 {
                     data: 'Estado',
                     render: function(data, type, row) {
@@ -214,243 +191,232 @@
                     data: 'Detalle',
                     render: function(data, type, row) {
 
-                        //para traer por quien LO SOLICITÓ
-                        if (row.Solicitud == 1) {
-                            var solicitadopor = `<th scope="row"  class="text-start">SOLICITADO POR:</th>
-                                                            <td id="aprobado_por" class="fw-bold text-primary">${row.SolicitadoPor}</td>
-                                                        </tr>`
-                        } else {
-                            var solicitadopor = `<th scope="row"  class="text-start">SOLICITADO POR:</th>
-                                                            <td id="aprobado_por" class="fw-bold text-dark">Pendiente...</td>
-                                                        </tr>`
-                        }
-
                         var id = row.IDAutorizacion; // Obtener el ID de la fila
                         var url = "{{ route('updatecoor.autorizacion', ':id') }}";
                         url = url.replace(':id', id);
 
+                        const fecha = row
+                                .Fecha; // Suponiendo que row.Fecha contiene la fecha en formato de cadena
 
-                        //TRAE LA CUENTA SI ES 11D QUE ES AUTORIZACION POR SCORE BAJO CREDITO
-                        if (row.CodigoAutorizacion == '11D') {
-                            var cuenta = `<th scope="row"  class="text-start">CUENTA:</th>
-                                                    <td id="aprobado_por" class="text-dark">${row.CuentaAsociada}</td>
-                                                </tr>`
-                        } else {
-                            var cuenta = ``
-                        }
+                            // Obtener las primeras dos letras de la fecha
+                            let primerasDosLetras = fecha.substring(0, 19);
 
+                            // Convertir la primera letra a mayúscula
+                            primerasDosLetras = primerasDosLetras.charAt(0).toUpperCase() + primerasDosLetras
+                                .slice(1);
 
-
-                        if (row.Estado == 1) {
-                            var RadioEstado = `
-                                    <label class="label" >
-                                        <input value="4" type="radio" name="Estado" id="Estado">
-                                        <span>APROBAR</span>
-                                    </label>
-
-
-                                <label class="label">
-                                        <input value="5" type="radio" name="Estado" id="Estado">
-                                        <span>ANULAR</span>
-                                    </label>
-                                    `
-                        } else if (row.Estado == 4) {
-                            var RadioEstado = `
-                            <label class="label" >
-                                        <input value="4" type="radio" name="Estado" id="Estado" checked>
-                                        <span>APROBADO</span>
-                                    </label>
-
-
-                                <label class="label">
-                                        <input value="5" type="radio" name="Estado" id="Estado">
-                                        <span>ANULAR</span>
-                                    </label>
+                                let fechaValidacion = "";
+                                if (row.FechaValidacion !== null) {
+                                    fechaValidacion = row.FechaValidacion.substring(0, 19); // Obtener los primeros 19 dígitos
+                                    fechaValidacion = fechaValidacion.charAt(0).toUpperCase() + fechaValidacion.slice(1); // Convertir la primera letra a mayúscula
+                                }
 
 
 
-                                    `
-                        } else if (row.Estado == 5) {
-                            var RadioEstado = `
+                            var modalEditar = `
+                            <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                                </svg>
+                            </a>
 
-                            <label class="label">
-                                        <input value="5" type="radio" name="Estado" id="Estado" checked>
-                                        <span>ANULADO</span>
-                                    </label>
-
-                                    <label class="label" >
-                                        <input value="4" type="radio" name="Estado" id="Estado">
-                                        <span>APROBAR</span>
-                                    </label>
-
-                                    `
-                        }
-
-
-                        if (row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row
-                            .CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G') {
-                            var DocumentoSoporte = `
-                                    <tr>
-                                        <th scope="row" class="text-start">SOPORTE:</th>
-                                        <td id="tipo"><a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download><img src="img/pdf.png" style="height: 2.5rem"></a></td>
-                                    </tr>
-                                    `
-                        } else {
-                            var DocumentoSoporte = ``
-                        }
-
-                        //para traer el score en badge Y SI SON LOS CODIGOS DE ABAJO QUE NO TRAIGA SCORE
-                        if (row.CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G' || row
-                            .CodigoAutorizacion == '19B') {
-                            var score = ``
-                        } else {
-                            if (row.Score == 'S/E') {
-                                //SIN EXPERIENCIA
-                                var score =
-                                    `
-                                        <tr>
-                                            <th scope="row" class="text-start">SCORE:</th>
-                                            <td id="observacion"><div class="btn btn-warning" title="sin experiencia" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 15px;"><label style="margin-bottom: 0px;">${row.Score}</label></div></td>
-                                            </tr>
-                                        <tr>
-                                       `
-                            } else if (row.Score >= 650) {
-                                //NORMAL
-                                var score =
-                                    `
-                                        <tr>
-                                            <th scope="row" class="text-start">SCORE:</th>
-                                            <td id="observacion"><div class="btn btn-success" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 17px;"><label style="margin-bottom: 0px;">${row.Score}</label></div></td>
-                                            </tr>
-                                        <tr>
-                                        `
-
-                            } else {
-                                //BAJO
-                                var score =
-                                    `
-                                        <tr>
-                                            <th scope="row" class="text-start">SCORE:</th>
-                                            <td id="observacion"><div class="btn btn-danger" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 15px;"><label style="margin-bottom: 0px;">${row.Score}</label></div></td>
-                                            </tr>
-                                        <tr>
-
-                                        `
-                            }
-                        }
-
-                        //nombre DE LA PERSONA O SI NO EXISTE EN DATACRÉDTIO ES VACIO
-                        if (row.CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G' || row
-                            .CodigoAutorizacion == '19B') {
-                            var nombre = ``
-                        } else {
-                            var nombre =
-                                `<tr>
-                                            <th scope="row" class="text-start">NOMBRE:</th>
-                                            <td id="fe_ho_so">${row.Nombre} ${row.Apellidos}</td>
-                                        </tr>`
-
-                        }
-
-                        //ESTADO DE CUENTA EN COOPSERP
-                        if (row.CodigoAutorizacion == '11B' || row.CodigoAutorizacion == '11G') {
-                            var estadocuenta = `
-                                <tr>
-                                    <th scope="row" class="text-start">ESTADO CUENTA:</th>
-                                    <td>${row.Cedula}</td>
-                                </tr>
-                                `
-                        } else {
-                            var estadocuenta = ``
-                        }
-
-
-                        var Detalle = `<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
-                                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-                                    </svg>
-                                    </button>
-
-                                    <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal_${row.IDAutorizacion}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" color="black" class="bi bi-eye" viewBox="0 0 16 16">
-                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
-                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
+                                        data-id="${id}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" color="black"
+                                        class="bi bi-eye" viewBox="0 0 16 16">
+                                        <path
+                                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
                                         </svg> Ver detallado
-                                        </a>
-                                    </li></ul>`
+                                    </a>
+                                </li>
+                            </ul>
 
 
-                        var modal = `        {{-- MODAL --}}
-                                            <div class="modal fade bd-example-modal-lg" id="exampleModal_${row.IDAutorizacion}" data-id="${row.IDAutorizacion}" tabindex="-1" role="dialog" aria-labelledby="permisoModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-width: 700px;">
-                                                    <div class="modal-content" style="padding: 2% 5% 5% 5%">
-                                                        <div class="modal-header text-center">
-                                                            <h6 class="modal-title" id="exampleModalLongTitle" style="color: #005E56;font-weight: 700;font-size: 22px">DETALLE DE LA AUTORIZACIÓN</h6>
-                                                            <button type="button" class="btn-close fs-5" data-bs-dismiss="modal" aria-label="Close" style="outline: none; border: none; font-size:18px">
-                                                            </button>
-                                                        </div>
+                            {{-- MODAL --}}
+                            <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header text-center">
+                                        <h6 class="modal-title" id="exampleModalLongTitle"
+                                            style="color: #646464;font-weight: 700;font-size: 22px">DETALLE DE LA AUTORIZACIÓN</h6>
+                                        <button type="button" class="btn-close fs-5" data-bs-dismiss="modal" aria-label="Close"
+                                            style="outline: none; border: none; font-size:18px">
+                                        </button>
+                                        </div>
+                                        <div class="modal-body p-1">
 
-                                                        <div class="d-flex position-relative" style="max-height: 1000px; overflow-y: auto;">
-                                                            <div style="margin-top: 4%;width: 100%;">
-                                                                <table class="table table-bordered" style="color: #111 !important; font-size: 17px;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                        <th scope="row" style="width: 50%;" class="text-start">CONSECUTIVO:</th>
-                                                                        <td id="" style="font-size: 30px" class="text-danger">${id}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <th scope="row"  class="text-start">AGENCIA:</th>
-                                                                            <td id="tipo">${row.NumAgencia} - ${row.NomAgencia}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                        <th scope="row"  class="text-start">CODIGO:</th>
-                                                                        <td id="tipo">${row.CodigoAutorizacion}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                        <th scope="row"  class="text-start">CONCEPTO:</th>
-                                                                        <td id="motivo">${row.Concepto}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                        <th scope="row"  class="text-start">FECHA DE LA SOLICITUD:</th>
-                                                                        <td id="fe_ho_in">${row.Fecha}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                        <th scope="row"  class="text-start">CÉDULA</th>
-                                                                        <td id="fe_ho_fi">${row.Cedula}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                        ` + estadocuenta + nombre + cuenta + score + `
-                                                                        <tr>
-                                                                        <th scope="row"  class="text-start">DETALLE:</th>
-                                                                        <td id="estado" style="text-align: center">${row.Detalle}</td>
-                                                                        </tr>
-                                                                        ` + DocumentoSoporte + `
-                                                                        ` + solicitadopor + `
-                                                                        <tr>
-                                                                        <th scope="row"  class="text-start">VALIDADO POR:</th>
-                                                                        <td id="estado" class="text-primary fw-bold" style="text-align: center">${row.ValidadoPor}</td>
-                                                                        </tr>
-                                                                        <th scope="row"  class="text-start">CAMBIAR ESTADO:
-                                                                        <td id="estado" style="text-align: center">
-                                                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
-                                                                                @csrf
-                                                                                ` + RadioEstado + `
-                                                                            </form>
-                                                                        </td>
-                                                                    </tbody>
-                                                                </table>
-                                                                <div class="text-center">
-                                                                        <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-primary fs-5 fw-bold" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)"
-                                                                        style="background-color: #646464;">GUARDAR</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                        <div class="row g-0 text-center">
+                                            <div class="col-sm-none col-md-none col-lg-2 bg-primary-subtle">
+
+                                            </div>
+                                            <div class="col-md-12 col-lg-10">
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-3">
+                                                        <span class="h2 fw-bold">SOLICITUD</span>
+                                                    </div>
+                                                    <div class="col-md-5 col-lg-3">
+                                                    <div class="row g-0 justify-content-center border p-2">
+                                                        <span class="h3 fw-bold mb-0 text-danger">No.${row.IDAutorizacion}</span>
+                                                    </div>
+
+                                                    <div class="row g-0 align-items-center justify-content-center border p-2">
+                                                        ${row.Estado == 0 ?
+                                                            `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">A - ANULADO</button>` :
+                                                            row.Estado == 1 || row.Estado == 2 ?
+                                                            `<button class="btn btn-success shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">V - VALIDADO</button>` :
+                                                            row.Estado == 3 ?
+                                                            `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
+                                                            row.Estado == 4 ?
+                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
+                                                            row.Estado == 5 ?
+                                                            `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
+                                                            '<h1>nada</h1>'
+                                                        }
+                                                    </div>
                                                     </div>
                                                 </div>
-                                            </div>`;
-                        return Detalle + modal;
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-0 text-center">
+                                            <div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
+                                                <span class="h1 fw-bold mb-0">S</span>
+
+                                            </div>
+
+                                            <div class="col-sm-12 col-md-12 col-lg-10">
+                                                <div class="row g-0 justify-content-start">
+                                                     <div class="row g-0  justify-content-center">
+                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} <b>${row.SolicitadoPor}</b></span>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                        <span class="mb-0 fs-5">${primerasDosLetras}</span>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0 row-cols-2 d-flex justify-content-start">
+                                                    <div
+                                                    class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
+                                                    <span class="fs-5">${row.CodigoAutorizacion} - ${row.Concepto}</span>
+                                                    </div>
+                                                    <div
+                                                    class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
+                                                    ${row.CodigoAutorizacion == "19B" ?
+                                                    `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
+                                                    }
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0">
+                                                    <div class="col-md-12 d-flex justify-content-start border p-2">
+                                                        <span class="fs-5">${row.Cedula}
+                                                            ${row.CodigoAutorizacion === '11D' || row.CodigoAutorizacion == '11G' ?
+                                                            `- ${row.CuentaAsociado} `
+                                                            : ``}- ${row.NombrePersona}</span>
+
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0">
+                                                    <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                            <span class="mb-0">${row.Detalle}</span>
+                                                        </div>
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}.pdf" download
+                                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
+                                                            <span class="h1 fw-bold mb-0">
+                                                                <img src="img/pdf.png" style="height: 4.5rem">
+                                                            </span>
+                                                        </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class=" row g-0 text-center ">
+                                            <div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
+
+                                                <span class="h1 fw-bold mb-0">V</span>
+
+
+
+
+                                            </div>
+
+                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                    <div class="row g-0 border ">
+
+                                                        <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
+                                                            <span class=" fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
+                                                        </div>
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3 ">
+                                                            <span class="mb-0 fs-5">${fechaValidacion}</span>
+                                                        </div>
+
+
+
+                                                    </div>
+                                                    <div class="row g-0">
+
+                                                            <div class="text-start fs-5 col-md-12 d-flex border p-3 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                                <span>${row.Observaciones == null ?
+                                                                `Ninguna.`:`${row.Observaciones}`
+                                                                }</span>
+                                                            </div>
+
+
+                                                    </div>
+                                            </div>
+                                        </div>
+                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                @csrf
+                                            <div class="row g-0 text-center">
+                                                <div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border border-dark">
+                                                    <label class="label">
+                                                        <input value="4" type="radio" name="Estado" id="Estado" required>
+                                                        <span>APROBAR</span>
+                                                    </label>
+                                                    <label class="label">
+                                                        <input value="5" type="radio" name="Estado" id="Estado" required>
+                                                        <span>RECHAZAR</span>
+                                                    </label>
+                                                    <label class="label">
+                                                        <input value="3" type="radio" name="Estado" id="Estado" required>
+                                                        <span>CORREGIR</span>
+                                                    </label>
+
+                                                </div>
+                                                <div class="col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-9 d-flex text-start border p-3">
+                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                        </div>
+                                                        <div class="col-md-3 border p-2">
+                                                            <span class="mb-0 fs-5">${row.FechaAprobacion == null ? `Pendiente...`:`${row.FechaAprobacion}`}</span>
+                                                        </div>
+                                                    </div>
+
+                                                        <input class="row g-0 border text-start p-4 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ?``:`value="${row.ObservacionesGer}"`}>
+                                                        </input>
+
+                                                </div>
+                                            </div>
+                                            </form>
+
+                                        </div>
+                                        <div class=" text-center p-3">
+                                            <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+
+                            return modalEditar;
                     },
                     orderable: false,
                     createdCell: function(td, cellData, rowData, row, col) {
@@ -477,7 +443,7 @@
             },
             "language": {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen Autorizaciones Disponibles!</span>",
+                "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen autorizaciones disponibles!</span>",
                 "info": "Mostrando la página _PAGE_ de _PAGES_",
                 "infoEmpty": "No hay registros disponibles",
                 "infoFiltered": "(Filtrado de _MAX_ registros totales)",
@@ -498,27 +464,6 @@
 
                 });
             },
-
-
-
-
-            //},
-            //   responsive: "true",
-            //   dom: 'Bfrtilp',
-            //   buttons:[
-            // {
-            // 	extend:    'excelHtml5',
-            // 	text:      '<i class="fas fa-file-excel"></i> ',
-            // 	titleAttr: 'Exportar a Excel',
-            // 	className: 'btn btn-success btn-lg'
-            // },
-            // {
-            // 	extend:    'print',
-            // 	text:      '<i class="fa fa-print"></i> ',
-            // 	titleAttr: 'Imprimir',
-            // 	className: 'btn btn-info btn-lg'
-            // }
-            // ]
         });
 
 
@@ -556,6 +501,15 @@
                 }
             });
             console.log(estado + ' ' + observaciones);
+            if (typeof estado === 'undefined') {
+                // Mostrar un mensaje de error o resaltar los campos de estado
+                alert('Por favor, seleccione un estado.');
+
+                // Permitir que el formulario se envíe nuevamente
+                form.data('submitted', false);
+
+                return;
+            }
 
             // Realizar la solicitud AJAX para actualizar la autorización
             $.ajax({

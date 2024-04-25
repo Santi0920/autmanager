@@ -18,15 +18,11 @@ class GerenciaController extends Controller
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-        B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-        B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-        B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-        C.Concepto, C.Areas
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
         FROM persona A
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        WHERE B.Estado = 1 OR B.Estado = 4 OR B.Estado = 5 AND B.Validacion = 1");
+        WHERE B.Estado = 1 AND B.Validacion = 1");
 
         return datatables()->of($solicitudes)->toJson();
     }
@@ -38,13 +34,19 @@ class GerenciaController extends Controller
         $rol = $usuarioActual->agenciau;
         $estadoautorizacion = $request->Estado;
 
-
-        if ($estadoautorizacion == '4' || $estadoautorizacion == '5') {
+        $fechadeSolicitud = Carbon::now('America/Bogota');
+        $fechadeSolicitudUtc = $fechadeSolicitud->setTimezone('UTC');
+        Carbon::setLocale('es');
+        $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
+        if ($estadoautorizacion == '4' || $estadoautorizacion == '5' || $estadoautorizacion == '3') {
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([
+                    'ObservacionesGer' => $request->input('Observaciones'),
                     'Estado' => $request->input('Estado'),
-                    'AprobadoPor' => $nombre . ' ' . $rol
+                    'AprobadoPor' => $nombre,
+                    'FechaAprobacion' => $fechaStringfechadeSolicitud,
+                    'Aprobacion' => 1
                 ]);
         }
 
