@@ -40,12 +40,12 @@
 
                                         <h2 class="fw-normal mb-3 pb-3 fw-bold" style="letter-spacing: 1px;">Iniciar
                                             Sesión</h2>
-
+{{--
                                         <div data-mdb-input-init class="form-outline mb-4">
                                             <input type="email" id="form2Example17" name="email"
                                                 class="form-control form-control-lg" />
                                             <label class="form-label" for="form2Example17">Correo Electrónico</label>
-                                        </div>
+                                        </div> --}}
 
                                         <div data-mdb-input-init class="form-outline mb-4">
                                             <input type="password" id="form2Example27" name="password"
@@ -57,9 +57,9 @@
                                                 <script>
                                                     Swal.fire({
                                                         icon: 'error',
-                                                        title: "Error!\n Email o Contraseña incorrectos!",
+                                                        title: "Error!\n Contraseña incorrecta!",
                                                         text: '',
-                                                        confirmButtonColor: '#005E56'
+                                                        confirmButtonColor: '#646464'
 
                                                     });
                                                 </script>

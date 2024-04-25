@@ -19,55 +19,35 @@ class CoordinacionController extends Controller
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
         if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 1") {
-            $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-            B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-            B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-            B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-            C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             WHERE B.Solicitud = 1 AND B.NumAgencia IN (34, 36, 37, 38, 40, 41, 87, 93, 96)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 2") {
             $solicitudes = DB::select("
-            SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-            B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-            B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-            B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-            C.Concepto, C.Areas
+            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             WHERE B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 3") {
             $solicitudes = DB::select("
-            SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-            B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-            B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-            B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-            C.Concepto, C.Areas
+            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             WHERE B.Solicitud = 1 AND B.NumAgencia IN (32, 42, 47, 81, 82, 83, 85, 90, 94)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 4") {
             $solicitudes = DB::select("
-            SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-            B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-            B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-            B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-            C.Concepto, C.Areas
+            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             WHERE B.Solicitud = 1 AND B.NumAgencia IN (44, 45, 48, 49, 74, 75, 84, 89, 91, 95, 97)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 5") {
             $solicitudes = DB::select("
-            SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                   B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                   B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                   B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                   C.Concepto, C.Areas
+            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -84,23 +64,43 @@ class CoordinacionController extends Controller
         $noCoordinacion = $usuarioActual->agenciau;
         $estadoautorizacion = $request->Estado;
 
+        if($noCoordinacion == 'Coordinacion 1'){
+            $coordinacion = 'C1';
+        }else if($noCoordinacion == 'Coordinacion 2'){
+            $coordinacion = 'C2';
+        }else if($noCoordinacion == 'Coordinacion 3'){
+            $coordinacion = 'C3';
+        }else if($noCoordinacion == 'Coordinacion 4'){
+            $coordinacion = 'C4';
+        }else if($noCoordinacion == 'Coordinacion 5'){
+            $coordinacion = 'C5';
+        }
+        $fechadeSolicitud = Carbon::now('America/Bogota');
+        $fechadeSolicitudUtc = $fechadeSolicitud->setTimezone('UTC');
+        Carbon::setLocale('es');
+        $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
         if ($estadoautorizacion == '0' || $estadoautorizacion == '2' || $estadoautorizacion == '3') {
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([
-                    'Observaciones' => $request->input('Observaciones'),
+                    'Observaciones' => $request->Observaciones,
                     'Estado' => $request->input('Estado'),
-                    'ValidadoPor' => $nombre. ' '.$noCoordinacion
+                    'ValidadoPor' => $nombre,
+                    'Coordinacion' => $coordinacion,
+                    'FechaValidacion' => $fechaStringfechadeSolicitud
                 ]);
+            //si fue validado
         } else if ($estadoautorizacion == '1') {
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([
-                    'Observaciones' => $request->input('Observaciones'),
+                    'Observaciones' => $request->Observaciones,
                     'Estado' => $request->input('Estado'),
-                    'ValidadoPor' => $nombre . ' '.$noCoordinacion,
+                    'ValidadoPor' => $nombre,
                     'Validacion' => 1,
+                    'Coordinacion' => $coordinacion,
+                    'FechaValidacion' => $fechaStringfechadeSolicitud
                 ]);
         }
 
