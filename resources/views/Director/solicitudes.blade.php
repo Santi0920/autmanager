@@ -62,7 +62,7 @@
                         class="text-danger" style="font-size:20px;">*</span></label>
                 <select class="form-select form-select-lg " name="tautorizacion" id="autorizaciones" required>
                     <option selected disabled>Selecciona una opción</option>
-                    {{-- <option disabled class="fw-bold">---TALENTO HUMANO---</option>
+                    <option disabled class="fw-bold">---TALENTO HUMANO---</option>
                         @foreach ($user as $autorizacion)
                             @if ($autorizacion->No == 10)
                                 <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
@@ -70,7 +70,7 @@
                                     {{ $autorizacion->Concepto }}
                                 </option>
                             @endif
-                        @endforeach --}}
+                        @endforeach
                     <option disabled class="fw-bold">---COORDINACION---</option>
                     @foreach ($user as $autorizacion)
                         @if ($autorizacion->No == 11)
@@ -89,7 +89,7 @@
                             </option>
                         @endif
                     @endforeach
-                    {{-- <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
+                    <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
                         @foreach ($user as $autorizacion)
                             @if ($autorizacion->No == 2150)
                                 <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
@@ -124,7 +124,7 @@
                                     {{ $autorizacion->Concepto }}
                                 </option>
                             @endif
-                        @endforeach --}}
+                        @endforeach
                 </select>
             </div>
 
@@ -211,6 +211,7 @@
                 "order": [
                     [0, 'desc']
                 ],
+                scrollY: 420,
 
                 "columns": [{
                         data: 'IDAutorizacion',
@@ -304,6 +305,9 @@
                             var url = "{{ route('update.autorizacion', ':id') }}";
                             url = url.replace(':id', id);
 
+                            const cedula = row.Cedula;
+                            const cedulaFormateada = new Intl.NumberFormat().format(cedula);
+
                             var modalEditar = `
                             <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
                                 aria-expanded="false">
@@ -378,14 +382,16 @@
                                         <div class="row g-0 text-center">
                                             <div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
-                                                <span class="h1 fw-bold mb-0">S</span>
+                                                <span class="h1 fw-bold mb-0">S<br><span class="fs-5 fw-normal">SOLICITUD<span></span>
+
+
                                             </div>
 
                                             <div class="col-sm-12 col-md-12 col-lg-10">
                                                 <div class="row g-0 justify-content-start">
                                                     <div class="row g-0 row-cols-2 justify-content-center">
                                                     <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} <b>${row.SolicitadoPor}</b></span>
+                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                         <span class="mb-0 fs-5">${row.Fecha}</span>
@@ -406,7 +412,7 @@
                                                 </div>
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                        <span class="fs-5">${row.Cedula}
+                                                        <span class="fs-5">${cedulaFormateada}
                                                             ${row.CodigoAutorizacion !== '11A' ?
                                                             `- ${row.CuentaAsociado} `
                                                             : ``}- ${row.NombrePersona}</span>
@@ -473,7 +479,7 @@
                                                         `<div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}.pdf" download
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
@@ -490,7 +496,7 @@
                                             //esta validacion es si la validacion esta 0 y estado en corregir
                                             `<div class="row g-0 text-center">
                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">C</span>
+                                                        <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
                                                 </div>
 
                                                 <div class="col-sm-12 col-md-12 col-lg-10">
@@ -515,7 +521,7 @@
                                             //esta validacion es si la validacion esta 0 y estado esta en rechazado
                                             `<div class="row g-0 text-center">
                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">R</span>
+                                                        <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
                                                 </div>
 
                                                 <div class="col-sm-12 col-md-12 col-lg-10">
@@ -542,17 +548,17 @@
                                             ${row.Estado == 0 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="ANULADO">
-                                                <span class="h1 fw-bold mb-0">A</span>
+                                                <span class="h1 fw-bold mb-0">A<br><span class="fs-5 fw-normal">APROBADO<span></span>
                                             </div>`:``
                                             }
 
                                             ${row.Aprobacion != 1 ?
                                                 (row.Estado == 3 && row.Validacion == 1 ?
                                                     `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
-                                                        <span class="h1 fw-bold mb-0">V</span>
+                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
                                                     </div>` :
                                                     `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">T</span>
+                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
                                                     </div>`
                                                 ) :
                                                 ``
@@ -563,17 +569,17 @@
                                             ${row.Estado == 4 || row.Estado == 5 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                <span class="h1 fw-bold mb-0">V</span>
+                                                <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
                                             </div>`:
                                             row.Estado == 1 &&  row.Aprobacion == 1 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
-                                                <span class="h1 fw-bold mb-0">T</span>
+                                                <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
                                             </div>`:
                                             row.Validacion == 1 && row.Estado == 3 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-${row.Validacion == 1 ?`success`:`danger`}-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                <span class="h1 fw-bold mb-0">${row.Validacion == 1 ?`V`:`R`}</span>
+                                                <span class="h1 fw-bold mb-0">${row.Validacion == 1 ?`V`:`R`}<br><span class="fs-5 fw-normal">VALIDADO<span></span>
                                             </div>`:
                                             ``
                                             }
@@ -597,17 +603,17 @@
                                                 ${row.Estado == 4 ?
                                                 `<div
                                                     class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
-                                                    <span class="h1 fw-bold mb-0">A</span>
+                                                    <span class="h1 fw-bold mb-0">A<br><span class="fs-5 fw-normal">APROBADO<span></span>
                                                 </div>`:
                                                 row.Estado == 5 ?
                                                 `<div
                                                     class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
-                                                    <span class="h1 fw-bold mb-0">R</span>
+                                                    <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
                                                 </div>`:
                                                 row.Estado == 3 ?
                                                 `<div
                                                     class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
-                                                    <span class="h1 fw-bold mb-0">C</span>
+                                                    <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
                                                 </div>`:
                                                 ``
                                                 }
@@ -871,6 +877,34 @@
                                 class="text-danger" style="font-size:20px;"> *</span></label>
                             <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
                         </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                } else{
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                        </div>
+
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
                                 style="background-color: #646464;">SOLICITAR</button>

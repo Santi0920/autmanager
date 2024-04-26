@@ -245,6 +245,9 @@
                         var url = "{{ route('updatecoor.autorizacion', ':id') }}";
                         url = url.replace(':id', id);
 
+                        const cedula = row.Cedula;
+                        const cedulaFormateada = new Intl.NumberFormat().format(cedula);
+
                             var modalEditar = `
                             <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
                                 aria-expanded="false">
@@ -321,7 +324,7 @@
                                         <div class="row g-0 text-center">
                                             <div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
-                                                <span class="h1 fw-bold mb-0">S</span>
+                                                <span class="h1 fw-bold mb-0">S<br><span class="fs-5 fw-normal">SOLICITUD<span></span>
 
                                             </div>
 
@@ -329,7 +332,7 @@
                                                 <div class="row g-0 justify-content-start">
                                                      <div class="row g-0  justify-content-center">
                                                     <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} <b>${row.SolicitadoPor}</b></span>
+                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                         <span class="mb-0 fs-5">${row.Fecha}</span>
@@ -350,7 +353,7 @@
                                                 </div>
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                        <span class="fs-5">${row.Cedula}
+                                                        <span class="fs-5">${cedulaFormateada}
                                                             ${row.CodigoAutorizacion === '11D' ?
                                                             `- ${row.CuentaAsociado} `
                                                             : ``}- ${row.NombrePersona}</span>
@@ -361,7 +364,7 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}.pdf" download
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
@@ -378,13 +381,13 @@
 
                                                 ${row.Aprobacion == 1 ?
                                                     `
-                                                        <span class="h1 fw-bold mb-0">V</span>
+                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
                                                     `:
                                                     `
                                                     ${row.Estado == 1 ?
                                                     ``:
                                                     row.Estado == 0 && row.ValidadoPor !== null ?
-                                                    `<span class="h1 fw-bold mb-0">R</span>`:
+                                                    `<span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>`:
                                                     `<label class="label mt-2">
                                                         <input value="1" type="radio" name="Estado" id="Estado">
                                                         <span>VALIDAR</span>
@@ -394,7 +397,7 @@
                                                 ${row.Estado == 0 ?
                                                     ``:
                                                     row.Estado == 1 && row.ValidadoPor !== null ?
-                                                    `<span class="h1 fw-bold mb-0">V</span>`
+                                                    `<span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>`
                                                     :`<label class="label">
                                                         <input value="0" type="radio" name="Estado" id="Estado">
                                                         <span>RECHAZAR</span>
@@ -450,17 +453,17 @@
                                                 ${row.Estado == 4 ?
                                                 `<div
                                                     class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
-                                                    <span class="h1 fw-bold mb-0">A</span>
+                                                    <span class="h1 fw-bold mb-0">A<br><span class="fs-5 fw-normal">APROBADO<span></span>
                                                 </div>`:
                                                 row.Estado == 5 ?
                                                 `<div
                                                     class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
-                                                    <span class="h1 fw-bold mb-0">R</span>
+                                                    <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
                                                 </div>`:
                                                 row.Estado == 3 ?
                                                 `<div
                                                     class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
-                                                    <span class="h1 fw-bold mb-0">C</span>
+                                                    <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
                                                 </div>`:
                                                 ``
                                                 }

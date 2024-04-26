@@ -35,7 +35,7 @@ class GerenciaController extends Controller
         $estadoautorizacion = $request->Estado;
 
         $fechadeSolicitud = Carbon::now('America/Bogota');
-        $fechadeSolicitudUtc = $fechadeSolicitud->setTimezone('UTC');
+
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
         if ($estadoautorizacion == '4' || $estadoautorizacion == '5' || $estadoautorizacion == '3') {

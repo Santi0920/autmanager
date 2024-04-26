@@ -10,8 +10,11 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
+
             <ul class="navbar-nav text-uppercase ps-3 fw-bold">
+                <img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand" style="filter: drop-shadow(0 2px 0.8px white);">
                 <li class="nav-item">
+
                     <span class="nav-link pe-3" style="font-weight: 600;font-size: 18px;" aria-current="page"
                         href="#">
                         Bienvenido: <div class="btn btn-warning shadow"
