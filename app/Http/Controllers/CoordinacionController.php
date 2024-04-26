@@ -76,7 +76,7 @@ class CoordinacionController extends Controller
             $coordinacion = 'C5';
         }
         $fechadeSolicitud = Carbon::now('America/Bogota');
-        $fechadeSolicitudUtc = $fechadeSolicitud->setTimezone('UTC');
+
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 

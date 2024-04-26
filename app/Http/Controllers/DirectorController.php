@@ -72,7 +72,6 @@ class DirectorController extends Controller
 
             //fecha de la solicitud del director
             $fechadeSolicitud = Carbon::now('America/Bogota');
-            $fechadeSolicitudUtc = $fechadeSolicitud->setTimezone('UTC');
             Carbon::setLocale('es');
             $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 

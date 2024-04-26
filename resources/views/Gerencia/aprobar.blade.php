@@ -211,6 +211,9 @@
                                     fechaValidacion = fechaValidacion.charAt(0).toUpperCase() + fechaValidacion.slice(1); // Convertir la primera letra a mayúscula
                                 }
 
+                            const cedula = row.Cedula;
+                            const cedulaFormateada = new Intl.NumberFormat().format(cedula);
+
 
 
                             var modalEditar = `
@@ -287,7 +290,7 @@
                                         <div class="row g-0 text-center">
                                             <div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
-                                                <span class="h1 fw-bold mb-0">S</span>
+                                                <span class="h1 fw-bold mb-0">S<br><span class="fs-5 fw-normal">SOLICITUD<span></span>
 
                                             </div>
 
@@ -295,7 +298,7 @@
                                                 <div class="row g-0 justify-content-start">
                                                      <div class="row g-0  justify-content-center">
                                                     <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} <b>${row.SolicitadoPor}</b></span>
+                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                         <span class="mb-0 fs-5">${primerasDosLetras}</span>
@@ -316,7 +319,7 @@
                                                 </div>
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                        <span class="fs-5">${row.Cedula}
+                                                        <span class="fs-5">${cedulaFormateada}
                                                             ${row.CodigoAutorizacion === '11D' || row.CodigoAutorizacion == '11G' ?
                                                             `- ${row.CuentaAsociado} `
                                                             : ``}- ${row.NombrePersona}</span>
@@ -327,7 +330,7 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}.pdf" download
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
@@ -340,7 +343,7 @@
                                             <div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
 
-                                                <span class="h1 fw-bold mb-0">V</span>
+                                                <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
 
 
 
