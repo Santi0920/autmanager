@@ -16,7 +16,7 @@ class GerenciaMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check()) {
-            if (auth()->user()->rol == 'Jefatura') {
+            if (auth()->user()->rol == 'Gerencia') {
                 return $next($request);
             }
         }
