@@ -82,7 +82,7 @@ class SessionsController extends Controller
                     return redirect()->to('/validar');
 
 
-                } else if ($user->rol == 'Jefatura') {
+                } else if ($user->rol == 'Gerencia') {
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
