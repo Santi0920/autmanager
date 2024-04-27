@@ -43,17 +43,17 @@ class SessionsController extends Controller
 
                     $fechaHoraActual = date('Y-m-d H:i:s');
                     $ip = $_SERVER['REMOTE_ADDR'];
-                    // $agencia = $usuarioActual->agenciau;
-        // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
-        //                 null,
-        //                 $nombre,
-        //                 $rol,
-        //                 $agencia,
-        //                 $fechaHoraActual,
-        //                 null,
-        //                 null,
-        //                 $ip
-        //             ]);
+                    $agencia = $usuarioActual->agenciau;
+                    $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'IngresoaAutorizaciones', ?, ?, ?, ?)", [
+                        null,
+                        $nombre,
+                        $rol,
+                        $agencia,
+                        $fechaHoraActual,
+                        null,
+                        null,
+                        $ip
+                    ]);
 
                     return redirect()->to('/solicitudes');
 
@@ -67,17 +67,17 @@ class SessionsController extends Controller
 
                     $fechaHoraActual = date('Y-m-d H:i:s');
                     $ip = $_SERVER['REMOTE_ADDR'];
-                    // $agencia = $usuarioActual->agenciau;
-        // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
-        //                 null,
-        //                 $nombre,
-        //                 $rol,
-        //                 $agencia,
-        //                 $fechaHoraActual,
-        //                 null,
-        //                 null,
-        //                 $ip
-        //             ]);
+                    $agencia = $usuarioActual->agenciau;
+                    $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'IngresoaAutorizaciones', ?, ?, ?, ?)", [
+                        null,
+                        $nombre,
+                        $rol,
+                        $agencia,
+                        $fechaHoraActual,
+                        null,
+                        null,
+                        $ip
+                    ]);
 
                     return redirect()->to('/validar');
 
@@ -91,17 +91,17 @@ class SessionsController extends Controller
 
                     $fechaHoraActual = date('Y-m-d H:i:s');
                     $ip = $_SERVER['REMOTE_ADDR'];
-                    // $agencia = $usuarioActual->agenciau;
-        // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Ingreso', ?, ?, ?, ?)", [
-        //                 null,
-        //                 $nombre,
-        //                 $rol,
-        //                 $agencia,
-        //                 $fechaHoraActual,
-        //                 null,
-        //                 null,
-        //                 $ip
-        //             ]);
+                    $agencia = $usuarioActual->agenciau;
+                    $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'IngresoaAutorizaciones', ?, ?, ?, ?)", [
+                        null,
+                        $nombre,
+                        $rol,
+                        $agencia,
+                        $fechaHoraActual,
+                        null,
+                        null,
+                        $ip
+                    ]);
 
                     return redirect()->to('/aprobar');
 
