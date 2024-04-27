@@ -107,17 +107,17 @@ class SessionsController extends Controller
 
 
                 } else {
-                    auth()->logout();
                     return back()->withErrors([
                         'message' => 'La contraseña es incorrecta!'
                     ]);
+                    auth()->logout();
                 }
             }
         }
+        return back()->withErrors([
+            'message' => 'La contraseña es incorrecta!'
+        ]);
         auth()->logout();
-            return back()->withErrors([
-                'message' => 'La contraseña es incorrecta!'
-            ]);
 
 
 
