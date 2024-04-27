@@ -21,13 +21,13 @@ class SessionsController extends Controller
         $password = $request->input('password');
 
         // Obtener todos los usuarios
-        $users = User::all();
-
+        $users = User::where('rol', 'Coordinacion')
+        ->orWhere('rol', 'Consultante')
+        ->orWhere('rol', 'Gerencia')
+        ->get();
         // Iterar sobre los usuarios y verificar si alguna contraseña coincide
         foreach ($users as $user) {
-
             if (Hash::check($password, $user->password)) {
-
                 // La contraseña coincide, autenticar al usuario manualmente
                 Auth::login($user);
 
