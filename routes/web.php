@@ -3,6 +3,7 @@
 use App\Http\Controllers\CoordinacionController;
 use App\Http\Controllers\DirectorController;
 use App\Http\Controllers\GerenciaController;
+use App\Http\Controllers\JefaturaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionsController;
 
@@ -64,3 +65,17 @@ Route::get('/aprobar', function () {
 Route::get('aprobar/datatable', [GerenciaController::class, 'solicitudes'])->name('datager.solicitudes')->middleware('auth.gerencia');
 
 Route::post('aprobar/actualizar-{id}', [GerenciaController::class, 'validarAutorizacion'])->name('updateger.autorizacion')->middleware('auth.gerencia');
+
+
+//JEFATURA
+Route::get('/solicitudesjefatura', function () {
+    return view('Jefatura/solicitudesjefatura');
+})->middleware('auth.jefatura');
+
+Route::get('solicitudesjefatura', [JefaturaController::class, 'data1'])->middleware('auth.jefatura');
+
+Route::get('solicitudesjefatura/datatable', [JefaturaController::class, 'solicitudes'])->name('data.solicitudesjef')->middleware('auth.jefatura');
+
+Route::post('/solicitudesjefatura/crear', [JefaturaController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacionjef')->middleware('auth.jefatura');
+
+Route::post('/solicitudesjefatura/actualizar-{id}', [JefaturaController::class, 'actualizardetalle'])->name('update.autorizacionjef')->middleware('auth.jefatura');
