@@ -167,6 +167,39 @@ class DirectorController extends Controller
 
             }
 
+                        // Verificar si se subió un archivo
+                        if (!$request->hasFile('SoporteScore')) {
+                            return back()->withErrors(['message' => 'No se subió ningún archivo.']);
+                        }
+
+                        $file = $request->file('SoporteScore');
+                        $filename = $file->getClientOriginalName();
+
+                        // Verificar si el archivo es PDF
+                        if ($file->getClientOriginalExtension() !== 'pdf') {
+                            return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
+                        }
+
+                        // Contar archivos existentes y crear nuevo nombre de archivo
+                        $existingFilesCount = DB::table('autorizaciones')
+                            ->where('Cedula', $cedula)
+                            ->where('DocumentoSoporte', 'like', 'Soporte-' . $cedula . '%')
+                            ->count();
+                        if ($existingFilesCount == 0) {
+                            // Si no hay archivos existentes, guardarlo como el primero
+                            $newFilename = 'Soporte-' . $cedula.'.pdf';
+                        } else {
+                            // Si hay archivos existentes, generar un nombre de archivo único
+                            $newFilename = 'Soporte-' . $cedula . '-' . ($existingFilesCount + 1).'.pdf';
+                        }
+
+                        // Subir el archivo
+                        $dir = 'Storage/files/soporteautorizaciones/';
+                        if (!$file->move($dir, $newFilename)) {
+                            return back()->withErrors(['message' => 'Error al subir el archivo.']);
+                        }
+
+
             //insercion
             $id_insertado = DB::table('autorizaciones')->insertGetId([
                 'Fecha' => $fechaStringfechadeSolicitud,
@@ -183,44 +216,10 @@ class DirectorController extends Controller
                 'SolicitadoPor' => $nombreU,
                 'ID_Persona' => $idpersona,
                 'ID_Concepto' => $idconcepto,
+                'DocumentoSoporte' => $newFilename
             ]);
 
-            // Verificar si se subió un archivo
-            if (!$request->hasFile('SoporteScore')) {
-                return back()->withErrors(['message' => 'No se subió ningún archivo.']);
-            }
 
-            $file = $request->file('SoporteScore');
-            $filename = $file->getClientOriginalName();
-
-            // Verificar si el archivo es PDF
-            if ($file->getClientOriginalExtension() !== 'pdf') {
-                return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
-            }
-
-            // Contar archivos existentes y crear nuevo nombre de archivo
-            $existingFilesCount = DB::table('autorizaciones')
-                ->where('Cedula', $cedula)
-                ->where('DocumentoSoporte', 'like', 'Soporte-' . $cedula . '%')
-                ->count();
-            if ($existingFilesCount == 0) {
-                // Si no hay archivos existentes, guardarlo como el primero
-                $newFilename = 'Soporte-' . $cedula.'.pdf';
-            } else {
-                // Si hay archivos existentes, generar un nombre de archivo único
-                $newFilename = 'Soporte-' . $cedula . '-' . ($existingFilesCount + 1).'.pdf';
-            }
-
-            // Subir el archivo
-            $dir = 'Storage/files/soporteautorizaciones/';
-            if (!$file->move($dir, $newFilename)) {
-                return back()->withErrors(['message' => 'Error al subir el archivo.']);
-            }
-
-            // Actualizar base de datos
-            $actualizacion = DB::table("autorizaciones")
-                ->where('ID', $id_insertado)
-                ->update(['DocumentoSoporte' => $newFilename]);
 
 
 
