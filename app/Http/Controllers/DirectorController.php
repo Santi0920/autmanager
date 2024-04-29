@@ -105,18 +105,14 @@ class DirectorController extends Controller
             }
 
             //en caso tal de que sea 11A me trae el nombre que existe en datacredito porque no tiene cuenta, es decir no existe en as400
-            if($tipoautorizacion != '11A'){
-                $nombre;
-            }else{
+            if($tipoautorizacion == '11A'){
                 $nombres = $existingID[0]->Nombre;
                 $apellidos = $existingID[0]->Apellidos;
                 $nombre = $nombres . ' '.$apellidos;
             }
 
-
-            if($tipoautorizacion != '10A'){
-                $nombre;
-            }else{
+            //permisos
+            if($tipoautorizacion == '10A'){
                 $nombres = $existingID[0]->Nombre;
                 $apellidos = $existingID[0]->Apellidos;
                 $nombre = $nombres . ' '.$apellidos;
