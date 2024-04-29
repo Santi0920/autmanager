@@ -21,10 +21,13 @@ class SessionsController extends Controller
         $password = $request->input('password');
 
         // Obtener todos los usuarios
-        $users = User::where('rol', 'Coordinacion')
+        $users = User::where('rol', 'Jefatura')
         ->orWhere('rol', 'Consultante')
         ->orWhere('rol', 'Gerencia')
+        ->orWhere('rol', 'Coordinacion')
         ->get();
+
+
         // Iterar sobre los usuarios y verificar si alguna contraseña coincide
         foreach ($users as $user) {
             if (Hash::check($password, $user->password)) {
@@ -33,8 +36,32 @@ class SessionsController extends Controller
 
 
 
+                if ($user->rol == 'Jefatura') {
+                    $usuarioActual = Auth::user();
+                    $nombre = $usuarioActual->name;
+                    $rol = $usuarioActual->rol;
 
-                if ($user->rol == 'Consultante') {
+                    date_default_timezone_set('America/Bogota');
+
+                    $fechaHoraActual = date('Y-m-d H:i:s');
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    $agencia = $usuarioActual->agenciau;
+                    $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'IngresoaAutorizaciones', ?, ?, ?, ?)", [
+                        null,
+                        $nombre,
+                        $rol,
+                        $agencia,
+                        $fechaHoraActual,
+                        null,
+                        null,
+                        $ip
+                    ]);
+
+                    return redirect()->to('/solicitudesjefatura');
+
+
+
+                }else if ($user->rol == 'Consultante') {
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
