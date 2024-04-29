@@ -51,7 +51,7 @@ class JefaturaController extends Controller
         //VALIDACIONES SI NO CUMPLE CON LAS CONDICIONES
         if (($tipoautorizacion == '11A' || $tipoautorizacion == '11D') && empty($existingPerson)) {
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
-        }else if ($tipoautorizacion != '11A' && $estado == '422'){
+        }else if (($tipoautorizacion != '11A')&& $estado == '422'){
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
         }else {
             //si el estado da 200 en la api que me traiga NOMBRE Y CUENTA

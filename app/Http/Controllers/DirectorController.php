@@ -48,10 +48,11 @@ class DirectorController extends Controller
             }
         } while ($attempts < $maxAttempts);
         $estado = $data['status'];
+
         //VALIDACIONES SI NO CUMPLE CON LAS CONDICIONES
         if (($tipoautorizacion == '11A' || $tipoautorizacion == '11D') && empty($existingPerson)) {
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
-        }else if ($tipoautorizacion != '11A' && $estado == '422'){
+        }else if (($tipoautorizacion != '10A' && $tipoautorizacion != '11A') && $estado == '422'){
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
         }else {
             //si el estado da 200 en la api que me traiga NOMBRE Y CUENTA
@@ -59,7 +60,8 @@ class DirectorController extends Controller
                 $nombre = $data['asociado']['NOMBRES'];
                 $cuenta = $data['asociado']['CUENTA'];
             }else{
-                $cuenta = null;
+                $cuenta = 'N/A';
+                $nombre = null;
             }
 
 
@@ -104,6 +106,15 @@ class DirectorController extends Controller
 
             //en caso tal de que sea 11A me trae el nombre que existe en datacredito porque no tiene cuenta, es decir no existe en as400
             if($tipoautorizacion != '11A'){
+                $nombre;
+            }else{
+                $nombres = $existingID[0]->Nombre;
+                $apellidos = $existingID[0]->Apellidos;
+                $nombre = $nombres . ' '.$apellidos;
+            }
+
+
+            if($tipoautorizacion != '10A'){
                 $nombre;
             }else{
                 $nombres = $existingID[0]->Nombre;
