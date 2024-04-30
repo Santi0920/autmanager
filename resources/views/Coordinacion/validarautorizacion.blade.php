@@ -284,7 +284,7 @@
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
                             } else {
                                 var Estado =
-                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO POR GERENCIA</div>'
+                                    '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
                             }
 
                             return Estado;
@@ -373,7 +373,7 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
-                                                            '<h1>nada</h1>'
+                                                            '<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRÁMITE</button>'
                                                         }
                                                     </div>
                                                     </div>
@@ -433,6 +433,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
                                         <div class=" row g-0 text-center ">
@@ -615,44 +616,73 @@
         </script>
 
         <script>
-            function formEditarAutorizacion(id, event) {
-                var _token = $('input[name="_token"]').val();
-                var Detalle = $('input[name="Detalle"]').val();
-                var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
+        function formEditarAutorizacion(id, event) {
+
+var form = $("#formEditarAutorizacion" + id);
+// Verificar si el formulario ya ha sido enviado
+if (form.data('submitted')) {
+    // Si el formulario ya ha sido enviado, no hacer nada
+    return;
+}
+
+// Marcar el formulario como enviado
+form.data('submitted', true);
+
+var formDataArray = form.serializeArray();
+
+// Almacenar los valores en variables
+var estado, observaciones;
 
 
-                var formData = new FormData();
-                formData.append('_token', _token);
-                formData.append('Detalle', Detalle);
+// Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
+formDataArray.forEach(function(input) {
+    if (input.name === "Estado") {
+        estado = input.value;
+    } else if (input.name == "Observaciones") {
+        observaciones = input.value;
+        event.preventDefault();
+    }
 
-                // Verificar si hay un archivo adjunto
-                if (Soporte) {
-                    formData.append('Soporte', Soporte);
-                }
+});
+console.log(estado + ' ' + observaciones);
+if (typeof estado === 'undefined') {
+    // Mostrar un mensaje de error o resaltar los campos de estado
+    alert('Por favor, seleccione un estado.');
 
-                $.ajax({
-                    url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        console.log(response);
-                        if (response.message === "Datos recibidos correctamente") {
-                            $(`#exampleModal_${id}`).modal('hide');
-                            console.log('¡Éxito!');
-                            $('#personas').DataTable().ajax.reload();
-                            Swal.fire({
-                                icon: 'success',
-                                title: "¡ACTUALIZADO!",
-                                html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                    id + "</span></span>",
-                                confirmButtonColor: '#646464'
-                            });
-                        }
-                    }
-                });
-            }
+    // Permitir que el formulario se envíe nuevamente
+    form.data('submitted', false);
+
+    return;
+}
+
+// Realizar la solicitud AJAX para actualizar la autorización
+$.ajax({
+    url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+    type: "POST",
+    data: {
+        Observaciones: observaciones,
+        Estado: estado,
+        _token: $('input[name="_token"]').val()
+    },
+    success: function(response) {
+        if (response) {
+            $(`#exampleModal_${id}`).modal('hide');
+            console.log('¡Éxito!');
+            table.ajax.reload();
+            Swal.fire({
+                icon: 'success',
+                title: "¡ACTUALIZADO!",
+                html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                    id + "</span></span>",
+                confirmButtonColor: '#646464'
+            });
+        }
+    },
+    error: function(error) {
+        console.log('Error');
+    }
+});
+}
 
             function disableEnterKey(event) {
                 if (event.key === "Enter") {
