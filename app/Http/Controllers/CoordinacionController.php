@@ -35,35 +35,35 @@ class CoordinacionController extends Controller
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            WHERE B.Solicitud = 1 AND B.NumAgencia IN (34, 36, 37, 38, 40, 41, 87, 93, 96) OR (B.Estado = 6)");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C1')) OR (B.Estado = 6)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 2") {
             $solicitudes = DB::select("
-            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            WHERE B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98) OR (B.Estado = 6)");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C2')) OR (B.Estado = 6)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 3") {
             $solicitudes = DB::select("
             SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            WHERE B.Solicitud = 1 AND B.NumAgencia IN (32, 42, 47, 81, 82, 83, 85, 90, 94) OR (B.Estado = 6)");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C3')) OR (B.Estado = 6)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 4") {
             $solicitudes = DB::select("
             SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            WHERE B.Solicitud = 1 AND B.NumAgencia IN (44, 45, 48, 49, 74, 75, 84, 89, 91, 95, 97) OR (B.Estado = 6)");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C4')) OR (B.Estado = 6)");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 5") {
             $solicitudes = DB::select("
             SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            WHERE B.Solicitud = 1 AND B.NumAgencia IN (13, 30, 31, 43, 68, 73, 76, 86) OR (B.Estado = 6)");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C5')) OR (B.Estado = 6)");
         }
         return datatables()->of($solicitudes)->toJson();
     }
@@ -135,6 +135,22 @@ class CoordinacionController extends Controller
             $usuarioActual = Auth::user();
             $agenciaU = $usuarioActual->agenciau;
             $nombreU = $usuarioActual->name;
+
+            if($usuarioActual->agenciau == 'Coordinacion 1'){
+                $coordinacion = 'C1';
+            }else if($usuarioActual->agenciau == 'Coordinacion 2'){
+                $coordinacion = 'C2';
+            }else if($usuarioActual->agenciau == 'Coordinacion 3'){
+                $coordinacion = 'C3';
+            }else if($usuarioActual->agenciau == 'Coordinacion 4'){
+                $coordinacion = 'C4';
+            }else if($usuarioActual->agenciau == 'Coordinacion 5'){
+                $coordinacion = 'C5';
+            }else{
+                $coordinacion = null;
+            }
+
+
             $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM Persona WHERE Cedula = ?', [$request->cedula]);
             //si el concepto es:
             if ($tipoautorizacion == '11A' || $tipoautorizacion == '11D') {
@@ -258,7 +274,7 @@ class CoordinacionController extends Controller
                 'CodigoAutorizacion' => $tipoautorizacion,
                 'CuentaAsociado' => $cuenta,
                 'Convencion' => $convencion,
-                'NumAgencia' => null,
+                'NumAgencia' => $coordinacion,
                 'NomAgencia' => $agenciaU,
                 'Cedula' => $cedula,
                 'NombrePersona' => $nombre,

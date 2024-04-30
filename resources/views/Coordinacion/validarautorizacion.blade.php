@@ -275,13 +275,16 @@
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
                             } else if (row.Estado == 1 || row.Estado == 2) {
                                 var Estado =
-                                    `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
+                                    `<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>`
                             } else if (row.Estado == 3) {
                                 var Estado =
                                     '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
                             } else if (row.Estado == 4) {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
+                            }else if (row.Estado == 5) {
+                                var Estado =
+                                    '<div class="btn btn-danger blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO POR GERENCIA</div>'
                             } else {
                                 var Estado =
                                     '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
@@ -433,8 +436,8 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                        ${row.Estado != 6 && (row.NumAgencia !== "C1" && row.NumAgencia !== "C2" && row.NumAgencia !== "C3" && row.NumAgencia !== "C4" && row.NumAgencia !== "C5") ?
+                                        `<form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
                                         <div class=" row g-0 text-center ">
                                             <div
@@ -507,7 +510,8 @@
                                                     </div>
                                             </div>
                                         </div>
-                                    </form>
+                                    </form>`:``
+                                    }
 
                                         ${row.Aprobacion == 1 ?
                                             `<div class="row g-0 text-center">
