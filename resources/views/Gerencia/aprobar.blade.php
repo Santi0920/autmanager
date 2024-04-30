@@ -328,7 +328,7 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <button type="button" id="soportePDF" onclick="modal('${row.DocumentoSoporte}')"
+                                                        <button type="button" id="soportePDF_${id}" onclick="modal('${row.DocumentoSoporte}')" data-id="${id}"
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
@@ -422,7 +422,7 @@
                             </div>
 
 
-                            <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal fade" id="modalSoportePdf_${id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel_${id}" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-xl">
                                     <div class="modal-content">
                                         <div class="modal-header">
