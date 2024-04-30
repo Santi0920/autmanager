@@ -65,9 +65,19 @@ class DirectorController extends Controller
             }
 
 
-            //numero y letra del concepto
-            $No = substr($tipoautorizacion, 0, 2);
-            $letra = substr($tipoautorizacion, 2, 3);
+
+
+            if (in_array($tipoautorizacion, ['1500A','1500B', '2150A', '2150B', '2250A', '2250B', '2350A' , '2350B', '2300A', '2300B', '2300C'])) {
+                // Número y letra del concepto
+                $No = substr($tipoautorizacion, 0, 4);
+                $letra = substr($tipoautorizacion, 4, 1); // Cambiado a 1 para obtener solo una letra
+            } else {
+                // Número y letra del concepto
+                $No = substr($tipoautorizacion, 0, 2);
+                $letra = substr($tipoautorizacion, 2, 1); // Cambiado a 1 para obtener solo una letra
+            }
+
+
 
             //detalle input
             $detalle = $request->detalle;
@@ -91,6 +101,7 @@ class DirectorController extends Controller
 
             //concepto traer el id
             $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ? AND Letra = ?', [$No, $letra]);
+
             $idconcepto = $existingConcepto[0]->ID;
 
             //traer el numero de agencia PARA INSERTARLO
@@ -112,7 +123,7 @@ class DirectorController extends Controller
             }
 
             //permisos
-            if($tipoautorizacion == '10A'){
+            if($tipoautorizacion == '10A' && !empty($existingID)){
                 $nombres = $existingID[0]->Nombre;
                 $apellidos = $existingID[0]->Apellidos;
                 $nombre = $nombres . ' '.$apellidos;

@@ -1,45 +1,3 @@
-@if (session('correcto'))
-    <div>
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: "¡Correcto!",
-                html: "{!! session('correcto') !!}",
-                confirmButtonColor: '#646464'
-            });
-        </script>
-    </div>
-@endif
-
-@if (session('incorrecto'))
-    <div>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: "{{ session('incorrecto') }}",
-                text: '',
-                confirmButtonColor: '#646464',
-                timer: 10000
-
-            });
-        </script>
-    </div>
-@endif
-
-@error('message')
-    <div>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: "Error al registrar!\n{{ $message }}",
-                text: '',
-                confirmButtonColor: '#646464'
-
-            });
-        </script>
-    </div>
-@enderror
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -66,187 +24,289 @@
 
 <body class="antialiased">
     @include('layouts/nav')
-    {{-- FECHA --}}
-    <div class="col-11" style="margin-left:3.5%">
-        <div class="">
-            <form action="" method="post">
-                <div class="" style="margin-top: 8px; margin-right: -14px;">
+    @if (session('correcto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: "¡Correcto!",
+                    html: "{!! session('correcto') !!}",
+                    confirmButtonColor: '#646464'
+                });
+            </script>
+        </div>
+    @endif
 
-                    <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
-                </div>
-                <script>
-                    function obtenerFechaActual() {
-                        const fecha = new Date();
-                        const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-                        const mes = meses[fecha.getMonth()];
-                        const dia = fecha.getDate();
-                        const anio = fecha.getFullYear();
-                        let horas = fecha.getHours();
-                        let amPm = 'AM';
+    @if (session('incorrecto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: "{{ session('incorrecto') }}",
+                    text: '',
+                    confirmButtonColor: '#646464',
+                    timer: 10000
 
-                        // AM/PM
-                        if (horas > 12) {
-                            horas -= 12;
-                            amPm = 'PM';
-                        } else if (horas === 0) {
-                            horas = 12;
+                });
+            </script>
+        </div>
+    @endif
+    <div class="container-fluid row p-4">
+        <form action="{{ route('solicitar.autorizacioncoor') }}" class="col m-3" method="POST"
+            enctype= "multipart/form-data" id="pagare">
+            @csrf
+            <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
+
+            <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                <label for="input1" class="form-label col-form-label-lg fw-semibold">TIPO DE AUTORIZACIÓN <span
+                        class="text-danger" style="font-size:20px;">*</span></label>
+                <select class="form-select form-select-lg " name="tautorizacion" id="autorizaciones" required>
+                    <option selected disabled>Selecciona una opción</option>
+                    <option disabled class="fw-bold">---TALENTO HUMANO---</option>
+                        @foreach ($user as $autorizacion)
+                            @if ($autorizacion->No == 10)
+                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                    {{ $autorizacion->No . $autorizacion->Letra }} -
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endif
+                        @endforeach
+                    <option disabled class="fw-bold">---COORDINACION---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 11)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---SISTEMAS---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 19)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
+                        @foreach ($user as $autorizacion)
+                            @if ($autorizacion->No == 2150)
+                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                    {{ $autorizacion->No . $autorizacion->Letra }} -
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endif
+                        @endforeach
+                        <option disabled class="fw-bold">---JURIDICO ZONA NORTE---</option>
+                        @foreach ($user as $autorizacion)
+                            @if ($autorizacion->No == 2250)
+                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                    {{ $autorizacion->No . $autorizacion->Letra }} -
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endif
+                        @endforeach
+                        <option disabled class="fw-bold">---JURIDICO ZONA SUR---</option>
+                        @foreach ($user as $autorizacion)
+                            @if ($autorizacion->No == 2350)
+                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                    {{ $autorizacion->No . $autorizacion->Letra }} -
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endif
+                        @endforeach
+                        <option disabled class="fw-bold">---TESORERIA---</option>
+                        @foreach ($user as $autorizacion)
+                            @if ($autorizacion->No == 1500)
+                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                    {{ $autorizacion->No . $autorizacion->Letra }} -
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endif
+                        @endforeach
+                </select>
+            </div>
+
+            <div id="cuerpo"></div>
+
+        </form>
+
+
+        {{-- FECHA --}}
+        <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9 col-xxl-9">
+            <div class="">
+                <form action="" method="post">
+                    <div class="" style="margin-top: 8px; margin-right: -14px;">
+
+                        <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
+                    </div>
+                    <script>
+                        function obtenerFechaActual() {
+                            const fecha = new Date();
+                            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                            const mes = meses[fecha.getMonth()];
+                            const dia = fecha.getDate();
+                            const anio = fecha.getFullYear();
+                            let horas = fecha.getHours();
+                            let amPm = 'AM';
+
+                            // AM/PM
+                            if (horas > 12) {
+                                horas -= 12;
+                                amPm = 'PM';
+                            } else if (horas === 0) {
+                                horas = 12;
+                            }
+
+                            const minutos = fecha.getMinutes();
+                            const segundos = fecha.getSeconds();
+
+
+                            return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
                         }
 
-                        const minutos = fecha.getMinutes();
-                        const segundos = fecha.getSeconds();
 
-
-                        return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
-                    }
-
-
-                    function actualizarFechaActual() {
-                        const elementoFecha = document.getElementById('fechaActual');
-                        elementoFecha.textContent = `${obtenerFechaActual()}`;
-                    }
-
-
-                    setInterval(actualizarFechaActual, 1000);
-                </script>
-
-
-            </form>
-        </div>
-        <div class="table-responsive mb-5">
-            <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
-                <thead style="background-color: #646464;">
-                    <tr class="text-white">
-                        <th scope="col" class="text-center">#</th>
-                        <th scope="col" class="text-center" style="width: 15%">CÉDULA</th>
-                        <th scope="col" class="text-center" style="width: 30%">CONCEPTO</th>
-                        <th scope="col" class="text-center">FECHA SOLICITUD</th>
-                        <th scope="col" class="text-center" style="width: 17%">ESTADO</th>
-                        <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script src="ResourcesAll/dtables/jquery-3.5.1.js"></script>
-    <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
-    <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
-    <script src="ResourcesAll/dtables/dtable1.min.js"></script>
-    <script src="ResourcesAll/dtables/botonesdt.min.js"></script>
-    <script src="ResourcesAll/dtables/estilobotondt.min.js"></script>
-    <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
-    <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
-
-
-    <script>
-        var table = $('#personas').DataTable({
-            "ajax": "{{ route('datacoor.solicitudes') }}",
-            "order": [
-                [0, 'desc']
-            ],
-            scrollY: 420,
-            "columns": [{
-                    data: 'IDAutorizacion',
-                    render: function(data, type, row) {
-                        var ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`
-
-                        return ID
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '30px',
-                            'text-align': 'center',
-                        });
-                    }
-                },
-                {
-                    data: 'Cedula',
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'center'
-                        });
-                    }
-                },
-
-                {
-                    data: 'CodigoAutorizacion',
-                    render: function(data, type, row) {
-                        var Codigo =
-                            `<span class='badge bg-secondary fw-bold'>${row.CodigoAutorizacion}</span> - ${row.Concepto}</span>`
-
-                        return Codigo
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: 'Fecha',
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'center'
-                        });
-                    }
-                },
-                {
-                    data: 'Estado',
-                    render: function(data, type, row) {
-                        // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
-                        if (row.Estado == 0) {
-                            var Estado =
-                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">RECHAZADO</div>';
-                        } else if (row.Estado == 1) {
-                            var Estado = `<div class="btn btn-info shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
-                                    REMITIDO A GERENCIA</label></div>`
-                        } else if (row.Estado == 2) {
-                            var Estado =
-                                '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;" class="blink">EN TRAMITE</div>'
-                        } else if (row.Estado == 3) {
-                            var Estado =
-                                '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
-                        } else if (row.Estado == 4) {
-                            var Estado =
-                                '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
-                        } else if (row.Estado == 5) {
-                            var Estado =
-                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO POR GERENCIA</div>'
-                        } else if (row.Estado == 6) {
-                            var Estado =
-                                '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">REVISAR CASO</div>'
+                        function actualizarFechaActual() {
+                            const elementoFecha = document.getElementById('fechaActual');
+                            elementoFecha.textContent = `${obtenerFechaActual()}`;
                         }
 
-                        return Estado;
+
+                        setInterval(actualizarFechaActual, 1000);
+                    </script>
+
+
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
+                    <thead style="background-color: #646464;">
+                        <tr class="text-white">
+                            <th scope="col" class="text-center">#</th>
+                            <th scope="col" class="text-center" style="width: 10%">CÉDULA</th>
+                            <th scope="col" class="text-center" style="width: 35%">CONCEPTO</th>
+                            <th scope="col" class="text-center">FECHA SOLICITUD</th>
+                            <th scope="col" class="text-center" style="width: 20%">ESTADO</th>
+                            <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script src="ResourcesAll/dtables/jquery-3.5.1.js"></script>
+        <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
+        <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
+        <script src="ResourcesAll/dtables/dtable1.min.js"></script>
+        <script src="ResourcesAll/dtables/botonesdt.min.js"></script>
+        <script src="ResourcesAll/dtables/estilobotondt.min.js"></script>
+        <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
+        <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
+        <script>
+            var table = $('#personas').DataTable({
+                "ajax": "{{ route('datacoor.solicitudes') }}",
+                "order": [
+                    [0, 'desc']
+                ],
+                scrollY: 420,
+
+                "columns": [{
+                        data: 'IDAutorizacion',
+                        render: function(data, type, row) {
+                            var ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`
+
+                            return ID
+                        },
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'font-weight': '500',
+                                'font-size': '30px',
+                                'text-align': 'center',
+                            });
+                        }
                     },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'center'
-                        });
-                    }
-                },
-                {
-                    data: 'Detalle',
-                    render: function(data, type, row) {
+                    {
+                        data: 'Cedula',
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'font-weight': '500',
+                                'font-size': '20px',
+                                'text-align': 'center'
+                            });
+                        }
+                    },
 
-                        var id = row.IDAutorizacion; // Obtener el ID de la fila
-                        var url = "{{ route('updatecoor.autorizacion', ':id') }}";
-                        url = url.replace(':id', id);
+                    {
+                        data: 'CodigoAutorizacion',
+                        render: function(data, type, row) {
+                            var Codigo =
+                                `<span class='badge bg-secondary fw-bold'>${row.CodigoAutorizacion}</span> - ${row.Concepto}</span>`
 
-                        const cedula = row.Cedula;
-                        const cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                            return Codigo
+                        },
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'font-weight': '500',
+                                'font-size': '20px',
+                                'text-align': 'justify'
+                            });
+                        }
+                    },
+
+                    {
+                        data: 'Fecha',
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'font-weight': '500',
+                                'font-size': '20px',
+                                'text-align': 'center'
+                            });
+                        }
+                    },
+                    {
+                        data: 'Estado',
+                        render: function(data, type, row) {
+                            // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
+                            if (row.Estado == 0) {
+                                var Estado =
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
+                            } else if (row.Estado == 1 || row.Estado == 2) {
+                                var Estado =
+                                    `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
+                            } else if (row.Estado == 3) {
+                                var Estado =
+                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
+                            } else if (row.Estado == 4) {
+                                var Estado =
+                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
+                            } else {
+                                var Estado =
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO POR GERENCIA</div>'
+                            }
+
+                            return Estado;
+                        },
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'font-weight': '500',
+                                'font-size': '20px',
+                                'text-align': 'center'
+                            });
+                        }
+                    },
+                    {
+                        data: 'IDAutorizacion',
+                        render: function(data, type, row) {
+
+                            var id = row.IDAutorizacion; // Obtener el ID de la fila
+                            var url = "{{ route('updatecoor.autorizacion', ':id') }}";
+                            url = url.replace(':id', id);
+
+                            const cedula = row.Cedula;
+                            const cedulaFormateada = new Intl.NumberFormat().format(cedula);
 
                             var modalEditar = `
                             <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
@@ -499,22 +559,21 @@
                             </div>`;
 
                             return modalEditar;
-                    },
-                    orderable: false,
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'text-align': 'center'
-                        });
+
+
+                        },
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'text-align': 'center'
+                            });
+                        }
                     }
-                }
-            ],
-
-
-            "lengthMenu": [
-                [5],
-                [5]
-            ],
-            "drawCallback": function(settings) {
+                ],
+                "lengthMenu": [
+                    [5],
+                    [5]
+                ],
+                "drawCallback": function(settings) {
                     var api = this.api();
                     var noRecordsMessage = api.table().container().querySelector('.dataTables_empty');
                     if (noRecordsMessage) {
@@ -523,19 +582,19 @@
                         noRecordsMessage.style.fontWeight = 'bold';
                     }
                 },
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen autorizaciones disponibles!</span>",
-                "info": "Mostrando la página _PAGE_ de _PAGES_",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(Filtrado de _MAX_ registros totales)",
-                "search": "<span style='font-size: 20px; font-weight: bold'>Buscar:</span>",
-                "paginate": {
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            },
-            "initComplete": function(settings, json) {
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen autorizaciones disponibles!</span>",
+                    "info": "Mostrando la página _PAGE_ de _PAGES_",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(Filtrado de _MAX_ registros totales)",
+                    "search": "<span style='font-size: 20px; font-weight: bold'>Buscar:</span>",
+                    "paginate": {
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                },
+                "initComplete": function(settings, json) {
                     var buttonsHtml = '<div class="custom-buttons">' +
                         '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                         //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
@@ -549,90 +608,237 @@
 
             });
 
-
-        function csesion() {
-            var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
-            return respuesta
-        }
-    </script>
-    <script>
-        function formEditarAutorizacion(id, event) {
-
-            var form = $("#formEditarAutorizacion" + id);
-            // Verificar si el formulario ya ha sido enviado
-            if (form.data('submitted')) {
-                // Si el formulario ya ha sido enviado, no hacer nada
-                return;
+            function csesion() {
+                var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
+                return respuesta
             }
+        </script>
 
-            // Marcar el formulario como enviado
-            form.data('submitted', true);
-
-            var formDataArray = form.serializeArray();
-
-            // Almacenar los valores en variables
-            var estado, observaciones;
+        <script>
+            function formEditarAutorizacion(id, event) {
+                var _token = $('input[name="_token"]').val();
+                var Detalle = $('input[name="Detalle"]').val();
+                var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
 
 
-            // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
-            formDataArray.forEach(function(input) {
-                if (input.name === "Estado") {
-                    estado = input.value;
-                } else if (input.name == "Observaciones") {
-                    observaciones = input.value;
-                    event.preventDefault();
+                var formData = new FormData();
+                formData.append('_token', _token);
+                formData.append('Detalle', Detalle);
+
+                // Verificar si hay un archivo adjunto
+                if (Soporte) {
+                    formData.append('Soporte', Soporte);
                 }
 
-            });
-            console.log(estado + ' ' + observaciones);
-            if (typeof estado === 'undefined') {
-                // Mostrar un mensaje de error o resaltar los campos de estado
-                alert('Por favor, seleccione un estado.');
-
-                // Permitir que el formulario se envíe nuevamente
-                form.data('submitted', false);
-
-                return;
-            }
-
-            // Realizar la solicitud AJAX para actualizar la autorización
-            $.ajax({
-                url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                type: "POST",
-                data: {
-                    Observaciones: observaciones,
-                    Estado: estado,
-                    _token: $('input[name="_token"]').val()
-                },
-                success: function(response) {
-                    if (response) {
-                        $(`#exampleModal_${id}`).modal('hide');
-                        console.log('¡Éxito!');
-                        table.ajax.reload();
-                        Swal.fire({
-                            icon: 'success',
-                            title: "¡ACTUALIZADO!",
-                            html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                id + "</span></span>",
-                            confirmButtonColor: '#646464'
-                        });
+                $.ajax({
+                    url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        console.log(response);
+                        if (response.message === "Datos recibidos correctamente") {
+                            $(`#exampleModal_${id}`).modal('hide');
+                            console.log('¡Éxito!');
+                            $('#personas').DataTable().ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: "¡ACTUALIZADO!",
+                                html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                                    id + "</span></span>",
+                                confirmButtonColor: '#646464'
+                            });
+                        }
                     }
-                },
-                error: function(error) {
-                    console.log('Error');
+                });
+            }
+
+            function disableEnterKey(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevenir la acción predeterminada de la tecla "Enter"
+                }
+            }
+        </script>
+        <script>
+            $('#autorizaciones').on('change', function() {
+                // Obtener el valor seleccionado
+                var valorSeleccionado = $(this).val();
+                console.log("Valor seleccionado:", valorSeleccionado);
+
+                if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                        </div>
+
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                } else if (valorSeleccionado == "11G") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS Y CAPTURA DE ESTADO DE CUENTA F6<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                } else if (valorSeleccionado == "11B") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="Cuenta" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                } else if (valorSeleccionado == "19B") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
+
+                        </div>
+
+
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                } else{
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                        </div>
+
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
                 }
             });
-        }
 
+            function fileUploaded() {
+    // Obtiene el elemento input de tipo file
+    var fileInput = document.getElementById("file");
 
+    // Obtiene el nombre del archivo
+    var fileName = "";
+    if (fileInput.files.length > 0) {
+        fileName = fileInput.files[0].name;
+    }
 
-
-
-
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-     <script>
- </script>
+    // Muestra el mensaje de confirmación con el nombre del archivo
+    document.getElementById("uploadMessage").innerHTML = fileName + "' subido.";
+    document.getElementById("uploadMessage").style.display = "block";
+}
+        </script>
 
     </div>
 
@@ -756,7 +962,6 @@
         }
     </style>
     </div>
-
     @include('layouts.footer')
 
 </body>
