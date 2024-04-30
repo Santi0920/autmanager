@@ -273,7 +273,10 @@
                             if (row.Estado == 0) {
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
-                            } else if (row.Estado == 1 || row.Estado == 2) {
+                            } else if (row.Estado == 1) {
+                                var Estado =
+                                    `<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>`
+                            }  else if (row.Estado == 2) {
                                 var Estado =
                                     `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">EN TRÁMITE</button>`
                             } else if (row.Estado == 3) {
