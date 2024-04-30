@@ -52,7 +52,11 @@ Route::middleware('auth.coord')->group(function () {
         return view('Coordinacion/validarautorizacion');
     });
 
+    Route::get('/validar', [CoordinacionController::class, 'data1']);
+
     Route::get('validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes');
+
+    Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
 
     Route::post('validar/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatecoor.autorizacion');
 });
