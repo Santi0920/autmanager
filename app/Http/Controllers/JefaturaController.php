@@ -157,25 +157,6 @@ class JefaturaController extends Controller
 
             }
 
-            //insercion
-            $id_insertado = DB::table('autorizaciones')->insertGetId([
-                'Fecha' => $fechaStringfechadeSolicitud,
-                'CodigoAutorizacion' => $tipoautorizacion,
-                'CuentaAsociado' => $cuenta,
-                'Convencion' => $convencion,
-                'NumAgencia' => null,
-                'NomAgencia' => $agenciaU,
-                'Cedula' => $cedula,
-                'NombrePersona' => $nombre,
-                'Detalle' => $detalle,
-                'Estado' => 6,
-                'Solicitud' => 1,
-                'Validacion' => 1,
-                'SolicitadoPor' => $nombreU,
-                'ID_Persona' => $idpersona,
-                'ID_Concepto' => $idconcepto,
-            ]);
-
             // Verificar si se subió un archivo
             if (!$request->hasFile('SoporteScore')) {
                 return back()->withErrors(['message' => 'No se subió ningún archivo.']);
@@ -208,11 +189,24 @@ class JefaturaController extends Controller
                 return back()->withErrors(['message' => 'Error al subir el archivo.']);
             }
 
-            // Actualizar base de datos
-            $actualizacion = DB::table("autorizaciones")
-                ->where('ID', $id_insertado)
-                ->update(['DocumentoSoporte' => $newFilename]);
-
+            //insercion
+            $id_insertado = DB::table('autorizaciones')->insertGetId([
+                'Fecha' => $fechaStringfechadeSolicitud,
+                'CodigoAutorizacion' => $tipoautorizacion,
+                'CuentaAsociado' => $cuenta,
+                'Convencion' => $convencion,
+                'NumAgencia' => null,
+                'NomAgencia' => $agenciaU,
+                'Cedula' => $cedula,
+                'NombrePersona' => $nombre,
+                'Detalle' => $detalle,
+                'Estado' => 6,
+                'Solicitud' => 1,
+                'Validacion' => 1,
+                'SolicitadoPor' => $nombreU,
+                'ID_Persona' => $idpersona,
+                'ID_Concepto' => $idconcepto,
+            ]);
 
 
             return back()->with("correcto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>" . $id_insertado . "</span> está en trámite.</span>");
