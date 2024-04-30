@@ -174,7 +174,7 @@
                                 '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO</div>'
                         } else {
                             var Estado =
-                                '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRÁMITE</div>'
+                                '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">SOLICITUD DE COORDINACIÓN</div>'
                         }
 
                         return Estado;
@@ -196,34 +196,32 @@
                         url = url.replace(':id', id);
 
                         const fecha = row
-                                .Fecha; // Suponiendo que row.Fecha contiene la fecha en formato de cadena
+                            .Fecha; // Suponiendo que row.Fecha contiene la fecha en formato de cadena
 
-                            // Obtener las primeras dos letras de la fecha
-                            let primerasDosLetras = fecha.substring(0, 19);
+                        // Obtener las primeras dos letras de la fecha
+                        let primerasDosLetras = fecha.substring(0, 19);
 
-                            // Convertir la primera letra a mayúscula
-                            primerasDosLetras = primerasDosLetras.charAt(0).toUpperCase() + primerasDosLetras
-                                .slice(1);
+                        // Convertir la primera letra a mayúscula
+                        primerasDosLetras = primerasDosLetras.charAt(0).toUpperCase() + primerasDosLetras
+                            .slice(1);
 
-                                let fechaValidacion = "";
-                                if (row.FechaValidacion !== null) {
-                                    fechaValidacion = row.FechaValidacion.substring(0, 19); // Obtener los primeros 19 dígitos
-                                    fechaValidacion = fechaValidacion.charAt(0).toUpperCase() + fechaValidacion.slice(1); // Convertir la primera letra a mayúscula
-                                }
+                        let fechaValidacion = "";
+                        if (row.FechaValidacion !== null) {
+                            fechaValidacion = row.FechaValidacion.substring(0,
+                                19); // Obtener los primeros 19 dígitos
+                            fechaValidacion = fechaValidacion.charAt(0).toUpperCase() + fechaValidacion
+                                .slice(1); // Convertir la primera letra a mayúscula
+                        }
 
-                            const cedula = row.Cedula;
-                            const cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                        const cedula = row.Cedula;
+                        const cedulaFormateada = new Intl.NumberFormat().format(cedula);
 
 
 
-                            var modalEditar = `
-                            <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill"
-                                    viewBox="0 0 16 16">
-                                    <path
-                                        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
-                                </svg>
+                        var modalEditar = `
+                            <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
+                                        data-id="${id}">
+                                        <i class="fa-solid fa-eye fs-5"></i>
                             </a>
 
                             <ul class="dropdown-menu">
@@ -279,7 +277,7 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
-                                                            '<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRÁMITE</button>'
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - SOLICITUD DE COORDINACIÓN</button>'
                                                         }
                                                     </div>
                                                     </div>
@@ -330,12 +328,14 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download
+                                                        <button type="button" id="soportePDF" onclick="modal('${row.DocumentoSoporte}')"
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
                                                             </span>
-                                                        </a>
+                                                        </button>
+
+
                                                 </div>
                                             </div>
                                         </div>
@@ -343,39 +343,39 @@
                                             ${row.Estado ==6 && row.Validacion == 1 ?
                                             ``:
                                             `<div
-                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
+                                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
 
-                                                <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
-
-
-
-
-                                            </div>
-
-                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
-                                                    <div class="row g-0 border ">
-
-                                                        <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
-                                                            <span class=" fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
-                                                        </div>
-                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3 ">
-                                                            <span class="mb-0 fs-5">${fechaValidacion}</span>
-                                                        </div>
+                                                                <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
 
 
 
-                                                    </div>
-                                                    <div class="row g-0">
 
-                                                            <div class="text-start fs-5 col-md-12 d-flex border p-3 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
-                                                                <span>${row.Observaciones == null ?
-                                                                `Ninguna.`:`${row.Observaciones}`
-                                                                }</span>
                                                             </div>
 
+                                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                                    <div class="row g-0 border ">
 
-                                                    </div>
-                                            </div>`}
+                                                                        <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
+                                                                            <span class=" fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
+                                                                        </div>
+                                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3 ">
+                                                                            <span class="mb-0 fs-5">${fechaValidacion}</span>
+                                                                        </div>
+
+
+
+                                                                    </div>
+                                                                    <div class="row g-0">
+
+                                                                            <div class="text-start fs-5 col-md-12 d-flex border p-3 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                                                <span>${row.Observaciones == null ?
+                                                                                `Ninguna.`:`${row.Observaciones}`
+                                                                                }</span>
+                                                                            </div>
+
+
+                                                                    </div>
+                                                            </div>`}
                                         </div>
                                         <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
@@ -419,9 +419,33 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>`;
+                            </div>
 
-                            return modalEditar;
+
+                            <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h6 class="modal-title" id="exampleModalLongTitle"
+                                            style="color: #646464;font-weight: 700;font-size: 22px">PDF</h6>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body p-0">
+                                            <div class="embed-responsive embed-responsive-16by9">
+                                                <iframe class="embed-responsive-item" src="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" frameborder="0" style="width:90%; height: 680px;"></iframe>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary fs-5" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            `;
+
+                        return modalEditar;
                     },
                     orderable: false,
                     createdCell: function(td, cellData, rowData, row, col) {
@@ -475,6 +499,12 @@
         function csesion() {
             var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
+        }
+
+        function modal(documentoSoporte) {
+            const doc = documentoSoporte;
+            // alert(`Storage/files/soporteautorizaciones/${doc}`);
+            $('#modalSoportePdf').modal('show');
         }
     </script>
     <script>
@@ -558,6 +588,9 @@
             }
         });
     </script>
+
+    <script></script>
+
 
     </div>
 

@@ -268,24 +268,25 @@ class CoordinacionController extends Controller
                         }
 
 
-            //insercion
-            $id_insertado = DB::table('autorizaciones')->insertGetId([
-                'Fecha' => $fechaStringfechadeSolicitud,
-                'CodigoAutorizacion' => $tipoautorizacion,
-                'CuentaAsociado' => $cuenta,
-                'Convencion' => $convencion,
-                'NumAgencia' => $coordinacion,
-                'NomAgencia' => $agenciaU,
-                'Cedula' => $cedula,
-                'NombrePersona' => $nombre,
-                'Detalle' => $detalle,
-                'Estado' => 6,
-                'Solicitud' => 1,
-                'Validacion' => 1,
-                'SolicitadoPor' => $nombreU,
-                'ID_Persona' => $idpersona,
-                'ID_Concepto' => $idconcepto,
-            ]);
+                        //insercion
+                        $id_insertado = DB::table('autorizaciones')->insertGetId([
+                            'Fecha' => $fechaStringfechadeSolicitud,
+                            'CodigoAutorizacion' => $tipoautorizacion,
+                            'CuentaAsociado' => $cuenta,
+                            'Convencion' => $convencion,
+                            'NumAgencia' => $coordinacion,
+                            'NomAgencia' => $agenciaU,
+                            'Cedula' => $cedula,
+                            'NombrePersona' => $nombre,
+                            'Detalle' => $detalle,
+                            'Estado' => 6,
+                            'Solicitud' => 1,
+                            'Validacion' => 1,
+                            'SolicitadoPor' => $nombreU,
+                            'ID_Persona' => $idpersona,
+                            'ID_Concepto' => $idconcepto,
+                            'DocumentoSoporte' => $newFilename
+                        ]);
 
 
 
