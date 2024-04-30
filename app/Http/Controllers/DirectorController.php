@@ -227,7 +227,8 @@ class DirectorController extends Controller
                 'SolicitadoPor' => $nombreU,
                 'ID_Persona' => $idpersona,
                 'ID_Concepto' => $idconcepto,
-                'DocumentoSoporte' => $newFilename
+                'DocumentoSoporte' => $newFilename,
+
             ]);
 
 
@@ -287,7 +288,8 @@ class DirectorController extends Controller
                     'DocumentoSoporte' => $nombre_archivo,
                     'Validacion' => 0,
                     'Aprobacion' => 0,
-                    'ObservacionesGer' => null
+                    'ObservacionesGer' => null,
+                    'Observaciones' => null
                 ]);
 
             // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
@@ -302,7 +304,8 @@ class DirectorController extends Controller
                     'DocumentoSoporte' => $nombre_documento,
                     'Validacion' => 0,
                     'Aprobacion' => 0,
-                    'ObservacionesGer' => null
+                    'ObservacionesGer' => null,
+                    'Observaciones' => null
                 ]);
             return response()->json(['message' => 'Datos recibidos correctamente']);
         }
