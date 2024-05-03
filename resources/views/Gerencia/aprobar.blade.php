@@ -195,23 +195,6 @@
                         var url = "{{ route('updatecoor.autorizacion', ':id') }}";
                         url = url.replace(':id', id);
 
-                        const fecha = row
-                            .Fecha; // Suponiendo que row.Fecha contiene la fecha en formato de cadena
-
-                        // Obtener las primeras dos letras de la fecha
-                        let primerasDosLetras = fecha.substring(0, 19);
-
-                        // Convertir la primera letra a mayúscula
-                        primerasDosLetras = primerasDosLetras.charAt(0).toUpperCase() + primerasDosLetras
-                            .slice(1);
-
-                        let fechaValidacion = "";
-                        if (row.FechaValidacion !== null) {
-                            fechaValidacion = row.FechaValidacion.substring(0,
-                                19); // Obtener los primeros 19 dígitos
-                            fechaValidacion = fechaValidacion.charAt(0).toUpperCase() + fechaValidacion
-                                .slice(1); // Convertir la primera letra a mayúscula
-                        }
 
                         const cedula = row.Cedula;
                         const cedulaFormateada = new Intl.NumberFormat().format(cedula);
@@ -299,7 +282,7 @@
                                                         <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
-                                                        <span class="mb-0 fs-5">${primerasDosLetras}</span>
+                                                        <span class="mb-0 fs-5">${row.Fecha}</span>
                                                     </div>
                                                     </div>
                                                 </div>
@@ -375,7 +358,7 @@
                                                                             <span class=" fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
                                                                         </div>
                                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-3 ">
-                                                                            <span class="mb-0 fs-5">${fechaValidacion}</span>
+                                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
                                                                         </div>
 
 
