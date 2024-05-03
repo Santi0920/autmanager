@@ -32,11 +32,12 @@ class SessionsController extends Controller
         foreach ($users as $user) {
             if (Hash::check($password, $user->password)) {
                 // La contraseña coincide, autenticar al usuario manualmente
-                Auth::login($user);
+
 
 
 
                 if ($user->rol == 'Jefatura') {
+                    Auth::login($user);
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -62,6 +63,7 @@ class SessionsController extends Controller
 
 
                 }else if ($user->rol == 'Consultante') {
+                    Auth::login($user);
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -86,6 +88,7 @@ class SessionsController extends Controller
 
 
                 } else if ($user->rol == 'Coordinacion') {
+                    Auth::login($user);
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -110,6 +113,7 @@ class SessionsController extends Controller
 
 
                 } else if ($user->rol == 'Gerencia') {
+                    Auth::login($user);
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -137,14 +141,13 @@ class SessionsController extends Controller
                     return back()->withErrors([
                         'message' => 'La contraseña es incorrecta!'
                     ]);
-                    auth()->logout();
                 }
             }
         }
         return back()->withErrors([
             'message' => 'La contraseña es incorrecta!'
         ]);
-        auth()->logout();
+
 
 
 
