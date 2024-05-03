@@ -33,7 +33,7 @@
                                 @if (auth()->user()->rol == 'Consultante')
                                     Director
                                 @elseif(auth()->user()->rol == 'Jefatura')
-                                    Gerencia
+                                    Jefatura
                                 @else
                                     {{ auth()->user()->rol }}
                                 @endif
