@@ -688,7 +688,7 @@
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
 
                         <div class="text-center">
@@ -715,7 +715,7 @@
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS Y CAPTURA DE ESTADO DE CUENTA F6<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
@@ -752,7 +752,7 @@
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
@@ -788,7 +788,7 @@
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
@@ -834,7 +834,7 @@
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
@@ -861,7 +861,7 @@
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
 
                         <div class="text-center">
