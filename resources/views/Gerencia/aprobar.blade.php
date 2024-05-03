@@ -318,9 +318,18 @@
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
                                                         <span class="fs-5">${cedulaFormateada}
-                                                            ${row.CodigoAutorizacion === '11D' || row.CodigoAutorizacion == '11G' ?
+                                                            ${row.CodigoAutorizacion !== '11A' ?
                                                             `- ${row.CuentaAsociado} `
-                                                            : ``}- ${row.NombrePersona}</span>
+                                                            : ``}- ${row.NombrePersona}
+                                                            ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
+                                                            (row.Score >= 650 ?
+                                                                `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span>` :
+                                                                (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span>` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span>`)
+                                                            ) :
+                                                            ``
+                                                        }
+
+                                                            </span>
 
                                                     </div>
                                                 </div>
@@ -328,12 +337,20 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" id="soportePDF"
+                                                        <button type="button" id="soportePDF" onclick="modal('${row.DocumentoSoporte}')"
+                                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" data-bs-target="#pdf_${id}"
+                                                        data-id="${id}">
+                                                            <span class="h1 fw-bold mb-0">
+                                                                <img src="img/pdf.png" style="height: 4.5rem">
+                                                            </span>
+                                                        </button>
+
+                                                        <!--<a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" id="soportePDF"
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" target="__blank">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
                                                             </span>
-                                                        </a>
+                                                        </a>-->
 
                                                 </div>
                                             </div>
@@ -421,7 +438,7 @@
                             </div>
 
 
-                            <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="--bs-modal-zindex:1056;">
                                 <div class="modal-dialog modal-dialog-centered modal-xl">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -431,7 +448,7 @@
                                         </div>
                                         <div class="modal-body p-0">
                                             <div class="embed-responsive embed-responsive-16by9">
-                                                <iframe class="embed-responsive-item" src="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" frameborder="0" style="width:90%; height: 680px;"></iframe>
+                                                <iframe class="embed-responsive-item" src="" frameborder="0" style="width:90%; height: 680px;"></iframe>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -503,6 +520,9 @@
         function modal(documentoSoporte) {
             const doc = documentoSoporte;
             // alert(`Storage/files/soporteautorizaciones/${doc}`);
+            const iframe = document.querySelector("#modalSoportePdf iframe");
+            const url = `Storage/files/soporteautorizaciones/${doc}`;
+            iframe.src = url;
             $('#modalSoportePdf').modal('show');
         }
 
