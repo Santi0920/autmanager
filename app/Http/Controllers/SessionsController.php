@@ -40,9 +40,9 @@ class SessionsController extends Controller
             }
         }
 
-        Auth::login($ingreso);
-                if ($rol == 'Jefatura' && !empty($email)) {
 
+                if ($rol == 'Jefatura' && !empty($email)) {
+                    Auth::login($ingreso);
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
