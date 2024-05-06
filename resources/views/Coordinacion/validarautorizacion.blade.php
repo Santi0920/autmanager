@@ -80,6 +80,17 @@
                             </option>
                         @endif
                     @endforeach
+                    <option disabled class="fw-bold">---SEGUROS COOPSERP---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 2300)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+
+
                     <option disabled class="fw-bold">---SISTEMAS---</option>
                     @foreach ($user as $autorizacion)
                         @if ($autorizacion->No == 19)

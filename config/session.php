@@ -31,8 +31,8 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 600),
-    // 'lifetime' => env('SESSION_LIFETIME', null),
+    // 'lifetime' => env('SESSION_LIFETIME', 10),
+    'lifetime' => env('SESSION_LIFETIME', null),
 
     'expire_on_close' => false,
 
@@ -86,7 +86,7 @@ return [
     |
     */
 
-    'table' => 'sessions',
+    'table' => 'users',
 
     /*
     |--------------------------------------------------------------------------

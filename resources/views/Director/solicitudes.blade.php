@@ -80,6 +80,18 @@
                             </option>
                         @endif
                     @endforeach
+
+                    <option disabled class="fw-bold">---SEGUROS COOPSERP---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 2300)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+
+
                     <option disabled class="fw-bold">---SISTEMAS---</option>
                     @foreach ($user as $autorizacion)
                         @if ($autorizacion->No == 19)
@@ -207,7 +219,17 @@
         <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
         <script>
             var table = $('#personas').DataTable({
-                "ajax": "{{ route('data.solicitudes') }}",
+                "ajax": {
+                    "url": "{{ route('data.solicitudes') }}",
+                    "dataType": "json", // Indicar que se espera una respuesta JSON
+                    "error": function(xhr, error, thrown) {
+                        // Verificar si el error es debido a una respuesta JSON inválida
+                        if(xhr.status === 200 && xhr.responseJSON && xhr.responseJSON.error) {
+                            // Redirigir al usuario a la ruta deseada
+                            window.location.href = "{{ route('login.index') }}";
+                        }
+                    }
+                },
                 "order": [
                     [0, 'desc']
                 ],
