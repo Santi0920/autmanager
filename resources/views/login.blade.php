@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -31,8 +32,8 @@
                             <div class="col-md-6 col-lg-7 d-flex align-items-center">
                                 <div class="card-body p-4 p-lg-5 text-black">
 
-                                    <form method="POST" >
-                                        @csrf
+                                    <form method="POST">
+                                        <input type="hidden" name='_token' value="{{csrf_token()}}">
                                         <div class="text-center mb-3 pb-1 img-fluid">
                                             <img src="img/Logo-Coopserp.png" alt="LOGO COOPSERP" class=""
                                                 style="height: 7.2rem; width: 17.5rem" />
@@ -48,22 +49,22 @@
                                         </div> --}}
 
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <input type="password" id="form2Example27" name="password"
+                                            <input type="password" id="form2Example27" name="password" required
                                                 class="form-control form-control-lg" />
                                             <label class="form-label" for="form2Example27">Contraseña</label>
                                         </div>
                                         @error('message')
-                                            <div>
-                                                <script>
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: "Error!\n Contraseña incorrecta!",
-                                                        text: '',
-                                                        confirmButtonColor: '#646464'
+                                        <div>
+                                            <script>
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: "Error!\n Contraseña incorrecta!",
+                                                    text: '',
+                                                    confirmButtonColor: '#646464'
 
-                                                    });
-                                                </script>
-                                            </div>
+                                                });
+                                            </script>
+                                        </div>
                                         @enderror
 
                                         <div class="pt-1 mb-4">
