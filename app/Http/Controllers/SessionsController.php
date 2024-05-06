@@ -18,31 +18,15 @@ class SessionsController extends Controller
     public function login_post(Request $request)
     {
 
-        $password = $request->input('password');
+        if(auth()->attempt(request(['email', 'password'])) == false){
+            return back()->withErrors([
+                'message' => 'El usuario o la contraseña es incorrecto!'
+            ]);
 
-        // Obtener todos los usuarios
-        $users = User::where('rol', 'Jefatura')
-        ->orWhere('rol', 'Consultante')
-        ->orWhere('rol', 'Gerencia')
-        ->orWhere('rol', 'Coordinacion')
-        ->get();
-
-        $email = null;
-        $rol = null;
-        $ingreso = null;
-        // Iterar sobre los usuarios y verificar si alguna contraseña coincide
-        foreach ($users as $user) {
-            if (Hash::check($password, $user->password)) {
-                // La contraseña coincide, autenticar al usuario manualmente
-                $email = $user->email;
-                $rol = $user->rol;
-                $ingreso = $user;
-            }
         }
+        $user = auth()->user();
 
-
-                if ($rol == 'Jefatura' && !empty($email)) {
-                    Auth::login($ingreso);
+                if ($user->rol == 'Jefatura') {
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -67,8 +51,7 @@ class SessionsController extends Controller
 
 
 
-                }else if ($rol == 'Consultante' && !empty($email)) {
-                    Auth::login($ingreso);
+                }else if ($user->rol == 'Consultante') {
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -92,8 +75,7 @@ class SessionsController extends Controller
                     return redirect()->to('/solicitudes');
 
 
-                } else if ($rol == 'Coordinacion' && !empty($email)) {
-                    Auth::login($ingreso);
+                } else if ($user->rol == 'Coordinacion') {
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
@@ -117,8 +99,7 @@ class SessionsController extends Controller
                     return redirect()->to('/validar');
 
 
-                } else if ($rol == 'Gerencia' && !empty($email)) {
-                    Auth::login($ingreso);
+                } else if ($user->rol == 'Gerencia') {
                     $usuarioActual = Auth::user();
                     $nombre = $usuarioActual->name;
                     $rol = $usuarioActual->rol;
