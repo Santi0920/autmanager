@@ -33,6 +33,7 @@ class DirectorController extends Controller
         $convencion = null;
         $cuenta = null;
         $idpersona = 7323;
+        $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
 
 
         //fecha de la solicitud del director
@@ -46,7 +47,7 @@ class DirectorController extends Controller
         $nombreU = $usuarioActual->name;
         $rol = $usuarioActual->rol;
 
-        if (str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '2150') || str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300')){
+        if (str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '2150') || str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300')||str_contains($tipoautorizacion, '2400')){
             // Número y letra del concepto
             $No = substr($tipoautorizacion, 0, 4);
             $letra = substr($tipoautorizacion, 4, 3); // Cambiado a 1 para obtener solo una letra
@@ -70,13 +71,13 @@ class DirectorController extends Controller
         }else if($rol == 'Coordinacion'){
             if($usuarioActual->agenciau == 'Coordinacion 1'){
                 $numAgencia = 'C1';
-            }else if($usuarioActual->agenciau == 'numAgencia 2'){
+            }else if($usuarioActual->agenciau == 'Coordinacion 2'){
                 $numAgencia = 'C2';
-            }else if($usuarioActual->agenciau == 'numAgencia 3'){
+            }else if($usuarioActual->agenciau == 'Coordinacion 3'){
                 $numAgencia = 'C3';
-            }else if($usuarioActual->agenciau == 'numAgencia 4'){
+            }else if($usuarioActual->agenciau == 'Coordinacion 4'){
                 $numAgencia = 'C4';
-            }else if($usuarioActual->agenciau == 'numAgencia 5'){
+            }else if($usuarioActual->agenciau == 'Coordinacion 5'){
                 $numAgencia = 'C5';
             }
         }
@@ -103,7 +104,7 @@ class DirectorController extends Controller
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
-            $url = env('URL_SERVER_API');
+
             do {
                 try {
                     $response = Http::get($url . 'retiro/' . $cuenta);
@@ -173,7 +174,7 @@ class DirectorController extends Controller
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
-            $url = env('URL_SERVER_API');
+
             do {
                 try {
                     $response = Http::get($url . 'nombre/' . $cedula);
@@ -199,7 +200,7 @@ class DirectorController extends Controller
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
-            $url = env('URL_SERVER_API');
+
             do {
                 try {
                     $response = Http::get($url . 'nombre/' . $cedula);
@@ -223,11 +224,17 @@ class DirectorController extends Controller
         }else if($tipoautorizacion == '11C'){
             $nombre = $request->nombre;
             $cuenta = $request->cuenta;
+        }else if($tipoautorizacion == '19J' || $tipoautorizacion == '10J' || $tipoautorizacion == '10G' || $tipoautorizacion == '2300D'){
+
+            //NOMBRE EMPRESA
+            $nombre = $request->nombre;
+
+            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
         }else{
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
-            $url = env('URL_SERVER_API');
+            $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
             do {
                 try {
                     $response = Http::get($url . 'nombre/' . $cedula);

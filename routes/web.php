@@ -6,6 +6,7 @@ use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\JefaturaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionsController;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,8 @@ Route::get('logout', [SessionsController::class, 'destroy'])
 
 //DIRECTOR
 Route::get('/solicitudes', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
     return view('Director/solicitudes');
 })->middleware('auth.director');
 
@@ -49,6 +52,8 @@ Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actuali
 
 Route::middleware('auth.coord')->group(function () {
     Route::get('/validar', function () {
+        Cookie::forget('laravel_session');
+        Cache::flush();
         return view('Coordinacion/validarautorizacion');
     });
 
@@ -63,6 +68,8 @@ Route::middleware('auth.coord')->group(function () {
 
 //GERENCIA
 Route::get('/aprobar', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
     return view('Gerencia/aprobar');
 })->middleware('auth.gerencia');
 
@@ -73,6 +80,8 @@ Route::post('aprobar/actualizar-{id}', [GerenciaController::class, 'validarAutor
 
 //JEFATURA
 Route::get('/solicitudesjefatura', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
     return view('Jefatura/solicitudesjefatura');
 })->middleware('auth.jefatura');
 

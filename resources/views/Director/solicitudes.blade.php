@@ -137,6 +137,17 @@
                                 </option>
                             @endif
                         @endforeach
+
+
+                        <option disabled class="fw-bold">---MERIDIAN---</option>
+                        @foreach ($user as $autorizacion)
+                            @if ($autorizacion->No == 2400)
+                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                    {{ $autorizacion->No . $autorizacion->Letra }} -
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endif
+                        @endforeach
                 </select>
             </div>
 
@@ -328,7 +339,13 @@
                             url = url.replace(':id', id);
 
                             const cedula = row.Cedula;
-                            const cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                            if(row.CodigoAutorizacion == '19J'){
+
+                            var cedulaFormateada = cedula;
+                            }else{
+                            var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+
+                            }
 
                             var modalEditar = `
                             <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
@@ -435,7 +452,7 @@
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
                                                         <span class="fs-5">${cedulaFormateada}
-                                                            ${row.CodigoAutorizacion !== '11A' ?
+                                                            ${row.CodigoAutorizacion !== '11A' &&  row.CodigoAutorizacion !== '19J' && row.CodigoAutorizacion !== '10J' && row.CodigoAutorizacion !== '10G' && row.CodigoAutorizacion !== '2300D' ?
                                                             `- ${row.CuentaAsociado} `
                                                             : ``}- ${row.NombrePersona}
                                                             ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
@@ -939,6 +956,43 @@
 
                         </div>
 
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+
+
+
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                }else if (valorSeleccionado == "19J" ||  valorSeleccionado == "10J" || valorSeleccionado == "10G" || valorSeleccionado == "2300D") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NIT <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE EMPRESA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
 
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span

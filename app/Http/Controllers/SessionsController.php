@@ -7,11 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 
 class SessionsController extends Controller
 {
     public function login()
     {
+        Cookie::forget('laravel_session');
+        Cache::flush();
         return view("login");
     }
 
@@ -123,13 +127,8 @@ class SessionsController extends Controller
                     return redirect()->to('/aprobar');
 
 
-                } else {
-                    auth()->logout();
-                    return back()->withErrors([
-                        'message' => 'La contraseña es incorrecta!'
-                    ]);
                 }
-
+                return redirect()->to('/');
     }
 
     public function destroy(Request $request)
@@ -148,6 +147,8 @@ class SessionsController extends Controller
 
 
         auth()->logout();
+        Cookie::forget('laravel_session');
+        Cache::flush();
 
 
 

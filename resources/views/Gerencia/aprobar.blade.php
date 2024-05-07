@@ -197,9 +197,14 @@
 
 
                         const cedula = row.Cedula;
-                        const cedulaFormateada = new Intl.NumberFormat().format(cedula);
 
+                        if(row.CodigoAutorizacion == '19J' ||  row.CodigoAutorizacion == "10J" || row.CodigoAutorizacion == "10G" || row.CodigoAutorizacion == "2300D" || row.CodigoAutorizacion == "2400A"){
 
+                        var cedulaFormateada = cedula;
+                        }else{
+                        var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+
+                        }
 
                         var modalEditar = `
                             <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
@@ -301,7 +306,7 @@
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
                                                         <span class="fs-5">${cedulaFormateada}
-                                                            ${row.CodigoAutorizacion !== '11A' ?
+                                                            ${row.CodigoAutorizacion !== '11A' &&  row.CodigoAutorizacion !== '19J' && row.CodigoAutorizacion !== '10J' && row.CodigoAutorizacion !== '10G' && row.CodigoAutorizacion !== '2300D' ?
                                                             `- ${row.CuentaAsociado} `
                                                             : ``}- ${row.NombrePersona}
                                                             ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
@@ -389,10 +394,7 @@
                                                         <input value="5" type="radio" name="Estado" id="Estado" required>
                                                         <span>RECHAZAR</span>
                                                     </label>
-                                                    <label class="label">
-                                                        <input value="3" type="radio" name="Estado" id="Estado" required>
-                                                        <span>CORREGIR</span>
-                                                    </label>
+
 
                                                 </div>
                                                 <div class="col-md-12 col-lg-10">
