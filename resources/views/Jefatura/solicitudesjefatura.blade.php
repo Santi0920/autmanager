@@ -294,7 +294,7 @@
                             // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
                             if (row.Estado == 0) {
                                 var Estado =
-                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">RECHAZADO</div>';
                             } else if (row.Estado == 1 || row.Estado == 2) {
                                 var Estado =
                                     `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
@@ -306,7 +306,7 @@
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
                             } else if (row.Estado == 5) {
                                 var Estado =
-                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO</div>'
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO POR GERENCIA</div>'
                             } else {
                                 var Estado =
                                     '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
@@ -394,7 +394,7 @@
 
                                                     <div class="row g-0 align-items-center justify-content-center border p-2">
                                                         ${row.Estado == 0 ?
-                                                            `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">A - ANULADO</button>` :
+                                                            `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO</button>` :
                                                             row.Estado == 1 || row.Estado == 2 ?
                                                             `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
                                                             row.Estado == 3 ?
@@ -534,7 +534,111 @@
                                         </div>
 
 
+                                        ${row.Validacion == 0 && row.Estado == 3 ?
+                                            //esta validacion es si la validacion esta 0 y estado en corregir
+                                            `<div class="row g-0 text-center">
+                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
+                                                </div>
 
+                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                        </div>
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-10 w-100">
+                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones}
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>`:``
+
+                                        }
+
+                                        ${row.Validacion == 0 && row.Estado == 0 ?
+                                            //esta validacion es si la validacion esta 0 y estado esta en rechazado
+                                            `<div class="row g-0 text-center">
+                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
+                                                </div>
+
+                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                        </div>
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-10 w-100">
+                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones}
+                                                        </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>`:``
+
+                                        }
+
+
+                                        ${row.Validacion == 1 ?
+                                        `<div class="row g-0 text-center">
+                                            ${row.Estado == 0 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="RECHAZADO">
+                                                <span class="h1 fw-bold mb-0">A<br><span class="fs-5 fw-normal">APROBADO<span></span>
+                                            </div>`:``
+                                            }
+
+                                            ${row.Aprobacion != 1 ?
+                                                (row.Estado == 3 && row.Validacion == 1 ?
+                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                                    </div>` :
+                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
+                                                    </div>`
+                                                ) :
+                                                ``
+                                            }
+
+
+
+                                            ${row.Estado == 4 || row.Estado == 5 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                            </div>`:
+                                            row.Estado == 1 &&  row.Aprobacion == 1 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+                                                <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
+                                            </div>`:
+                                            row.Validacion == 1 && row.Estado == 3 ?
+                                            `<div
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-${row.Validacion == 1 ?`success`:`danger`}-subtle border p-2 border border-dark" title="EN TRÁMITE">
+                                                <span class="h1 fw-bold mb-0">${row.Validacion == 1 ?`V`:`R`}<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                            </div>`:
+                                            ``
+                                            }
+
+
+
+                                            <div class="col-sm-12 col-md-12 col-lg-10">
+                                                <div class="row g-0">
+                                                    <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                        <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                    <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>` : ``}
 
 
 
