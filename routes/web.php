@@ -85,7 +85,7 @@ Route::get('/solicitudesjefatura', function () {
     return view('Jefatura/solicitudesjefatura');
 })->middleware('auth.jefatura');
 
-Route::get('solicitudesjefatura', [JefaturaController::class, 'data1'])->middleware('auth.jefatura');
+Route::get('solicitudesjefatura', [JefaturaController::class, 'data1']);
 
 Route::get('solicitudesjefatura/datatable', [JefaturaController::class, 'solicitudes'])->name('data.solicitudesjef')->middleware('auth.jefatura');
 

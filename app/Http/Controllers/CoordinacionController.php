@@ -16,7 +16,7 @@ class CoordinacionController extends Controller
 
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
-        $user = DB::select("SELECT * FROM concepto_autorizaciones");
+        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
         return view('Coordinacion/validarautorizacion', ['user' => $user]);
     }
@@ -35,7 +35,7 @@ class CoordinacionController extends Controller
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (34, 36, 37, 38, 40, 41, 87, 93, 96, 'C1'))");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (35,34, 36, 37, 38, 40, 41, 87, 93, 96, 'C1'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 2") {
             $solicitudes = DB::select("
             SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
@@ -99,7 +99,7 @@ class CoordinacionController extends Controller
         $nombreU = $usuarioActual->name;
         $rol = $usuarioActual->rol;
 
-        if (str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '2150') || str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300')||str_contains($tipoautorizacion, '2400')){
+        if (str_contains($tipoautorizacion, '1100')||str_contains($tipoautorizacion, '1200')||str_contains($tipoautorizacion, '1300')||str_contains($tipoautorizacion, '1400')||str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '1600') || str_contains($tipoautorizacion, '1700') || str_contains($tipoautorizacion, '1800') ||str_contains($tipoautorizacion, '1900') || str_contains($tipoautorizacion, '2000') || str_contains($tipoautorizacion, '2100') ||str_contains($tipoautorizacion, '2200') || str_contains($tipoautorizacion, '2150') ||  str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300') ||str_contains($tipoautorizacion, '2400')|| str_contains($tipoautorizacion, '2500') || str_contains($tipoautorizacion, '2600') || str_contains($tipoautorizacion, '2700')){
             // Número y letra del concepto
             $No = substr($tipoautorizacion, 0, 4);
             $letra = substr($tipoautorizacion, 4, 3); // Cambiado a 1 para obtener solo una letra
@@ -133,6 +133,9 @@ class CoordinacionController extends Controller
                 $numAgencia = 'C5';
             }
         }
+
+        //CONDICION PARA LOS QUE TIENEN NIT
+        $condicionit = ($tipoautorizacion === '10M' || $tipoautorizacion === '11E'||      $tipoautorizacion=== '11F'|| $tipoautorizacion==='11M'|| $tipoautorizacion==='11N'|| $tipoautorizacion=== '11O'|| $tipoautorizacion==='11P'|| $tipoautorizacion==='11Q' || $tipoautorizacion=== '11R'|| $tipoautorizacion==='11S'|| $tipoautorizacion==='11T'  || $tipoautorizacion=== '11U'|| $tipoautorizacion==='11V'|| $tipoautorizacion==='11W' || $tipoautorizacion=== '11X'|| $tipoautorizacion==='11Y'|| $tipoautorizacion==='11Z'||    $tipoautorizacion === '11AB'||    $tipoautorizacion=== '11AD'|| $tipoautorizacion==='11AE'|| $tipoautorizacion==='11AF'|| $tipoautorizacion==='11AG'|| $tipoautorizacion === '10J' || $tipoautorizacion === '10G' || $tipoautorizacion === '10N' ||$tipoautorizacion === '10O' ||$tipoautorizacion === '10P' || $tipoautorizacion === '2300D' || $tipoautorizacion === '2400A' || $tipoautorizacion === '2400B'||$tipoautorizacion === '1500A' || $tipoautorizacion === '19J'|| $tipoautorizacion === '19D' || $tipoautorizacion === '19E' ||  $tipoautorizacion === '1400A'||  $tipoautorizacion === '1500C');
 
         //ASOCIACION SCORE BAJO
         if($tipoautorizacion == '11A'){
@@ -276,12 +279,18 @@ class CoordinacionController extends Controller
         }else if($tipoautorizacion == '11C'){
             $nombre = $request->nombre;
             $cuenta = $request->cuenta;
-        }else if($tipoautorizacion == '19J' || $tipoautorizacion == '10J' || $tipoautorizacion == '10G' || $tipoautorizacion == '2300D'){
+        }else if($condicionit){
 
             //NOMBRE EMPRESA
             $nombre = $request->nombre;
 
             //Y LA CEDULA LA ESTA TOMANDO COMO NIT
+        }else if($tipoautorizacion == '10M'){
+
+            //NOMBRE EMPRESA
+            $nombre = "COOPSERP";
+            $cedula = "805.004.034-9";
+
         }else{
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
