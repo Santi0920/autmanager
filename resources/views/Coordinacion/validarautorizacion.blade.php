@@ -57,99 +57,7 @@
             @csrf
             <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
 
-            <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                <label for="input1" class="form-label col-form-label-lg fw-semibold">TIPO DE AUTORIZACIÓN <span
-                        class="text-danger" style="font-size:20px;">*</span></label>
-                <select class="form-select form-select-lg " name="tautorizacion" id="autorizaciones" required>
-                    <option selected disabled>Selecciona una opción</option>
-                    <option disabled class="fw-bold">---TALENTO HUMANO---</option>
-                        @foreach ($user as $autorizacion)
-                            @if ($autorizacion->No == 10)
-                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                    {{ $autorizacion->No . $autorizacion->Letra }} -
-                                    {{ $autorizacion->Concepto }}
-                                </option>
-                            @endif
-                        @endforeach
-                    <option disabled class="fw-bold">---COORDINACION---</option>
-                    @foreach ($user as $autorizacion)
-                        @if ($autorizacion->No == 11)
-                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                {{ $autorizacion->No . $autorizacion->Letra }} -
-                                {{ $autorizacion->Concepto }}
-                            </option>
-                        @endif
-                    @endforeach
-                    <option disabled class="fw-bold">---SEGUROS COOPSERP---</option>
-                    @foreach ($user as $autorizacion)
-                        @if ($autorizacion->No == 2300)
-                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                {{ $autorizacion->No . $autorizacion->Letra }} -
-                                {{ $autorizacion->Concepto }}
-                            </option>
-                        @endif
-                    @endforeach
-
-
-                    <option disabled class="fw-bold">---SISTEMAS---</option>
-                    @foreach ($user as $autorizacion)
-                        @if ($autorizacion->No == 19)
-                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                {{ $autorizacion->No . $autorizacion->Letra }} -
-                                {{ $autorizacion->Concepto }}
-                            </option>
-                        @endif
-                    @endforeach
-                    <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
-                        @foreach ($user as $autorizacion)
-                            @if ($autorizacion->No == 2150)
-                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                    {{ $autorizacion->No . $autorizacion->Letra }} -
-                                    {{ $autorizacion->Concepto }}
-                                </option>
-                            @endif
-                        @endforeach
-                        <option disabled class="fw-bold">---JURIDICO ZONA NORTE---</option>
-                        @foreach ($user as $autorizacion)
-                            @if ($autorizacion->No == 2250)
-                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                    {{ $autorizacion->No . $autorizacion->Letra }} -
-                                    {{ $autorizacion->Concepto }}
-                                </option>
-                            @endif
-                        @endforeach
-                        <option disabled class="fw-bold">---JURIDICO ZONA SUR---</option>
-                        @foreach ($user as $autorizacion)
-                            @if ($autorizacion->No == 2350)
-                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                    {{ $autorizacion->No . $autorizacion->Letra }} -
-                                    {{ $autorizacion->Concepto }}
-                                </option>
-                            @endif
-                        @endforeach
-                        <option disabled class="fw-bold">---TESORERIA---</option>
-                        @foreach ($user as $autorizacion)
-                            @if ($autorizacion->No == 1500)
-                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                    {{ $autorizacion->No . $autorizacion->Letra }} -
-                                    {{ $autorizacion->Concepto }}
-                                </option>
-                            @endif
-                        @endforeach
-
-                                                <option disabled class="fw-bold">---MERIDIAN---</option>
-                        @foreach ($user as $autorizacion)
-                            @if ($autorizacion->No == 2400)
-                                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
-                                    {{ $autorizacion->No . $autorizacion->Letra }} -
-                                    {{ $autorizacion->Concepto }}
-                                </option>
-                            @endif
-                        @endforeach
-
-
-                </select>
-            </div>
+            @include('layouts.option')
 
             <div id="cuerpo"></div>
 
@@ -228,6 +136,7 @@
         <script src="ResourcesAll/dtables/estilobotondt.min.js"></script>
         <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
         <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
+        <script src="js/condicionNit.js"></script>
         <script>
             var table = $('#personas').DataTable({
                 "ajax": "{{ route('datacoor.solicitudes') }}",
@@ -335,22 +244,19 @@
                             url = url.replace(':id', id);
 
                             const cedula = row.Cedula;
-                            if(row.CodigoAutorizacion == '19J'){
-
-                            var cedulaFormateada = cedula;
+                            var condiciondenit = esCondicionNit(row.CodigoAutorizacion);
+                            var visualizarnit = condicionparamostrarNit(row.CodigoAutorizacion);
+                            if(condiciondenit){
+                                var cedulaFormateada = cedula;
                             }else{
-                            var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                                var cedulaFormateada = new Intl.NumberFormat().format(cedula);
 
                             }
 
                             var modalEditar = `
-                            <a type="button" type="submit" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear-fill"
-                                    viewBox="0 0 16 16">
-                                    <path
-                                        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
-                                </svg>
+                            <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
+                                        data-id="${id}">
+                                        <i class="fa-solid fa-eye fs-5"></i>
                             </a>
 
                             <ul class="dropdown-menu">
@@ -449,7 +355,7 @@
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
                                                         <span class="fs-5">${cedulaFormateada}
-                                                            ${row.CodigoAutorizacion !== '11A' &&  row.CodigoAutorizacion !== '19J' && row.CodigoAutorizacion !== '10J' && row.CodigoAutorizacion !== '10G' && row.CodigoAutorizacion !== '2300D' ?
+                                                            ${visualizarnit ?
                                                             `- ${row.CuentaAsociado} `
                                                             : ``}- ${row.NombrePersona}
                                                             ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
@@ -468,7 +374,7 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}"
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank"
                                                         class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
                                                             <span class="h1 fw-bold mb-0">
                                                                 <img src="img/pdf.png" style="height: 4.5rem">
@@ -736,10 +642,12 @@ $.ajax({
             }
         </script>
         <script>
+
             $('#autorizaciones').on('change', function() {
                 // Obtener el valor seleccionado
                 var valorSeleccionado = $(this).val();
                 console.log("Valor seleccionado:", valorSeleccionado);
+                var condiciondenit = esCondicionNit(valorSeleccionado);
 
                 if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
                     $("#cuerpo").html(`
@@ -914,7 +822,28 @@ $.ajax({
                                 style="background-color: #646464;">SOLICITAR</button>
                         </div>
                         `);
-                }else if (valorSeleccionado == "19J" ||  valorSeleccionado == "10J" || valorSeleccionado == "10G" || valorSeleccionado == "2300D") {
+                }else if (valorSeleccionado == "10M") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+
+
+
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;">SOLICITAR</button>
+                        </div>
+                        `);
+                }else if (condiciondenit) {
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
                             <label for="input1" class="form-label col-form-label-lg fw-semibold">NIT <span class="text-danger"
