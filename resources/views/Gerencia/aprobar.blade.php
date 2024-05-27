@@ -295,7 +295,8 @@
                                                 <div class="row g-0 row-cols-2 d-flex justify-content-start">
                                                     <div
                                                     class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                    <span class="fs-5">${row.Concepto}</span>
+                                                    <span class="fs-5">${row.Concepto} -
+                                                                    @include('layouts.optionvercodigo')</span>
                                                     </div>
                                                     <div
                                                     class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
@@ -601,8 +602,90 @@
 
     </div>
     <style>
+.input-group-text {
+                position: relative; /* Añade posicionamiento relativo */
+            }
+
+            .tooltip1:hover::after {
+                content: "Cédula / NIT";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .tooltip2:hover::after {
+                content: "Cuenta";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .tooltip3:hover::after {
+                content: "Nombre / Nombre Empresa";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .tooltip4:hover::after {
+                content: "Convención";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+
+        .input {
+            max-width: 190px;
+            display: none;
+        }
+
+        .labelFile {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 250px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            color: #404040;
+            cursor: pointer;
+        }
+
+        #uploadMessage {
+            display: none;
+            color: green;
+            font-weight: bold;
+        }
+
         .custom-buttons {
-            display: inline-block;
+            display: absolute;
             margin-right: 10px;
         }
 
@@ -629,6 +712,7 @@
             overflow: hidden;
             margin-bottom: 0em;
             font-size: 15px
+
         }
 
         .label input {
@@ -716,6 +800,75 @@
             cursor: pointer;
             /* Cambia el cursor al pasar el mouse */
         }
+
+
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin: 0px;
+            }
+
+
+            .col::-webkit-scrollbar {
+            width: 10px;  /*Ancho de la barra de desplazamiento */
+            }
+
+            .col::-webkit-scrollbar-track {
+            background: #f1eeed; /*Color de fondo de la barra de desplazamiento */
+            }
+
+            .col::-webkit-scrollbar-thumb {
+            background: #bea232;  /*Color del botón de desplazamiento */
+            }
+
+
+
+
+            .text {
+            color: #333;
+            font-size: 18px;
+            cursor: pointer;
+            }
+
+            .tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            visibility: hidden;
+            background: #898989;
+            color: #fff;
+            font-weight: bold;
+            padding: 7px;
+            border-radius: 4px;
+            transition: opacity 0.3s, visibility 0.3s, top 0.3s, background 0.3s;
+            z-index: 1;
+            width: 500px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+            }
+
+            .tooltip::before {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent #898989 transparent;
+            transform: translateX(-50%);
+
+            }
+
+            .tooltip-container:hover .tooltip {
+            top: 120%;
+            opacity: 1;
+            visibility: visible;
+            background: #898989;
+            transform: translate(-50%, 0px);
+
+            }
     </style>
     </div>
 

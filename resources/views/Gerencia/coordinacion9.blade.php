@@ -307,7 +307,7 @@
                                                     <div class="row g-0 row-cols-2 d-flex justify-content-start">
                                                         <div
                                                         class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.Concepto}</span>
+                                                        <span class="fs-5">${row.Concepto} - @include('layouts.optionvercodigo')</span>
                                                         </div>
                                                         <div
                                                         class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
@@ -614,8 +614,90 @@
     </div>
     {{-- ESTILOS --}}
     <style>
+.input-group-text {
+                position: relative; /* Añade posicionamiento relativo */
+            }
+
+            .tooltip1:hover::after {
+                content: "Cédula / NIT";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .tooltip2:hover::after {
+                content: "Cuenta";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .tooltip3:hover::after {
+                content: "Nombre / Nombre Empresa";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .tooltip4:hover::after {
+                content: "Convención";
+                position: absolute;
+                bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+
+        .input {
+            max-width: 190px;
+            display: none;
+        }
+
+        .labelFile {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 250px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            color: #404040;
+            cursor: pointer;
+        }
+
+        #uploadMessage {
+            display: none;
+            color: green;
+            font-weight: bold;
+        }
+
         .custom-buttons {
-            display: inline-block;
+            display: absolute;
             margin-right: 10px;
         }
 
@@ -642,6 +724,7 @@
             overflow: hidden;
             margin-bottom: 0em;
             font-size: 15px
+
         }
 
         .label input {
