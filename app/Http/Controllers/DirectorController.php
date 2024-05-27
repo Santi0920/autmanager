@@ -49,8 +49,8 @@ class DirectorController extends Controller
         $rol = $usuarioActual->rol;
 
         // Número y letra del concepto
-        $No = substr($tipoautorizacion, 0, 2);
-        $letra = substr($tipoautorizacion, 2, 3);
+        $No = substr($tipoautorizacion, 0, 1);
+        $letra = substr($tipoautorizacion, 1, 1);
 
         //concepto traer el id
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ? AND Letra = ?', [$No, $letra]);
@@ -433,8 +433,8 @@ class DirectorController extends Controller
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
 
         // Número y letra del concepto
-        $No = substr($tipoautorizacion, 0, 2);
-        $letra = substr($tipoautorizacion, 2, 3);
+        $No = substr($tipoautorizacion, 0, 1);
+        $letra = substr($tipoautorizacion, 1, 1);
 
         //concepto traer el id
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ? AND Letra = ?', [$No, $letra]);

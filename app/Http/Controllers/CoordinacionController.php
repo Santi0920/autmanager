@@ -88,8 +88,8 @@ class CoordinacionController extends Controller
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
 
         // Número y letra del concepto
-        $No = substr($tipoautorizacion, 0, 2);
-        $letra = substr($tipoautorizacion, 2, 3);
+        $No = substr($tipoautorizacion, 0, 1);
+        $letra = substr($tipoautorizacion, 1, 1);
 
         //fecha de la solicitud del director
         $fechadeSolicitud = Carbon::now('America/Bogota');
@@ -536,8 +536,8 @@ class CoordinacionController extends Controller
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
 
         // Número y letra del concepto
-        $No = substr($tipoautorizacion, 0, 2);
-        $letra = substr($tipoautorizacion, 2, 3);
+        $No = substr($tipoautorizacion, 0, 1);
+        $letra = substr($tipoautorizacion, 1, 1);
 
         $condicionTalento = in_array($tipoautorizacion, [
             "10A", "10B", "10C", "10D", "10E", "10F", "10G", "10H", "10I", "10J", "10K", "10L"

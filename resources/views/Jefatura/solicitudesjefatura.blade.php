@@ -833,27 +833,28 @@
 
                 if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
                     $("#inputs" + id).html(inputcedula);
-                } else if (valorSeleccionado == "11G") {
-                    $("#inputs"+id).html(inputcedula);
+                } else if (valorSeleccionado == "11L") {
+                    $("#inputs" + id).html(inputcedula);
                 } else if (valorSeleccionado == "11B") {
-                    $("#inputs"+id).html(inputcedula + inputcuenta);
-                } else if (valorSeleccionado == "19B") {
-                    $("#inputs"+id).html(inputcedula + inputconvencion);
+                    $("#inputs" + id).html(inputcedula + inputcuenta);
+                } else if (valorSeleccionado == "11K") {
+                    $("#inputs" + id).html(inputcedula + inputconvencion);
                 } else if (valorSeleccionado == "11C") {
-                    $("#inputs"+id).html(inputcedula + inputnombre + inputcuenta);
-                } else if (valorSeleccionado == "10M") {
-                    $("#inputs"+id).html(`
+                    $("#inputs" + id).html(inputcedula + inputnombre + inputcuenta);
+                } else if (valorSeleccionado == "10D") {
+                    $("#inputs" + id).html(`
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
                     `);
                 } else if (condiciondenit) {
-                    $("#inputs"+id).html(inputcedula + inputnombre);
+                    $("#inputs" + id).html(inputcedula + inputnombre);
                 } else {
                     $("#inputs"+id).html(inputcedula + inputnombre);
                 }
+
+                $('[data-bs-toggle="tooltip"]').tooltip();
             }
-        </script>
-        <script>
+
             $('#autorizaciones').on('change', function() {
                 // Obtener el valor seleccionado
                 var valorSeleccionado = $(this).val();
@@ -890,7 +891,7 @@
                                 style="background-color: #646464;">SOLICITAR</button>
                         </div>
                         `);
-                } else if (valorSeleccionado == "11M") {
+                } else if (valorSeleccionado == "11L") {
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
                             <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
@@ -953,7 +954,7 @@
                                 style="background-color: #646464;">SOLICITAR</button>
                         </div>
                         `);
-                } else if (valorSeleccionado == "11L") {
+                } else if (valorSeleccionado == "11K") {
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
                             <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
@@ -1035,7 +1036,7 @@
                                 style="background-color: #646464;">SOLICITAR</button>
                         </div>
                         `);
-                }else if (valorSeleccionado == "10M") {
+                }else if (valorSeleccionado == "10D") {
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
