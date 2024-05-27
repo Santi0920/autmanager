@@ -46,6 +46,11 @@ Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutoriza
 
 Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion')->middleware('auth.director');
 
+Route::get('/filtrar', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Director.filtrar');
+});
 
 
 //COORDINACION
@@ -63,7 +68,9 @@ Route::middleware('auth.coord')->group(function () {
 
     Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
 
-    Route::post('validar/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatecoor.autorizacion');
+    Route::post('/validarautorizacion/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatevalidarcoor.autorizacion');
+
+    Route::post('/validar/actualizar-{id}', [CoordinacionController::class, 'actualizardetalle'])->name('updatecoor.autorizacion');
 });
 
 //GERENCIA
@@ -73,9 +80,23 @@ Route::get('/aprobar', function () {
     return view('Gerencia/aprobar');
 })->middleware('auth.gerencia');
 
+Route::get('/coordinacion9', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/coordinacion9');
+})->middleware('auth.gerencia');
+
+Route::get('aprobar', [GerenciaController::class, 'data1'])->middleware('auth.gerencia');
+
 Route::get('aprobar/datatable', [GerenciaController::class, 'solicitudes'])->name('datager.solicitudes')->middleware('auth.gerencia');
 
 Route::post('aprobar/actualizar-{id}', [GerenciaController::class, 'validarAutorizacion'])->name('updateger.autorizacion')->middleware('auth.gerencia');
+
+Route::get('coordinacion9', [GerenciaController::class, 'data2'])->middleware('auth.gerencia');
+
+Route::get('coordinacion9/datatable', [GerenciaController::class, 'solicitudescoordinacion'])->name('datagercoordi.solicitudes')->middleware('auth.gerencia');
+
+Route::post('coordinacion9/actualizar-{id}', [GerenciaController::class, 'validarAutorizacioncoordinacion9'])->name('updategercoordi.autorizacion')->middleware('auth.gerencia');
 
 
 //JEFATURA
