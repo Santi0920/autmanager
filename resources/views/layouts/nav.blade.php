@@ -23,7 +23,7 @@
                     </span>
                 </li>
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <span class="nav-link pe-3" style="font-weight: 600;font-size: 18px;" aria-current="page"
                         href="#">
                         Rol:
@@ -40,7 +40,7 @@
                             </label>
                         </div>
                     </span>
-                </li>
+                </li> --}}
 
                 <li class="nav-item">
                     <span class="nav-link pe-3" style="font-weight: 600;font-size: 18px;" aria-current="page"
@@ -54,6 +54,38 @@
                                     {{ auth()->user()->agenciau }}
                                 @endif
                                 </strong></div>
+                    </span>
+                </li>
+
+
+                <li class="nav-item dropdown">
+                    <span class="nav-link pe-3" style="font-weight: 600;font-size: 18px; margin-top:5.5px" aria-current="page"
+                    href="#">
+                        <a class="dropdown-toggle text-light text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            OPCIONES
+                        </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @if (auth()->user()->rol == 'Consultante')
+                            <li><a class="dropdown-item fw-bold" href="solicitudes">Solicitar Autorización</a></li>
+                            {{-- <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li> --}}
+                        @elseif (auth()->user()->rol == 'Gerencia')
+                            <li><a class="dropdown-item fw-bold" href="aprobar">Gerencia</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="coordinacion9">Coordinación 9</a></li>
+                        @elseif (auth()->user()->rol == 'Coordinacion')
+                            <li><a class="dropdown-item fw-bold" href="#">Proximamente...</a></li>
+                        @elseif (auth()->user()->rol == 'Jefatura')
+                            <li><a class="dropdown-item fw-bold" href="#">Proximamente...</a></li>
+                        @endif
+
+
+
+{{--
+                        <!-- <li><a class="dropdown-item" href="#">Another action</a></li> -->
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item fw-bold" href="#">Coord 9</a></li> --}}
+                    </ul>
                     </span>
                 </li>
 
@@ -75,6 +107,20 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <style>
+        .dropdown-menu {
+            margin-top: 0;
+        }
+
+        .dropdown:hover .dropdown-menu{
+            display: block;
+        }
+
+        .dropdown:hover .dropdown-menu{
+
+            background-color: #ffc107;
+        }
+
+
     /* === removing default button style ===*/
     .buttontroll {
         margin: 0;

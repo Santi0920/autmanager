@@ -1,26 +1,4 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Autorizaciones</title>
-
-    <!-- Fonts -->
-    <link href="ResourcesAll/Bootstrap/Bootstrap.css" rel="stylesheet">
-    <link rel="shortcut icon" href="img/logoo.png" type="image/png">
-    <script src="ResourcesAll/jquery/jquery-3.6.0.js"></script>
-    <script src="ResourcesAll/jquery/jquery-ui.js"></script>
-
-    <script src="ResourcesAll/fontawesome/fontawesome.js"></script>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <script src="ResourcesAll/Sweetalert/sweetalert2.js"></script>
-    <link rel="stylesheet" href="ResourcesAll/Sweetalert/sweetalert2.css">
-    <link rel="stylesheet" href="ResourcesAll/Bootstrap/Bootstrap2.css">
-    <link rel="stylesheet" href="ResourcesAll/Bootstrap/dataTablesbootstrap5.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
-</head>
+@include('layouts/head')
 
 <body class="antialiased">
     @include('layouts/nav')
@@ -55,43 +33,35 @@
     <div class="col-11" style="margin-left:3.5%">
         <div class="">
             <form action="" method="post">
-                <div class="" style="margin-top: 8px; margin-right: -14px;">
-
+                <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
+                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- GERENCIA -⭐</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
                 <script>
-                    function obtenerFechaActual() {
-                        const fecha = new Date();
-                        const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-                        const mes = meses[fecha.getMonth()];
-                        const dia = fecha.getDate();
-                        const anio = fecha.getFullYear();
-                        let horas = fecha.getHours();
-                        let amPm = 'AM';
+                        function obtenerFechaActual() {
+                            const fecha = new Date();
+                            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                            const mes = meses[fecha.getMonth()];
+                            const dia = fecha.getDate();
+                            const anio = fecha.getFullYear();
+                            let horas = fecha.getHours();
+                            let amPm = horas >= 12 ? 'PM' : 'AM'; // Se establece 'AM' si horas es menor a 12, de lo contrario, se establece 'PM'
 
-                        // AM/PM
-                        if (horas > 12) {
-                            horas -= 12;
-                            amPm = 'PM';
-                        } else if (horas === 0) {
-                            horas = 12;
+                            // Convertir 0 a 12 AM
+                            horas = horas % 12 || 12;
+
+                            const minutos = fecha.getMinutes();
+                            const segundos = fecha.getSeconds();
+
+                            return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
                         }
 
-                        const minutos = fecha.getMinutes();
-                        const segundos = fecha.getSeconds();
+                        function actualizarFechaActual() {
+                            const elementoFecha = document.getElementById('fechaActual');
+                            elementoFecha.textContent = obtenerFechaActual();
+                        }
 
-
-                        return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
-                    }
-
-
-                    function actualizarFechaActual() {
-                        const elementoFecha = document.getElementById('fechaActual');
-                        elementoFecha.textContent = `${obtenerFechaActual()}`;
-                    }
-
-
-                    setInterval(actualizarFechaActual, 1000);
+                        setInterval(actualizarFechaActual, 1000);
                 </script>
 
 
@@ -149,7 +119,7 @@
                     data: 'CodigoAutorizacion',
                     render: function(data, type, row) {
                         var Codigo =
-                            `<span class='badge bg-secondary fw-bold'>${row.CodigoAutorizacion}</span> - ${row.Concepto}</span>`
+                            `${row.Concepto}`
 
                         return Codigo
                     },
@@ -205,6 +175,36 @@
                                 var cedulaFormateada = new Intl.NumberFormat().format(cedula);
 
                             }
+
+                        const mesesEnEspanol = [
+                        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                        ];
+
+                        const fechainsercion = row.FechaInsercion;
+                        // Convertir fechainsercion a un objeto Date
+                        const fechaInsercionDate = new Date(fechainsercion);
+
+                        // Obtener la fecha actual
+                        const fechaActual = new Date();
+
+                        // Calcular la diferencia en milisegundos
+                        const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
+
+                        // Convertir la diferencia de milisegundos a días
+                        const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+
+                        const estado = diferenciaDias > 179
+                        ? ` <span class="fs-2">⚪⚪🔴</span>`
+                        : diferenciaDias > 169
+                            ? ` <span class="fs-2">⚪🟡⚪</span>`
+                            : ` <span class="fs-2">🟢⚪⚪</span>`;
+
+
+                        const dia = fechaInsercionDate.getDate();
+                        const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
+                        const año = fechaInsercionDate.getFullYear();
+                        const fechaFormateada = `${mes} ${dia} del ${año}`;
 
 
                         var modalEditar = `
@@ -295,25 +295,23 @@
                                                 <div class="row g-0 row-cols-2 d-flex justify-content-start">
                                                     <div
                                                     class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                    <span class="fs-5">${row.CodigoAutorizacion} - ${row.Concepto}</span>
+                                                    <span class="fs-5">${row.Concepto}</span>
                                                     </div>
                                                     <div
                                                     class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                    ${row.CodigoAutorizacion == "19B" ?
+                                                    ${row.CodigoAutorizacion == "11K" ?
                                                     `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
                                                     }
                                                     </div>
                                                 </div>
                                                 <div class="row g-0">
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                        <span class="fs-5">${cedulaFormateada}
-                                                            ${visualizarnit ?
-                                                            `- ${row.CuentaAsociado} `
-                                                            : ``}- ${row.NombrePersona}
+                                                        <span class="fs-5">${cedulaFormateada} -
+                                                            ${row.CuentaAsociado == null ? `N/A`:`${row.CuentaAsociado}`} - ${row.NombrePersona}
                                                             ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
                                                             (row.Score >= 650 ?
-                                                                `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span>` :
-                                                                (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span>` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span>`)
+                                                                `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span>` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
                                                             ) :
                                                             ``
                                                         }
