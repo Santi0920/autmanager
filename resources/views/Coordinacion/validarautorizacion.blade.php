@@ -315,7 +315,7 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
-                                                            '<h1>nada</h1>'
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>'
                                                         }
                                                     </div>
                                                     </div>
@@ -350,7 +350,7 @@
                                                             @csrf
                                                                         <div class="mb-3 w-100 " title="" id="id">
                                                                             <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" onChange="autorizacionesModalChange(${row.IDAutorizacion},'${row.Cedula}','${row.CuentaAsociado}', '${row.NombrePersona}', '${row.Convencion}', event)" required>
-                                                                                <option selected  class="fw-bold" value="${row.No + row.Letra}">**Concepto Actual** -> ${row.Concepto}</option>
+                                                                                <option selected  class="fw-bold" value="${row.No + row.Letra + 'actual'}">**Concepto Actual** -> ${row.Concepto}</option>
 
                                                                                 @include('layouts.optionmodal')
                                                                             </select>
@@ -384,8 +384,8 @@
                                                                 <div class="col-md-12 d-flex justify-content-start border p-2">
                                                                     <span class="fs-5">${cedulaFormateada}
                                                                         ${visualizarnit ?
-                                                                        `${row.CuentaAsociado == null ?`N/A`:`- ${row.CuentaAsociado}`} `
-                                                                        : `- ${row.CuentaAsociado == null ?`N/A`:``} `}- ${row.NombrePersona}
+                                                                        `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
+                                                                        : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
                                                                         ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
                                                                         (row.Score >= 650 ?
                                                                             `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span>` :

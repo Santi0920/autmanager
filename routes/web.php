@@ -52,6 +52,15 @@ Route::get('/filtrar', function () {
     return view('Director.filtrar');
 });
 
+Route::get('/autorizacion', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Director.mostrarautorizacion');
+});
+
+Route::post('/autorizacion', [DirectorController::class, 'buscarautorizacion'])
+->name('buscarautorizacion');
+
 
 //COORDINACION
 
