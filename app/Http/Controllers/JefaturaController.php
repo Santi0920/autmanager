@@ -215,7 +215,7 @@ class JefaturaController extends Controller
             $nombre = $nombres . ' '.$apellidos;
             $cuenta = $existingID[0]->CuentaAsociada;
             //Desembolso Creditos por Transferencia Electronica
-        }else if($tipoautorizacion == '11F'){
+        }else if($tipoautorizacion == '11L'){
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
@@ -287,28 +287,14 @@ class JefaturaController extends Controller
             $cedula = "805.004.034-9";
 
         }else{
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-            $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            $estado = $data['status'];
-            if ($estado == '200') {
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
+
+            //NOMBRE EMPRESA
+            $nombre = $request->nombre;
+
+            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
+
+
+            //NOMINA COOPSERP EMPLEADOS
 
 
         }
@@ -392,15 +378,7 @@ class JefaturaController extends Controller
         $cedula = $request->Cedulamodal;
         $validacion = $documento[0]->Validacion;
 
-        if($validacion == 1){
-            $estado='6';
-        }else{
-            $estado='2';
-        }
 
-
-
-        Log::info($estado);
         $nombre_documento = $documento[0]->DocumentoSoporte;
         if ($request->hasFile('Soporte')) {
             if (!empty($documento)) {
@@ -442,8 +420,18 @@ class JefaturaController extends Controller
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
 
         // Número y letra del concepto
-        $No = substr($tipoautorizacion, 0, 1);
-        $letra = substr($tipoautorizacion, 1, 1);
+        if (str_contains($tipoautorizacion, '1100')||str_contains($tipoautorizacion, '1200')||str_contains($tipoautorizacion, '1300')||str_contains($tipoautorizacion, '1400')||str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '1600') || str_contains($tipoautorizacion, '1700') || str_contains($tipoautorizacion, '1800') ||str_contains($tipoautorizacion, '1900') || str_contains($tipoautorizacion, '2000') || str_contains($tipoautorizacion, '2100') ||str_contains($tipoautorizacion, '2200') || str_contains($tipoautorizacion, '2150') ||  str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300') ||str_contains($tipoautorizacion, '2400')|| str_contains($tipoautorizacion, '2500') || str_contains($tipoautorizacion, '2600') || str_contains($tipoautorizacion, '2700')){
+            // Número y letra del concepto
+            $No = substr($tipoautorizacion, 0, 4);
+            $letra = substr($tipoautorizacion, 4, 1);
+            $actual = substr($tipoautorizacion, 5, 6);
+        } else {
+            // Número y letra del concepto
+            $No = substr($tipoautorizacion, 0, 2);
+            $letra = substr($tipoautorizacion, 2, 1);
+            $actual = substr($tipoautorizacion, 3, 6);
+        }
+
 
         $condicionTalento = in_array($tipoautorizacion, [
             "10A", "10B", "10C", "10D", "10E", "10F", "10G", "10H", "10I", "10J", "10K", "10L"
@@ -495,7 +483,14 @@ class JefaturaController extends Controller
 
 
         //ASOCIACION POR SCORE BAJO
-        if($tipoautorizacion == '11A'){
+        if($tipoautorizacion . $actual == $tipoautorizacion . 'actual'){
+            $existingAutorizacion = DB::select('SELECT * FROM autorizaciones WHERE ID = ?', [$id]);
+
+            $cedula = $existingAutorizacion[0]->Cedula;
+            $cuenta = $existingAutorizacion[0]->CuentaAsociado;
+            $convencion = $existingAutorizacion[0]->Convencion;
+            $nombre = $existingAutorizacion[0]->NombrePersona;
+        }else if($tipoautorizacion == '11A'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -503,7 +498,7 @@ class JefaturaController extends Controller
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
             }
             //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
             $idpersona = $existingID[0]->ID;
 
             $nombres = $existingID[0]->Nombre;
@@ -575,7 +570,7 @@ class JefaturaController extends Controller
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
             }
             //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$cedula]);
             $idpersona = $existingID[0]->ID;
 
             $nombres = $existingID[0]->Nombre;
@@ -583,7 +578,7 @@ class JefaturaController extends Controller
             $nombre = $nombres . ' '.$apellidos;
             $cuenta = $existingID[0]->CuentaAsociada;
             //Desembolso Creditos por Transferencia Electronica
-        }else if($tipoautorizacion == '11F'){
+        }else if($tipoautorizacion == '11L'){
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
@@ -659,6 +654,12 @@ class JefaturaController extends Controller
             $nombre = $request->Nombremodal;
         }
 
+        if($validacion == 1){
+            $estado='6';
+        }else{
+            $estado='2';
+        }
+
         // Si el archivo se proporcionó y se movió correctamente, actualiza la base de datos
         if (isset($nombre_archivo)) {
             // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
@@ -672,7 +673,7 @@ class JefaturaController extends Controller
                     'Convencion' => $convencion,
                     'NombrePersona' => $nombre,
                     'ID_Persona' => $idpersona,
-                    'CodigoAutorizacion' => $tipoautorizacion,
+                    'CodigoAutorizacion' => $No.$letra,
                     'DocumentoSoporte' => $nombre_archivo,
                     'Estado' => $estado,
                     'Solicitud' => 1,
@@ -695,7 +696,7 @@ class JefaturaController extends Controller
                     'Convencion' => $convencion,
                     'NombrePersona' => $nombre,
                     'ID_Persona' => $idpersona,
-                    'CodigoAutorizacion' => $tipoautorizacion,
+                    'CodigoAutorizacion' => $No.$letra,
                     'DocumentoSoporte' => $nombre_documento,
                     'Estado' => $estado,
                     'Solicitud' => 1,

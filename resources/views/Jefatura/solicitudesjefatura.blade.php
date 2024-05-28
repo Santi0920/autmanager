@@ -343,7 +343,7 @@
                                                         ${row.Estado == 0 || row.Estado == 5 ? `
                                                                         <div class="mb-3 w-100 " title="" id="id">
                                                                             <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" onChange="autorizacionesModalChange(${row.IDAutorizacion},'${row.Cedula}','${row.CuentaAsociado}', '${row.NombrePersona}', '${row.Convencion}', event)" required>
-                                                                                <option selected  class="fw-bold" value="${row.No + row.Letra}">**Concepto Actual** -> ${row.Concepto}</option>
+                                                                                <option selected  class="fw-bold" value="${row.No + row.Letra + 'actual'}">**Concepto Actual** -> ${row.Concepto}</option>
 
                                                                                 @include('layouts.optionmodal')
                                                                             </select>

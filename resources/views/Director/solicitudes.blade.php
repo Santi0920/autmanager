@@ -356,7 +356,7 @@
                                                         ${row.Estado == 0 || row.Estado == 5 ? `
                                                             <div class="mb-3 w-100 " title="" id="id">
                                                                 <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" onChange="autorizacionesModalChange(${row.IDAutorizacion},'${row.Cedula}','${row.CuentaAsociado}', '${row.NombrePersona}', '${row.Convencion}', event)" required>
-                                                                    <option selected  class="fw-bold" value="${row.No + row.Letra}">**Concepto Actual** -> ${row.Concepto}</option>
+                                                                    <option selected  class="fw-bold" value="${row.No + row.Letra + 'actual'}">**Concepto Actual** -> ${row.Concepto}</option>
 
                                                                     @include('layouts.optionmodal')
                                                                 </select>
@@ -383,8 +383,8 @@
                                                             <div class="col-md-12 d-flex justify-content-start border p-2">
                                                                 <span class="fs-5">${cedulaFormateada}
                                                                     ${visualizarnit ?
-                                                                    `${row.CuentaAsociado == null ?`N/A`:`- ${row.CuentaAsociado}`} `
-                                                                    : `- ${row.CuentaAsociado == null ?`N/A`:``} `}- ${row.NombrePersona}
+                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
+                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
                                                                     ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
                                                                     (row.Score >= 650 ?
                                                                         `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span>` :
