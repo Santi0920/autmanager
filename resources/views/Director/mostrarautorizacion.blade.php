@@ -3,27 +3,42 @@
 <body class="antialiased">
     @include('layouts/nav')
 
+
     <div class="col-11 mt-5 mb-5" style="margin-left:3.5%">
         <div class="container">
             <div class="row justify-content-center align-items-center m-0">
-               <div class="col-12 col-sm-10 col-md-8 p-0 shadow-lg border border-dark">
+               <div class="col-12 col-sm-10 col-md-9 p-0 shadow-lg border border-dark">
                   <div class="row m-0">
 
                      <div class="row g-0 text-center">
-                        <div class="col-sm-none col-md-none col-lg-2 bg-info">
+                        <div class="col-sm-none col-md-none col-lg-2 bg-primary-subtle">
 
                         </div>
                         <div class="col-md-12 col-lg-10">
                            <div class="row g-0 text-center ">
-                              <div class="col-md-7 col-lg-9 bg-info d-flex align-items-center justify-content-center p-3">
+                              <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-3">
                                  <span class="h2 fw-bold">SOLICITUD</span>
                               </div>
                               <div class="col-md-5 col-lg-3">
                                  <div class="row g-0 justify-content-center border p-2">
                                     <span class="h3 fw-bold mb-0 text-danger">No.{{ $id }}</span>
                                  </div>
-                                 <div class="row g-0 align-items-center justify-content-center bg-danger-subtle border p-2">
-                                    <span class="h5 fw-bold mb-0 text-danger">C-CORREGIR</span>
+                                 <div class="row g-0 align-items-center justify-content-center border p-2">
+                                    @if ($autorizacion->EstadoAutorizacion == 0)
+                                        <button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 1)
+                                        <button class="btn btn-success shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">V - VALIDADO</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 2)
+                                        <button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 3)
+                                        <button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 4)
+                                        <button class="btn btn-success  shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 5)
+                                        <button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 6)
+                                    <button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>
+                                    @endif
                                  </div>
                               </div>
                            </div>
@@ -32,95 +47,132 @@
 
                      <div class="row g-0 text-center">
                         <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
-                           <span class="h1 fw-bold mb-0">S</span>
+                            <span class="h1 fw-bold mb-0">S<br><span class="fs-5 fw-normal">SOLICITUD<span></span>
                         </div>
 
                         <div class="col-sm-12 col-md-12 col-lg-10">
                            <div class="row g-0 justify-content-start">
                               <div class="row g-0 row-cols-2 justify-content-center">
                                  <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                    <span>31 - CALI WALTER CRUZ BRICEÑO</span>
+                                    <span class="fs-5">{!! $autorizacion->NumAgencia . ' - ' . $autorizacion->NomAgencia . ' - <b>' . $autorizacion->SolicitadoPor . '</b>' !!}</span>
                                  </div>
                                  <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
-                                    <span class="mb-0">10 ABR 2024 3:32PM</span>
+                                    <span class="mb-0 fs-5">{{ $autorizacion->Fecha }}</span>
                                  </div>
                               </div>
                            </div>
                            <div class="row g-0 row-cols-2 d-flex justify-content-start">
                               <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                 <span class="">11B - ASOCIACION MAYOR A 90 DIAS</span>
+                                 <span class="fs-4">{{ $autorizacion->Concepto }}</span>
                               </div>
                               <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                 <!-- <span class="h1 fw-bold mb-0">1</span> -->
+
+                                @if ($autorizacion->CodigoAutorizacion == "11K")
+                                    <span class="fs-5 fw-bold mb-0">{{ $autorizacion->Convencion }}</span>
+                                @endif
                               </div>
                            </div>
                            <div class="row g-0">
-                              <div class="col-md-12 d-flex justify-content-start border p-2">
-                                 <span>1144029855 - 85504 - CAROLINA GONZALEZ GONZALEZ</span>
+                              <div class="col-md-12 d-flex justify-content-start border p-2 fs-5">
+                                 <span>{{ $autorizacion->CedulaAutorizacion }} -
+                                    @if ($autorizacion->CuentaAsociado == null)
+                                        N/A
+                                    @else
+                                        {{$autorizacion->CuentaAsociado}}
+                                    @endif
+                                    - {{$autorizacion->NombrePersona}}
+                                    @if ($autorizacion->CodigoAutorizacion == '11A' || $autorizacion->CodigoAutorizacion == '11D' || $autorizacion->CodigoAutorizacion == '11L')
+                                        @if ($autorizacion->Score >= 650)
+                                            - <span class="badge badge-pill badge-danger bg-success text-light fw-bold fs-5">{{$autorizacion->Score}}</span> - {!! $estado !!}
+
+                                        @elseif ($autorizacion->Score== 'S/E')
+                                            - <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold fs-5">{{$autorizacion->Score}}</span> - {!! $estado !!}
+                                        @else
+                                            - <span class="badge badge-pill badge-danger bg-danger text-light fw-bold fs-5">{{$autorizacion->Score}}</span> - {!! $estado !!}
+                                        @endif
+                                    @endif
+                                </span>
                               </div>
                            </div>
                            <div class="row g-0">
-                              <div class="col-sm-12 col-md-9 text-start border p-2">
-                                 <p class="mb-0">Se solicita vinculacion antes de los 90 dias</p>
-                                 <p class="mb-0">Fecha de Retiro: 05-FEB-2024</p>
-                                 <p class="mb-0">Fecha Dev. Apo: 28-FEB-2024</p>
-                                 <p class="mb-0">Sin Derecho a Bono</p>
+                              <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                    {{$autorizacion->Detalle}}
                               </div>
-                              <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-5">
-                                 <span class="h1 fw-bold mb-0">
-                                    PDF
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
-                                       fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                       stroke-linejoin="round" class="lucide lucide-file-text">
-                                       <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                                       <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                                       <path d="M10 9H8" />
-                                       <path d="M16 13H8" />
-                                       <path d="M16 17H8" />
-                                    </svg>
-                                 </span>
-                              </div>
+                            <a href="Storage/files/soporteautorizaciones/{{$autorizacion->DocumentoSoporte}}" class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" target="__blank">
+                                <span class="h1 fw-bold mb-0">
+                                    <img src="img/pdf.png" style="height: 4.5rem">
+                                </span>
+                            </a>
                            </div>
                         </div>
                      </div>
+                    @if($autorizacion->Validacion == 1 || $autorizacion->EstadoAutorizacion == 0 || $autorizacion->EstadoAutorizacion == 5)
+                        <div class="row g-0 text-center">
+                            @if ($autorizacion->Validacion == 0 && $autorizacion->EstadoAutorizacion == 0)
+                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
+                                    <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span>
+                                </div>
+                            @elseif ($autorizacion->Validacion == 1 || $autorizacion->EstadoAutorizacion == 5)
+                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
+                                    <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span>
+                                </div>
+                            @endif
+                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                    <div class="row g-0">
+                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                            <span class="fs-5 mb-0">{{$autorizacion->Coordinacion}} - <b>{{$autorizacion->ValidadoPor}}</b></span>
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                            <span class="mb-0 fs-5">{{$autorizacion->FechaValidacion}}</span>
+                                        </div>
+                                        <div class="text-start col-md-9 d-flex align-items-center border p-2 w-100">
+                                            <span class="fs-5 fw-bold mb-0">
+                                                @if($autorizacion->Observaciones == null)
+                                                    Ninguna.
+                                                @else
+                                                    {{$autorizacion->Observaciones}}
+                                                @endif
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    @else
+                    @endif
 
-                     <div class="row g-0 text-center">
-                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
-                           <span class="h1 fw-bold mb-0">V</span>
+                    @if($autorizacion->Aprobacion == 1 || $autorizacion->EstadoAutorizacion == 5)
+                        <div class="row g-0 text-center">
+                            @if ($autorizacion->EstadoAutorizacion == 4)
+                                <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
+                                    <span class="h1 fw-bold mb-0">A<br><span class="fs-5 fw-normal">APROBADO<span></span>
+                                </div>
+                            @elseif ($autorizacion->EstadoAutorizacion == 5)
+                                <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
+                                    <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
+                                </div>
+                            @endif
+                            <div class="col-md-12 col-lg-10">
+                                <div class="row g-0">
+                                    <div class="col-md-9 d-flex text-start border p-2">
+                                        <span class="h5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                    </div>
+                                    <div class="col-md-3 border p-2">
+                                        <span class="mb-0 fs-5">{{$autorizacion->FechaAprobacion}}</span>
+                                    </div>
+                                </div>
+                                <div class="row g-0 border text-start p-2">
+                                    <p class="mb-0 fw-semibold fs-5">
+                                        @if($autorizacion->ObservacionesGer == null)
+                                            Ninguna.
+                                        @else
+                                            {{$autorizacion->ObservacionesGer}}
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="col-sm-12 col-md-12 col-lg-10">
-                           <div class="row g-0">
-                              <div class="col-md-9 d-flex align-items-center justify-content-center border p-4">
-                                 <span class="h5 fw-bold mb-0">C3-CAROLINA GONZALEZ GONZALEZ</span>
-                              </div>
-                              <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
-                                 <span class="mb-0">10 ABR 2024 7:00PM</span>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-
-                     <div class="row g-0 text-center">
-                        <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
-                           <span class="h1 fw-bold mb-0">C</span>
-                        </div>
-                        <div class="col-md-12 col-lg-10">
-                           <div class="row g-0">
-                              <div class="col-md-9 d-flex align-items-center justify-content-center border p-2">
-                                 <span class="h5 fw-bold mb-0">DIRECCION GENERAL</span>
-                              </div>
-                              <div class="col-md-3 border p-2">
-                                 <span class="mb-0">10 ABR 2024</span>
-                                 <span class="mb-0">7:00PM</span>
-                              </div>
-                           </div>
-                           <div class="row g-0 border text-center p-2">
-                              <p class="mb-0 fw-semibold">Investigar por que se devolvio el 28 de Febrero si el Acta tiene
-                                 Fecha de 01 de Marzo 2024</p>
-                           </div>
-                        </div>
-                     </div>
+                    @else
+                    @endif
 
                   </div>
                </div>
@@ -183,6 +235,11 @@
                 inputNumero.value = valor.slice(0, -1);
             }
         }
+
+        function csesion() {
+                var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
+                return respuesta
+            }
     </script>
 
     <style>

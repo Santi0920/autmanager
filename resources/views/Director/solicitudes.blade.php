@@ -387,8 +387,8 @@
                                                                     : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
                                                                     ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
                                                                     (row.Score >= 650 ?
-                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span>` :
-                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span>` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span>`)
+                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
                                                                     ) :
                                                                     ``
                                                                 }
@@ -546,8 +546,11 @@
                                                             <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
                                                         </div>
                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
-                                                        <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
                                                         </div>
+                                                        <div class="col-md-12 col-lg-10 w-100">
+                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones == null ? `Ninguna.`:`${row.Observaciones}`}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>` : ``}
@@ -580,12 +583,8 @@
                                                             <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
                                                         </div>
                                                     </div>
-                                                    ${row.Estado == 5 || row.Estado ==3 ?
-                                                        `<div class="row g-0 border text-start p-2">
-                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer}</p>
-                                                        </div>`:
-                                                            ``
-                                                        }
+                                                    <div class="row g-0 border text-start p-2">
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer}</p>
                                                     </div>
                                                 </div>`:``
                                         }

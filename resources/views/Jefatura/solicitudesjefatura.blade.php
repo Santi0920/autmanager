@@ -372,8 +372,8 @@
                                                                         : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
                                                                         ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
                                                                         (row.Score >= 650 ?
-                                                                            `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span>` :
-                                                                            (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span>` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span>`)
+                                                                            `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                            (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
                                                                         ) :
                                                                         ``
                                                                     }

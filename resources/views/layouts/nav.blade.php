@@ -67,8 +67,8 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         @if (auth()->user()->rol == 'Consultante')
                             <li><a class="dropdown-item fw-bold" href="solicitudes">Solicitar Autorización</a></li>
-                            {{-- <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li> --}}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="#">Consultar Autorización</a></li>
                         @elseif (auth()->user()->rol == 'Gerencia')
                             <li><a class="dropdown-item fw-bold" href="aprobar">Gerencia</a></li>
                             <li><hr class="dropdown-divider"></li>
