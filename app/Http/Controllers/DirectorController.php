@@ -380,9 +380,6 @@ class DirectorController extends Controller
         $cedula = $request->Cedulamodal;
         $validacion = $documento[0]->Validacion;
 
-
-
-
         $nombre_documento = $documento[0]->DocumentoSoporte;
         if ($request->hasFile('Soporte')) {
             if (!empty($documento)) {
@@ -661,7 +658,7 @@ class DirectorController extends Controller
         }
 
         if($validacion == 1){
-            $estado='6';
+            $estado='2';
         }else{
             $estado='2';
         }
@@ -723,13 +720,32 @@ class DirectorController extends Controller
     public function buscarautorizacion(Request $request){
         {
             $id = $request->idautorizacion;
-            $autorizacion = DB::select("SELECT * FROM autorizaciones WHERE ID = $id");
+            $autorizacion = DB::table('autorizaciones')
+                ->join('persona', 'autorizaciones.ID_Persona', '=', 'persona.ID')
+                ->join('concepto_autorizaciones', 'autorizaciones.ID_Concepto', '=', 'concepto_autorizaciones.ID')
+                ->join('documentosintesis', 'persona.ID', '=', 'documentosintesis.ID_Persona')
+                ->select('autorizaciones.*', 'autorizaciones.Cedula as CedulaAutorizacion', 'autorizaciones.Estado as EstadoAutorizacion', 'persona.Cedula as CedulaPersona', 'persona.*' , 'documentosintesis.*', 'concepto_autorizaciones.*')
+                ->where('autorizaciones.ID', $id)
+                ->first();
+            if(!empty($autorizacion)){
+                $fechaInsercion = Carbon::parse($autorizacion->FechaInsercion);
+                $fechaActual = Carbon::now();
+                $diferenciaDias = $fechaActual->diffInDays($fechaInsercion);
 
+                // Definir el estado según la diferencia en días
+                if ($diferenciaDias > 179) {
+                    $estado = '<span class="fs-2">⚪⚪🔴</span>';
+                } elseif ($diferenciaDias > 169) {
+                    $estado = '<span class="fs-2">⚪🟡⚪</span>';
+                } else {
+                    $estado = '<span class="fs-2">🟢⚪⚪</span>';
+                }
+            }
 
             if(empty($autorizacion)){
                 return back()->with("incorrecto", "Autorización No.$id, NO EXISTE!");
             }else{
-                return view('Director/mostrarautorizacion', ['id' => $id,'autorizacion' => $autorizacion]);
+                return view('Director/mostrarautorizacion', ['id' => $id,'autorizacion' => $autorizacion, 'estado' => $estado]);
             }
         }
     }

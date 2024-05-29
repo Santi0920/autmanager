@@ -655,7 +655,7 @@ class JefaturaController extends Controller
         }
 
         if($validacion == 1){
-            $estado='6';
+            $estado='2';
         }else{
             $estado='2';
         }
