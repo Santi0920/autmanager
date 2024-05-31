@@ -52,6 +52,25 @@ class GerenciaController extends Controller
                 ]);
             }
 
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionGerencia', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id . ' - '. $estadoautorizacion,
+            null,
+            $ip
+        ]);
+
 
 
             return response()->json(['success' => true]);
@@ -135,6 +154,25 @@ class GerenciaController extends Controller
                     'FechaValidacion' => $fechaStringfechadeSolicitud
                 ]);
         }
+
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionCoordinacion9', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id . ' - '. $estadoautorizacion,
+            null,
+            $ip
+        ]);
 
 
 

@@ -238,11 +238,14 @@
                         const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
 
                         // Verificar si la diferencia supera los 180 días
-                        const estado = diferenciaDias > 179
-                        ? ` <span class="fs-2">⚪⚪🔴</span>`
-                        : diferenciaDias > 169
-                            ? ` <span class="fs-2">⚪🟡⚪</span>`
-                            : ` <span class="fs-2">🟢⚪⚪</span>`;
+                        const estado = fechainsercion == null || fechainsercion === undefined
+                        ? `<span class="fs-2">⚪⚪⚪</span>`
+                        : diferenciaDias > 179
+                            ? `<span class="fs-2">⚪⚪🔴</span>`
+                            : diferenciaDias > 169
+                                ? `<span class="fs-2">⚪🟡⚪</span>`
+                                : `<span class="fs-2">🟢⚪⚪</span>`;
+
 
                         const dia = fechaInsercionDate.getDate();
                         const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
@@ -370,7 +373,7 @@
                                                                         ${visualizarnit ?
                                                                         `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
                                                                         : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                        ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
+                                                                        ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
                                                                         (row.Score >= 650 ?
                                                                             `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                             (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
@@ -384,8 +387,17 @@
                                                     `
                                                             <div class="row g-0">
                                                                 <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
-                                                                    <span class="fs-5 fw-bold">${row.Concepto} -
-                                                                                @include('layouts.optionvercodigo')
+                                                                    <span class="fs-5">${cedulaFormateada}
+                                                                    ${visualizarnit ?
+                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
+                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
+                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
+                                                                    (row.Score >= 650 ?
+                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
+                                                                    ) :
+                                                                    ``
+                                                                    }
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -594,12 +606,10 @@
                                                             <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
                                                         </div>
                                                     </div>
-                                                    ${row.Estado == 5 || row.Estado ==3 ?
-                                                        `<div class="row g-0 border text-start p-2">
-                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer}</p>
-                                                        </div>`:
-                                                        ``
-                                                    }
+                                                    <div class="row g-0 border text-start p-2">
+                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ? 'Ninguna.' : row.ObservacionesGer}</p>
+                                                    </div>
+
                                                 </div>
                                             </div>`:``
                                         }

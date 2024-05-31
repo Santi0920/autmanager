@@ -96,7 +96,7 @@
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datager.solicitudes') }}",
             "order": [
-                [0, 'desc']
+                [0, 'asc']
             ],
             scrollY: 420,
             "columns": [{
@@ -194,11 +194,13 @@
                         // Convertir la diferencia de milisegundos a días
                         const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
 
-                        const estado = diferenciaDias > 179
-                        ? ` <span class="fs-2">⚪⚪🔴</span>`
-                        : diferenciaDias > 169
-                            ? ` <span class="fs-2">⚪🟡⚪</span>`
-                            : ` <span class="fs-2">🟢⚪⚪</span>`;
+                        const estado = fechainsercion == null || fechainsercion === undefined
+                        ? `<span class="fs-2">⚪⚪⚪</span>`
+                        : diferenciaDias > 179
+                            ? `<span class="fs-2">⚪⚪🔴</span>`
+                            : diferenciaDias > 169
+                                ? `<span class="fs-2">⚪🟡⚪</span>`
+                                : `<span class="fs-2">🟢⚪⚪</span>`;
 
 
                         const dia = fechaInsercionDate.getDate();
@@ -309,7 +311,7 @@
                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
                                                         <span class="fs-5">${cedulaFormateada} -
                                                             ${row.CuentaAsociado == null ? `N/A`:`${row.CuentaAsociado}`} - ${row.NombrePersona}
-                                                            ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
+                                                            ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
                                                             (row.Score >= 650 ?
                                                                 `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                 (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span>` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
@@ -360,7 +362,7 @@
                                                                     <div class="row g-0 border ">
 
                                                                         <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
-                                                                            <span class=" fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
+                                                                            <span class="fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
                                                                         </div>
                                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-3 ">
                                                                             <span class="mb-0 fs-5">${row.FechaValidacion}</span>
@@ -371,7 +373,7 @@
                                                                     </div>
                                                                     <div class="row g-0">
 
-                                                                            <div class="text-start fs-5 col-md-12 d-flex border p-3 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                                            <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
                                                                                 <span>${row.Observaciones == null ?
                                                                                 `Ninguna.`:`${row.Observaciones}`
                                                                                 }</span>
@@ -399,7 +401,7 @@
                                                 </div>
                                                 <div class="col-md-12 col-lg-10">
                                                     <div class="row g-0">
-                                                        <div class="col-md-9 d-flex text-start border p-3">
+                                                        <div class="col-md-9 d-flex text-start border p-2">
                                                             <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
                                                         </div>
                                                         <div class="col-md-3 border p-2">
@@ -407,7 +409,7 @@
                                                         </div>
                                                     </div>
 
-                                                        <input class="row g-0 border text-start p-4 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ?``:`value="${row.ObservacionesGer}"`}>
+                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ?``:`value="${row.ObservacionesGer}"`}>
                                                         </input>
 
                                                 </div>

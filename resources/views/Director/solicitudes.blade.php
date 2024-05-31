@@ -189,7 +189,7 @@
                             // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
                             if (row.Estado == 0) {
                                 var Estado =
-                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>';
+                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>CORREGIR</div>';
                             } else if (row.Estado == 1 || row.Estado == 2) {
                                 var Estado =
                                     `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
@@ -251,11 +251,14 @@
                             const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
 
                             // Verificar si la diferencia supera los 180 días
-                            const estado = diferenciaDias > 179 ?
-                                ` <span class="fs-2">⚪⚪🔴</span>` :
-                                diferenciaDias > 169 ?
-                                ` <span class="fs-2">⚪🟡⚪</span>` :
-                                ` <span class="fs-2">🟢⚪⚪</span>`;
+                            const estado = fechainsercion == null || fechainsercion === undefined
+                            ? `<span class="fs-2">⚪⚪⚪</span>`
+                            : diferenciaDias > 179
+                                ? `<span class="fs-2">⚪⚪🔴</span>`
+                                : diferenciaDias > 169
+                                    ? `<span class="fs-2">⚪🟡⚪</span>`
+                                    : `<span class="fs-2">🟢⚪⚪</span>`;
+
 
                             const dia = fechaInsercionDate.getDate();
                             const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
@@ -385,13 +388,13 @@
                                                                     ${visualizarnit ?
                                                                     `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
                                                                     : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
+                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
                                                                     (row.Score >= 650 ?
                                                                         `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                         (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
                                                                     ) :
                                                                     ``
-                                                                }
+                                                                    }
                                                                     </span>
                                                             </div>
                                                         </div>
@@ -399,8 +402,17 @@
                                                     `
                                                         <div class="row g-0">
                                                             <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
-                                                                <span class="fs-5 fw-bold">${row.Concepto} -
-                                                                            @include('layouts.optionvercodigo')
+                                                                <span class="fs-5">${cedulaFormateada}
+                                                                    ${visualizarnit ?
+                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
+                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
+                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
+                                                                    (row.Score >= 650 ?
+                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
+                                                                    ) :
+                                                                    ``
+                                                                    }
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -506,17 +518,16 @@
                                             </div>`:``
                                             }
 
-                                            ${row.Aprobacion != 1 ?
-                                                (row.Estado == 3 && row.Validacion == 1 ?
-                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
-                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                            ${row.Aprobacion != 1 ? (
+                                                row.Estado == 3 && row.Validacion == 1 ? `
+                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
                                                     </div>` :
-                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
-                                                    </div>`
-                                                    ) :
-                                                        ``
-                                                    }
+                                                row.Estado == 1 && row.Validacion == 1 ? `
+                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE</span></span>
+                                                    </div>` : ''
+                                            ) : ''}
 
 
 
@@ -530,11 +541,7 @@
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
                                                 <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
                                             </div>`:
-                                            row.Validacion == 1 && row.Estado == 3 ?
-                                            `<div
-                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-${row.Validacion == 1 ?`success`:`danger`}-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                <span class="h1 fw-bold mb-0">${row.Validacion == 1 ?`V`:`R`}<br><span class="fs-5 fw-normal">VALIDADO<span></span>
-                                            </div>`:
+
                                             ``
                                             }
 
@@ -555,7 +562,7 @@
                                                 </div>
                                             </div>` : ``}
 
-                                        ${row.Aprobacion == 1 ?
+                                        ${row.Aprobacion == 1 || row.Estado == 5 ?
                                             `<div class="row g-0 text-center">
                                                 ${row.Estado == 4 ?
                                                 `<div

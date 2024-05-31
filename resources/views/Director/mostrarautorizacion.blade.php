@@ -3,7 +3,6 @@
 <body class="antialiased">
     @include('layouts/nav')
 
-
     <div class="col-11 mt-5 mb-5" style="margin-left:3.5%">
         <div class="container">
             <div class="row justify-content-center align-items-center m-0">
@@ -12,7 +11,7 @@
 
                      <div class="row g-0 text-center">
                         <div class="col-sm-none col-md-none col-lg-2 bg-primary-subtle">
-
+                            <a class="" href="filtrar"><i class="mt-5 fa-solid fa-xmark fs-2 text-dark" title="REGRESAR"></i></a>
                         </div>
                         <div class="col-md-12 col-lg-10">
                            <div class="row g-0 text-center ">
@@ -63,7 +62,7 @@
                            </div>
                            <div class="row g-0 row-cols-2 d-flex justify-content-start">
                               <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                 <span class="fs-4">{{ $autorizacion->Concepto }}</span>
+                                 <span class="fs-5">{{ $autorizacion->Concepto }}</span>
                               </div>
                               <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
 
@@ -81,23 +80,24 @@
                                         {{$autorizacion->CuentaAsociado}}
                                     @endif
                                     - {{$autorizacion->NombrePersona}}
-                                    @if ($autorizacion->CodigoAutorizacion == '11A' || $autorizacion->CodigoAutorizacion == '11D' || $autorizacion->CodigoAutorizacion == '11L')
-                                        @if ($autorizacion->Score >= 650)
-                                            - <span class="badge badge-pill badge-danger bg-success text-light fw-bold fs-5">{{$autorizacion->Score}}</span> - {!! $estado !!}
-
-                                        @elseif ($autorizacion->Score== 'S/E')
-                                            - <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold fs-5">{{$autorizacion->Score}}</span> - {!! $estado !!}
-                                        @else
-                                            - <span class="badge badge-pill badge-danger bg-danger text-light fw-bold fs-5">{{$autorizacion->Score}}</span> - {!! $estado !!}
+                                    @if (in_array($autorizacion->CodigoAutorizacion, ['11A', '11D', '11L']))
+                                        @if ($autorizacion->Score == 'N/A')
+                                            - <span class="badge badge-pill badge-danger bg-warning text-light fw-bold fs-5">{{ $autorizacion->Score }}</span> - {!! $estado !!}
+                                        @elseif ($autorizacion->Score == 'S/E')
+                                            - <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold fs-5">{{ $autorizacion->Score }}</span> - {!! $estado !!}
+                                        @elseif ($autorizacion->Score >= 650)
+                                            - <span class="badge badge-pill badge-danger bg-success text-light fw-bold fs-5">{{ $autorizacion->Score }}</span> - {!! $estado !!}
+                                        @elseif ($autorizacion->Score < 650)
+                                        - <span class="badge badge-pill badge-danger bg-danger text-light fw-bold fs-5">{{ $autorizacion->Score }}</span> - {!! $estado !!}
                                         @endif
                                     @endif
                                 </span>
                               </div>
                            </div>
                            <div class="row g-0">
-                              <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                <div class="col-sm-12 col-md-9 text-start border p-2 fs-5" style="max-width: 100%; overflow: auto;">
                                     {{$autorizacion->Detalle}}
-                              </div>
+                                </div>
                             <a href="Storage/files/soporteautorizaciones/{{$autorizacion->DocumentoSoporte}}" class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" target="__blank">
                                 <span class="h1 fw-bold mb-0">
                                     <img src="img/pdf.png" style="height: 4.5rem">
@@ -106,7 +106,8 @@
                            </div>
                         </div>
                      </div>
-                    @if($autorizacion->Validacion == 1 || $autorizacion->EstadoAutorizacion == 0 || $autorizacion->EstadoAutorizacion == 5)
+                     {{-- estado 6 es remitido a gerencia pero SOLO APLICA PARA COORDINADORES --}}
+                    @if($autorizacion->EstadoAutorizacion != 6 && ($autorizacion->Validacion == 1 || $autorizacion->EstadoAutorizacion == 0 || $autorizacion->EstadoAutorizacion == 5))
                         <div class="row g-0 text-center">
                             @if ($autorizacion->Validacion == 0 && $autorizacion->EstadoAutorizacion == 0)
                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">

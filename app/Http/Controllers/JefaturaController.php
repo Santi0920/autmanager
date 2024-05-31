@@ -199,7 +199,7 @@ class JefaturaController extends Controller
             }
 
         //AUTORIZACION POR CREDITO SCORE BAJO
-        }else if($tipoautorizacion == '11D'){
+        }else if($tipoautorizacion == '11D' || $tipoautorizacion == '11L'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -294,7 +294,28 @@ class JefaturaController extends Controller
             //Y LA CEDULA LA ESTA TOMANDO COMO NIT
 
 
-            //NOMINA COOPSERP EMPLEADOS
+            $attempts = 0;
+            $maxAttempts = 3; // INTENTOS MÁXIMOS
+            $retryDelay = 500; // Milisegundos
+
+            do {
+                try {
+                    $response = Http::get($url . 'nombre/' . $cedula);
+                    $data = $response->json();
+                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                    break;
+                } catch (\Exception $e) {
+                    $attempts++;
+                    usleep($retryDelay * 1000);
+                }
+            } while ($attempts < $maxAttempts);
+            if(!empty($data['status'])){
+                if ($data['status'] == '200') {
+                    $cuenta = $data['asociado']['CUENTA'];
+                }
+            }else{
+                $cuenta = null;
+            }
 
 
         }
@@ -330,6 +351,26 @@ class JefaturaController extends Controller
         if (!$file->move($dir, $newFilename)) {
             return back()->with("incorrecto", "¡Error al subir el archivo!");
         }
+
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $cedula,
+            null,
+            $ip
+        ]);
+
 
         //insercion
         $id_insertado = DB::table('autorizaciones')->insertGetId([
@@ -562,7 +603,7 @@ class JefaturaController extends Controller
             }
 
         //AUTORIZACION POR CREDITO SCORE BAJO
-        }else if($tipoautorizacion == '11D'){
+        }else if($tipoautorizacion == '11D' || $tipoautorizacion == '11L'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -652,6 +693,33 @@ class JefaturaController extends Controller
         }else{
             //NOMBRE EMPRESA
             $nombre = $request->Nombremodal;
+
+            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
+
+
+            $attempts = 0;
+            $maxAttempts = 3; // INTENTOS MÁXIMOS
+            $retryDelay = 500; // Milisegundos
+
+            do {
+                try {
+                    $response = Http::get($url . 'nombre/' . $cedula);
+                    $data = $response->json();
+                    // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                    break;
+                } catch (\Exception $e) {
+                    $attempts++;
+                    usleep($retryDelay * 1000);
+                }
+            } while ($attempts < $maxAttempts);
+            if(!empty($data['status'])){
+                if ($data['status'] == '200') {
+                    $cuenta = $data['asociado']['CUENTA'];
+                }
+            }else{
+                $cuenta = null;
+            }
+
         }
 
         if($validacion == 1){
@@ -659,6 +727,26 @@ class JefaturaController extends Controller
         }else{
             $estado='2';
         }
+
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id . ' '.$cedula,
+            null,
+            $ip
+        ]);
+
 
         // Si el archivo se proporcionó y se movió correctamente, actualiza la base de datos
         if (isset($nombre_archivo)) {

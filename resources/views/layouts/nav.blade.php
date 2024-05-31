@@ -68,15 +68,21 @@
                         @if (auth()->user()->rol == 'Consultante')
                             <li><a class="dropdown-item fw-bold" href="solicitudes">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="#">Consultar Autorización</a></li>
+                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                         @elseif (auth()->user()->rol == 'Gerencia')
                             <li><a class="dropdown-item fw-bold" href="aprobar">Gerencia</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="coordinacion9">Coordinación 9</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                         @elseif (auth()->user()->rol == 'Coordinacion')
-                            <li><a class="dropdown-item fw-bold" href="#">Proximamente...</a></li>
+                            <li><a class="dropdown-item fw-bold" href="validar">Solicitar Autorización</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                         @elseif (auth()->user()->rol == 'Jefatura')
-                            <li><a class="dropdown-item fw-bold" href="#">Proximamente...</a></li>
+                            <li><a class="dropdown-item fw-bold" href="solicitudesjefatura">Solicitar Autorización</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                         @endif
 
 

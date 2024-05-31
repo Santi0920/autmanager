@@ -96,7 +96,7 @@
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datagercoordi.solicitudes') }}",
             "order": [
-                [0, 'desc']
+                [0, 'asc']
             ],
             scrollY: 420,
             "columns": [{
@@ -205,11 +205,13 @@
                         const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
 
                         // Verificar si la diferencia supera los 180 días
-                        const estado = diferenciaDias > 179
-                        ? ` <span class="fs-2">⚪⚪🔴</span>`
-                        : diferenciaDias > 169
-                            ? ` <span class="fs-2">⚪🟡⚪</span>`
-                            : ` <span class="fs-2">🟢⚪⚪</span>`;
+                        const estado = fechainsercion == null || fechainsercion === undefined
+                        ? `<span class="fs-2">⚪⚪⚪</span>`
+                        : diferenciaDias > 179
+                            ? `<span class="fs-2">⚪⚪🔴</span>`
+                            : diferenciaDias > 169
+                                ? `<span class="fs-2">⚪🟡⚪</span>`
+                                : `<span class="fs-2">🟢⚪⚪</span>`;
 
                         const dia = fechaInsercionDate.getDate();
                         const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];

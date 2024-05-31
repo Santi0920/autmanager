@@ -31,6 +31,19 @@
         </div>
     @endif
 
+    @php
+        if (auth()->user() && auth()->user()->rol == 'Consultante'){
+            $href = "solicitudes";
+        }else if(auth()->user() && auth()->user()->rol == 'Coordinacion'){
+            $href = "validar";
+        }else if(auth()->user() && auth()->user()->rol == 'Gerencia'){
+            $href = "aprobar";
+        }else if(auth()->user() && auth()->user()->rol == 'Jefatura'){
+            $href = "solicitudesjefatura";
+        }
+
+    @endphp
+
     <div class="col-11" style="margin-left:3.5%">
         <div class="">
             <div class="" style="margin-top: 0px; margin-right: -14px;">
@@ -70,7 +83,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <a type="submit" class="btn btn-warning mt-3 border border-1 border-dark" style="font-size: 40px;" href="solicitudes"><i class="fa-solid fa-arrow-left"></i> ATRAS</a>
+                                    <a type="submit" class="btn btn-warning mt-3 border border-1 border-dark" style="font-size: 40px;" href="{{$href}}"><i class="fa-solid fa-arrow-left"></i> ATRAS</a>
                                     <button type="" class="btn btn-dark boton-buscar mt-3" style="font-size: 40px;">BUSCAR</button>
                                     <button type="submit" class="btn btn-dark boton-asd d-none mt-3" style="font-size: 40px;" onclick="buscar()">BUSCAR</button>
                                 </div>
