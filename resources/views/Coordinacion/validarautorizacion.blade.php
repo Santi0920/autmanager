@@ -182,7 +182,7 @@
                                     `<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>`
                             }  else if (row.Estado == 2) {
                                 var Estado =
-                                    `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">EN TRÁMITE</button>`
+                                    `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;"><span class="d-none">1</span>EN TRÁMITE</button>`
                             } else if (row.Estado == 3) {
                                 var Estado =
                                     '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
@@ -245,11 +245,14 @@
                                 const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
 
                                 // Verificar si la diferencia supera los 180 días
-                                const estado = diferenciaDias > 179
-                                ? ` <span class="fs-2">⚪⚪🔴</span>`
-                                : diferenciaDias > 169
-                                    ? ` <span class="fs-2">⚪🟡⚪</span>`
-                                    : ` <span class="fs-2">🟢⚪⚪</span>`;
+                                const estado = fechainsercion == null || fechainsercion === undefined
+                                ? `<span class="fs-2">⚪⚪⚪${fechainsercion}</span>`
+                                : diferenciaDias > 179
+                                    ? `<span class="fs-2">⚪⚪🔴</span>`
+                                    : diferenciaDias > 169
+                                        ? `<span class="fs-2">⚪🟡⚪</span>`
+                                        : `<span class="fs-2">🟢⚪⚪</span>`;
+
 
                                 const dia = fechaInsercionDate.getDate();
                                 const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
@@ -373,8 +376,17 @@
                                                     `
                                                             <div class="row g-0">
                                                                 <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
-                                                                    <span class="fs-5 fw-bold">${row.Concepto} -
-                                                                                @include('layouts.optionvercodigo')
+                                                                    <span class="fs-5">${cedulaFormateada}
+                                                                    ${visualizarnit ?
+                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
+                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
+                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
+                                                                    (row.Score >= 650 ?
+                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
+                                                                    ) :
+                                                                    ``
+                                                                    }
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -386,7 +398,7 @@
                                                                         ${visualizarnit ?
                                                                         `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
                                                                         : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                        ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D') ?
+                                                                        ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
                                                                         (row.Score >= 650 ?
                                                                             `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                             (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
@@ -525,7 +537,7 @@
                                     </form>`:``
                                     }
 
-                                        ${row.Aprobacion == 1 ?
+                                        ${row.Aprobacion == 1  || row.Estado == 5?
                                             `<div class="row g-0 text-center">
                                                 ${row.Estado == 4 ?
                                                 `<div
@@ -554,7 +566,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="row g-0 border text-start p-2">
-                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer}</p>
+                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ? 'Ninguna.':row.ObservacionesGer}</p>
                                                         </div>
 
                                                 </div>

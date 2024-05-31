@@ -42,7 +42,7 @@
                                             Sesión</h2>
 
                                         <div data-mdb-input-init class="form-outline mb-4">
-                                            <input type="email" id="form2Example17" name="email"
+                                            <input type="email" id="form2Example17" name="email" required
                                                 class="form-control form-control-lg" />
                                             <label class="form-label" for="form2Example17">Correo Electrónico</label>
                                         </div>

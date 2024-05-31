@@ -31,45 +31,46 @@ class CoordinacionController extends Controller
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
         if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 1") {
-            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
             WHERE (B.Solicitud = 1 AND B.NumAgencia IN (35,34, 36, 37, 38, 40, 41, 87, 93, 96, 'C1'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 2") {
-            $solicitudes = DB::select("
-            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
             WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C2'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 3") {
-            $solicitudes = DB::select("
-            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
             WHERE (B.Solicitud = 1 AND B.NumAgencia IN (32, 42, 47, 81, 82, 83, 85, 90, 94, 'C3'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 4") {
-            $solicitudes = DB::select("
-            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
             WHERE (B.Solicitud = 1 AND B.NumAgencia IN (44, 45, 48, 49, 74, 75, 84, 89, 91, 95, 97, 'C4'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 5") {
-            $solicitudes = DB::select("
-            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
             WHERE (B.Solicitud = 1 AND B.NumAgencia IN (13, 30, 31, 43, 68, 73, 76, 86, 'C5'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 9") {
-            $solicitudes = DB::select("
-            SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas
+            $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
             WHERE (B.Solicitud = 1 AND B.NumAgencia IN ('Jefatura'))");
         }
         return datatables()->of($solicitudes)->toJson();
@@ -251,7 +252,7 @@ class CoordinacionController extends Controller
             }
 
         //AUTORIZACION POR CREDITO SCORE BAJO
-        }else if($tipoautorizacion == '11D'){
+        }else if($tipoautorizacion == '11D' || $tipoautorizacion == '11L'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -346,7 +347,28 @@ class CoordinacionController extends Controller
             //Y LA CEDULA LA ESTA TOMANDO COMO NIT
 
 
-            //NOMINA COOPSERP EMPLEADOS
+            $attempts = 0;
+            $maxAttempts = 3; // INTENTOS MÁXIMOS
+            $retryDelay = 500; // Milisegundos
+
+            do {
+                try {
+                    $response = Http::get($url . 'nombre/' . $cedula);
+                    $data = $response->json();
+                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                    break;
+                } catch (\Exception $e) {
+                    $attempts++;
+                    usleep($retryDelay * 1000);
+                }
+            } while ($attempts < $maxAttempts);
+            if(!empty($data['status'])){
+                if ($data['status'] == '200') {
+                    $cuenta = $data['asociado']['CUENTA'];
+                }
+            }else{
+                $cuenta = null;
+            }
 
 
         }
@@ -384,6 +406,25 @@ class CoordinacionController extends Controller
         if (!$file->move($dir, $newFilename)) {
             return back()->withErrors(['message' => 'Error al subir el archivo.']);
         }
+
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoutorizacionCoordinador', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $cedula,
+            null,
+            $ip
+        ]);
 
 
         //insercion
@@ -445,6 +486,26 @@ class CoordinacionController extends Controller
 
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
+
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionCoordinador', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id . ' '. $estadoautorizacion,
+            null,
+            $ip
+        ]);
+
 
         if ($estadoautorizacion == '0' || $estadoautorizacion == '2' || $estadoautorizacion == '3') {
             $update = DB::table('autorizaciones')
@@ -666,7 +727,7 @@ class CoordinacionController extends Controller
             }
 
         //AUTORIZACION POR CREDITO SCORE BAJO
-        }else if($tipoautorizacion == '11D'){
+        }else if($tipoautorizacion == '11D'|| $tipoautorizacion == '11L'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -756,6 +817,33 @@ class CoordinacionController extends Controller
         }else{
             //NOMBRE EMPRESA
             $nombre = $request->Nombremodal;
+
+            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
+
+
+            $attempts = 0;
+            $maxAttempts = 3; // INTENTOS MÁXIMOS
+            $retryDelay = 500; // Milisegundos
+
+            do {
+                try {
+                    $response = Http::get($url . 'nombre/' . $cedula);
+                    $data = $response->json();
+                    // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                    break;
+                } catch (\Exception $e) {
+                    $attempts++;
+                    usleep($retryDelay * 1000);
+                }
+            } while ($attempts < $maxAttempts);
+            if(!empty($data['status'])){
+                if ($data['status'] == '200') {
+                    $cuenta = $data['asociado']['CUENTA'];
+                }
+            }else{
+                $cuenta = null;
+            }
+
         }
 
         if($validacion == 1){
@@ -763,6 +851,25 @@ class CoordinacionController extends Controller
         }else{
             $estado='2';
         }
+
+        //AUDITORIA
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ModificoAutorizacionCoordinador', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id,
+            null,
+            $ip
+        ]);
 
 
         // Si el archivo se proporcionó y se movió correctamente, actualiza la base de datos
