@@ -18,7 +18,7 @@
 <body>
     <section class="vh-100 shadow-lg"
         style="background: rgb(0,94,86);
-    background: linear-gradient(90deg, rgba(0,94,86,0.639093137254902) 0%, rgba(0,94,86,0.2189250700280112) 35%, rgba(0,0,0,0.4009978991596639) 100%);">
+    background: linear-gradient(90deg, #005e56a3 0%, rgba(0,94,86,0.2189250700280112) 35%, rgba(0,0,0,0.4009978991596639) 100%);">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col col-xl-10">

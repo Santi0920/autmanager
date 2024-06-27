@@ -29,6 +29,21 @@
             </script>
         </div>
     @endif
+
+    @error('message')
+        <div>
+        <script>
+        Swal.fire
+            ({
+                icon: 'error',
+                title: "Error al registrar!\n{{$message}}",
+                text: '',
+                confirmButtonColor: '#005E56'
+
+            });
+        </script>
+        </div>
+    @enderror
     <div class="container-fluid row p-4">
         <form action="{{ route('solicitar.autorizacioncoor') }}" class="col m-3" method="POST"
             enctype= "multipart/form-data" id="pagare">
@@ -222,7 +237,7 @@
                             if(condiciondenit){
                                 var cedulaFormateada = cedula;
                             }else{
-                                var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                                var cedulaFormateada = cedula;
 
                             }
 
@@ -246,7 +261,7 @@
 
                                 // Verificar si la diferencia supera los 180 días
                                 const estado = fechainsercion == null || fechainsercion === undefined
-                                ? `<span class="fs-2">⚪⚪⚪${fechainsercion}</span>`
+                                ? `<span class="fs-2">⚪⚪⚪</span>`
                                 : diferenciaDias > 179
                                     ? `<span class="fs-2">⚪⚪🔴</span>`
                                     : diferenciaDias > 169
@@ -458,6 +473,7 @@
                                                                     <p id="uploadMessage">Adjunta el archivo aquí!</p>
                                                                 </label>
                                                                 <input class="input" name="Soporte_${row.IDAutorizacion}" id="file" type="file" onchange="fileUploaded()" />
+                                                                <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${row.DocumentoSoporte}" />
                                                             </div>
                                                             </form>
                                                             ` :
@@ -622,8 +638,9 @@
                     }
                 },
                 "initComplete": function(settings, json) {
-                    var buttonsHtml = '<div class="custom-buttons">' +
+                    var buttonsHtml = '<div class="custom-buttons mb-2">' +
                         '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                        '<a href="filtrarconcepto" class="ms-2"><button id="btnT" class="custom-btn" title="Filtrar por concepto">Filtrar por Concepto</button></a>' +
                         //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
                         '</div>';
                     $(buttonsHtml).prependTo('.dataTables_filter');
@@ -653,6 +670,7 @@
             var Convencionmodal = $(`#Convencionmodal${id}`).val();
             var Detalle = $('textarea[name="Detalle"]').val();
             var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
+            var DocumentoSoporte = $(`#DocumentoSoporte_${id}`).val();
             console.log(Nombremodal);
 
             var formData = new FormData();
@@ -666,7 +684,9 @@
 
             // Verificar si hay un archivo adjunto
             if (Soporte) {
-                formData.append('Soporte', Soporte);
+            formData.append('Soporte', Soporte);
+            } else {
+                formData.append('Soporte', DocumentoSoporte);
             }
 
             Swal.fire({
@@ -1176,19 +1196,19 @@
             });
 
             function fileUploaded() {
-    // Obtiene el elemento input de tipo file
-    var fileInput = document.getElementById("file");
+        // Obtiene el elemento input de tipo file
+        var fileInput = document.getElementById("file");
 
-    // Obtiene el nombre del archivo
-    var fileName = "";
-    if (fileInput.files.length > 0) {
-        fileName = fileInput.files[0].name;
+        // Obtiene el nombre del archivo
+        var fileName = "";
+        if (fileInput.files.length > 0) {
+            fileName = fileInput.files[0].name;
+        }
+
+        // Muestra el mensaje de confirmación con el nombre del archivo
+        document.getElementById("uploadMessage").innerHTML = fileName + "' subido.";
+        document.getElementById("uploadMessage").style.display = "block";
     }
-
-    // Muestra el mensaje de confirmación con el nombre del archivo
-    document.getElementById("uploadMessage").innerHTML = fileName + "' subido.";
-    document.getElementById("uploadMessage").style.display = "block";
-}
         </script>
 
     </div>
@@ -1196,7 +1216,7 @@
     </div>
     <style>
 
-.input-group-text {
+            .input-group-text {
                 position: relative; /* Añade posicionamiento relativo */
             }
 

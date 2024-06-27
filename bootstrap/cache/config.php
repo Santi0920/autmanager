@@ -10,7 +10,7 @@
     'locale' => 'en',
     'fallback_locale' => 'en',
     'faker_locale' => 'en_US',
-    'key' => 'base64:wCfa9UIJSSZKdVbmS/cRxuxdxxO7P86MJMiYTygHJBs=',
+    'key' => 'base64:CjStZHmLSTiK0+Fu4Qmj+8g/a9iMCveruUuOimuDtMU=',
     'cipher' => 'AES-256-CBC',
     'maintenance' => 
     array (
@@ -807,9 +807,9 @@
     'cookie' => 'laravel_session',
     'path' => '/',
     'domain' => NULL,
-    'secure' => NULL,
+    'secure' => false,
     'http_only' => true,
-    'same_site' => 'lax',
+    'same_site' => NULL,
   ),
   'view' => 
   array (

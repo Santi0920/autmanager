@@ -29,6 +29,21 @@
             </script>
         </div>
     @endif
+
+    @error('message')
+        <div>
+        <script>
+        Swal.fire
+            ({
+                icon: 'error',
+                title: "Error al registrar!\n{{$message}}",
+                text: '',
+                confirmButtonColor: '#005E56'
+
+            });
+        </script>
+        </div>
+    @enderror
     <div class="container-fluid row p-4">
         <form action="{{ route('solicitar.autorizacionjef') }}" class="col m-3" method="POST"
             enctype= "multipart/form-data" id="pagare">
@@ -215,7 +230,7 @@
                             if(condiciondenit){
                                 var cedulaFormateada = cedula;
                             }else{
-                                var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                                var cedulaFormateada = cedula;
 
                             }
 
@@ -563,16 +578,20 @@
 
 
                                             <div class="col-sm-12 col-md-12 col-lg-10">
-                                                <div class="row g-0">
-                                                    <div class="text-start col-md-9 d-flex align-items-center border p-2">
-                                                        <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
-                                                    </div>
-                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
-                                                    <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                    <div class="row g-0">
+                                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
+                                                        </div>
+                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-10 w-100">
+                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones == null ? `Ninguna.`:`${row.Observaciones}`}
+                                                        </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>` : ``}
+                                            </div>` : ``}
 
 
 

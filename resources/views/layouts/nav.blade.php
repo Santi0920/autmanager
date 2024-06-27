@@ -75,6 +75,8 @@
                             <li><a class="dropdown-item fw-bold" href="coordinacion9">Coordinación 9</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="estadisticas">Estadísticas</a></li>
                         @elseif (auth()->user()->rol == 'Coordinacion')
                             <li><a class="dropdown-item fw-bold" href="validar">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>

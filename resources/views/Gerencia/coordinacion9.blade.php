@@ -118,7 +118,7 @@
                         data: 'CodigoAutorizacion',
                         render: function(data, type, row) {
                             var Codigo =
-                                `${row.Concepto}`
+                                `${row.Concepto}<div class="fw-bold text-primary">${row.NomAgencia} - ${row.SolicitadoPor}</div>`
 
                             return Codigo
                         },
@@ -182,7 +182,7 @@
                             if(condiciondenit){
                                 var cedulaFormateada = cedula;
                             }else{
-                                var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                                var cedulaFormateada = cedula;
 
                             }
 
