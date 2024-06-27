@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class GerenciaController extends Controller
 {
@@ -178,6 +179,236 @@ class GerenciaController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+
+    public function contarsolicitudes(Request $request)
+        {
+            $directorestramite = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 2)
+            ->get()
+            ->count();
+
+            $coordinadorestramite = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 6)
+            ->get()
+            ->count();
+
+            //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
+            $coordinadorestramitecorregir = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 3)
+            ->get()
+            ->count();
+
+            //sumatoria de todos los que estan en tramite
+            $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
+
+
+
+            $validadocoordinadores = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 1)
+            ->get()
+            ->count();
+
+
+            $rechazadogerencia = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 5)
+            ->get()
+            ->count();
+
+            $rechazadocoordinacion = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 0)
+            ->get()
+            ->count();
+
+            $rechazados = $rechazadocoordinacion + $rechazadogerencia;
+
+            $aprobadogerencia = DB::table('autorizaciones')
+            ->select('autorizaciones.Estado as EstadoAutorizacion')
+            ->where('autorizaciones.Estado', 4)
+            ->get()
+            ->count();
+
+            $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia;
+
+            $nombresAgencia = DB::table('autorizaciones')
+            ->select('NomAgencia')
+            ->distinct()
+            ->orderBy('NomAgencia', 'asc')
+            ->get();
+
+            $year = DB::table('autorizaciones')
+            ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->get();
+
+
+
+            //esto se hace con el fin de que se rellene los circulo de forma dinamica
+            $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
+            $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
+
+            $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
+            $decimalvalidados = round($porcentajevalidos, 2);
+
+            $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
+            $decimalrechazados = round($porcentajerechazados, 2);
+
+            $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
+            $decimalaprobados = round($porcentajeaprobados, 2);
+
+
+            return view('Gerencia/estadisticas', ['decimalaprobados' => $decimalaprobados, 'decimalrechazados' => $decimalrechazados, 'decimalvalidados' => $decimalvalidados, 'porcentajetramite' => $porcentaje_tramite_con_decimales, 'tramite' => $tramite, 'validadocoordinadores' => $validadocoordinadores, 'rechazados' => $rechazados, 'aprobadogerencia' => $aprobadogerencia, 'total' => $total, 'nombresAgencia' => $nombresAgencia, 'year' => $year]);
+
+        }
+
+
+    public function actualizardatos(Request $request)
+    {
+
+        $startDate = $request->start; // '2024-05-29'
+        $endDate = $request->end;     // '2024-05-28'
+
+
+        Log::info($startDate. ' '. $endDate. ' '.$request->agencia);
+
+        // Asegúrate de que las fechas estén en formato Y-m-d
+        $startDateFormatted = date('Y-m-d 00:00:00', strtotime($startDate));
+        $endDateFormatted = date('Y-m-d 23:59:59', strtotime($endDate));
+
+        $whererangosfecha = "
+        STR_TO_DATE(
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        REPLACE(
+                                            REPLACE(
+                                                REPLACE(
+                                                    REPLACE(
+                                                        REPLACE(Fecha, 'enero', 'January'),
+                                                        'febrero', 'February'
+                                                    ), 'marzo', 'March'
+                                                ), 'abril', 'April'
+                                            ), 'mayo', 'May'
+                                        ), 'junio', 'June'
+                                    ), 'julio', 'July'
+                                ), 'agosto', 'August'
+                            ), 'septiembre', 'September'
+                        ), 'octubre', 'October'
+                    ), 'noviembre', 'November'
+                ), 'diciembre', 'December'
+            ), '%M %d %Y-%H:%i:%s'
+        ) BETWEEN ? AND ?
+        ";
+
+        $directorestramite = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 2)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+
+        $coordinadorestramite = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 6)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+        //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
+        $coordinadorestramitecorregir = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 3)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+
+        //sumatoria de todos los que estan en tramite
+        $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
+
+
+
+        $validadocoordinadores = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 1)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+        $rechazadogerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 5)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+        $rechazadocoordinacion = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 0)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+        $rechazados = $rechazadocoordinacion + $rechazadogerencia;
+
+        $aprobadogerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 4)
+        ->where('autorizaciones.NomAgencia', $request->agencia)
+        ->whereRaw($whererangosfecha, [$startDateFormatted, $endDateFormatted])
+        ->get()
+        ->count();
+
+        $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia;
+
+
+
+        //esto se hace con el fin de que se rellene los circulo de forma dinamica
+        $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
+        $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
+
+        $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
+        $decimalvalidados = round($porcentajevalidos, 2);
+
+        $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
+        $decimalrechazados = round($porcentajerechazados, 2);
+
+        $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
+        $decimalaprobados = round($porcentajeaprobados, 2);
+
+
+        return response()->json([
+            'decimalaprobados' => $decimalaprobados,
+            'decimalrechazados' => $decimalrechazados,
+            'decimalvalidados' => $decimalvalidados,
+            'porcentaje_tramite' => $porcentaje_tramite_con_decimales,
+            'tramite' => $tramite,
+            'validadocoordinadores' => $validadocoordinadores,
+            'rechazados' => $rechazados,
+            'aprobadogerencia' => $aprobadogerencia,
+            'total' => $total,
+        ]);
+
+    }
+
 
 
 

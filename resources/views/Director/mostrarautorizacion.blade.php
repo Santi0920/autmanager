@@ -107,7 +107,7 @@
                         </div>
                      </div>
                      {{-- estado 6 es remitido a gerencia pero SOLO APLICA PARA COORDINADORES --}}
-                    @if($autorizacion->EstadoAutorizacion != 6 && ($autorizacion->Validacion == 1 || $autorizacion->EstadoAutorizacion == 0 || $autorizacion->EstadoAutorizacion == 5))
+                    @if(($autorizacion->NumAgencia != 'C1' && $autorizacion->NumAgencia != 'C2' && $autorizacion->NumAgencia != 'C3' && $autorizacion->NumAgencia != 'C4' && $autorizacion->NumAgencia != 'C5') && ($autorizacion->Validacion == 1 || $autorizacion->EstadoAutorizacion == 0 || $autorizacion->EstadoAutorizacion == 5))
                         <div class="row g-0 text-center">
                             @if ($autorizacion->Validacion == 0 && $autorizacion->EstadoAutorizacion == 0)
                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
@@ -128,10 +128,10 @@
                                         </div>
                                         <div class="text-start col-md-9 d-flex align-items-center border p-2 w-100">
                                             <span class="fs-5 fw-bold mb-0">
-                                                @if($autorizacion->Observaciones == null)
-                                                    Ninguna.
-                                                @else
+                                                @if($autorizacion->Observaciones !== null)
                                                     {{$autorizacion->Observaciones}}
+                                                @else
+                                                    Ninguna.
                                                 @endif
                                             </span>
                                         </div>

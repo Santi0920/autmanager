@@ -231,6 +231,9 @@ class JefaturaController extends Controller
                     usleep($retryDelay * 1000);
                 }
             } while ($attempts < $maxAttempts);
+            //traer el ID
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
             $estado = $data['status'];
             if ($estado == '200') {
                 $nombre = $data['asociado']['NOMBRES'];
@@ -329,7 +332,7 @@ class JefaturaController extends Controller
         $filename = $file->getClientOriginalName();
 
         // Verificar si el archivo es PDF
-        if ($file->getClientOriginalExtension() !== 'pdf') {
+        if ($file->getClientOriginalExtension() !== 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
             return back()->with("incorrecto", "¡Solo se pueden subir archivos PDF!");
         }
 
@@ -421,6 +424,7 @@ class JefaturaController extends Controller
 
 
         $nombre_documento = $documento[0]->DocumentoSoporte;
+        $nombre_archivo = $documento[0]->DocumentoSoporte;
         if ($request->hasFile('Soporte')) {
             if (!empty($documento)) {
 
@@ -442,7 +446,7 @@ class JefaturaController extends Controller
                 }
             } else {
                 // Si no existe un documento en la base de datos, asignar un nombre basado en la cédula
-                $nombre_archivo = $nombre_documento;
+                $nombre_archivo = "Soporte-" . $cedula . ".pdf";
             }
         }
 
@@ -636,6 +640,9 @@ class JefaturaController extends Controller
                 }
             } while ($attempts < $maxAttempts);
             $estado = $data['status'];
+            //traer el ID
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
             if ($estado == '200') {
                 $nombre = $data['asociado']['NOMBRES'];
                 $cuenta = $data['asociado']['CUENTA'];
@@ -765,6 +772,7 @@ class JefaturaController extends Controller
                     'DocumentoSoporte' => $nombre_archivo,
                     'Estado' => $estado,
                     'Solicitud' => 1,
+                    'Validacion' => 0,
                     'Aprobacion' => 0,
                     'ObservacionesGer' => null,
                     'Observaciones' => null,
@@ -785,9 +793,10 @@ class JefaturaController extends Controller
                     'NombrePersona' => $nombre,
                     'ID_Persona' => $idpersona,
                     'CodigoAutorizacion' => $No.$letra,
-                    'DocumentoSoporte' => $nombre_documento,
+                    'DocumentoSoporte' => $nombre_archivo,
                     'Estado' => $estado,
                     'Solicitud' => 1,
+                    'Validacion' => 0,
                     'Aprobacion' => 0,
                     'ObservacionesGer' => null,
                     'Observaciones' => null,

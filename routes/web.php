@@ -80,6 +80,16 @@ Route::middleware('auth.coord')->group(function () {
     Route::post('/validarautorizacion/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatevalidarcoor.autorizacion');
 
     Route::post('/validar/actualizar-{id}', [CoordinacionController::class, 'actualizardetalle'])->name('updatecoor.autorizacion');
+
+    Route::get('/filtrarconcepto', function () {
+        Cookie::forget('laravel_session');
+        Cache::flush();
+        return view('Coordinacion/filtrarconcepto');
+    });
+
+    Route::get('filtrarconcepto/datatable', [CoordinacionController::class, 'filtrarconcepto'])->name('datacoor.filtrarconcepto');
+
+    Route::get('/filtrarconcepto', [CoordinacionController::class, 'data2']);
 });
 
 //GERENCIA
@@ -106,6 +116,26 @@ Route::get('coordinacion9', [GerenciaController::class, 'data2'])->middleware('a
 Route::get('coordinacion9/datatable', [GerenciaController::class, 'solicitudescoordinacion'])->name('datagercoordi.solicitudes')->middleware('auth.gerencia');
 
 Route::post('coordinacion9/actualizar-{id}', [GerenciaController::class, 'validarAutorizacioncoordinacion9'])->name('updategercoordi.autorizacion')->middleware('auth.gerencia');
+
+Route::get('/estadisticas', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/estadisticas');
+})->middleware('auth.gerencia');
+
+Route::get('/estadisticas', [GerenciaController::class, 'contarsolicitudes'])
+->name('contarsolicitudes');
+
+Route::get('/estadisticas/actualizar-datos', [GerenciaController::class, 'actualizardatos'])
+->name('actualizardatos');
+
+Route::get('/estadisticasindividual', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/estadisticaindividual');
+})->middleware('auth.gerencia');
+
+
 
 
 //JEFATURA

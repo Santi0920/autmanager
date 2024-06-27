@@ -24,8 +24,6 @@ return array(
     '35a6ad97d21e794e7e22a17d806652e4' => $vendorDir . '/nunomaduro/termwind/src/Functions.php',
     '801c31d8ed748cfa537fa45402288c95' => $vendorDir . '/psy/psysh/src/functions.php',
     'e39a8b23c42d4e1452234d762b03835a' => $vendorDir . '/ramsey/uuid/src/functions.php',
-    '601bf5295f4f86b2c9aa6885006f8ce5' => $vendorDir . '/werneckbh/qr-code/src/helpers/constants.php',
-    '550b6372332081faf3fe4980a1884cf2' => $vendorDir . '/werneckbh/qr-code/src/helpers/functions.php',
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     '63a825c721352937ef5e35d85859b99f' => $vendorDir . '/irazasyed/larasupport/helpers.php',
     '265b4faa2b3a9766332744949e83bf97' => $vendorDir . '/laravel/framework/src/Illuminate/Collections/helpers.php',

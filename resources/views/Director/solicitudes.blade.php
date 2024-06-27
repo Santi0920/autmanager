@@ -29,6 +29,21 @@
             </script>
         </div>
     @endif
+
+    @error('message')
+        <div>
+        <script>
+        Swal.fire
+            ({
+                icon: 'error',
+                title: "Error al registrar!\n{{$message}}",
+                text: '',
+                confirmButtonColor: '#005E56'
+
+            });
+        </script>
+        </div>
+    @enderror
     <div class="container-fluid row p-4">
         <form action="{{ route('solicitar.autorizacion') }}" class="col m-3" method="POST" enctype= "multipart/form-data"
             id="pagare">
@@ -228,7 +243,7 @@
 
                                 var cedulaFormateada = cedula;
                             } else {
-                                var cedulaFormateada = new Intl.NumberFormat().format(cedula);
+                                var cedulaFormateada = cedula;
 
                             }
 
@@ -465,7 +480,7 @@
                                                                     </span>
                                                                     <p id="uploadMessage">Adjunta el archivo aquí!</p>
                                                                 </label>
-                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file" type="file" onchange="fileUploaded()" />
+                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file" type="file" onchange="fileUploaded()" />${row.DocumentoSoporte}
                                                             </div>
                                                 </form>
                                                                                                                             ` :

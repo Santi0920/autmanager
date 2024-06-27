@@ -145,7 +145,8 @@ class DirectorController extends Controller
             $nombre = $nombres . ' '.$apellidos;
 
         //ASOCIACION < 90 DIAS ENTREGAR BONO
-        }else if($tipoautorizacion == '11B'){
+        }
+        else if($tipoautorizacion == '11B'){
             $cuenta = $request->Cuenta;
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
@@ -201,7 +202,8 @@ class DirectorController extends Controller
             }
 
         //AUTORIZACION POR CREDITO SCORE BAJO
-        }else if($tipoautorizacion == '11D' || $tipoautorizacion == '11L'){
+        }
+        else if($tipoautorizacion == '11D'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -233,6 +235,10 @@ class DirectorController extends Controller
                     usleep($retryDelay * 1000);
                 }
             } while ($attempts < $maxAttempts);
+            //traer el ID
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
+
             $estado = $data['status'];
             if ($estado == '200') {
                 $nombre = $data['asociado']['NOMBRES'];
@@ -294,7 +300,7 @@ class DirectorController extends Controller
             $nombre = $request->nombre;
 
             //Y LA CEDULA LA ESTA TOMANDO COMO NIT
-
+            $cuenta = null;
 
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
@@ -331,7 +337,7 @@ class DirectorController extends Controller
         $filename = $file->getClientOriginalName();
 
         // Verificar si el archivo es PDF
-        if ($file->getClientOriginalExtension() !== 'pdf') {
+        if ($file->getClientOriginalExtension() != 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
             return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
         }
 
@@ -340,6 +346,7 @@ class DirectorController extends Controller
         ->where('Cedula', $cedula)
         ->where('DocumentoSoporte', 'like', 'Soporte-' . $cedula . '%')
         ->count();
+
         if ($existingFilesCount == 0) {
             // Si no hay archivos existentes, guardarlo como el primero
             $newFilename = 'Soporte-' . $cedula.'.pdf';
@@ -347,6 +354,7 @@ class DirectorController extends Controller
             // Si hay archivos existentes, generar un nombre de archivo único
             $newFilename = 'Soporte-' . $cedula . '-' . ($existingFilesCount + 1).'.pdf';
         }
+
 
         // Subir el archivo
         $dir = 'Storage/files/soporteautorizaciones/';
@@ -423,6 +431,7 @@ class DirectorController extends Controller
 
 
         $nombre_documento = $documento[0]->DocumentoSoporte;
+        $nombre_archivo = $documento[0]->DocumentoSoporte;
         if ($request->hasFile('Soporte')) {
             if (!empty($documento)) {
 
@@ -444,7 +453,7 @@ class DirectorController extends Controller
                 }
             } else {
                 // Si no existe un documento en la base de datos, asignar un nombre basado en la cédula
-                $nombre_archivo = $nombre_documento;
+                $nombre_archivo = "Soporte-" . $cedula . ".pdf";
             }
         }
 
@@ -469,12 +478,14 @@ class DirectorController extends Controller
             // Número y letra del concepto
             $No = substr($tipoautorizacion, 0, 4);
             $letra = substr($tipoautorizacion, 4, 3);
-            $actual = substr($tipoautorizacion, 5, 6);
+            $actual = 'actual';
+            $tipoautorizacion = $No . $letra;
         } else {
             // Número y letra del concepto
             $No = substr($tipoautorizacion, 0, 2);
             $letra = substr($tipoautorizacion, 2, 1);
-            $actual = substr($tipoautorizacion, 3, 6);
+            $actual = 'actual';
+            $tipoautorizacion = $No . $letra;
         }
 
 
@@ -528,15 +539,7 @@ class DirectorController extends Controller
 
 
 
-        //ASOCIACION POR SCORE BAJO
-        if($tipoautorizacion . $actual == $tipoautorizacion . 'actual'){
-            $existingAutorizacion = DB::select('SELECT * FROM autorizaciones WHERE ID = ?', [$id]);
-
-            $cedula = $existingAutorizacion[0]->Cedula;
-            $cuenta = $existingAutorizacion[0]->CuentaAsociado;
-            $convencion = $existingAutorizacion[0]->Convencion;
-            $nombre = $existingAutorizacion[0]->NombrePersona;
-        }else if($tipoautorizacion == '11A'){
+        if($tipoautorizacion == '11A'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -646,6 +649,11 @@ class DirectorController extends Controller
                 }
             } while ($attempts < $maxAttempts);
             $estado = $data['status'];
+            //traer el ID
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
+
+
             if ($estado == '200') {
                 $nombre = $data['asociado']['NOMBRES'];
                 $cuenta = $data['asociado']['CUENTA'];
@@ -800,7 +808,7 @@ class DirectorController extends Controller
                     'ID_Persona' => $idpersona,
                     'CodigoAutorizacion' => $No.$letra,
                     'Estado' => $estado,
-                    'DocumentoSoporte' => $nombre_documento,
+                    'DocumentoSoporte' => $nombre_archivo,
                     'Validacion' => 0,
                     'Aprobacion' => 0,
                     'ObservacionesGer' => null,
@@ -822,7 +830,7 @@ class DirectorController extends Controller
                 ->join('persona', 'autorizaciones.ID_Persona', '=', 'persona.ID')
                 ->join('concepto_autorizaciones', 'autorizaciones.ID_Concepto', '=', 'concepto_autorizaciones.ID')
                 ->join('documentosintesis', 'persona.ID', '=', 'documentosintesis.ID_Persona')
-                ->select('autorizaciones.*', 'autorizaciones.Cedula as CedulaAutorizacion', 'autorizaciones.Estado as EstadoAutorizacion', 'persona.Cedula as CedulaPersona', 'persona.*' , 'documentosintesis.*', 'concepto_autorizaciones.*')
+                ->select('autorizaciones.*', 'autorizaciones.Cedula as CedulaAutorizacion', 'autorizaciones.Estado as EstadoAutorizacion', 'persona.Cedula as CedulaPersona', 'persona.*' , 'documentosintesis.*', 'concepto_autorizaciones.*', 'autorizaciones.Observaciones as Observaciones')
                 ->where('autorizaciones.ID', $id)
                 ->first();
             if(!empty($autorizacion)){

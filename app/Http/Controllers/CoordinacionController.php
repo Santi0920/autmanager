@@ -284,10 +284,15 @@ class CoordinacionController extends Controller
                     usleep($retryDelay * 1000);
                 }
             } while ($attempts < $maxAttempts);
+
+            //traer el ID
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
             $estado = $data['status'];
             if ($estado == '200') {
                 $nombre = $data['asociado']['NOMBRES'];
                 $cuenta = $data['asociado']['CUENTA'];
+
             }else{
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
             }
@@ -384,7 +389,7 @@ class CoordinacionController extends Controller
         $filename = $file->getClientOriginalName();
 
         // Verificar si el archivo es PDF
-        if ($file->getClientOriginalExtension() !== 'pdf') {
+        if ($file->getClientOriginalExtension() !== 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
             return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
         }
 
@@ -547,6 +552,7 @@ class CoordinacionController extends Controller
 
 
         $nombre_documento = $documento[0]->DocumentoSoporte;
+        $nombre_archivo = $documento[0]->DocumentoSoporte;
         if ($request->hasFile('Soporte')) {
             if (!empty($documento)) {
 
@@ -568,7 +574,7 @@ class CoordinacionController extends Controller
                 }
             } else {
                 // Si no existe un documento en la base de datos, asignar un nombre basado en la cédula
-                $nombre_archivo = $nombre_documento;
+                $nombre_archivo = "Soporte-" . $cedula . ".pdf";
             }
         }
 
@@ -648,14 +654,7 @@ class CoordinacionController extends Controller
 
 
         //ASOCIACION POR SCORE BAJO
-        if($tipoautorizacion . $actual == $tipoautorizacion . 'actual'){
-            $existingAutorizacion = DB::select('SELECT * FROM autorizaciones WHERE ID = ?', [$id]);
-
-            $cedula = $existingAutorizacion[0]->Cedula;
-            $cuenta = $existingAutorizacion[0]->CuentaAsociado;
-            $convencion = $existingAutorizacion[0]->Convencion;
-            $nombre = $existingAutorizacion[0]->NombrePersona;
-        }else if($tipoautorizacion == '11A'){
+    if($tipoautorizacion == '11A'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
@@ -759,6 +758,9 @@ class CoordinacionController extends Controller
                     usleep($retryDelay * 1000);
                 }
             } while ($attempts < $maxAttempts);
+            //traer el ID
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
             $estado = $data['status'];
             if ($estado == '200') {
                 $nombre = $data['asociado']['NOMBRES'];
@@ -846,11 +848,6 @@ class CoordinacionController extends Controller
 
         }
 
-        if($validacion == 1){
-            $estado='2';
-        }else{
-            $estado='2';
-        }
 
         //AUDITORIA
         $usuarioActual = Auth::user();
@@ -871,57 +868,172 @@ class CoordinacionController extends Controller
             $ip
         ]);
 
+        if($validacion == 1){
+            $estado='6';
+            if (isset($nombre_archivo)) {
+                // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
+                // $cedula = $existingCedula[0]->Cedula;
+                $update = DB::table('autorizaciones')
+                    ->where('ID', $id)
+                    ->update([
+                        'Detalle' => $request->input('Detalle'),
+                        'Cedula' => $cedula,
+                        'CuentaAsociado' => $cuenta,
+                        'Convencion' => $convencion,
+                        'NombrePersona' => $nombre,
+                        'ID_Persona' => $idpersona,
+                        'CodigoAutorizacion' => $No.$letra,
+                        'DocumentoSoporte' => $nombre_archivo,
+                        'Estado' => $estado,
+                        'Solicitud' => 1,
+                        'Validacion' => 1,
+                        'Aprobacion' => 0,
+                        'ObservacionesGer' => null,
+                        'Observaciones' => null,
+                        'ID_Concepto' => $idconcepto,
+                    ]);
 
-        // Si el archivo se proporcionó y se movió correctamente, actualiza la base de datos
-        if (isset($nombre_archivo)) {
-            // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
-            // $cedula = $existingCedula[0]->Cedula;
-            $update = DB::table('autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'Detalle' => $request->input('Detalle'),
-                    'Cedula' => $cedula,
-                    'CuentaAsociado' => $cuenta,
-                    'Convencion' => $convencion,
-                    'NombrePersona' => $nombre,
-                    'ID_Persona' => $idpersona,
-                    'CodigoAutorizacion' => $No.$letra,
-                    'DocumentoSoporte' => $nombre_archivo,
-                    'Estado' => $estado,
-                    'Solicitud' => 1,
-                    'Validacion' => 1,
-                    'Aprobacion' => 0,
-                    'ObservacionesGer' => null,
-                    'Observaciones' => null,
-                    'ID_Concepto' => $idconcepto,
-                ]);
+                // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
+                return response()->json(['message' => 'Datos recibidos correctamente']);
+            } else {
+                // Devuelve un mensaje de error si no se proporcionó ningún archivo
+                $update = DB::table('autorizaciones')
+                    ->where('ID', $id)
+                    ->update([
+                        'Detalle' => $request->input('Detalle'),
+                        'Cedula' => $cedula,
+                        'CuentaAsociado' => $cuenta,
+                        'Convencion' => $convencion,
+                        'NombrePersona' => $nombre,
+                        'ID_Persona' => $idpersona,
+                        'CodigoAutorizacion' => $No.$letra,
+                        'DocumentoSoporte' => $nombre_archivo,
+                        'Estado' => $estado,
+                        'Solicitud' => 1,
+                        'Validacion' => 1,
+                        'Aprobacion' => 0,
+                        'ObservacionesGer' => null,
+                        'Observaciones' => null,
+                        'ID_Concepto' => $idconcepto,
+                    ]);
+                return response()->json(['message' => 'Datos recibidos correctamente']);
+            }
+        }else{
+            $estado='2';
+            if (isset($nombre_archivo)) {
+                // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
+                // $cedula = $existingCedula[0]->Cedula;
+                $update = DB::table('autorizaciones')
+                    ->where('ID', $id)
+                    ->update([
+                        'Detalle' => $request->input('Detalle'),
+                        'Cedula' => $cedula,
+                        'CuentaAsociado' => $cuenta,
+                        'Convencion' => $convencion,
+                        'NombrePersona' => $nombre,
+                        'ID_Persona' => $idpersona,
+                        'CodigoAutorizacion' => $No.$letra,
+                        'DocumentoSoporte' => $nombre_archivo,
+                        'Estado' => $estado,
+                        'Solicitud' => 1,
+                        'Validacion' => 0,
+                        'Aprobacion' => 0,
+                        'ObservacionesGer' => null,
+                        'Observaciones' => null,
+                        'ID_Concepto' => $idconcepto,
+                    ]);
 
-            // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
-            return response()->json(['message' => 'Datos recibidos correctamente']);
-        } else {
-            // Devuelve un mensaje de error si no se proporcionó ningún archivo
-            $update = DB::table('autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'Detalle' => $request->input('Detalle'),
-                    'Cedula' => $cedula,
-                    'CuentaAsociado' => $cuenta,
-                    'Convencion' => $convencion,
-                    'NombrePersona' => $nombre,
-                    'ID_Persona' => $idpersona,
-                    'CodigoAutorizacion' => $No.$letra,
-                    'DocumentoSoporte' => $nombre_documento,
-                    'Estado' => $estado,
-                    'Solicitud' => 1,
-                    'Validacion' => 1,
-                    'Aprobacion' => 0,
-                    'ObservacionesGer' => null,
-                    'Observaciones' => null,
-                    'ID_Concepto' => $idconcepto,
-                ]);
-            return response()->json(['message' => 'Datos recibidos correctamente']);
+                // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
+                return response()->json(['message' => 'Datos recibidos correctamente']);
+            } else {
+                // Devuelve un mensaje de error si no se proporcionó ningún archivo
+                $update = DB::table('autorizaciones')
+                    ->where('ID', $id)
+                    ->update([
+                        'Detalle' => $request->input('Detalle'),
+                        'Cedula' => $cedula,
+                        'CuentaAsociado' => $cuenta,
+                        'Convencion' => $convencion,
+                        'NombrePersona' => $nombre,
+                        'ID_Persona' => $idpersona,
+                        'CodigoAutorizacion' => $No.$letra,
+                        'DocumentoSoporte' => $nombre_archivo,
+                        'Estado' => $estado,
+                        'Solicitud' => 1,
+                        'Validacion' => 0,
+                        'Aprobacion' => 0,
+                        'ObservacionesGer' => null,
+                        'Observaciones' => null,
+                        'ID_Concepto' => $idconcepto,
+                    ]);
+                return response()->json(['message' => 'Datos recibidos correctamente']);
+            }
+
         }
 
+    }
 
+    public function filtrarconcepto(Request $request)
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("
+            SELECT DISTINCT
+                A.ID AS IDPersona,
+                A.Score,
+                A.CuentaAsociada,
+                A.Nombre,
+                A.Apellidos,
+                B.ID AS IDAutorizacion,
+                B.Convencion,
+                B.DocumentoSoporte,
+                B.Fecha,
+                B.CodigoAutorizacion,
+                B.NomAgencia,
+                B.NumAgencia,
+                B.Cedula,
+                B.CuentaAsociado,
+                B.EstadoCuenta,
+                B.NombrePersona,
+                B.Detalle,
+                B.Observaciones,
+                B.Estado,
+                B.Solicitud,
+                B.SolicitadoPor,
+                B.Validacion,
+                B.ValidadoPor,
+                B.FechaValidacion,
+                B.Coordinacion,
+                B.Aprobacion,
+                B.AprobadoPor,
+                B.FechaAprobacion,
+                B.ObservacionesGer,
+                C.Letra,
+                C.No,
+                C.Concepto,
+                C.Areas,
+                D.FechaInsercion
+            FROM persona A
+            JOIN autorizaciones B ON B.ID_Persona = A.ID
+            JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
+            WHERE B.Estado = 4 AND B.Solicitud = 1
+        ");
+
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
+    public function data2()
+    {
+
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
+
+        return view('Coordinacion/filtrarconcepto', ['user' => $user]);
     }
 }

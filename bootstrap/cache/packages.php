@@ -52,17 +52,6 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
-  'werneckbh/laravel-qr-code' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'LaravelQRCode\\Providers\\QRCodeServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'QRCode' => 'LaravelQRCode\\Facades\\QRCode',
-    ),
-  ),
   'yajra/laravel-datatables-oracle' => 
   array (
     'providers' => 

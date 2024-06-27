@@ -53,6 +53,11 @@
                         <div class="d-flex justify-content-center">
                             <form id="calculadoraForm" class="text-center" method="POST" action="{{ route('buscarautorizacion') }}">
                             @csrf
+                                <div class="mb-3">
+                                    <a type="submit" class="btn btn-warning mt-3 border border-1 border-dark" style="font-size: 40px;" href="{{$href}}"><i class="fa-solid fa-arrow-left"></i> ATRAS</a>
+                                    <button type="" class="btn btn-dark boton-buscar mt-3" style="font-size: 40px;">BUSCAR</button>
+                                    <button type="submit" class="btn btn-dark boton-asd d-none mt-3" style="font-size: 40px;" onclick="buscar()">BUSCAR</button>
+                                </div>
 
                                 <label for="numero" class="form-label me-2 fw-semibold text-secondary" style="font-size: 40px">Ingrese el número de autorización:</label>
 
@@ -82,11 +87,6 @@
                                         <button type="button" class="btn btn-dark boton-numero" onclick="agregarNumero(0)">0</button>
                                     </div>
                                 </div>
-                                <div>
-                                    <a type="submit" class="btn btn-warning mt-3 border border-1 border-dark" style="font-size: 40px;" href="{{$href}}"><i class="fa-solid fa-arrow-left"></i> ATRAS</a>
-                                    <button type="" class="btn btn-dark boton-buscar mt-3" style="font-size: 40px;">BUSCAR</button>
-                                    <button type="submit" class="btn btn-dark boton-asd d-none mt-3" style="font-size: 40px;" onclick="buscar()">BUSCAR</button>
-                                </div>
                             </form>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
 
     @include('layouts.footer')
 
-    <div class="loader">
+    <div class="loader d-none">
         <div class="truckWrapper">
           <div class="truckBody">
             <svg
