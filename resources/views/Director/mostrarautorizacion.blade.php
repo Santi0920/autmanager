@@ -141,7 +141,7 @@
                     @else
                     @endif
 
-                    @if($autorizacion->Aprobacion == 1 || $autorizacion->EstadoAutorizacion == 5)
+                    @if($autorizacion->Aprobacion ==   || $autorizacion->EstadoAutorizacion == 5)
                         <div class="row g-0 text-center">
                             @if ($autorizacion->EstadoAutorizacion == 4)
                                 <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">

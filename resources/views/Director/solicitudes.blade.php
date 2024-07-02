@@ -403,12 +403,10 @@
                                                                     ${visualizarnit ?
                                                                     `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
                                                                     : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
-                                                                    (row.Score >= 650 ?
+                                                                    ${(row.Score >= 650 ?
                                                                         `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                         (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                    ) :
-                                                                    ``
+                                                                    )
                                                                     }
                                                                     </span>
                                                             </div>
@@ -421,12 +419,10 @@
                                                                     ${visualizarnit ?
                                                                     `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
                                                                     : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
-                                                                    (row.Score >= 650 ?
+                                                                    ${(row.Score >= 650 ?
                                                                         `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                         (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                    ) :
-                                                                    ``
+                                                                    )
                                                                     }
                                                                 </span>
                                                             </div>
