@@ -386,14 +386,12 @@
                                                                 <div class="col-md-12 d-flex justify-content-start border p-2">
                                                                     <span class="fs-5">${cedulaFormateada}
                                                                         ${visualizarnit ?
-                                                                        `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
-                                                                        : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                        ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
-                                                                        (row.Score >= 650 ?
-                                                                            `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                            (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                        ) :
-                                                                        ``
+                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
+                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
+                                                                    ${(row.Score >= 650 ?
+                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
+                                                                    )
                                                                     }
                                                                         </span>
                                                                 </div>
@@ -403,15 +401,13 @@
                                                             <div class="row g-0">
                                                                 <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
                                                                     <span class="fs-5">${cedulaFormateada}
-                                                                    ${visualizarnit ?
+                                                                        ${visualizarnit ?
                                                                     `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
                                                                     : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                    ${(row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D' || row.CodigoAutorizacion == '11L') ?
-                                                                    (row.Score >= 650 ?
+                                                                    ${(row.Score >= 650 ?
                                                                         `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
                                                                         (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                    ) :
-                                                                    ``
+                                                                    )
                                                                     }
                                                                     </span>
                                                                 </div>
