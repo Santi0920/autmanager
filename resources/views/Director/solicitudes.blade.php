@@ -237,15 +237,6 @@
 
                             const cedula = row.Cedula;
 
-                            var condiciondenit = esCondicionNit(row.CodigoAutorizacion);
-                            var visualizarnit = condicionparamostrarNit(row.CodigoAutorizacion);
-                            if (condiciondenit) {
-
-                                var cedulaFormateada = cedula;
-                            } else {
-                                var cedulaFormateada = cedula;
-
-                            }
 
                             const mesesEnEspanol = [
                                 "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -279,6 +270,82 @@
                             const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
                             const año = fechaInsercionDate.getFullYear();
                             const fechaFormateada = `${mes} ${dia} del ${año}`;
+
+
+                            const inputcedula = `
+                                <div class="input-group mb-0 w-25 border rounded-3 border-dark ms-2 me-2">
+                                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
+                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M12 16v-4" />
+                                                <path d="M12 8h.01" />
+                                            </svg>
+                                        </span>
+                                </div>
+                                `
+                            const inputcuenta = `
+                                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${row.CuentaAsociado}" required onkeydown="disableEnterKey(event)">
+                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M12 16v-4" />
+                                                <path d="M12 8h.01" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                `
+
+                            const inputnombre = `
+                                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${row.NombrePersona}" required onkeydown="disableEnterKey(event)">
+                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M12 16v-4" />
+                                                <path d="M12 8h.01" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                `
+
+
+                            const inputconvencion = `
+                                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                        <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${row.Convencion}" required onkeydown="disableEnterKey(event)">
+                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M12 16v-4" />
+                                                <path d="M12 8h.01" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                `
+
+
+
+
+
+                            if (row.CodigoAutorizacion == "11A" || row.CodigoAutorizacion == "11D") {
+                                var inputs = inputcedula;
+                            } else if (row.CodigoAutorizacion == "11L") {
+                                var inputs = inputcedula;
+                            } else if (row.CodigoAutorizacion == "11B") {
+                                var inputs = inputcedula + inputcuenta;
+                            } else if (row.CodigoAutorizacion == "11K") {
+                                var inputs = (inputcedula + inputconvencion);
+                            } else if (row.CodigoAutorizacion == "11C") {
+                                var inputs = (inputcedula + inputnombre + inputcuenta);
+                            } else if (row.CodigoAutorizacion == "10D") {
+                                var inputs =(`
+                                    <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
+                                    <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
+                                `);
+                            }else {
+                                var inputs =(inputcedula + inputnombre);
+                            }
 
                             var modalEditar = `
                             <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
@@ -378,11 +445,8 @@
 
                                                                     @include('layouts.optionmodal')
                                                                 </select>
+
                                                             </div>
-
-
-
-
                                                             `:`<span class="fs-5">${row.Concepto} -
                                                                     @include('layouts.optionvercodigo')
 
@@ -399,14 +463,12 @@
                                                     `
                                                         <div class="row g-0">
                                                             <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                                <span class="fs-5">${cedulaFormateada}
-                                                                    ${visualizarnit ?
-                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
-                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                    ${(row.Score >= 650 ?
-                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                    )
+                                                                <span class="fs-5">${cedula}
+                                                                    ${row.CuentaAsociado == null ? '- N/A' : `- ${row.CuentaAsociado}`}
+                                                                    - ${row.NombrePersona} -
+                                                                    ${row.Score >= 650 ?
+                                                                        `<span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `<span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `<span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
                                                                     }
                                                                     </span>
                                                             </div>
@@ -414,16 +476,18 @@
                                                         `:
                                                     `
                                                         <div class="row g-0">
+                                                            <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
+                                                                ${inputs}
+                                                            </div>
                                                             <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
-                                                                <span class="fs-5">${cedulaFormateada}
-                                                                    ${visualizarnit ?
-                                                                    `${row.CuentaAsociado == null ?`- N/A`:`- ${row.CuentaAsociado}`} `
-                                                                    : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                    ${(row.Score >= 650 ?
-                                                                        `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                        (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                    )
+                                                                <span class="fs-5">${cedula}
+                                                                    ${row.CuentaAsociado == null ? '- N/A' : `- ${row.CuentaAsociado}`}
+                                                                    - ${row.NombrePersona} -
+                                                                    ${row.Score >= 650 ?
+                                                                        `<span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `<span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `<span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
                                                                     }
+
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -628,8 +692,8 @@
                     }
                 ],
                 "lengthMenu": [
-                    [5],
-                    [5]
+                    [1],
+                    [1]
                 ],
                 "drawCallback": function(settings) {
                     var api = this.api();
@@ -772,61 +836,60 @@
             function autorizacionesModalChange(id, cedula, cuenta, nombrepersona, convencion, event) {
                 // Obtener el valor seleccionado del elemento select
                 const valorSeleccionado = $(`#autorizacionesmodal${id}`).val();
-                // Realizar acciones basadas en el valor seleccionado
-                const condiciondenit = esCondicionNit(valorSeleccionado);
+                $('#desactivar').addClass('d-none');
 
                 const inputcedula = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                    </div>
+                    `
 
                 const inputcuenta = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${cuenta}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                    </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${cuenta}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                        </div>
+                    `
 
                 const inputnombre = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${nombrepersona}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                    </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${nombrepersona}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                        </div>
+                    `
 
 
                 const inputconvencion = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${convencion}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                    </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${convencion}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                        </div>
+                    `
 
                 if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
                     $("#inputs" + id).html(inputcedula);
@@ -843,9 +906,7 @@
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
                     `);
-                } else if (condiciondenit) {
-                    $("#inputs" + id).html(inputcedula + inputnombre);
-                } else {
+                }else {
                     $("#inputs"+id).html(inputcedula + inputnombre);
                 }
 
@@ -856,9 +917,6 @@
                 // Obtener el valor seleccionado
                 var valorSeleccionado = $(this).val();
                 console.log("Valor seleccionado:", valorSeleccionado);
-                let condiciondenit = esCondicionNit(valorSeleccionado);
-
-                console.log(condiciondenit);
 
                 if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
                     $("#cuerpo").html(`
@@ -1054,48 +1112,12 @@
                                 style="background-color: #646464;">SOLICITAR</button>
                         </div>
                         `);
-                }else if (condiciondenit) {
+                }else{
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
                             <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
                                     style="font-size:20px;">*</span></label>
-                            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                } else{
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
+                            <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9.<span class="text-danger"> NOTA</span></p>
                             <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
                                 required>
 
