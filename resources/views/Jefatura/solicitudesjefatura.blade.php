@@ -423,7 +423,7 @@
                                                         ${row.Estado == 0 || row.Estado == 5 ? `
                                                                         <div class="mb-3 w-100 " title="" id="id">
                                                                             <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" onChange="autorizacionesModalChange(${row.IDAutorizacion},'${row.Cedula}','${row.CuentaAsociado}', '${row.NombrePersona}', '${row.Convencion}', event)" required>
-                                                                                <option selected  class="fw-bold" value="${row.No + row.Letra + 'actual'}">**Concepto Actual** -> ${row.Concepto}</option>
+                                                                                <option selected  class="fw-bold" value="${row.No + row.Letra}">**Concepto Actual** -> ${row.Concepto}</option>
 
                                                                                 @include('layouts.optionmodal')
                                                                             </select>
@@ -1140,6 +1140,7 @@
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
                             <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
                                     style="font-size:20px;">*</span></label>
+                            <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9 (código de verificación).<span class="text-danger"> NOTA</span></p>
                             <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
                                 required>
 
