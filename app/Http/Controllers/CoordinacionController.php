@@ -214,6 +214,25 @@ class CoordinacionController extends Controller
         else if($tipoautorizacion == '11D'){
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
+            $attempts = 0;
+            $maxAttempts = 3; // INTENTOS MÁXIMOS
+            $retryDelay = 500; // Milisegundos
+
+            do {
+                try {
+                    $response = Http::get($url . 'nombre/' . $cedula);
+                    $data = $response->json();
+                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                    break;
+                } catch (\Exception $e) {
+                    $attempts++;
+                    usleep($retryDelay * 1000);
+                }
+            } while ($attempts < $maxAttempts);
+            $estado = $data['status'];
+            if ($estado == '200') {
+                $cuenta = $data['asociado']['CUENTA'];
+            }
 
             if(empty($existingPerson)){
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
@@ -225,7 +244,6 @@ class CoordinacionController extends Controller
             $nombres = $existingID[0]->Nombre;
             $apellidos = $existingID[0]->Apellidos;
             $nombre = $nombres . ' '.$apellidos;
-            $cuenta = $existingID[0]->CuentaAsociada;
             //Desembolso Creditos por Transferencia Electronica
         }else if($tipoautorizacion == '11L'){
             $attempts = 0;
@@ -264,6 +282,9 @@ class CoordinacionController extends Controller
                 //traer el ID
                 $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
                 $idpersona = $existingID[0]->ID;
+                $nombres = $existingID[0]->Nombre;
+                $apellidos = $existingID[0]->Apellidos;
+                $nombre = $nombres . ' '.$apellidos;
             }
 
         //DISPOSICINES
@@ -301,6 +322,9 @@ class CoordinacionController extends Controller
                 //traer el ID
                 $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
                 $idpersona = $existingID[0]->ID;
+                $nombres = $existingID[0]->Nombre;
+                $apellidos = $existingID[0]->Apellidos;
+                $nombre = $nombres . ' '.$apellidos;
             }
 
             $convencion = $request->convencion;
@@ -331,14 +355,12 @@ class CoordinacionController extends Controller
             $proveedores = DB::table('proveedor')
             ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
             ->get();
-
-            if($proveedores == null){
+            if(!$proveedores->isEmpty()){
                 $idpersona = $proveedores[0]->ID_Persona;
                 $nombre = $proveedores[0]->RazonSocial;
 
             }else{
-
-                $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedulaSinPuntos]);
+                $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
 
                 if(empty($existingPerson)){
@@ -346,7 +368,7 @@ class CoordinacionController extends Controller
                     $nombre = $request->nombre;
                 }else{
                     //traer el ID
-                    $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+                    $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
                     $idpersona = $existingID[0]->ID;
 
                     $nombres = $existingID[0]->Nombre;
@@ -354,7 +376,6 @@ class CoordinacionController extends Controller
                     $nombre = $nombres . ' '.$apellidos;
                 }
             }
-
 
 
             //Y LA CEDULA LA ESTA TOMANDO COMO NIT
@@ -382,6 +403,16 @@ class CoordinacionController extends Controller
             }else{
                 $cuenta = null;
             }
+
+        }
+
+        $cedulaSinPuntos = str_replace('.', '', $cedula);
+        $proveedores = DB::table('proveedor')
+        ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
+        ->get();
+        if(!$proveedores->isEmpty()){
+            $idpersona = $proveedores[0]->ID_Persona;
+            $nombre = $proveedores[0]->RazonSocial;
 
         }
 
@@ -419,8 +450,9 @@ class CoordinacionController extends Controller
 
         $newFilename = 'Soporte-' . $id_insertado.'.pdf';
 
-
-        DB::table('autorizaciones')->update([
+        DB::table('autorizaciones')
+        ->where('ID', $id_insertado)
+        ->update([
             'DocumentoSoporte' => $newFilename,
         ]);
 
@@ -431,6 +463,8 @@ class CoordinacionController extends Controller
         if (!$file->move($dir, $newFilename)) {
             return back()->withErrors(['message' => 'Error al subir el archivo.']);
         }
+
+
 
         //AUDITORIA
         $usuarioActual = Auth::user();
@@ -541,7 +575,7 @@ class CoordinacionController extends Controller
 
 
         $nombre_documento = $documento[0]->DocumentoSoporte;
-        $nombre_archivo = $documento[0]->DocumentoSoporte;
+        $nombre_archivo = 'Soporte-'.$id.'.pdf';
 
         if ($request->hasFile('Soporte')) {
             $soporte = $request->file('Soporte');
@@ -584,7 +618,7 @@ class CoordinacionController extends Controller
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
             }
             //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
             $idpersona = $existingID[0]->ID;
 
             $nombres = $existingID[0]->Nombre;
@@ -594,7 +628,7 @@ class CoordinacionController extends Controller
         //ASOCIACION < 90 DIAS ENTREGAR BONO
         }
         else if($tipoautorizacion == '11B'){
-            $cuenta = $request->Cuenta;
+            $cuenta = $request->Cuentamodal;
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
@@ -658,7 +692,7 @@ class CoordinacionController extends Controller
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
             }
             //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$cedula]);
             $idpersona = $existingID[0]->ID;
 
             $nombres = $existingID[0]->Nombre;
@@ -683,7 +717,7 @@ class CoordinacionController extends Controller
                 }
             } while ($attempts < $maxAttempts);
             //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$request->cedula]);
+            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$cedula]);
             $idpersona = $existingID[0]->ID;
 
             $estado = $data['status'];
@@ -701,8 +735,11 @@ class CoordinacionController extends Controller
                 $cuenta = $data['asociado']['CUENTA'];
             }else{
                 //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
                 $idpersona = $existingID[0]->ID;
+                $nombres = $existingID[0]->Nombre;
+                $apellidos = $existingID[0]->Apellidos;
+                $nombre = $nombres . ' '.$apellidos;
             }
 
         //DISPOSICINES
@@ -738,11 +775,14 @@ class CoordinacionController extends Controller
                 $cuenta = $data['asociado']['CUENTA'];
             }else{
                 //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
                 $idpersona = $existingID[0]->ID;
+                $nombres = $existingID[0]->Nombre;
+                $apellidos = $existingID[0]->Apellidos;
+                $nombre = $nombres . ' '.$apellidos;
             }
 
-            $convencion = $request->convencion;
+            $convencion = $request->Convencionmodal;
 
             //< 1 AÑO
         }else if($tipoautorizacion == '11C'){
@@ -750,11 +790,11 @@ class CoordinacionController extends Controller
 
 
             if(empty($existingPerson)){
-                $nombre = $request->nombre;
-                $cuenta = $request->cuenta;
+                $nombre = $request->Nombremodal;
+                $cuenta = $request->Cuentamodal;
             }else{
                 //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$request->cedula]);
+                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
                 $idpersona = $existingID[0]->ID;
 
                 $nombres = $existingID[0]->Nombre;
@@ -770,8 +810,7 @@ class CoordinacionController extends Controller
             $proveedores = DB::table('proveedor')
             ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
             ->get();
-
-            if($proveedores == null){
+            if(!$proveedores->isEmpty()){
                 $idpersona = $proveedores[0]->ID_Persona;
                 $nombre = $proveedores[0]->RazonSocial;
 
@@ -781,7 +820,7 @@ class CoordinacionController extends Controller
 
                 if(empty($existingPerson)){
                     //NOMBRE EMPRESA
-                    $nombre = $request->nombre;
+                    $nombre = $request->Nombremodal;
                 }else{
                     //traer el ID
                     $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
@@ -792,7 +831,6 @@ class CoordinacionController extends Controller
                     $nombre = $nombres . ' '.$apellidos;
                 }
             }
-
 
 
             //Y LA CEDULA LA ESTA TOMANDO COMO NIT
@@ -820,6 +858,17 @@ class CoordinacionController extends Controller
             }else{
                 $cuenta = null;
             }
+
+        }
+
+
+        $cedulaSinPuntos = str_replace('.', '', $cedula);
+        $proveedores = DB::table('proveedor')
+        ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
+        ->get();
+        if(!$proveedores->isEmpty()){
+            $idpersona = $proveedores[0]->ID_Persona;
+            $nombre = $proveedores[0]->RazonSocial;
 
         }
 
