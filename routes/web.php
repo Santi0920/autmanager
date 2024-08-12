@@ -109,6 +109,14 @@ Route::get('aprobar', [GerenciaController::class, 'data1'])->middleware('auth.ge
 
 Route::get('aprobar/datatable', [GerenciaController::class, 'solicitudes'])->name('datager.solicitudes')->middleware('auth.gerencia');
 
+Route::get('aprobados/datatable', [GerenciaController::class, 'aprobados'])->name('datager.aprobados')->middleware('auth.gerencia');
+
+Route::get('rechazados/datatable', [GerenciaController::class, 'rechazados'])->name('datager.rechazados')->middleware('auth.gerencia');
+
+Route::get('tramite/datatable', [GerenciaController::class, 'tramite'])->name('datager.tramite')->middleware('auth.gerencia');
+
+Route::get('bloqueados/datatable', [GerenciaController::class, 'bloqueados'])->name('datager.bloqueados')->middleware('auth.gerencia');
+
 Route::post('aprobar/actualizar-{id}', [GerenciaController::class, 'validarAutorizacion'])->name('updateger.autorizacion')->middleware('auth.gerencia');
 
 Route::get('coordinacion9', [GerenciaController::class, 'data2'])->middleware('auth.gerencia');

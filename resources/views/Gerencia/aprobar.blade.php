@@ -72,7 +72,7 @@
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
-                        <th scope="col" class="text-center">CONCEPTO</th>
+                        <th scope="col" class="text-center w-50">CONCEPTO</th>
                         <th scope="col" class="text-center">ESTADO</th>
                         <th scope="col" class="text-center">DETALLE</th>
                     </tr>
@@ -95,10 +95,12 @@
     <script>
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datager.solicitudes') }}",
+            "processing" : true,
+            "serverSide": true,
             "order": [
-                [0, 'asc']
+                [0, 'desc']
             ],
-            scrollY: 420,
+            scrollY: 550,
             "columns": [{
                     data: 'IDAutorizacion',
                     render: function(data, type, row) {
@@ -118,10 +120,111 @@
                 {
                     data: 'CodigoAutorizacion',
                     render: function(data, type, row) {
-                        var Codigo =
-                            `${row.Concepto}<div class="fw-bold text-primary">${row.NumAgencia} - ${row.NomAgencia} - ${row.SolicitadoPor}</div>`
+                        fechaSolicitud = row.Fecha;
+                        fechaValidacion = row.FechaValidacion;
+                        const months = {
+                            "enero": "01",
+                            "febrero": "02",
+                            "marzo": "03",
+                            "abril": "04",
+                            "mayo": "05",
+                            "junio": "06",
+                            "julio": "07",
+                            "agosto": "08",
+                            "septiembre": "09",
+                            "octubre": "10",
+                            "noviembre": "11",
+                            "diciembre": "12"
+                        };
+                        //fecha solicitud
+                        const parts = fechaSolicitud.split(' ');
 
-                        return Codigo
+                        //Obtener el mes, día y año
+                        const month = months[parts[0].toLowerCase()];
+                        const day = parts[1];
+                        const yearTime = parts[2].split('-');
+                        const year = yearTime[0];
+                        const time = yearTime[1];
+
+                        //Crear una nueva cadena en un formato que JavaScript pueda interpretar
+                        const formattedDateString = `${year}-${month}-${day} ${time}`;
+                        const fechaSolicitudDate = new Date(formattedDateString);
+
+
+
+                        if(fechaValidacion == "Pendiente..."){
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                const totalMinutos = Math.floor(totalSegundos / 60);
+                                const totalHoras = Math.floor(totalMinutos / 60);
+
+                                const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                const horas = String(totalHoras).padStart(2, '0'); // Acumula todas las horas
+
+                                return { horas, minutos, segundos };
+                            }
+                            const fechaActualDate = new Date();
+                            const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
+
+                            var demoracoord = ``
+                            if(row.Estado == 2){
+                                var demoradireccion = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >${row.Coordinacion}: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span>`
+                            }else{
+                                var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`
+                            }
+
+
+                        }else{
+                            //fecha validacion
+                            const parts2 = fechaValidacion.split(' ');
+                            //Obtener el mes, día y año
+                            const month2 = months[parts2[0].toLowerCase()];
+                            const day2 = parts2[1];
+                            const yearTime2 = parts2[2].split('-');
+                            const year2 = yearTime2[0];
+                            const time2 = yearTime2[1];
+
+                            //Crear una nueva cadena en un formato que JavaScript pueda interpretar
+                            const formattedDateString2 = `${year2}-${month2}-${day2} ${time2}`;
+                            const fechaValidacionDate = new Date(formattedDateString2);
+
+
+                            //calculo ->
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                const totalMinutos = Math.floor(totalSegundos / 60);
+                                const totalHoras = Math.floor(totalMinutos / 60);
+
+                                const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                const horas = String(totalHoras).padStart(2, '0'); // Acumula todas las horas
+
+                                return { horas, minutos, segundos };
+                            }
+
+                            const fechaActualDate = new Date();
+                            const diferencia = calcularDiferencia(fechaSolicitudDate, fechaValidacionDate);
+                            const diferencia2 = calcularDiferencia(fechaValidacionDate, fechaActualDate);
+
+                            var demoracoord = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >${row.Coordinacion}: <span class="text-dark fw-semibold ">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span>`
+                            var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`
+
+                        }
+
+
+
+
+
+                        var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumAgencia} - ${row.NomAgencia} - ${row.SolicitadoPor}</div>
+                                        ${demoracoord}
+                                        ${demoradireccion}`
+
+                        return Contenido
                     },
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({
@@ -142,7 +245,13 @@
                         } else if (row.Estado == 4) {
                             var Estado =
                                 '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO</div>'
-                        } else {
+                        } else if(row.Estado == 5) {
+                            var Estado =
+                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO GERENCIA</div>'
+                        } else if(row.Estado == 2) {
+                            var Estado =
+                                '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRÁMITE</div>'
+                        }else{
                             var Estado =
                                 '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">SOLICITUD DE COORDINACIÓN</div>'
                         }
@@ -209,6 +318,8 @@
                         const fechaFormateada = `${mes} ${dia} del ${año}`;
 
 
+
+
                         var modalEditar = `
                             <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
                                         data-id="${id}">
@@ -260,8 +371,10 @@
                                                     <div class="row g-0 align-items-center justify-content-center border p-2">
                                                         ${row.Estado == 0 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">A - ANULADO</button>` :
-                                                            row.Estado == 1 || row.Estado == 2 ?
+                                                            row.Estado == 1 ?
                                                             `<button class="btn btn-success shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">V - VALIDADO</button>` :
+                                                             row.Estado == 2 ?
+                                                            `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRÁMITE</button>` :
                                                             row.Estado == 3 ?
                                                             `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
                                                             row.Estado == 4 ?
@@ -327,29 +440,21 @@
                                                     <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <button type="button" id="soportePDF" onclick="modal('${row.DocumentoSoporte}')"
-                                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" data-bs-target="#pdf_${id}"
-                                                        data-id="${id}">
-                                                            <span class="h1 fw-bold mb-0">
-                                                                <img src="img/pdf.png" style="height: 4.5rem">
-                                                            </span>
-                                                        </button>
-
-                                                        <!--<a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" id="soportePDF"
-                                                        class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" target="__blank">
-                                                            <span class="h1 fw-bold mb-0">
-                                                                <img src="img/pdf.png" style="height: 4.5rem">
-                                                            </span>
-                                                        </a>-->
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank"
+                                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
+                                                                <span class="h1 fw-bold mb-0">
+                                                                    <img src="img/pdf.png" style="height: 4.5rem">
+                                                                </span>
+                                                        </a>
 
                                                 </div>
                                             </div>
                                         </div>
                                         <div class=" row g-0 text-center ">
-                                            ${row.Estado ==6 && row.Validacion == 1 ?
+                                            ${(row.Estado ==6 && row.Validacion == 1) || row.Coordinacion == "C#" ?
                                             ``:
                                             `<div
-                                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
+                                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-success-subtle`} border p-1 border border-dark" id="fondo">
 
                                                                 <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
 
@@ -383,6 +488,9 @@
                                                                     </div>
                                                             </div>`}
                                         </div>
+
+                                        ${row.Aprobacion == 0 && row.Bloqueado == 0 ?
+                                        `
                                         <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
                                             <div class="row g-0 text-center">
@@ -395,6 +503,10 @@
                                                     <label class="label">
                                                         <input value="5" type="radio" name="Estado" id="Estado" required>
                                                         <span>RECHAZAR</span>
+                                                    </label>
+                                                    <label class="label">
+                                                        <input value="1" type="radio" name="Estado" id="Estado" required>
+                                                        <span>BLOQUEAR</span>
                                                     </label>
 
 
@@ -409,7 +521,10 @@
                                                         </div>
                                                     </div>
 
-                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ?``:`value="${row.ObservacionesGer}"`}>
+                                                    <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
+                                                    onkeydown="return event.key != 'Enter';"
+                                                    placeholder="Escribe aquí tu Observación."
+                                                    ${row.ObservacionesGer == null ? `` : `value="${row.ObservacionesGer}"`}>
                                                         </input>
 
                                                 </div>
@@ -421,31 +536,88 @@
                                             <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button></div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                    `:
+                                    `
+                                    ${row.Estado == 4 && row.Bloqueado == 0 ?
+                                        `
+                                        <div class="row g-0 text-center">
+                                            <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-success-subtle'} border p-1 border-dark" id="fondo">
+                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADO' : 'RECHAZADO'}</span></span>
+                                            </div>
 
-
-                            <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="--bs-modal-zindex:1056;">
-                                <div class="modal-dialog modal-dialog-centered modal-xl">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h6 class="modal-title" id="exampleModalLongTitle"
-                                            style="color: #646464;font-weight: 700;font-size: 22px">PDF</h6>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body p-0">
-                                            <div class="embed-responsive embed-responsive-16by9">
-                                                <iframe class="embed-responsive-item" src="" frameborder="0" style="width:90%; height: 680px;"></iframe>
+                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                <div class="row g-0 border">
+                                                    <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
+                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                        <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0">
+                                                    <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                        <span>${row.ObservacionesGer == null ? 'Ninguna.' : `${row.ObservacionesGer}`}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary fs-5" data-bs-dismiss="modal">Cerrar</button>
+                                        ` : row.Bloqueado == 1 ?
+                                        `
+
+                                        ` : `
+                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                @csrf
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border-dark">
+                                                        <label class="label">
+                                                            <input value="0" type="radio" name="Estado" id="Estado" required>
+                                                            <span>DESBLOQUEAR</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-md-12 col-lg-10">
+                                                        <div class="row g-0">
+                                                            <div class="col-md-9 d-flex text-start border p-2">
+                                                                <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                            </div>
+                                                            <div class="col-md-3 border p-2">
+                                                                <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                            </div>
+                                                        </div>
+                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`}>
+                                                    </div>
+                                                </div>
+                                                <div class="text-center p-3">
+                                                    <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
+                                                </div>
+                                            </form>
+
+                                        `
+                                    }
                                         </div>
                                     </div>
-                                </div>
-                            </div>
 
 
+                                    <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="--bs-modal-zindex:1056;">
+                                        <div class="modal-dialog modal-dialog-centered modal-xl">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h6 class="modal-title" id="exampleModalLongTitle"
+                                                    style="color: #646464;font-weight: 700;font-size: 22px">PDF</h6>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body p-0">
+                                                    <div class="embed-responsive embed-responsive-16by9">
+                                                        <iframe class="embed-responsive-item" src="" frameborder="0" style="width:90%; height: 680px;"></iframe>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary fs-5" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        `
+                                    }
                             `;
 
                         return modalEditar;
@@ -486,16 +658,50 @@
                 }
             },
             "initComplete": function(settings, json) {
-                var buttonsHtml = '<div class="custom-buttons">' +
-                    '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                    //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
-                    '</div>';
-                $(buttonsHtml).prependTo('.dataTables_filter');
+            var buttonsHtml = '<div class="custom-buttons mb-2">' +
+                '<button id="btnT" class="custom-btn me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                '<button id="btnA" class="btn btn-success fw-bold me-2" title="APROBADOS">APROBADOS</button>' +
+                '<button id="btnR" class="btn btn-danger fw-bold me-2" title="RECHAZADOS">RECHAZADOS</button>' +
+                '<button id="btnTramite" class="btn btn-warning fw-bold me-2" title="EN TRÁMITE">EN TRÁMITE</button>' +
+                '<button id="btnBloqueado" class="btn btn-primary fw-bold" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
+                '</div>';
+
+            $(buttonsHtml).prependTo('.dataTables_filter');
                 $('#btnT').on('click', function() {
-                    table.ajax.reload(null, false);
+                    var newAjaxSource = '{{ route("datager.solicitudes") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                });
+
+                $('#btnA').on('click', function() {
+                    var newAjaxSource = '{{ route("datager.aprobados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                });
+
+                $('#btnR').on('click', function() {
+                    var newAjaxSource = '{{ route("datager.rechazados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
-            },
+
+                $('#btnTramite').on('click', function() {
+                    var newAjaxSource = '{{ route("datager.tramite") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnBloqueado').on('click', function() {
+                    var newAjaxSource = '{{ route("datager.bloqueados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                },
         });
 
 
@@ -513,9 +719,6 @@
             $('#modalSoportePdf').modal('show');
         }
 
-
-    </script>
-    <script>
         function formEditarAutorizacion(id, event) {
 
             var form = $("#formEditarAutorizacion" + id);

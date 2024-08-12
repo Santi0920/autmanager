@@ -71,6 +71,7 @@
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                         @elseif (auth()->user()->rol == 'Gerencia')
                             <li><a class="dropdown-item fw-bold" href="aprobar">Gerencia</a></li>
+                            {{-- <li><a class="dropdown-item fw-bold" href="#" title="EN PROCESO">&nbsp&nbsp&nbsp• Bloqueados</a></li> --}}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="coordinacion9">Coordinación 9</a></li>
                             <li><hr class="dropdown-divider"></li>
