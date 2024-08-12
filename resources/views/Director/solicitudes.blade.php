@@ -20,10 +20,9 @@
             <script>
                 Swal.fire({
                     icon: 'error',
-                    title: "{{ session('incorrecto') }}",
-                    text: '',
+                    title: "¡Usted ha sido BLOQUEADO!",
+                    html: "{!! session('incorrecto') !!}",
                     confirmButtonColor: '#646464',
-                    timer: 10000
 
                 });
             </script>
@@ -201,8 +200,11 @@
                     {
                         data: 'Estado',
                         render: function(data, type, row) {
-                            // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
-                            if (row.Estado == 0) {
+
+                            if(row.Bloqueado == 1){
+                                var Estado =
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>';
+                            }else if (row.Estado == 0) {
                                 var Estado =
                                     '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>CORREGIR</div>';
                             } else if (row.Estado == 1 || row.Estado == 2) {
@@ -666,9 +668,34 @@
                                                         </div>
                                                     </div>
                                                     <div class="row g-0 border text-start p-2">
-                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer}</p>
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ?`Ninguna.`:`${row.ObservacionesGer}`}</p>
                                                     </div>
                                                 </div>`:``
+                                        }
+
+                                        ${row.Bloqueado == 1 ?
+                                            `<div class="row g-0 text-center">
+                                                <div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
+                                                    <span class="h1 fw-bold mb-0">B<br><span class="fs-5 fw-normal">BLOQUEADO<span></span>
+                                                </div>
+
+                                                <div class="col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-9 d-flex text-start border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                        </div>
+                                                        <div class="col-md-3 border p-2">
+                                                            <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row g-0 border text-start p-2">
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ?`Ninguna.`:`${row.ObservacionesGer}`}</p>
+                                                    </div>
+                                                </div>
+                                            </div>`
+                                            :
+                                            ``
                                         }
 
                                         </div>

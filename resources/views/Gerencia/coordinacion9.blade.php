@@ -117,10 +117,60 @@
                     {
                         data: 'CodigoAutorizacion',
                         render: function(data, type, row) {
-                            var Codigo =
-                                `${row.Concepto}<div class="fw-bold text-primary">${row.NomAgencia} - ${row.SolicitadoPor}</div>`
+                            fechaSolicitud = row.Fecha;
+                            const months = {
+                                "enero": "01",
+                                "febrero": "02",
+                                "marzo": "03",
+                                "abril": "04",
+                                "mayo": "05",
+                                "junio": "06",
+                                "julio": "07",
+                                "agosto": "08",
+                                "septiembre": "09",
+                                "octubre": "10",
+                                "noviembre": "11",
+                                "diciembre": "12"
+                            };
+                            //fecha solicitud
+                            const parts = fechaSolicitud.split(' ');
 
-                            return Codigo
+                            //Obtener el mes, día y año
+                            const month = months[parts[0].toLowerCase()];
+                            const day = parts[1];
+                            const yearTime = parts[2].split('-');
+                            const year = yearTime[0];
+                            const time = yearTime[1];
+
+                            //Crear una nueva cadena en un formato que JavaScript pueda interpretar
+                            const formattedDateString = `${year}-${month}-${day} ${time}`;
+                            const fechaSolicitudDate = new Date(formattedDateString);
+
+
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                const totalMinutos = Math.floor(totalSegundos / 60);
+                                const totalHoras = Math.floor(totalMinutos / 60);
+
+                                const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                const horas = String(totalHoras).padStart(2, '0'); // Acumula todas las horas
+
+                                return { horas, minutos, segundos };
+                            }
+                            const fechaActualDate = new Date();
+                            const diferencia = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
+
+                            var demoracoord = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >Coordinación 9: <span class="text-dark fw-semibold ">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span>`
+
+
+
+                            var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumAgencia} - ${row.NomAgencia} - ${row.SolicitadoPor}</div>
+                                            ${demoracoord}`
+
+                            return Contenido
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
@@ -527,8 +577,6 @@
         }
 
 
-    </script>
-    <script>
         function formValidarAutorizacion(id, event) {
 
             var form = $("#formValidarAutorizacion" + id);

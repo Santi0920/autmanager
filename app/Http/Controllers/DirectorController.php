@@ -365,6 +365,13 @@ class DirectorController extends Controller
             $nombre = $proveedores[0]->RazonSocial;
         }
 
+        $consultabloqueado = DB::select('SELECT ID, (SELECT COUNT(*) FROM autorizaciones WHERE Bloqueado = 1 AND NomAgencia = ?) as total FROM autorizaciones WHERE Bloqueado = 1 AND NomAgencia = ?', [$agenciaU, $agenciaU]);
+
+        if(!empty($consultabloqueado)){
+            if($consultabloqueado[0]->total > 0){
+                return back()->with("incorrecto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID."</span> se encuentra <span class='text-danger fw-bold'>BLOQUEADA</span>. Por favor contactar con <span class='fw-bold'>Dirección General</span>.</span>");
+            }
+        }
 
         //insercion
         $id_insertado = DB::table('autorizaciones')->insertGetId([
@@ -448,7 +455,7 @@ class DirectorController extends Controller
     {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
         FROM persona A
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -793,7 +800,10 @@ class DirectorController extends Controller
         ]);
 
 
-
+        //fecha de la solicitud del director
+        $fechadeSolicitud = Carbon::now('America/Bogota');
+        Carbon::setLocale('es');
+        $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
         // Si el archivo se proporcionó y se movió correctamente, actualiza la base de datos
         if (isset($nombre_archivo)) {
             // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
@@ -801,6 +811,7 @@ class DirectorController extends Controller
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([
+                    'Fecha' => $fechaStringfechadeSolicitud,
                     'Detalle' => $request->input('Detalle'),
                     'Cedula' => $cedula,
                     'CuentaAsociado' => $cuenta,
@@ -826,6 +837,7 @@ class DirectorController extends Controller
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([
+                    'Fecha' => $fechaStringfechadeSolicitud,
                     'Detalle' => $request->input('Detalle'),
                     'Cedula' => $cedula,
                     'CuentaAsociado' => $cuenta,
