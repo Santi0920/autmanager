@@ -96,7 +96,7 @@
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datager.solicitudes') }}",
             "processing" : true,
-            "serverSide": true,
+
             "order": [
                 [0, 'desc']
             ],
@@ -524,7 +524,7 @@
                                                     <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
                                                     onkeydown="return event.key != 'Enter';"
                                                     placeholder="Escribe aquí tu Observación."
-                                                    ${row.ObservacionesGer == null ? `` : `value="${row.ObservacionesGer}"`}>
+                                                    ${row.ObservacionesGer == null ? `` : `value="${row.ObservacionesGer}"`} autocomplete="off">
                                                         </input>
 
                                                 </div>
@@ -583,7 +583,7 @@
                                                                 <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
                                                             </div>
                                                         </div>
-                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`}>
+                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`} autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="text-center p-3">
