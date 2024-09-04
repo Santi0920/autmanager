@@ -201,7 +201,7 @@ class CoordinacionController extends Controller
                 $dias_restantes = $fechaActual->diffInDays($fecha_retiro);
 
 
-                if($dias_restantes > 89){
+                if($dias_restantes > 120){
                         return back()->with("incorrecto", "No necesita autorización, tiene ".$dias_restantes." dias asociado a COOPSERP.!");
                 }
 
@@ -681,7 +681,7 @@ class CoordinacionController extends Controller
                 $dias_restantes = $fechaActual->diffInDays($fecha_retiro);
 
 
-                if($dias_restantes > 89){
+                if($dias_restantes > 120){
                         return back()->with("incorrecto", "No necesita autorización, tiene ".$dias_restantes." dias asociado a COOPSERP.!");
                 }
 

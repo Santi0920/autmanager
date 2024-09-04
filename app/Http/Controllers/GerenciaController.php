@@ -42,8 +42,9 @@ class GerenciaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Aprobacion = 1 && B.Estado = 4
+        WHERE B.Aprobacion = 1 AND B.Estado = 4
         ORDER BY A.ID ASC");
+
 
 
         return datatables()->of($solicitudes)->toJson();
