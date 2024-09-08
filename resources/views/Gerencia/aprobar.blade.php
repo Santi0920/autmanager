@@ -67,7 +67,7 @@
 
             </form>
         </div>
-        <div class="table-responsive mb-5">
+        <div class="table-responsive mb-5" id="tablepersonas">
             <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
@@ -657,6 +657,8 @@
                     "previous": "Anterior"
                 }
             },
+
+
             "initComplete": function(settings, json) {
             var buttonsHtml = '<div class="custom-buttons mb-2">' +
                 '<button id="btnT" class="custom-btn me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
@@ -702,6 +704,17 @@
                 });
 
                 },
+                // responsive: "true",
+                //     dom: 'Bfrtilp',
+                //     buttons:[
+                //         {
+                //             extend:    'excelHtml5',
+                //             text:      '<i class="fas fa-file-excel"></i> ',
+                //             titleAttr: 'Exportar a Excel',
+                //             className: 'btn btn-success btn-md'
+                //         }
+                // ],
+
         });
 
 
