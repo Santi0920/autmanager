@@ -503,6 +503,80 @@ class GerenciaController extends Controller
     }
 
 
+    public function concepto()
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
+        $agencia = DB::select("SELECT DISTINCT NomAgencia FROM autorizaciones ORDER BY NomAgencia ASC");
+        $solicitadopor = DB::select("SELECT DISTINCT SolicitadoPor FROM autorizaciones ORDER BY SolicitadoPor ASC");
+        $validadopor = DB::select("SELECT DISTINCT ValidadoPor FROM autorizaciones ORDER BY ValidadoPor ASC");
+    
+
+        return view('Gerencia/filtrarconcepto', [
+            'user' => $user,
+            'agencia' => $agencia,
+            'solicitadopor' => $solicitadopor,
+            'validadopor' => $validadopor
+        ]);
+    }
+    
+
+
+        public function filtrarconcepto(Request $request)
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("
+            SELECT DISTINCT
+                A.ID AS IDPersona,
+                A.Score,
+                A.CuentaAsociada,
+                A.Nombre,
+                A.Apellidos,
+                B.ID AS IDAutorizacion,
+                B.Convencion,
+                B.DocumentoSoporte,
+                B.Fecha,
+                B.CodigoAutorizacion,
+                B.NomAgencia,
+                B.NumAgencia,
+                B.Cedula,
+                B.CuentaAsociado,
+                B.EstadoCuenta,
+                B.NombrePersona,
+                B.Detalle,
+                B.Observaciones,
+                B.Estado,
+                B.Solicitud,
+                B.SolicitadoPor,
+                B.Validacion,
+                B.ValidadoPor,
+                B.FechaValidacion,
+                B.Coordinacion,
+                B.Aprobacion,
+                B.AprobadoPor,
+                B.FechaAprobacion,
+                B.ObservacionesGer,
+                C.Letra,
+                C.No,
+                C.Concepto,
+                C.Areas,
+                D.FechaInsercion
+            FROM persona A
+            JOIN autorizaciones B ON B.ID_Persona = A.ID
+            JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
+            WHERE (B.Aprobacion = 1 AND B.Estado = 4) OR B.Estado = 0 OR B.Estado = 5 OR (B.Estado = 2 AND B.Coordinacion = 'C#') OR B.Bloqueado = 1
+        ");
+
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
 
 
 }

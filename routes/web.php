@@ -143,6 +143,16 @@ Route::get('/estadisticasindividual', function () {
     return view('Gerencia/estadisticaindividual');
 })->middleware('auth.gerencia');
 
+Route::get('/filtrarconceptoger', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/filtrarconcepto');
+});
+
+Route::get('filtrarconceptoger/datatable', [GerenciaController::class, 'filtrarconcepto'])->name('datager.filtrarconcepto');
+
+Route::get('/filtrarconceptoger', [GerenciaController::class, 'concepto']);
+
 
 
 
