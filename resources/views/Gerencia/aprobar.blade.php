@@ -661,6 +661,7 @@
 
             "initComplete": function(settings, json) {
             var buttonsHtml = '<div class="custom-buttons mb-2">' +
+                '<a href="filtrarconceptoger" class="btn btn-success btn-lg me-3" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel"></i></a>' +
                 '<button id="btnT" class="custom-btn me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                 '<button id="btnA" class="btn btn-success fw-bold me-2" title="APROBADOS">APROBADOS</button>' +
                 '<button id="btnR" class="btn btn-danger fw-bold me-2" title="RECHAZADOS">RECHAZADOS</button>' +
