@@ -2,6 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
+    
     @if (session('correcto'))
         <div>
             <script>
@@ -568,24 +569,7 @@
                             className: 'btn btn-success btn-lg'
                         }
                 ],
-            "initComplete": function(settings, json) {
-                var buttonsHtml = '<div class="custom-buttons">' +
-                    '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                    //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
-                    '</div>';
-                $(buttonsHtml).prependTo('.dataTables_filter');
-                $('#btnT').on('click', function() {
-                    table.ajax.reload(null, false);
 
-                });
-            $('.filter-input').keyup(function() {
-                table.column($(this).data('column')).search($(this).val()).draw();
-            });
-
-            $('.filter-select').change(function() {
-                table.column($(this).data('column')).search($(this).val()).draw();
-            });
-            },
         });
 
 

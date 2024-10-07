@@ -23,6 +23,7 @@
 
   <body>
         <div class="" >
+
             @yield('content')
         </div>
 

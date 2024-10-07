@@ -4,6 +4,7 @@ use App\Http\Controllers\CoordinacionController;
 use App\Http\Controllers\DirectorController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\JefaturaController;
+use App\Http\Controllers\Todos;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionsController;
 use Illuminate\Support\Facades\Cache;
@@ -105,6 +106,33 @@ Route::get('/coordinacion9', function () {
     return view('Gerencia/coordinacion9');
 })->middleware('auth.gerencia');
 
+Route::get('/otrabajo', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/otrabajo');
+})->middleware('auth.gerencia');
+Route::get('otrabajo/datatable', [GerenciaController::class, 'otrabajodatatable'])->name('datager.otrabajodatatable')->middleware('auth.gerencia');
+
+Route::get('/otrabajo', [GerenciaController::class, 'cargaragcoorjef'])
+->name('cargaragcoorjef');
+
+Route::post('/otrabajo/crear', [GerenciaController::class, 'crearotrabajo'])->name('crearotrabajo.ger')->middleware('auth.gerencia');
+
+Route::post('cambiar-estado', [GerenciaController::class, 'cambiarEstado'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+Route::post('/otrabajo/guardar-grupo', [GerenciaController::class, 'store']);
+
+Route::get('/otrabajo/ruta-para-cargar-grupos', [GerenciaController::class, 'loadGroups']);
+
+Route::delete('/otrabajo/eliminar-grupo/{id}', [GerenciaController::class, 'destroy']);
+
+Route::delete('/otrabajo/eliminar-integrante/{grupoId}/{integranteId}', [GerenciaController::class, 'eliminarIntegrante']);
+
+Route::get('/otrabajo/buscar-grupos', [GerenciaController::class, 'buscarGrupos']);
+
+Route::put('/otrabajo/actualizar-grupo/{grupoId}', [GerenciaController::class, 'updateNombreGrupo']);
+
 Route::get('aprobar', [GerenciaController::class, 'data1'])->middleware('auth.gerencia');
 
 Route::get('aprobar/datatable', [GerenciaController::class, 'solicitudes'])->name('datager.solicitudes')->middleware('auth.gerencia');
@@ -116,6 +144,8 @@ Route::get('rechazados/datatable', [GerenciaController::class, 'rechazados'])->n
 Route::get('tramite/datatable', [GerenciaController::class, 'tramite'])->name('datager.tramite')->middleware('auth.gerencia');
 
 Route::get('bloqueados/datatable', [GerenciaController::class, 'bloqueados'])->name('datager.bloqueados')->middleware('auth.gerencia');
+
+Route::get('anulados/datatable', [GerenciaController::class, 'anulados'])->name('datager.anulados')->middleware('auth.gerencia');
 
 Route::post('aprobar/actualizar-{id}', [GerenciaController::class, 'validarAutorizacion'])->name('updateger.autorizacion')->middleware('auth.gerencia');
 
@@ -136,6 +166,8 @@ Route::get('/estadisticas', [GerenciaController::class, 'contarsolicitudes'])
 
 Route::get('/estadisticas/actualizar-datos', [GerenciaController::class, 'actualizardatos'])
 ->name('actualizardatos');
+
+
 
 Route::get('/estadisticasindividual', function () {
     Cookie::forget('laravel_session');
@@ -170,3 +202,18 @@ Route::get('solicitudesjefatura/datatable', [JefaturaController::class, 'solicit
 Route::post('/solicitudesjefatura/crear', [JefaturaController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacionjef')->middleware('auth.jefatura');
 
 Route::post('/solicitudesjefatura/actualizar-{id}', [JefaturaController::class, 'actualizardetalle'])->name('update.autorizacionjef')->middleware('auth.jefatura');
+
+
+//TODOS LOS PERFILES
+
+Route::get('/ordentrabajo', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('otrabajo');
+});
+
+
+Route::get('ordentrabajo/datatable', [Todos::class, 'otrabajodatatable'])->name('data.otrabajotodos');
+
+Route::get('celular', [Todos::class, 'celularpendiente'])->name('celular');
+

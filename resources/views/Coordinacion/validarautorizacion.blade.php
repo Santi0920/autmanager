@@ -650,7 +650,10 @@
                                                         </div>
 
                                                 </div>
-                                            </div>`:``
+                                            </div>`:`
+                                            
+                                            
+                                            `
                                         }
 
 
@@ -678,6 +681,35 @@
                                             :
                                             ``
                                         }
+
+                                        ${row.Estado == 7 ?
+                                        `
+                                        <div class="row g-0 text-center">
+                                                <div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-3 border border-dark">
+                                                    <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
+                                                </div>
+
+                                                <div class="col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-9 d-flex text-start border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                        </div>
+                                                        <div class="col-md-3 border p-2">
+                                                            <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row g-0 border text-start p-2">
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ?`Ninguna.`:`${row.ObservacionesGer}`}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                        `
+                                        :
+                                        ``
+                                        }
+
 
                                         </div>
                                         <div class=" text-center p-3">
@@ -1532,6 +1564,8 @@
             }
     </style>
     </div>
+    @include('layouts.notification')
+    @include('layouts.celular')
     @include('layouts.footer')
 
 </body>
