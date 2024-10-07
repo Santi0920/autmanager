@@ -2,6 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
+    @include('layouts.notification')
     @if (session('correcto'))
         <div>
             <script>
@@ -29,14 +30,19 @@
             </script>
         </div>
     @endif
+
+
+
+
     {{-- FECHA --}}
     <div class="col-11" style="margin-left:3.5%">
         <div class="">
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
-                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐FILTRAR POR CONCEPTO⭐</b></span>
+                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- ORDEN DE TRABAJO -⭐</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
+                
                 <script>
                         function obtenerFechaActual() {
                             const fecha = new Date();
@@ -66,88 +72,22 @@
 
 
             </form>
+
         </div>
-        <div class="table-responsive mb-5">
+        <div class="table-responsive mb-5" id="tablepersonas">
             <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
-                        <th scope="col" class="text-center" style="">CONCEPTO</th>
+                        <th scope="col" class="text-center">TIPO</th>
                         <th scope="col" class="text-center">FECHA</th>
-                        <th scope="col" class="text-center">C.U</th>
-                        <th scope="col" class="text-center">CÉDULA</th>
-                        <th scope="col" class="text-center">CUENTA</th>
-                        <th scope="col" class="text-center">NOMBRE</th>
-                        <th scope="col" class="text-center" style="">DETALLE</th>
-                        <th scope="col" class="text-center">SOLICITADORPOR</th>
-                        <th scope="col" class="text-center">CONVENCION</th>
+                        <th scope="col" class="text-center w-50">DESCRIPCIÓN</th>
                         <th scope="col" class="text-center">ESTADO</th>
-                        <th scope="col" class="text-center">VALIDADOPOR</th>
-                        <th scope="col" class="text-center">FECHA VALIDACIÓN</th>
-                        <th scope="col" class="text-center">OBSERVACIONES GERENCIA</th>
-                        <th scope="col" class="text-center">FECHA APROBACION</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
 
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="ID" data-column="0" />
-                        </td>
-                        <td>
-                            <select name="" id="" data-column="1" class="form-control filter-select fs-4 fw-bold">
-                                <option value="">CONCEPTO...</option>
-                                @foreach ($user as $autorizacion)
-                                        <option class="fw-semibold" value="{{ $autorizacion->Concepto }}">
-                                            {{ $autorizacion->Concepto }}
-                                        </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="FECHA" data-column="2" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="C.U" data-column="3" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="CÉDULA" data-column="4" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="CUENTA" data-column="5" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="NOMBRE" data-column="6" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="DETALLE" data-column="7" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="SOLICITADO POR" data-column="8" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="CONVENCION" data-column="9" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="ESTADO" data-column="10" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="VALIDADO POR" data-column="11" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="FECHA VALIDACION" data-column="12" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="OBSERVACIONES GER" data-column="13" />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control filter-input fs-4 fw-bold" name="" id="" placeholder="FECHA APROBACION" data-column="14" />
-                        </td>
-                    </tr>
-
-                </tfoot>
             </table>
         </div>
     </div>
@@ -162,16 +102,17 @@
     <script src="js/condicionNit.js"></script>
     <script>
         var table = $('#personas').DataTable({
-            "ajax": "{{ route('datacoor.filtrarconcepto') }}",
+            "ajax": "{{ route('data.otrabajotodos') }}",
+            "processing": true,
             "order": [
-                [0, 'asc']
+                [0, 'desc']
             ],
+            scrollY: 450,
             "columns": [{
-                    data: 'IDAutorizacion',
+                    data: 'id',
                     render: function(data, type, row) {
-                        var ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`
-
-                        return ID
+                        var ID = `<span class='text-danger fw-bold'>${row.id}</span>`;
+                        return ID;
                     },
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({
@@ -181,119 +122,39 @@
                         });
                     }
                 },
-
                 {
-                    data: 'CodigoAutorizacion',
+                    data: 'tipo',
                     render: function(data, type, row) {
-                        var Codigo =
-                            `${row.Concepto}`
-
-                        return Codigo
+                        var tipo = `<span class='text-dark fw-bold'>${row.tipo.charAt(0).toUpperCase()+ row.tipo.slice(1)}</span>`;
+                        return tipo;
                     },
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({
                             'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
+                            'font-size': '30px',
+                            'text-align': 'center',
                         });
                     }
                 },
-
                 {
-                    data: 'Fecha',
+                    data: 'fecha',
                     render: function(data, type, row) {
-                        var dato =
-                            `${row.Fecha}`
-
-                        return dato
+                        var fecha = `<span class='text-danger fw-bold'>${row.fecha.charAt(0).toUpperCase()+ row.fecha.slice(1)}</span>`;
+                        return fecha;
                     },
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({
                             'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
+                            'font-size': '30px',
+                            'text-align': 'center',
                         });
                     }
                 },
-
-
                 {
-                    data: null,
+                    data: "descripcion",
                     render: function(data, type, row) {
-                        var dato =
-                            `${row.NumAgencia}`
-
-                        return dato
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.Cedula}`
-
-                        return dato
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.CuentaAsociado}`
-
-                            if(row.CuentaAsociado == null){
-                            return 'N/A'
-                        }else{
-                            return dato
-                        }
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.NombrePersona}`
-
-                        return dato
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var textoCorto = row.Detalle.substring(0, 100); // Ajusta el número de caracteres
-                        var textoCompleto = row.Detalle;
+                        var textoCorto = row.descripcion.substring(0, 100); // Ajusta el número de caracteres
+                        var textoCompleto = row.descripcion;
 
                         var dato = `
                             <span class="texto-corto">${textoCorto}...</span>
@@ -306,8 +167,8 @@
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({
                             'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
+                            'font-size': '30px',
+                            'text-align': 'center',
                         });
 
                         $(td).find('.leer-mas').on('click', function() {
@@ -327,150 +188,42 @@
                         });
                     }
                 },
-
                 {
-                    data: null,
+                    data: 'estado',
                     render: function(data, type, row) {
-                        var dato =
-                            `${row.SolicitadoPor}`
+                        var id = row.id
+                        const estadoClasses = {
+                            "PERMANENTE": "btn-danger",
+                            "ANULAR": "btn-danger",
+                            "LABOR A CUMPLIR": "btn-warning",
+                            "TEMPORAL": "btn-warning",
+                            "TERMINADA": "btn-success",
+                            "APLAZADA": "btn-primary",
+                            "DEROGADA": "btn-primary"
+                        };
 
-                        return dato
+
+                    var estadoview = `
+                    <div class="btn-group fs-5 pe-none">
+                        <button type="button" class="btn ${estadoClasses[row.estado]} shadow"
+                                style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;"
+                                data-bs-toggle="dropdown" aria-expanded="false" id="dropdownToggle_${id}">
+                            ${row.estado}
+                        </button>
+                    </div>
+                    `;
+
+                        return estadoview;
                     },
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({
                             'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.Convencion}`
-
-                        if(row.Convencion == null){
-                            return 'N/A'
-                        }else{
-                            return dato
-                        }
-
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': 'bold',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-
-                {
-                    data: 'Estado',
-                    render: function(data, type, row) {
-                        // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
-                        if (row.Estado == 1) {
-                            var Estado = `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
-                                <i class="fa-solid fa-check"></i> VALIDADO</label></div>`
-                        } else if (row.Estado == 4) {
-                            var Estado =
-                                '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO</div>'
-                        } else {
-                            var Estado =
-                                '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">SOLICITUD DE COORDINACIÓN</div>'
-                        }
-
-                        return Estado;
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'center'
-                        });
-                    }
-                },
-
-
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.ValidadoPor}`
-
-                        return dato
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.FechaValidacion}`
-
-                        return dato
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.ObservacionesGer}`
-
-                        if(row.ObservacionesGer==null){
-                            return 'Ninguna.'
-                        }else{
-                            return dato
-                        }
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
-                        });
-                    }
-                },
-
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var dato =
-                            `${row.FechaAprobacion}`
-
-                        return dato
-                    },
-                    createdCell: function(td, cellData, rowData, row, col) {
-                        $(td).css({
-                            'font-weight': '500',
-                            'font-size': '20px',
-                            'text-align': 'justify'
+                            'font-size': '30px',
+                            'text-align': 'center',
                         });
                     }
                 },
             ],
-
-
             "lengthMenu": [
                 [5],
                 [5]
@@ -486,7 +239,7 @@
             },
             "language": {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen autorizaciones disponibles!</span>",
+                "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen ordenes de trabajo disponibles!</span>",
                 "info": "Mostrando la página _PAGE_ de _PAGES_",
                 "infoEmpty": "No hay registros disponibles",
                 "infoFiltered": "(Filtrado de _MAX_ registros totales)",
@@ -495,51 +248,34 @@
                     "next": "Siguiente",
                     "previous": "Anterior"
                 }
-            },
-            responsive: "true",
-                    dom: 'Bfrtilp',
-                    buttons:[
-                        {
-                            extend:    'excelHtml5',
-                            text:      '<i class="fas fa-file-excel"></i> ',
-                            titleAttr: 'Exportar a Excel',
-                            className: 'btn btn-success btn-lg'
-                        }
-                ],
-            "initComplete": function(settings, json) {
-                var buttonsHtml = '<div class="custom-buttons">' +
-                    '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                    //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
-                    '</div>';
-                $(buttonsHtml).prependTo('.dataTables_filter');
-                $('#btnT').on('click', function() {
-                    table.ajax.reload(null, false);
-
-                });
-            $('.filter-input').keyup(function() {
-                table.column($(this).data('column')).search($(this).val()).draw();
-            });
-
-            $('.filter-select').change(function() {
-                table.column($(this).data('column')).search($(this).val()).draw();
-            });
-            },
+            }
         });
-
-
-        function csesion() {
-            var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
-            return respuesta
-        }
-    </script>
-
-
+        </script>
 
     </div>
 
     </div>
     <style>
-            .texto-corto {
+            /* From Uiverse.io by felipesntr */ 
+                .buttonpro {
+                border-radius: 0.9em;
+                cursor: pointer;
+                padding: 0.8em 1.2em 0.8em 1em;
+                transition: all ease-in-out 0.2s;
+                font-size: 16px;
+                }
+
+                .buttonpro span {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #000000;
+                font-weight: 600;
+                }
+
+ 
+
+                .texto-corto {
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -556,8 +292,6 @@
                 color: blue;
                 cursor: pointer;
             }
-
-
 
             .input-group-text {
                 position: relative; /* Añade posicionamiento relativo */
@@ -828,8 +562,7 @@
             }
     </style>
     </div>
-    @include('layouts.notification')
-    @include('layouts.celular')
+
     @include('layouts.footer')
 
 </body>

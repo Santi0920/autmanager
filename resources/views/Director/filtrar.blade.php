@@ -93,8 +93,11 @@
             </div>
         </div>
     </div>
-
-
+    @if (auth()->user()->rol == 'Gerencia')
+    @else
+        @include('layouts.notification')
+    @endif
+    @include('layouts.celular')
     @include('layouts.footer')
 
     <div class="loader d-none">

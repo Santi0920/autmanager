@@ -2,6 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
+    
     @if (session('correcto'))
         <div>
             <script>
@@ -933,7 +934,6 @@
             }
     </style>
     </div>
-
     @include('layouts.footer')
 
 </body>

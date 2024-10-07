@@ -5,7 +5,7 @@
                 @include('layouts/cards')
 
 
-
+                
         @include('layouts.footer')
 
     </body>

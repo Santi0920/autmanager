@@ -201,7 +201,11 @@
                         data: 'Estado',
                         render: function(data, type, row) {
 
-                            if(row.Bloqueado == 1){
+                            if (row.Bloqueado == 2) {
+                                var Estado =
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>ANULADO</div>';
+                            } 
+                            else if(row.Bloqueado == 1){
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>';
                             }else if (row.Estado == 0) {
@@ -216,6 +220,9 @@
                             } else if (row.Estado == 4) {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
+                            } else if (row.Estado == 7) {
+                                var Estado =
+                                    '<div class="btn btn-info blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                             } else {
                                 var Estado =
                                     '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR(GERENCIA)</div>'
@@ -408,6 +415,8 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
+                                                            row.Estado == 7 ?
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
                                                             '<h1>nada</h1>'
                                                         }
                                                     </div>
@@ -461,7 +470,7 @@
                                                         }
                                                         </div>
                                                     </div>
-                                                    ${row.Estado != 0 && row.Estado != 5 ?
+                                                ${row.Estado != 0 && row.Estado != 5 ?
                                                     `
                                                         <div class="row g-0">
                                                             <div class="col-md-12 d-flex justify-content-start border p-2">
@@ -596,7 +605,7 @@
                                             }
 
                                             ${row.Aprobacion != 1 ? (
-                                                row.Estado == 3 && row.Validacion == 1 ? `
+                                                row.Estado == 3 && row.Validacion == 1 || row.Validacion == 1 ? `
                                                     <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
                                                         <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
                                                     </div>` :
@@ -604,7 +613,12 @@
                                                     <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
                                                         <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE</span></span>
                                                     </div>` : ''
-                                            ) : ''}
+                                            ) : `
+                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
+                                                </div>
+                                            
+                                            `}
 
 
 
@@ -656,7 +670,10 @@
                                                     class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
                                                     <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
                                                 </div>`:
-                                                ``
+                                                `<div
+                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
+                                                    <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
+                                                </div>`
                                                 }
                                                 <div class="col-md-12 col-lg-10">
                                                     <div class="row g-0">
@@ -697,7 +714,7 @@
                                             :
                                             ``
                                         }
-
+                                            
                                         </div>
                                         ${row.Estado == 0 || row.Estado == 5 ?
                                         `<div class=" text-center p-3">
@@ -1421,6 +1438,8 @@
         }
     </style>
     </div>
+    @include('layouts.notification')
+    @include('layouts.celular')
     @include('layouts.footer')
 
 </body>

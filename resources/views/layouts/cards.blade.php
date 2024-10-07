@@ -35,7 +35,7 @@
             </div>
 
             <div class="row mb-2 text-center">
-                <a href="" class="text-decoration-none text-dark"><div class="col-xl-6 col-md-12">
+                <div class="col-xl-6 col-md-12">
                     <div class="card">
                       <div class="card-content">
                         <div class="card-body cleartfix">
@@ -61,10 +61,10 @@
                             </div>
                         </div>
                       </div>
-                    </div></a>
+                    </div>
                 </div>
                 <div class="col-xl-6 col-md-12">
-                    <a href="" class="text-decoration-none text-dark"><div class="card overflow-hidden">
+                    <div class="card overflow-hidden">
                     <div class="card-content">
                         <div class="card-body cleartfix">
                         <div class="media align-items-stretch">
@@ -81,13 +81,13 @@
                         </div>
                         </div>
                     </div>
-                    </div></a>
+                    </div>
                 </div>
             </div>
 
-            <div class="row text-center">
+            <div class="row text-center mb-2">
                 <div class="col-xl-6 col-md-12">
-                    <a href="" class="text-decoration-none text-dark"><div class="card overflow-hidden">
+                    <div class="card overflow-hidden">
                     <div class="card-content">
                         <div class="card-body cleartfix">
                         <div class="media align-items-stretch">
@@ -104,11 +104,11 @@
                         </div>
                         </div>
                     </div>
-                    </div></a>
+                    </div>
                 </div>
 
                 <div class="col-xl-6 col-md-12">
-                    <a href="" class="text-decoration-none text-dark"><div class="card">
+                    <div class="card">
                     <div class="card-content">
                         <div class="card-body cleartfix">
                         <div class="media align-items-stretch">
@@ -124,11 +124,43 @@
                             </div>
                         </div>
                         </div>
-                    </div></a>
+                    </div>
                     </div>
 
                 </div>
             </div>
+
+            <div class="row mb-2 text-center">
+                <div class="col-xl-12 col-md-12">
+                    <div class="card">
+                      <div class="card-content">
+                        <div class="card-body cleartfix">
+                          <div class="media align-items-stretch">
+                            <div class="align-self-center">
+                              <i class="icon-speech warning font-large-2 mr-2"></i>
+                            </div>
+                            <div class="media-body">
+                              <h3 class="fw-bold">🔵ANULADOS🔵</h3>
+                              <span class="fs-4 fst-italic">Directores, Coordinadores y Jefaturas</span>
+                            </div>
+                                <div class="text-center mt-3">
+                                    <div id="porcentaje-tramite-container">
+                                        <div style="display:inline;width:150px;height:150px;">
+                                            <canvas width="0" height="150"></canvas>
+                                            <input type="text" value="{{$porcentajeanulados}}" id="porcentaje-tramite" class="knob hide-value responsive angle-offset" data-angleoffset="0" data-thickness=".15" data-linecap="round" data-width="150" data-height="150" data-inputcolor="black" data-readonly="true" data-fgcolor="#0055ff " readonly="readonly" style="width: 79px; height: 50px; position: absolute; vertical-align: middle; margin-top: 50px; margin-left: -114px; border: 0px; background: none; font: bold 30px Arial; text-align: center; color: rgb(225, 225, 225); padding: 0px; appearance: none; display: none;">
+                                            <i class="knob-center-icon icon-note" style="width: 79px; height: 50px; position: absolute; vertical-align: middle; margin-top: 50px; margin-left: -114px; border: 0px; background: none; font: normal 30px Arial; text-align: center; color: rgb(225, 225, 225); padding: 0px; appearance: none;font-size: 50px;">
+                                                <h1 class="fw-bold value text-dark fs-3" akhi="{{$anuladosgerencia}}" id="anulados">0</h1>
+                                            </i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            
         </section>
         <p class="text-center mt-3 fw-bold fs-2">
             TOTAL: <span class="btn btn-secondary shadow value " style="padding: 0rem 0.8rem; border-radius: 10%; font-weight: 600; font-size: 25px;" akhi="{{$total}}" id="total"><b>0</b></span>
@@ -177,6 +209,7 @@
                         $('#aprobados').text(response.aprobadogerencia);
                         $('#aprobados').text(response.aprobadogerencia);
                         $('#total').text(response.total);
+                        $('#anulados').text(response.anuladosgerencia);
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);

@@ -34,7 +34,7 @@
         <div class="">
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
-                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- GERENCIA -⭐</b></span>
+                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- DIRECCIÓN GENERAL -⭐</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
                 <script>
@@ -251,6 +251,9 @@
                         } else if(row.Estado == 2) {
                             var Estado =
                                 '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRÁMITE</div>'
+                        }else if(row.Estado == 7) {
+                            var Estado =
+                                '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                         }else{
                             var Estado =
                                 '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">SOLICITUD DE COORDINACIÓN</div>'
@@ -381,7 +384,9 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
-                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - SOLICITUD DE COORDINACIÓN</button>'
+                                                            row.Estado == 7 ?
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>':
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">ERROR</button>'
                                                         }
                                                     </div>
                                                     </div>
@@ -538,9 +543,61 @@
                                     </div>
                                     `:
                                     `
-                                    ${row.Estado == 4 && row.Bloqueado == 0 ?
+                                    ${row.Estado == 4 && row.Bloqueado == 0 || row.Estado == 7 ?
                                         `
                                         <div class="row g-0 text-center">
+                                            <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-info-subtle'} border p-1 border-dark" id="fondo">
+                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : row.Estado == 7 ? `AN` : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADO' : row.Estado == 7 ? `ANULADO`: 'RECHAZADO'}</span></span>
+                                            </div>
+
+                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                <div class="row g-0 border">
+                                                    <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
+                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                        <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-0">
+                                                    <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                        <span>${row.ObservacionesGer == null ? 'Ninguna.' : `${row.ObservacionesGer}`}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ` : row.Bloqueado == 1 || (row.Estado == 4 || row.Aprobacion == 1 || row.Estado == 5 || row.Estado == 2) ?
+                                        `  ${row.Estado == 2 ? `` : row.Estado == 5 ? `
+                                                <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                @csrf
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border-dark">
+                                                        <label class="label">
+                                                            <input value="7" type="radio" name="Estado" id="Estado" required>
+                                                            <span>ANULAR</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-md-12 col-lg-10">
+                                                        <div class="row g-0">
+                                                            <div class="col-md-9 d-flex text-start border p-2">
+                                                                <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                            </div>
+                                                            <div class="col-md-3 border p-2">
+                                                                <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                            </div>
+                                                        </div>
+                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="text-center p-3">
+                                                    <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
+                                                </div>
+                                            </form>
+                                        
+                                        
+                                        `: `
+                                        
+                                                                                                                            <div class="row g-0 text-center">
                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-success-subtle'} border p-1 border-dark" id="fondo">
                                                 <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADO' : 'RECHAZADO'}</span></span>
                                             </div>
@@ -561,8 +618,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        ` : row.Bloqueado == 1 ?
-                                        `
+                                        `} 
 
                                         ` : `
                                             <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
@@ -572,6 +628,10 @@
                                                         <label class="label">
                                                             <input value="0" type="radio" name="Estado" id="Estado" required>
                                                             <span>DESBLOQUEAR</span>
+                                                        </label>
+                                                        <label class="label">
+                                                            <input value="7" type="radio" name="Estado" id="Estado" required>
+                                                            <span>ANULAR</span>
                                                         </label>
                                                     </div>
                                                     <div class="col-md-12 col-lg-10">
@@ -661,12 +721,13 @@
 
             "initComplete": function(settings, json) {
             var buttonsHtml = '<div class="custom-buttons mb-2">' +
-                '<a href="filtrarconceptoger" class="btn btn-success btn-lg me-3" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel"></i></a>' +
+                '<a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><button class="custom-btn2 me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fas fa-file-excel"></i></button></a>' +
                 '<button id="btnT" class="custom-btn me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                 '<button id="btnA" class="btn btn-success fw-bold me-2" title="APROBADOS">APROBADOS</button>' +
                 '<button id="btnR" class="btn btn-danger fw-bold me-2" title="RECHAZADOS">RECHAZADOS</button>' +
                 '<button id="btnTramite" class="btn btn-warning fw-bold me-2" title="EN TRÁMITE">EN TRÁMITE</button>' +
-                '<button id="btnBloqueado" class="btn btn-primary fw-bold" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                '<button id="btnBloqueado" class="btn btn-primary fw-bold me-2" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                '<button id="btnAnulado" class="btn btn-info fw-bold" title="BLOQUEADOS">ANULADOS</button>' +
                 //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
                 '</div>';
 
@@ -699,6 +760,13 @@
 
                 $('#btnBloqueado').on('click', function() {
                     var newAjaxSource = '{{ route("datager.bloqueados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnAnulado').on('click', function() {
+                    var newAjaxSource = '{{ route("datager.anulados") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
@@ -737,9 +805,7 @@
 
             var form = $("#formEditarAutorizacion" + id);
 
-            // Verificar si el formulario ya ha sido enviado
             if (form.data('submitted')) {
-                // Si el formulario ya ha sido enviado, no hacer nada
                 return;
             }
 
@@ -814,7 +880,6 @@
         });
     </script>
 
-    <script></script>
 
 
     </div>
@@ -911,10 +976,9 @@
         .custom-btn {
             background-color: #646464;
             font-weight: bold;
-            font-size: 20px;
+            font-size: 21px;
             color: white;
-            padding: 5px 10px;
-            margin: 2px;
+            padding: 6px 13px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -922,6 +986,21 @@
 
         .custom-btn:hover {
             background-color: #aeaeae;
+        }
+
+        .custom-btn2 {
+            background-color: #168400;
+            font-weight: bold;
+            font-size: 21px;
+            color: white;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .custom-btn2:hover {
+            background-color: #1eb200;
         }
 
         .label {
@@ -1090,7 +1169,7 @@
             }
     </style>
     </div>
-
+    
     @include('layouts.footer')
 
 </body>

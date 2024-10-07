@@ -202,6 +202,10 @@
                             } else if (row.Estado == 5) {
                                 var Estado =
                                     '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR(GERENCIA)</div>'
+                            }
+                            else if (row.Estado == 7) {
+                                var Estado =
+                                    '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                             } else {
                                 var Estado =
                                     '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
@@ -390,7 +394,7 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
-                                                            '<h1>nada</h1>'
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>'
                                                         }
                                                     </div>
                                                     </div>
@@ -715,6 +719,34 @@
                                             </div>`
                                             :
                                             ``
+                                        }
+
+                                                                                ${row.Estado == 7 ?
+                                        `
+                                        <div class="row g-0 text-center">
+                                                <div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-3 border border-dark">
+                                                    <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
+                                                </div>
+
+                                                <div class="col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-9 d-flex text-start border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                        </div>
+                                                        <div class="col-md-3 border p-2">
+                                                            <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row g-0 border text-start p-2">
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ?`Ninguna.`:`${row.ObservacionesGer}`}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                        `
+                                        :
+                                        ``
                                         }
 
                                         </div>
@@ -1447,6 +1479,8 @@
 
     </style>
     </div>
+    @include('layouts.notification')
+    @include('layouts.celular')
     @include('layouts.footer')
 
 </body>

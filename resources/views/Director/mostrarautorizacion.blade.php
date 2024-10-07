@@ -37,6 +37,8 @@
                                         <button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>
                                     @elseif ($autorizacion->EstadoAutorizacion == 6)
                                     <button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>
+                                    @elseif ($autorizacion->EstadoAutorizacion == 7)
+                                    <button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>
                                     @endif
                                  </div>
                               </div>
@@ -141,7 +143,7 @@
                     @else
                     @endif
 
-                    @if($autorizacion->Aprobacion ==  1 || $autorizacion->EstadoAutorizacion == 5)
+                    @if($autorizacion->Aprobacion ==  1 || $autorizacion->EstadoAutorizacion == 5 || $autorizacion->Aprobacion == 0)
                         <div class="row g-0 text-center">
                             @if ($autorizacion->EstadoAutorizacion == 4)
                                 <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-3 border border-dark">
@@ -151,6 +153,10 @@
                                 <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
                                     <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
                                 </div>
+                            @elseif ($autorizacion->EstadoAutorizacion == 7)
+                                <div class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-3 border border-dark">
+                                    <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
+                            </div>
                             @endif
                             <div class="col-md-12 col-lg-10">
                                 <div class="row g-0">
@@ -181,7 +187,11 @@
          </div>
     </div>
 
-
+    @if (auth()->user()->rol == 'Gerencia')
+    @else
+        @include('layouts.notification')
+    @endif
+    @include('layouts.celular')
     @include('layouts.footer')
 
 

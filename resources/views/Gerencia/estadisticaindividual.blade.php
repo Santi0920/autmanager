@@ -2,6 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
+    
     @if (session('correcto'))
         <div>
             <script>
