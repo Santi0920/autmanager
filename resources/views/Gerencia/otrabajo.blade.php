@@ -2,7 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
-    
+
     @if (session('correcto'))
         <div>
             <script>
@@ -21,10 +21,9 @@
             <script>
                 Swal.fire({
                     icon: 'error',
-                    title: "{{ session('incorrecto') }}",
-                    text: '',
+                    title: "¡Error!",
+                    html: "{!! session('incorrecto') !!}",
                     confirmButtonColor: '#646464',
-                    timer: 10000
 
                 });
             </script>
@@ -34,7 +33,7 @@
 
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-  
+
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -54,22 +53,22 @@
                 <div class="form-check fs-4">
                     <input class="form-check-input border-dark border-3" type="radio" name="tipoorden" id="gruposacciones">
                     <label class="form-check-label" for="gruposacciones">
-                        Grupos - Acciones (Crear, Editar, etc) 
+                        Grupos - Acciones (Crear, Editar, etc)
                     </label>
                 </div>
-            
+
 
                 @include('layouts/grupos')
 
-                <form action="{{route('crearotrabajo.ger')}}" id='form-actualizar-datos' method="POST">  
+                <form action="{{route('crearotrabajo.ger')}}" id='form-actualizar-datos' method="POST" onsubmit="disableButton()">
                     @csrf
                     @include('layouts/impartirorden')
 
 
-            
+
         </div>
         <div class="modal-footer">
-          <button id="buttonmodal" type="submit" class="fs-4 btn btn-warning fw-bold">Asignar Orden de Trabajo</button>
+            <button id="buttonmodal" type="submit" class="fs-4 btn btn-warning fw-bold">Asignar Orden de Trabajo</button>
         </div>
     </form>
       </div>
@@ -83,7 +82,7 @@
                     <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- ORDEN DE TRABAJO -⭐</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
-                
+
                 <script>
                         function obtenerFechaActual() {
                             const fecha = new Date();
@@ -128,7 +127,7 @@
                         Impartir Nueva Orden de Trabajo
                     </span>
                 </button>
-                
+
             </div>
         </div>
         <div class="table-responsive mb-5" id="tablepersonas">
@@ -353,8 +352,8 @@
 
 
         //         response.cargos.forEach(function(item) {
-        //             var optionText = item.name + ' - ' + item.agenciau;  
-        //             var optionValue = item.name;  
+        //             var optionText = item.name + ' - ' + item.agenciau;
+        //             var optionValue = item.name;
 
         //             $('#nombreempleado').append('<option class="fw-semibold" value="' + optionValue + '">' + optionText + '</option>');
         //         });
@@ -403,24 +402,24 @@
                     id: selectedId
                 },
                 success: function(response) {
-                    
+
                     const estadoClasses = {
-                        "PERMANENTE": "btn-danger", 
-                        "ANULAR": "btn-danger",      
-                        "LABOR A CUMPLIR": "btn-warning", 
-                        "TEMPORAL": "btn-warning",  
-                        "TERMINADA": "btn-success",  
-                        "APLAZADA": "btn-primary",    
-                        "DEROGADA": "btn-primary"     
+                        "PERMANENTE": "btn-danger",
+                        "ANULAR": "btn-danger",
+                        "LABOR A CUMPLIR": "btn-warning",
+                        "TEMPORAL": "btn-warning",
+                        "TERMINADA": "btn-success",
+                        "APLAZADA": "btn-primary",
+                        "DEROGADA": "btn-primary"
                     };
 
-               
+
                     dropdownToggle.text(response.estado);
 
-        
+
                     dropdownToggle.removeClass('btn-danger btn-warning btn-success btn-primary');
 
-             
+
                     dropdownToggle.addClass(estadoClasses[response.estado]);
 
                     // alert('Estado cambiado a: ' + response.estado);
@@ -431,6 +430,9 @@
             });
         });
 
+        function disableButton() {
+            document.getElementById('buttonmodal').disabled = true;
+        }
 
     </script>
 
@@ -439,7 +441,7 @@
 
     </div>
     <style>
-            /* From Uiverse.io by felipesntr */ 
+            /* From Uiverse.io by felipesntr */
                 .buttonpro {
                 border-radius: 0.9em;
                 cursor: pointer;
@@ -456,7 +458,7 @@
                 font-weight: 600;
                 }
 
- 
+
 
                 .texto-corto {
                 overflow: hidden;

@@ -559,7 +559,7 @@ class GerenciaController extends Controller
         $agencia = DB::select("SELECT DISTINCT NomAgencia FROM autorizaciones ORDER BY NomAgencia ASC");
         $solicitadopor = DB::select("SELECT DISTINCT SolicitadoPor FROM autorizaciones ORDER BY SolicitadoPor ASC");
         $validadopor = DB::select("SELECT DISTINCT ValidadoPor FROM autorizaciones ORDER BY ValidadoPor ASC");
-    
+
 
         return view('Gerencia/filtrarconcepto', [
             'user' => $user,
@@ -568,7 +568,7 @@ class GerenciaController extends Controller
             'validadopor' => $validadopor
         ]);
     }
-    
+
 
 
         public function filtrarconcepto(Request $request)
@@ -652,11 +652,14 @@ class GerenciaController extends Controller
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
 
-
+        $validardescripcion = DB::select('SELECT descripcion FROM ordentrabajo WHERE descripcion = ? AND asignado = ?', [$request->descripcion, $request->nombreempleado]);
+        if(!empty($validardescripcion)){
+            return back()->with("incorrecto", "<span class='fs-4'>Ya existe una <b>Orden de Trabajo</b> con la misma descripción</span>");
+        }
 
         $id_insertado = DB::table('ordentrabajo')->insertGetId([
             'tipo' => $request->tipoorden,
-            'fecha' => $fechaStringfechadeSolicitud, 
+            'fecha' => $fechaStringfechadeSolicitud,
             'descripcion' => $request->descripcion,
             'asignado' => $request->nombreempleado,
             'estado' => $request->estadopolitica,
@@ -664,93 +667,92 @@ class GerenciaController extends Controller
 
 
 
-
         $query = DB::select('SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?', [$request->nombreempleado]);
 
-        if (!empty($query)) {
-            $integrantes = json_decode($query[0]->integrantes, true);
-            DB::table('users')
-            ->whereIn('id', $integrantes)
-            ->increment('notificaciones', 1);
-            $idsString = implode(',', $integrantes); 
+        // if (!empty($query)) {
+        //     $integrantes = json_decode($query[0]->integrantes, true);
+        //     DB::table('users')
+        //     ->whereIn('id', $integrantes)
+        //     ->increment('notificaciones', 1);
+        //     $idsString = implode(',', $integrantes);
 
-            $correos = DB::select("SELECT email,name,celular FROM users WHERE id IN ($idsString)");
+        //     $correos = DB::select("SELECT email,name,celular FROM users WHERE id IN ($idsString)");
 
-            $emails = array_map(function($user) {
-                if ($user->celular !== null) {
-                    return [
-                        'email' => $user->email,
-                        'name' => $user->name,
-                        'celular' => $user->celular
-                    ];
-                }
-            }, $correos);
-            foreach ($emails as $emailData) {
-                SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
-                $url = 'https://aio2.sigmamovil.com/api/sms'; 
-                $nombrecompleto = $emailData['name'];
-                $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+        //     $emails = array_map(function($user) {
+        //         if ($user->celular !== null) {
+        //             return [
+        //                 'email' => $user->email,
+        //                 'name' => $user->name,
+        //                 'celular' => $user->celular
+        //             ];
+        //         }
+        //     }, $correos);
+        //     foreach ($emails as $emailData) {
+        //         SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
+        //         $url = 'https://aio2.sigmamovil.com/api/sms';
+        //         $nombrecompleto = $emailData['name'];
+        //         $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
 
-                $data = [
-                    "idSmsCategory" => 1,
-                    "name" => "".$id_insertado."otrabajo",
-                    "receiver" => [
-                        [
-                            "indicative" => 57,
-                            "phone" => $emailData['celular'],
-                            "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
+        //         $data = [
+        //             "idSmsCategory" => 1,
+        //             "name" => "".$id_insertado."otrabajo",
+        //             "receiver" => [
+        //                 [
+        //                     "indicative" => 57,
+        //                     "phone" => $emailData['celular'],
+        //                     "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
 
-                        ]
-                    ],
-                    "dateNow" => 1,
-                    "type" => "lote",
-                    "track" => 0,
-                    "sendPush" => 0,
-                    "api" => 1,
-                    "notification" => 0,
-                    "email" => "email@email.com.co",
-                    "rne" => 0
-                ];
+        //                 ]
+        //             ],
+        //             "dateNow" => 1,
+        //             "type" => "lote",
+        //             "track" => 0,
+        //             "sendPush" => 0,
+        //             "api" => 1,
+        //             "notification" => 0,
+        //             "email" => "email@email.com.co",
+        //             "rne" => 0
+        //         ];
 
-                $response = Http::withToken($bearerToken)->post($url, $data);  
-            }
-        } else{
-            DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
-            $queryindividual = DB::select('SELECT * FROM users WHERE name = ?', [$request->nombreempleado]);
-            $email = $queryindividual[0]->email;
-            $nombrecompleto = $queryindividual[0]->name;
-            Mail::to($email)->send(new CorreoInfo($nombrecompleto, $id_insertado, $fechaStringfechadeSolicitud));
-            $querycelular = DB::select('SELECT celular FROM users WHERE name = ?', [$request->nombreempleado]);
-            $celular = $querycelular[0]->celular;
+        //         $response = Http::withToken($bearerToken)->post($url, $data);
+        //     }
+        // } else{
+        //     DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
+        //     $queryindividual = DB::select('SELECT * FROM users WHERE name = ?', [$request->nombreempleado]);
+        //     $email = $queryindividual[0]->email;
+        //     $nombrecompleto = $queryindividual[0]->name;
+        //     Mail::to($email)->send(new CorreoInfo($nombrecompleto, $id_insertado, $fechaStringfechadeSolicitud));
+        //     $querycelular = DB::select('SELECT celular FROM users WHERE name = ?', [$request->nombreempleado]);
+        //     $celular = $querycelular[0]->celular;
 
-            if(!empty($celular)){
-                $url = 'https://aio2.sigmamovil.com/api/sms'; 
-                
-                $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+        //     if(!empty($celular)){
+        //         $url = 'https://aio2.sigmamovil.com/api/sms';
 
-                $data = [
-                    "idSmsCategory" => 1,
-                    "name" => "".$id_insertado."otrabajo",
-                    "receiver" => [
-                        [
-                            "indicative" => 57,
-                            "phone" => $celular,
-                            "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
-                        ]
-                    ],
-                    "dateNow" => 1,
-                    "type" => "lote",
-                    "track" => 0,
-                    "sendPush" => 0,
-                    "api" => 1,
-                    "notification" => 0,
-                    "email" => "email@email.com.co",
-                    "rne" => 0
-                ];
+        //         $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
 
-                $response = Http::withToken($bearerToken)->post($url, $data);
-            }
-        }
+        //         $data = [
+        //             "idSmsCategory" => 1,
+        //             "name" => "".$id_insertado."otrabajo",
+        //             "receiver" => [
+        //                 [
+        //                     "indicative" => 57,
+        //                     "phone" => $celular,
+        //                     "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
+        //                 ]
+        //             ],
+        //             "dateNow" => 1,
+        //             "type" => "lote",
+        //             "track" => 0,
+        //             "sendPush" => 0,
+        //             "api" => 1,
+        //             "notification" => 0,
+        //             "email" => "email@email.com.co",
+        //             "rne" => 0
+        //         ];
+
+        //         $response = Http::withToken($bearerToken)->post($url, $data);
+        //     }
+        // }
 
 
 
@@ -761,7 +763,7 @@ class GerenciaController extends Controller
     {
         $integrantesJson = json_encode($request->members);
         $validarnombre = DB::select('SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?', [$request->name]);
-    
+
         if (empty($validarnombre)) {
             $consultantes = DB::select('SELECT id FROM users WHERE rol = ?', ['D. de Agencia']);
 
@@ -770,64 +772,64 @@ class GerenciaController extends Controller
             foreach ($consultantes as $consultante) {
                 $consultantesArray[] = $consultante->id;
             }
-    
+
             // Combinar los miembros recibidos con los consultantes
             $integrantesArray = array_merge($request->members, $consultantesArray);
-    
+
             // Convertir el array combinado a JSON
             $integrantesJson = json_encode($integrantesArray);
-    
+
             // Insertar el nuevo grupo en la base de datos
             $id_insertado = DB::table('grupos_otrabajo')->insertGetId([
                 'nombregrupo' => $request->name,
-                'integrantes' => $integrantesJson, 
+                'integrantes' => $integrantesJson,
             ]);
             return response()->json(['success' => true, 'id' => $id_insertado]);
         } else {
             $grupoExistente = $validarnombre[0];
             $integrantesExistentes = json_decode($grupoExistente->integrantes, true);
             $nuevosIntegrantes = json_decode($integrantesJson, true);
-            
+
             $integrantesCombinados = array_unique(array_merge($integrantesExistentes, $nuevosIntegrantes));
-    
+
             DB::table('grupos_otrabajo')->where('nombregrupo', $request->name)->update([
                 'integrantes' => json_encode($integrantesCombinados)
             ]);
-    
+
             return response()->json(['success2' => true]);
         }
     }
-    
-    
+
+
 
     public function loadGroups()
     {
         $grupos = DB::table('grupos_otrabajo')->get();
-    
+
         $result = $grupos->map(function ($grupo) {
             $integrantesArray = json_decode($grupo->integrantes, true);
-    
+
             $integrantesDetalles = DB::table('users')
                 ->whereIn('id', $integrantesArray)
                 ->select('name', 'agenciau')
                 ->get();
-    
+
             $nombresIntegrantes = $integrantesDetalles->map(function ($integrante) {
                 return $integrante->name . ' - ' . $integrante->agenciau;
             });
-    
+
             return [
                 'id' => $grupo->id,
                 'nombregrupo' => $grupo->nombregrupo,
                 'integrantes' => $nombresIntegrantes
             ];
         });
-    
+
         return response()->json($result);
     }
-    
-    
-    
+
+
+
 
     public function destroy($id)
     {
@@ -850,44 +852,44 @@ class GerenciaController extends Controller
 
     public function eliminarIntegrante($grupoId, $integranteId)
     {
-        $parts = explode(' - ', $integranteId); 
+        $parts = explode(' - ', $integranteId);
         $integranteName = $parts[0];
         $agenciau = $parts[1];
-        
+
         $grupo = DB::table('grupos_otrabajo')
             ->where('id', $grupoId)
             ->first();
-    
+
         $integrante = DB::table('users')
             ->where('name', $integranteName)
             ->where('agenciau', $agenciau)
             ->first();
-        
+
         if (!$integrante) {
             return response()->json(['success' => false, 'message' => 'Integrante no encontrado']);
         }
-    
+
         $integranteIdToDelete = $integrante->id;
-    
+
         if ($grupo) {
             $integrantesArray = json_decode($grupo->integrantes, true);
-            
-   
+
+
             if (($key = array_search($integranteIdToDelete, $integrantesArray)) !== false) {
                 unset($integrantesArray[$key]);
-    
+
                 DB::table('grupos_otrabajo')->where('id', $grupoId)->update([
                     'integrantes' => json_encode(array_values($integrantesArray))
                 ]);
-    
+
                 return response()->json(['success' => true]);
             }
         }
-    
+
         return response()->json(['success' => false, 'message' => 'Grupo o integrante no encontrado']);
     }
 
-    
+
     public function buscarGrupos(Request $request)
     {
         $termino = $request->input('query');
@@ -930,10 +932,10 @@ class GerenciaController extends Controller
     }
 
 
-    
 
-    
-    
+
+
+
 
 
 
