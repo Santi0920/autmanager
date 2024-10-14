@@ -60,7 +60,7 @@
 
                 @include('layouts/grupos')
 
-                <form action="{{route('crearotrabajo.ger')}}" id='form-actualizar-datos' method="POST" onsubmit="disableButton()">
+                <form action="{{route('crearotrabajo.ger')}}" id='form-actualizar-datos' method="POST" onsubmit="return submitForm()">
                     @csrf
                     @include('layouts/impartirorden')
 
@@ -430,8 +430,24 @@
             });
         });
 
-        function disableButton() {
+        function submitForm() {
+
+            Swal.fire({
+            title: 'Cargando...',
+            text: 'Enviando correos y mensajes de texto a los empleados',
+            icon: 'info',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+            });
+
+
             document.getElementById('buttonmodal').disabled = true;
+
+
+            return true;
         }
 
     </script>
