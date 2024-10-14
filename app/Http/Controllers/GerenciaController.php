@@ -669,90 +669,90 @@ class GerenciaController extends Controller
 
         $query = DB::select('SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?', [$request->nombreempleado]);
 
-        // if (!empty($query)) {
-        //     $integrantes = json_decode($query[0]->integrantes, true);
-        //     DB::table('users')
-        //     ->whereIn('id', $integrantes)
-        //     ->increment('notificaciones', 1);
-        //     $idsString = implode(',', $integrantes);
+        if (!empty($query)) {
+            $integrantes = json_decode($query[0]->integrantes, true);
+            DB::table('users')
+            ->whereIn('id', $integrantes)
+            ->increment('notificaciones', 1);
+            $idsString = implode(',', $integrantes);
 
-        //     $correos = DB::select("SELECT email,name,celular FROM users WHERE id IN ($idsString)");
+            $correos = DB::select("SELECT email,name,celular FROM users WHERE id IN ($idsString)");
 
-        //     $emails = array_map(function($user) {
-        //         if ($user->celular !== null) {
-        //             return [
-        //                 'email' => $user->email,
-        //                 'name' => $user->name,
-        //                 'celular' => $user->celular
-        //             ];
-        //         }
-        //     }, $correos);
-        //     foreach ($emails as $emailData) {
-        //         SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
-        //         $url = 'https://aio2.sigmamovil.com/api/sms';
-        //         $nombrecompleto = $emailData['name'];
-        //         $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+            $emails = array_map(function($user) {
+                if ($user->celular !== null) {
+                    return [
+                        'email' => $user->email,
+                        'name' => $user->name,
+                        'celular' => $user->celular
+                    ];
+                }
+            }, $correos);
+            foreach ($emails as $emailData) {
+                SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
+                $url = 'https://aio2.sigmamovil.com/api/sms';
+                $nombrecompleto = $emailData['name'];
+                $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
 
-        //         $data = [
-        //             "idSmsCategory" => 1,
-        //             "name" => "".$id_insertado."otrabajo",
-        //             "receiver" => [
-        //                 [
-        //                     "indicative" => 57,
-        //                     "phone" => $emailData['celular'],
-        //                     "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
+                $data = [
+                    "idSmsCategory" => 1,
+                    "name" => "".$id_insertado."otrabajo",
+                    "receiver" => [
+                        [
+                            "indicative" => 57,
+                            "phone" => $emailData['celular'],
+                            "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
 
-        //                 ]
-        //             ],
-        //             "dateNow" => 1,
-        //             "type" => "lote",
-        //             "track" => 0,
-        //             "sendPush" => 0,
-        //             "api" => 1,
-        //             "notification" => 0,
-        //             "email" => "email@email.com.co",
-        //             "rne" => 0
-        //         ];
+                        ]
+                    ],
+                    "dateNow" => 1,
+                    "type" => "lote",
+                    "track" => 0,
+                    "sendPush" => 0,
+                    "api" => 1,
+                    "notification" => 0,
+                    "email" => "email@email.com.co",
+                    "rne" => 0
+                ];
 
-        //         $response = Http::withToken($bearerToken)->post($url, $data);
-        //     }
-        // } else{
-        //     DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
-        //     $queryindividual = DB::select('SELECT * FROM users WHERE name = ?', [$request->nombreempleado]);
-        //     $email = $queryindividual[0]->email;
-        //     $nombrecompleto = $queryindividual[0]->name;
-        //     Mail::to($email)->send(new CorreoInfo($nombrecompleto, $id_insertado, $fechaStringfechadeSolicitud));
-        //     $querycelular = DB::select('SELECT celular FROM users WHERE name = ?', [$request->nombreempleado]);
-        //     $celular = $querycelular[0]->celular;
+                $response = Http::withToken($bearerToken)->post($url, $data);
+            }
+        } else{
+            DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
+            $queryindividual = DB::select('SELECT * FROM users WHERE name = ?', [$request->nombreempleado]);
+            $email = $queryindividual[0]->email;
+            $nombrecompleto = $queryindividual[0]->name;
+            Mail::to($email)->send(new CorreoInfo($nombrecompleto, $id_insertado, $fechaStringfechadeSolicitud));
+            $querycelular = DB::select('SELECT celular FROM users WHERE name = ?', [$request->nombreempleado]);
+            $celular = $querycelular[0]->celular;
 
-        //     if(!empty($celular)){
-        //         $url = 'https://aio2.sigmamovil.com/api/sms';
+            if(!empty($celular)){
+                $url = 'https://aio2.sigmamovil.com/api/sms';
 
-        //         $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+                $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
 
-        //         $data = [
-        //             "idSmsCategory" => 1,
-        //             "name" => "".$id_insertado."otrabajo",
-        //             "receiver" => [
-        //                 [
-        //                     "indicative" => 57,
-        //                     "phone" => $celular,
-        //                     "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
-        //                 ]
-        //             ],
-        //             "dateNow" => 1,
-        //             "type" => "lote",
-        //             "track" => 0,
-        //             "sendPush" => 0,
-        //             "api" => 1,
-        //             "notification" => 0,
-        //             "email" => "email@email.com.co",
-        //             "rne" => 0
-        //         ];
+                $data = [
+                    "idSmsCategory" => 1,
+                    "name" => "".$id_insertado."otrabajo",
+                    "receiver" => [
+                        [
+                            "indicative" => 57,
+                            "phone" => $celular,
+                            "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
+                        ]
+                    ],
+                    "dateNow" => 1,
+                    "type" => "lote",
+                    "track" => 0,
+                    "sendPush" => 0,
+                    "api" => 1,
+                    "notification" => 0,
+                    "email" => "email@email.com.co",
+                    "rne" => 0
+                ];
 
-        //         $response = Http::withToken($bearerToken)->post($url, $data);
-        //     }
-        // }
+                $response = Http::withToken($bearerToken)->post($url, $data);
+            }
+        }
 
 
 
