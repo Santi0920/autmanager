@@ -689,32 +689,32 @@ class GerenciaController extends Controller
             }, $correos);
             foreach ($emails as $emailData) {
                 SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
-                $url = 'https://aio2.sigmamovil.com/api/sms';
-                $nombrecompleto = $emailData['name'];
-                $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+                // $url = 'https://aio2.sigmamovil.com/api/sms';
+                // $nombrecompleto = $emailData['name'];
+                // $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
 
-                $data = [
-                    "idSmsCategory" => 1,
-                    "name" => "".$id_insertado."otrabajo",
-                    "receiver" => [
-                        [
-                            "indicative" => 57,
-                            "phone" => $emailData['celular'],
-                            "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
+                // $data = [
+                //     "idSmsCategory" => 1,
+                //     "name" => "".$id_insertado."otrabajo",
+                //     "receiver" => [
+                //         [
+                //             "indicative" => 57,
+                //             "phone" => $emailData['celular'],
+                //             "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
 
-                        ]
-                    ],
-                    "dateNow" => 1,
-                    "type" => "lote",
-                    "track" => 0,
-                    "sendPush" => 0,
-                    "api" => 1,
-                    "notification" => 0,
-                    "email" => "email@email.com.co",
-                    "rne" => 0
-                ];
+                //         ]
+                //     ],
+                //     "dateNow" => 1,
+                //     "type" => "lote",
+                //     "track" => 0,
+                //     "sendPush" => 0,
+                //     "api" => 1,
+                //     "notification" => 0,
+                //     "email" => "email@email.com.co",
+                //     "rne" => 0
+                // ];
 
-                $response = Http::withToken($bearerToken)->post($url, $data);
+                // $response = Http::withToken($bearerToken)->post($url, $data);
             }
         } else{
             DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
