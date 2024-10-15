@@ -17,6 +17,7 @@
         "maatwebsite/excel": "*",
         "psr/simple-cache": "2.0",
         "setasign/fpdf": "^1.8",
+        "symfony/error-handler": "*",
         "yajra/laravel-datatables-oracle": "^10.4"
     },
     "require-dev": {
