@@ -42,7 +42,7 @@
                     <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- ORDEN DE TRABAJO -⭐</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
-                
+
                 <script>
                         function obtenerFechaActual() {
                             const fecha = new Date();
@@ -256,7 +256,7 @@
 
     </div>
     <style>
-            /* From Uiverse.io by felipesntr */ 
+            /* From Uiverse.io by felipesntr */
                 .buttonpro {
                 border-radius: 0.9em;
                 cursor: pointer;
@@ -273,7 +273,7 @@
                 font-weight: 600;
                 }
 
- 
+
 
                 .texto-corto {
                 overflow: hidden;

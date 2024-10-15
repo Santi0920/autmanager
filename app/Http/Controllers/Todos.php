@@ -18,16 +18,16 @@ class Todos extends Controller
         //ESTABLECER NOTIFICACIONES EN 0 PORQUE YA REVISO
         DB::table('users')->where('name', $name)->update(['notificaciones' => 0]);
 
-    
+
         $grupos = DB::table('grupos_otrabajo')
             ->where(function($query) use ($id) {
-                $query->whereJsonContains('integrantes', (string)$id)  
-                      ->orWhereJsonContains('integrantes', $id);     
+                $query->whereJsonContains('integrantes', (string)$id)
+                      ->orWhereJsonContains('integrantes', $id);
             })
         ->get();
 
         $nombreGrupos = $grupos->pluck('nombregrupo');
-    
+
         $solicitudes = DB::table('ordentrabajo')
         ->whereIn('asignado', $nombreGrupos)
         ->orWhere('asignado', $name)
