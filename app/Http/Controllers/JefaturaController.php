@@ -703,6 +703,7 @@ class JefaturaController extends Controller
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
             $cedula = "805.004.034-9";
+            $idpersona = 14920;
         }else{
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
