@@ -299,6 +299,7 @@ class JefaturaController extends Controller
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
             $cedula = "805.004.034-9";
+            $idpersona = 14920;
         }else{
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
@@ -338,7 +339,6 @@ class JefaturaController extends Controller
                 try {
                     $response = Http::get($url . 'nombre/' . $cedula);
                     $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
                     break;
                 } catch (\Exception $e) {
                     $attempts++;
