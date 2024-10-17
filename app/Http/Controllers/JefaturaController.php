@@ -298,7 +298,8 @@ class JefaturaController extends Controller
         }else if($tipoautorizacion == '10D'){
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
-            $cedula = "805.004.034-9";
+            $cedula = "805.004.034";
+            $cuenta = 9;
             $idpersona = 14920;
         }else{
             $cedulaSinPuntos = str_replace('.', '', $cedula);
@@ -702,7 +703,8 @@ class JefaturaController extends Controller
         }else if($tipoautorizacion == '10D'){
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
-            $cedula = "805.004.034-9";
+            $cedula = "805.004.034";
+            $cuenta = 9;
             $idpersona = 14920;
         }else{
             $cedulaSinPuntos = str_replace('.', '', $cedula);
