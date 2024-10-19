@@ -26,7 +26,7 @@
             </tr>
         </thead>
         <tbody id="createdGroups">
-          
+
         </tbody>
     </table>
 </div>
@@ -62,7 +62,7 @@
 
             selectedPeople = selectedPeople.filter(id => id !== employeeId);
 
-     
+
             e.target.parentElement.remove();
 
 
@@ -75,15 +75,15 @@
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         document.getElementById('guardarGrupo').addEventListener('click', function () {
             const groupName = document.getElementById('groupName').value;
-            
+
             if (groupName && selectedPeople.length > 0) {
-              
+
                 fetch('otrabajo/guardar-grupo', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken, 
-                        'X-Requested-With': 'XMLHttpRequest' 
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
                         name: groupName,
@@ -103,9 +103,9 @@
                         nombreEmpleadoSelect.querySelectorAll('option').forEach(option => option.disabled = false);
                     }
                     if (data.success) {
-                        
+
                         alert('Grupo guardado con éxito');
-                        
+
                         loadGroups();
                         document.getElementById('nombreempleado').selectedIndex = 0;
                         selectedPeopleContainer.innerHTML = '';
@@ -125,26 +125,26 @@
         .then(response => response.json())
         .then(data => {
             const createdGroups = document.getElementById('createdGroups');
-            createdGroups.innerHTML = ''; 
-            
+            createdGroups.innerHTML = '';
+
             data.forEach(group => {
                 let integrantesArray = [...group.integrantes];
 
                 const row = document.createElement('tr');
-                const integrantesList = document.createElement('ul'); 
-                const displayedCount = 2; 
+                const integrantesList = document.createElement('ul');
+                const displayedCount = 2;
 
-          
+
                 function updateIntegrantesList(showAll = false) {
-                    integrantesList.innerHTML = ''; 
+                    integrantesList.innerHTML = '';
 
-                 
+
                     const integrantesToShow = showAll ? integrantesArray : integrantesArray.slice(0, displayedCount);
 
                     integrantesToShow.forEach((integrante, index) => {
                         const listItem = document.createElement('li');
-                        
-                      
+
+
                         const deleteButton = document.createElement('span');
                         deleteButton.textContent = 'X ';
                         deleteButton.style.cursor = 'pointer';
@@ -152,16 +152,16 @@
                         deleteButton.style.marginRight = '10px';
                         deleteButton.title = 'Eliminar'
 
-                    
+
                         deleteButton.addEventListener('click', () => {
                             const integranteId = integrantesArray[index];
-                            
-                            
-                         
+
+
+
                             const confirmation = window.confirm(`¿Está seguro de eliminar a ${integrante} del grupo ${group.nombregrupo}?`);
 
                             if (confirmation) {
-                                
+
                                 fetch(`otrabajo/eliminar-integrante/${group.id}/${integranteId}`, {
                                     method: 'DELETE',
                                     headers: {
@@ -186,31 +186,31 @@
                             }
                         });
 
-                    
+
                         listItem.appendChild(deleteButton);
-                        listItem.appendChild(document.createTextNode(integrante));  
-                        integrantesList.appendChild(listItem); 
+                        listItem.appendChild(document.createTextNode(integrante));
+                        integrantesList.appendChild(listItem);
                     });
 
                     if (!showAll && integrantesArray.length > displayedCount) {
                         const leerMas = document.createElement('button');
                         leerMas.textContent = 'Leer más';
-                        leerMas.className = 'btn btn-link'; 
+                        leerMas.className = 'btn btn-link';
                         leerMas.style.cursor = 'pointer';
 
                         leerMas.addEventListener('click', () => {
-                            updateIntegrantesList(true); 
-                            leerMas.style.display = 'none'; 
+                            updateIntegrantesList(true);
+                            leerMas.style.display = 'none';
 
                             const leerMenos = document.createElement('button');
                             leerMenos.textContent = 'Leer menos';
-                            leerMenos.className = 'btn btn-link'; 
+                            leerMenos.className = 'btn btn-link';
                             leerMenos.style.cursor = 'pointer';
 
                             leerMenos.addEventListener('click', () => {
-                                updateIntegrantesList(false); 
-                                leerMas.style.display = 'inline'; 
-                                leerMenos.style.display = 'none'; 
+                                updateIntegrantesList(false);
+                                leerMas.style.display = 'inline';
+                                leerMenos.style.display = 'none';
                             });
 
                             integrantesList.appendChild(leerMenos);
@@ -232,7 +232,7 @@
                         <button class='btn btn-danger' onclick='deleteGroup(${group.id})'><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
-                
+
                 const integrantesCell = row.cells[1];
                 integrantesCell.appendChild(integrantesList);
                 createdGroups.appendChild(row);
@@ -259,7 +259,7 @@
                 .then(data => {
                     if (data.success) {
                         alert('Grupo eliminado con éxito');
-                        loadGroups(); 
+                        loadGroups();
                     } else {
                         alert('Error al eliminar el grupo');
                     }
@@ -273,10 +273,10 @@
             const newName = document.getElementById(`groupNameInput_${groupId}`).value;
 
             fetch(`otrabajo/actualizar-grupo/${groupId}`, {
-                method: 'PUT', 
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken, 
+                    'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
@@ -287,7 +287,7 @@
             .then(data => {
                 if (data.success) {
                     alert(`Grupo actualizado a: ${newName}`);
-                    loadGroups(); 
+                    loadGroups();
                 } else {
                     alert('Error al actualizar el grupo');
                 }
