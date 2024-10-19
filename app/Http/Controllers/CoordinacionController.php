@@ -723,9 +723,7 @@ class CoordinacionController extends Controller
                     usleep($retryDelay * 1000);
                 }
             } while ($attempts < $maxAttempts);
-            //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$cedula]);
-            $idpersona = $existingID[0]->ID;
+
 
             $estado = $data['status'];
             if ($estado == '200') {
@@ -1076,7 +1074,7 @@ class CoordinacionController extends Controller
 
         return view('Coordinacion/filtrarconcepto', ['user' => $user]);
     }
-    
-    
-    
+
+
+
 }
