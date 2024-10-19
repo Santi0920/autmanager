@@ -1,6 +1,6 @@
 <div id="impartirtarea">
     <label for="" class="fw-bold fs-4 mb-3">Seleccionar grupo o empleado:</label>
-    <select class="form-select fs-4 border-dark border-3" aria-label="Default select example" name="nombreempleado" id="nombreempleado" onchange="habilitarTipoOrden()" required> 
+    <select class="form-select fs-4 border-dark border-3" aria-label="Default select example" name="nombreempleado" id="nombreempleado2" onchange="habilitarTipoOrden()" required>
         <option value="">Seleccionar una opción</option>
         <option class="fw-semibold" value="" disabled>↓-------- Grupos Creados --------↓</option>
         @foreach ($gruposcreados as $grupo)
@@ -27,13 +27,13 @@
     </div>
 
 
-    
+
     <div class="mt-3">
         <label for="descripcion" class="fw-bold fs-4">Descripción Orden de Trabajo:</label>
         <textarea class="form-control fs-4 border border-dark border-3" id="descripcion" name="descripcion" rows="5" placeholder="Escribir aquí..." required></textarea>
-        
+
         <button type="button" id="emoji-button" class="btn btn-secondary mt-2" required>😊 Emojis</button>
-        
+
 
         <div id="emoji-panel" style="display: none; border: 1px solid #ccc; padding: 10px; margin-top: 5px; background: #fff; cursor: pointer; font-size: 25px">
 
@@ -83,22 +83,22 @@
                         Labor a Cumplir
                     </label>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 
     <script>
         $('input[name="tipoorden"]').on('change', function() {
             if ($('#impartirorden').is(':checked')) {
-                $('#impartirtarea').removeClass('d-none'); 
+                $('#impartirtarea').removeClass('d-none');
                 $('#grupos').addClass('d-none');
-                $('#buttonmodal').removeClass('d-none');            
+                $('#buttonmodal').removeClass('d-none');
             } else if ($('#gruposacciones').is(':checked')) {
-                $('#grupos').removeClass('d-none');        
+                $('#grupos').removeClass('d-none');
                 $('#impartirtarea').addClass('d-none');
-                $('#buttonmodal').addClass('d-none'); 
+                $('#buttonmodal').addClass('d-none');
             }
         });
-        
+
 
     </script>
