@@ -116,6 +116,8 @@ Route::get('otrabajo/datatable', [GerenciaController::class, 'otrabajodatatable'
 Route::get('/otrabajo', [GerenciaController::class, 'cargaragcoorjef'])
 ->name('cargaragcoorjef');
 
+Route::get('/otrabajo/recargar', [GerenciaController::class, 'obtenerGrupos']);
+
 Route::post('/otrabajo/crear', [GerenciaController::class, 'crearotrabajo'])->name('crearotrabajo.ger')->middleware('auth.gerencia');
 
 Route::post('cambiar-estado', [GerenciaController::class, 'cambiarEstado'])

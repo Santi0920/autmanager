@@ -935,6 +935,14 @@ class GerenciaController extends Controller
 
 
 
+    public function obtenerGrupos()
+    {
+        $gruposcreados = DB::select('SELECT * FROM grupos_otrabajo');
+
+        return response()->json([
+            'grupos' => $gruposcreados,
+        ]);
+    }
 
 
 
