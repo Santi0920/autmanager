@@ -676,18 +676,30 @@ class GerenciaController extends Controller
             ->increment('notificaciones', 1);
             $idsString = implode(',', $integrantes);
 
-            $correos = DB::select("SELECT email,name,celular FROM users WHERE id IN ($idsString)");
+            $correos = DB::select("SELECT id,email,name,celular FROM users WHERE id IN ($idsString)");
 
             $emails = array_map(function($user) {
                 if ($user->celular !== null) {
                     return [
+                        'id' => $user->id,
                         'email' => $user->email,
                         'name' => $user->name,
                         'celular' => $user->celular
                     ];
+                }else{
+                    return [
+                        'id' => $user->id,
+                        'email' => $user->email,
+                        'name' => $user->name,
+                        'celular' => 0
+                    ];
                 }
             }, $correos);
+
+
+
             foreach ($emails as $emailData) {
+
                 SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
                 // $url = 'https://aio2.sigmamovil.com/api/sms';
                 // $nombrecompleto = $emailData['name'];
