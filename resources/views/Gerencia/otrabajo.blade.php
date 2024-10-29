@@ -264,7 +264,7 @@
                     render: function(data, type, row) {
                         var id = row.id
 
-
+                        //estados para politica
                         var estados = [
                             "PERMANENTE",
                             "LABOR A CUMPLIR",
