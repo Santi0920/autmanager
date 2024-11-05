@@ -8,6 +8,7 @@ use App\Http\Controllers\Todos;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionsController;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 
 /*
 |--------------------------------------------------------------------------

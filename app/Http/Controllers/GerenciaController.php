@@ -26,7 +26,7 @@ class GerenciaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE (B.Estado = 1 AND B.Validacion = 1) OR (B.Estado = 6 AND B.Validacion = 1) AND B.Bloqueado = 0");
+        WHERE  B.Bloqueado = 0 AND ((B.Estado = 1 AND B.Validacion = 1) OR (B.Estado = 6 AND B.Validacion = 1 ))");
 
 
         return datatables()->of($solicitudes)->toJson();
