@@ -45,7 +45,7 @@
     @enderror
     <div class="container-fluid row p-4">
         <form action="{{ route('solicitar.autorizacionjef') }}" class="col m-3" method="POST"
-            enctype= "multipart/form-data" id="pagare">
+            enctype= "multipart/form-data" id="pagare" onsubmit="return enviarFormulario()">
             @csrf
             <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
             @include('layouts.option')
@@ -743,7 +743,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        
+
                                         `
                                         :
                                         ``
@@ -1234,6 +1234,11 @@
                         `);
                 }
             });
+            function enviarFormulario() {
+                const boton = document.getElementById("agregar");
+                boton.disabled = true;
+                return true;
+            }
 
             function fileUploaded() {
                 // Obtiene el elemento input de tipo file

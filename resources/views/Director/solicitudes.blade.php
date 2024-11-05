@@ -45,7 +45,7 @@
     @enderror
     <div class="container-fluid row p-4">
         <form action="{{ route('solicitar.autorizacion') }}" class="col m-3" method="POST" enctype= "multipart/form-data"
-            id="pagare">
+            id="pagare" onsubmit="return enviarFormulario()">
             @csrf
             <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
 
@@ -204,7 +204,7 @@
                             if (row.Bloqueado == 2) {
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>ANULADO</div>';
-                            } 
+                            }
                             else if(row.Bloqueado == 1){
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>';
@@ -617,7 +617,7 @@
                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
                                                         <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
                                                 </div>
-                                            
+
                                             `}
 
 
@@ -714,7 +714,7 @@
                                             :
                                             ``
                                         }
-                                            
+
                                         </div>
                                         ${row.Estado == 0 || row.Estado == 5 ?
                                         `<div class=" text-center p-3">
@@ -877,6 +877,7 @@
                 }
             }
 
+
             function autorizacionesModalChange(id, cedula, cuenta, nombrepersona, convencion, event) {
                 // Obtener el valor seleccionado del elemento select
                 const valorSeleccionado = $(`#autorizacionesmodal${id}`).val();
@@ -957,10 +958,13 @@
                 $('[data-bs-toggle="tooltip"]').tooltip();
             }
 
+
             $('#autorizaciones').on('change', function() {
+
                 // Obtener el valor seleccionado
                 var valorSeleccionado = $(this).val();
                 console.log("Valor seleccionado:", valorSeleccionado);
+
 
                 if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
                     $("#cuerpo").html(`
@@ -987,7 +991,7 @@
 
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 } else if (valorSeleccionado == "11L") {
@@ -1013,7 +1017,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 } else if (valorSeleccionado == "11B") {
@@ -1050,7 +1054,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 } else if (valorSeleccionado == "11K") {
@@ -1086,7 +1090,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }else if (valorSeleccionado == "11C") {
@@ -1132,7 +1136,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }else if (valorSeleccionado == "10D") {
@@ -1153,7 +1157,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }else{
@@ -1191,11 +1195,16 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }
             });
+            function enviarFormulario() {
+                const boton = document.getElementById("agregar");
+                boton.disabled = true;
+                return true;
+            }
 
             function fileUploaded() {
                 // Obtiene el elemento input de tipo file
