@@ -2,7 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
-    
+
     @if (session('correcto'))
         <div>
             <script>
@@ -97,7 +97,7 @@
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datagercoordi.solicitudes') }}",
             "order": [
-                [0, 'asc']
+                [0, 'desc']
             ],
             scrollY: 420,
             "columns": [{
