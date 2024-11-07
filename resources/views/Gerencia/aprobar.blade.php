@@ -567,7 +567,7 @@
                                             </div>
                                         </div>
                                         ` : row.Bloqueado == 1 || (row.Estado == 4 || row.Aprobacion == 1 || row.Estado == 5 || row.Estado == 2) ?
-                                        `  ${row.Estado == 2 ? `` : row.Estado == 5 ? `
+                                        `  ${row.Estado == 2 ? `` : row.Estado == 5 || row.Estado == 4 ? `
                                                 <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
                                                 <div class="row g-0 text-center">
@@ -593,13 +593,13 @@
                                                     <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
                                                 </div>
                                             </form>
-                                        
-                                        
+
+
                                         `: `
-                                        
+
                                                                                                                             <div class="row g-0 text-center">
                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-success-subtle'} border p-1 border-dark" id="fondo">
-                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADO' : 'RECHAZADO'}</span></span>
+                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADOs' : 'RECHAZADO'}</span></span>
                                             </div>
 
                                             <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
@@ -618,7 +618,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        `} 
+                                        `}
 
                                         ` : `
                                             <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
@@ -1169,7 +1169,7 @@
             }
     </style>
     </div>
-    
+
     @include('layouts.footer')
 
 </body>
