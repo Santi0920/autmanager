@@ -37,20 +37,35 @@ class GerenciaController extends Controller
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
 
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Aprobacion = 1 AND B.Estado = 4
-        ORDER BY A.ID ASC");
+        $ultimoId = DB::table('persona')->max('ID');
 
 
+        $limiteId = $ultimoId - 1000;
+
+        $solicitudes = DB::select("
+            SELECT DISTINCT
+                A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
+                B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion,
+                B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta,
+                B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor,
+                B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion,
+                B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer,
+                C.Letra, C.No, C.Concepto, C.Areas,
+                D.FechaInsercion
+            FROM persona A
+            JOIN autorizaciones B ON B.ID_Persona = A.ID
+            JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+            JOIN documentosintesis D ON A.ID = D.ID_Persona
+            WHERE B.Aprobacion = 1
+                AND B.Estado = 4
+                AND A.ID > :limiteId
+            ORDER BY A.ID ASC
+        ", ['limiteId' => $limiteId]);
 
         return datatables()->of($solicitudes)->toJson();
     }
+
 
 
     public function rechazados(){
@@ -233,7 +248,7 @@ class GerenciaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE (B.Solicitud = 1 AND B.NumAgencia IN ('Jefatura')) && (B.Estado = 2) || (B.Estado = 2 && B.NumAgencia = 91) || (B.Estado = 2 && B.NumAgencia = 31) || (B.Estado = 2 && B.NumAgencia = 30)");
+        WHERE (B.Solicitud = 1 AND B.NumAgencia IN ('Jefatura')) && (B.Estado = 2) || (B.Estado = 2 && B.NumAgencia = 91) || (B.Estado = 2 && B.NumAgencia = 31) || (B.Estado = 2 && B.NumAgencia = 30) || (B.Estado = 2 && B.NumAgencia = 68)");
 
 
         return datatables()->of($solicitudes)->toJson();
