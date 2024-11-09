@@ -35,21 +35,21 @@ class CoordinacionController extends Controller
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             JOIN documentosintesis D ON A.ID = D.ID_Persona
-            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (35,34, 36, 37, 38, 40, 41, 87, 93, 96, 'C1'))");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (43, 76, 35,34, 36, 37, 38, 40, 41, 87, 93, 96, 'C1'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 2") {
             $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             JOIN documentosintesis D ON A.ID = D.ID_Persona
-            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C2'))");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (86, 33, 39, 46, 70, 77, 78, 80, 88, 92, 98, 'C2'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 3") {
             $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             JOIN documentosintesis D ON A.ID = D.ID_Persona
-            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (32, 42, 47, 81, 82, 83, 85, 90, 94, 'C3'))");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (73, 13, 32, 42, 47, 81, 82, 83, 85, 90, 94, 'C3'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 4") {
             $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A
@@ -63,7 +63,7 @@ class CoordinacionController extends Controller
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             JOIN documentosintesis D ON A.ID = D.ID_Persona
-            WHERE (B.Solicitud = 1 AND B.NumAgencia IN (13, 30, 31, 43, 68, 73, 76, 86, 'C5'))");
+            WHERE (B.Solicitud = 1 AND B.NumAgencia IN ('C5'))");
         } else if ($agenciaU = $usuarioActual->agenciau == "Coordinacion 9") {
             $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
             FROM persona A

@@ -96,7 +96,6 @@
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datager.solicitudes') }}",
             "processing" : true,
-
             "order": [
                 [0, 'desc']
             ],
@@ -120,8 +119,24 @@
                 {
                     data: 'CodigoAutorizacion',
                     render: function(data, type, row) {
+                        function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                            const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                            const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                            const totalMinutos = Math.floor(totalSegundos / 60);
+                            const totalHoras = Math.floor(totalMinutos / 60);
+
+                            const segundos = String(totalSegundos % 60).padStart(2, '0');
+                            const minutos = String(totalMinutos % 60).padStart(2, '0');
+                            const horas = String(totalHoras).padStart(2, '0');
+
+                            return { horas, minutos, segundos };
+                        }
+
+
                         fechaSolicitud = row.Fecha;
                         fechaValidacion = row.FechaValidacion;
+
                         const months = {
                             "enero": "01",
                             "febrero": "02",
@@ -136,85 +151,66 @@
                             "noviembre": "11",
                             "diciembre": "12"
                         };
-                        //fecha solicitud
-                        const parts = fechaSolicitud.split(' ');
 
-                        //Obtener el mes, día y año
-                        const month = months[parts[0].toLowerCase()];
-                        const day = parts[1];
-                        const yearTime = parts[2].split('-');
-                        const year = yearTime[0];
-                        const time = yearTime[1];
+                        if (fechaSolicitud || fechaSolicitud == "") {
+                            const parts = fechaSolicitud.split(' ');
+                            const month = months[parts[0]?.toLowerCase()];
+                            const day = parts[1];
+                            const yearTime = parts[2]?.split('-');
 
-                        //Crear una nueva cadena en un formato que JavaScript pueda interpretar
-                        const formattedDateString = `${year}-${month}-${day} ${time}`;
-                        const fechaSolicitudDate = new Date(formattedDateString);
+                            const year = yearTime ? yearTime[0] : null;
+                            const time = yearTime ? yearTime[1] : null;
 
+                            const formattedDateString = `${year}-${month}-${day} ${time}`;
+                            const fechaSolicitudDate = new Date(formattedDateString);
 
+                            if (fechaValidacion == "Pendiente..." || fechaValidacion == null) {
+                                function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                    const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
 
-                        if(fechaValidacion == "Pendiente..."){
-                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
-                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+                                    const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                    const totalMinutos = Math.floor(totalSegundos / 60);
+                                    const totalHoras = Math.floor(totalMinutos / 60);
 
-                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
-                                const totalMinutos = Math.floor(totalSegundos / 60);
-                                const totalHoras = Math.floor(totalMinutos / 60);
+                                    const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                    const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                    const horas = String(totalHoras).padStart(2, '0');
 
-                                const segundos = String(totalSegundos % 60).padStart(2, '0');
-                                const minutos = String(totalMinutos % 60).padStart(2, '0');
-                                const horas = String(totalHoras).padStart(2, '0'); // Acumula todas las horas
+                                    return { horas, minutos, segundos };
+                                }
 
-                                return { horas, minutos, segundos };
+                                const fechaActualDate = new Date();
+                                const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
+
+                                var demoracoord = ``;
+                                if (row.Estado == 2) {
+                                    var demoradireccion = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >${row.Coordinacion}: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span>`;
+                                } else {
+                                    var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
+                                }
+
+                            } else {
+                                if (fechaValidacion) {
+                                    const parts2 = fechaValidacion.split(' ');
+                                    const month2 = months[parts2[0]?.toLowerCase()];
+                                    const day2 = parts2[1];
+                                    const yearTime2 = parts2[2]?.split('-');
+
+                                    const year2 = yearTime2 ? yearTime2[0] : null;
+                                    const time2 = yearTime2 ? yearTime2[1] : null;
+
+                                    const formattedDateString2 = `${year2}-${month2}-${day2} ${time2}`;
+                                    const fechaValidacionDate = new Date(formattedDateString2);
+
+                                    const diferencia = calcularDiferencia(fechaSolicitudDate, fechaValidacionDate);
+                                    const diferencia2 = calcularDiferencia(fechaValidacionDate, new Date());
+
+                                    var demoracoord = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >${row.Coordinacion}: <span class="text-dark fw-semibold ">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span>`;
+                                    var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
+                                }
                             }
-                            const fechaActualDate = new Date();
-                            const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
-
-                            var demoracoord = ``
-                            if(row.Estado == 2){
-                                var demoradireccion = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >${row.Coordinacion}: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span>`
-                            }else{
-                                var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`
-                            }
-
-
-                        }else{
-                            //fecha validacion
-                            const parts2 = fechaValidacion.split(' ');
-                            //Obtener el mes, día y año
-                            const month2 = months[parts2[0].toLowerCase()];
-                            const day2 = parts2[1];
-                            const yearTime2 = parts2[2].split('-');
-                            const year2 = yearTime2[0];
-                            const time2 = yearTime2[1];
-
-                            //Crear una nueva cadena en un formato que JavaScript pueda interpretar
-                            const formattedDateString2 = `${year2}-${month2}-${day2} ${time2}`;
-                            const fechaValidacionDate = new Date(formattedDateString2);
-
-
-                            //calculo ->
-                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
-                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
-
-                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
-                                const totalMinutos = Math.floor(totalSegundos / 60);
-                                const totalHoras = Math.floor(totalMinutos / 60);
-
-                                const segundos = String(totalSegundos % 60).padStart(2, '0');
-                                const minutos = String(totalMinutos % 60).padStart(2, '0');
-                                const horas = String(totalHoras).padStart(2, '0'); // Acumula todas las horas
-
-                                return { horas, minutos, segundos };
-                            }
-
-                            const fechaActualDate = new Date();
-                            const diferencia = calcularDiferencia(fechaSolicitudDate, fechaValidacionDate);
-                            const diferencia2 = calcularDiferencia(fechaValidacionDate, fechaActualDate);
-
-                            var demoracoord = `<span title="Fecha Solicitud: ${row.Fecha} . Fecha Validacion: ${row.FechaValidacion}" class="" >${row.Coordinacion}: <span class="text-dark fw-semibold ">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span>`
-                            var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`
-
                         }
+
 
 
 
@@ -721,14 +717,13 @@
 
             "initComplete": function(settings, json) {
             var buttonsHtml = '<div class="custom-buttons mb-2">' +
-                '<a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><button class="custom-btn2 me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fas fa-file-excel"></i></button></a>' +
-                '<button id="btnT" class="custom-btn me-2" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                '<button id="btnA" class="btn btn-success fw-bold me-2" title="APROBADOS">APROBADOS</button>' +
-                '<button id="btnR" class="btn btn-danger fw-bold me-2" title="RECHAZADOS">RECHAZADOS</button>' +
-                '<button id="btnTramite" class="btn btn-warning fw-bold me-2" title="EN TRÁMITE">EN TRÁMITE</button>' +
-                '<button id="btnBloqueado" class="btn btn-primary fw-bold me-2" title="BLOQUEADOS">BLOQUEADOS</button>' +
-                '<button id="btnAnulado" class="btn btn-info fw-bold" title="BLOQUEADOS">ANULADOS</button>' +
-                //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
+                    '<button class="custom-btn2 mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel text-white"></i></a></button>' +
+                    '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                    '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">APROBADOS</button>' +
+                    '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                    '<button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="EN TRÁMITE">EN TRÁMITE</button>' +
+                    '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                    '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="ANULADOS">ANULADOS</button>' +
                 '</div>';
 
             $(buttonsHtml).prependTo('.dataTables_filter');
@@ -803,68 +798,73 @@
 
         function formEditarAutorizacion(id, event) {
 
-            var form = $("#formEditarAutorizacion" + id);
+    var form = $("#formEditarAutorizacion" + id);
 
-            if (form.data('submitted')) {
-                return;
-            }
+    if (form.data('submitted')) {
+        return;
+    }
 
-            // Marcar el formulario como enviado
-            form.data('submitted', true);
 
-            var formDataArray = form.serializeArray();
+    form.data('submitted', true);
 
-            // Almacenar los valores en variables
-            var estado, observaciones;
+    var formDataArray = form.serializeArray();
 
-            // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
-            formDataArray.forEach(function(input) {
-                if (input.name === "Estado") {
-                    estado = input.value;
-                } else if (input.name === "Observaciones") {
-                    observaciones = input.value;
-                    event.preventDefault();
-                }
-            });
-            console.log(estado + ' ' + observaciones);
-            if (typeof estado === 'undefined') {
-                // Mostrar un mensaje de error o resaltar los campos de estado
-                alert('Por favor, seleccione un estado.');
 
-                // Permitir que el formulario se envíe nuevamente
-                form.data('submitted', false);
+    var estado, observaciones;
 
-                return;
-            }
-
-            // Realizar la solicitud AJAX para actualizar la autorización
-            $.ajax({
-                url: "{{ route('updateger.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                type: "POST",
-                data: {
-                    Observaciones: observaciones,
-                    Estado: estado,
-                    _token: $('input[name="_token"]').val()
-                },
-                success: function(response) {
-                    if (response) {
-                        $(`#exampleModal_${id}`).modal('hide');
-                        console.log('¡Éxito!');
-                        $('#personas').DataTable().ajax.reload();
-                        Swal.fire({
-                            icon: 'success',
-                            title: "¡ACTUALIZADO!",
-                            html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                id + "</span></span>",
-                            confirmButtonColor: '#646464'
-                        });
-                    }
-                },
-                error: function(error) {
-                    console.log('Error');
-                }
-            });
+    formDataArray.forEach(function(input) {
+        if (input.name === "Estado") {
+            estado = input.value;
+        } else if (input.name === "Observaciones") {
+            observaciones = input.value;
+            event.preventDefault();
         }
+    });
+    console.log(estado + ' ' + observaciones);
+    if (typeof estado === 'undefined') {
+        alert('Por favor, seleccione un estado.');
+
+        form.data('submitted', false);
+
+            return;
+        }
+
+
+        var currentPage = $('#personas').DataTable().page();
+
+
+        $.ajax({
+            url: "{{ route('updateger.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+            type: "POST",
+            data: {
+                Observaciones: observaciones,
+                Estado: estado,
+                _token: $('input[name="_token"]').val()
+            },
+            success: function(response) {
+                if (response) {
+                    $(`#exampleModal_${id}`).modal('hide');
+                    console.log('¡Éxito!');
+
+                    $('#personas').DataTable().ajax.reload(function() {
+                        $('#personas').DataTable().page(currentPage).draw('page');
+                    });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: "¡ACTUALIZADO!",
+                        html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                            id + "</span></span>",
+                        confirmButtonColor: '#646464'
+                    });
+                }
+            },
+            error: function(error) {
+                console.log('Error');
+            }
+        });
+        }
+
 
 
 
@@ -969,7 +969,7 @@
         }
 
         .custom-buttons {
-            display: absolute;
+            display:absolute;
             margin-right: 10px;
         }
 
