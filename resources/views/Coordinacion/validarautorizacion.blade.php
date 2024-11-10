@@ -20,6 +20,20 @@
             <script>
                 Swal.fire({
                     icon: 'error',
+                    title: "¡Advertencia!",
+                    html: "{!! session('incorrecto') !!}",
+                    confirmButtonColor: '#646464',
+
+                });
+            </script>
+        </div>
+    @endif
+
+    @if (session('incorrecto2'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'error',
                     title: "¡Usted ha sido BLOQUEADO!",
                     html: "{!! session('incorrecto') !!}",
                     confirmButtonColor: '#646464',

@@ -158,6 +158,8 @@
                                     <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
                             </div>
                             @endif
+
+                            @if ($autorizacion->EstadoAutorizacion != 0)
                             <div class="col-md-12 col-lg-10">
                                 <div class="row g-0">
                                     <div class="col-md-9 d-flex text-start border p-2">
@@ -177,6 +179,8 @@
                                     </p>
                                 </div>
                             </div>
+                            @else
+                            @endif
                         </div>
                     @else
                     @endif
