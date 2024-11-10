@@ -366,7 +366,7 @@ class DirectorController extends Controller
 
         if(!empty($consultabloqueado)){
             if($consultabloqueado[0]->total > 0){
-                return back()->with("incorrecto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID."</span> se encuentra <span class='text-danger fw-bold'>BLOQUEADA</span>. Por favor contactar con <span class='fw-bold'>Dirección General</span>.</span>");
+                return back()->with("incorrecto2", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID."</span> se encuentra <span class='text-danger fw-bold'>BLOQUEADA</span>. Por favor contactar con <span class='fw-bold'>Dirección General</span>.</span>");
             }
         }
 
@@ -552,33 +552,6 @@ class DirectorController extends Controller
                 $cuenta = $data['asociado']['CUENTA'];
             }else{
                 return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
-
-            $fretiro = $data['asociado']['RETIRO'];
-
-            if($fretiro != 0){
-                $fechaActual = Carbon::now('America/Bogota');
-
-                // Extraer los componentes de la fecha (año, mes, día)
-                $año = substr($fretiro, 1, 2);
-                $mes = substr($fretiro, 3, 2);
-                $dia = substr($fretiro, 5, 2);
-
-                // Corregir el año si es necesario
-                if ($año < 200) {
-                    $año += 2000; // Si el año es menor que 100, se asume que es en este siglo.
-                }
-                // Crear un objeto de fecha con los componentes
-                $fecha_retiro = Carbon::create($año, $mes, $dia);
-                $dias_restantes = $fechaActual->diffInDays($fecha_retiro);
-
-
-                if($dias_restantes > 120){
-                        return back()->with("incorrecto", "No necesita autorización, tiene ".$dias_restantes." dias asociado a COOPSERP.!");
-                }
-
-            }else{
-                return back()->with("incorrecto","No aplica porque aun está vinculado a COOPSERP.");
             }
 
         //AUTORIZACION POR CREDITO SCORE BAJO

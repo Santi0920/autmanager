@@ -20,6 +20,20 @@
             <script>
                 Swal.fire({
                     icon: 'error',
+                    title: "¡Advertencia!",
+                    html: "{!! session('incorrecto') !!}",
+                    confirmButtonColor: '#646464',
+
+                });
+            </script>
+        </div>
+    @endif
+
+    @if (session('incorrecto2'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'error',
                     title: "¡Usted ha sido BLOQUEADO!",
                     html: "{!! session('incorrecto') !!}",
                     confirmButtonColor: '#646464',
@@ -28,6 +42,8 @@
             </script>
         </div>
     @endif
+
+
 
     @error('message')
         <div>
@@ -789,9 +805,10 @@
                 var Convencionmodal = $(`#Convencionmodal${id}`).val();
                 var Detalle = $('textarea[name="Detalle"]').val();
                 var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
-                console.log(Nombremodal);
+
 
                 var formData = new FormData();
+                console.log(CodigoAutorizacion + " ** "+ _token + " ** "+ Cedulamodal + " ** "+ Nombremodal + " ** "+ Convencionmodal + " ** "+ Detalle + " ** "+ Soporte);
                 formData.append('_token', _token);
                 formData.append('Detalle', Detalle);
                 formData.append('CodigoAutorizacion', CodigoAutorizacion);
@@ -818,10 +835,11 @@
                             contentType: false,
                             processData: false,
                             success: function(response) {
-                                console.log(response);
+
                                 if (response.message === "Datos recibidos correctamente") {
                                     $(`#exampleModal_${id}`).modal('hide');
                                     console.log('¡Éxito!');
+                                    event.preventDefault();
                                     $('#personas').DataTable().ajax.reload();
                                     Swal.fire({
                                         icon: 'success',
@@ -864,6 +882,8 @@
                                         confirmButtonColor: '#646464',
                                         timer: 10000
                                     });
+                                }else{
+                                    console.log(response.message);
                                 }
                             }
                         });
