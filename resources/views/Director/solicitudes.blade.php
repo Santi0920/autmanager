@@ -620,21 +620,7 @@
                                             </div>`:``
                                             }
 
-                                            ${row.Aprobacion != 1 ? (
-                                                row.Estado == 3 && row.Validacion == 1 || row.Validacion == 1 ? `
-                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
-                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
-                                                    </div>` :
-                                                row.Estado == 1 && row.Validacion == 1 ? `
-                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE</span></span>
-                                                    </div>` : ''
-                                            ) : `
-                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
-                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
-                                                </div>
 
-                                            `}
 
 
 
@@ -1472,5 +1458,21 @@
     @include('layouts.footer')
 
 </body>
+
+{{-- ${row.Aprobacion != 1 ? (
+    row.Estado == 3 && row.Validacion == 1 || row.Validacion == 1 ? `
+        <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+            <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
+        </div>` :
+    row.Estado == 1 && row.Validacion == 1 ? `
+        <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+            <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE</span></span>
+        </div>` : ''
+) : `
+    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+            <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
+    </div>
+
+`} --}}
 
 </html>
