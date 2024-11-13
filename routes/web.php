@@ -73,9 +73,9 @@ Route::middleware('auth.coord')->group(function () {
         return view('Coordinacion/validarautorizacion');
     });
 
-    Route::get('/validar', [CoordinacionController::class, 'data1']);
+    Route::get('/validar', [CoordinacionController::class, 'data1'])->middleware('disable.cache');
 
-    Route::get('validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes');
+    Route::get('validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes')->middleware('disable.cache');
 
     Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
 
