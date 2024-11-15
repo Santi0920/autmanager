@@ -57,11 +57,12 @@ class GerenciaController extends Controller
             JOIN autorizaciones B ON B.ID_Persona = A.ID
             JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
             JOIN documentosintesis D ON A.ID = D.ID_Persona
-            WHERE B.Aprobacion = 1
+            WHERE
+                B.Aprobacion = 1
                 AND B.Estado = 4
-                AND A.ID > :limiteId
+                AND B.ID > 5000
             ORDER BY A.ID ASC
-        ", ['limiteId' => $limiteId]);
+        ");
 
         return datatables()->of($solicitudes)->toJson();
     }
