@@ -60,7 +60,7 @@ class GerenciaController extends Controller
             WHERE
                 B.Aprobacion = 1
                 AND B.Estado = 4
-                AND B.ID > 5000
+                AND B.ID > 4000
             ORDER BY A.ID ASC
         ");
 
