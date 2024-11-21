@@ -80,7 +80,7 @@ class GerenciaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 5
+        WHERE B.Estado = 5 OR (B.Estado = 0 AND B.Coordinacion = 'C9')
         ORDER BY A.ID ASC");
 
 
