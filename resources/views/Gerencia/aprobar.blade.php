@@ -250,6 +250,9 @@
                         }else if(row.Estado == 7) {
                             var Estado =
                                 '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
+                        }else if(row.Estado == 0 && row.Coordinacion == "C9"){
+                            var Estado =
+                                '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO COORDINACIÓN 9</div>'
                         }else{
                             var Estado =
                                 '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">SOLICITUD DE COORDINACIÓN</div>'
@@ -454,15 +457,27 @@
                                         <div class=" row g-0 text-center ">
                                             ${(row.Estado ==6 && row.Validacion == 1) || row.Coordinacion == "C#" ?
                                             ``:
-                                            `<div
-                                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-success-subtle`} border p-1 border border-dark" id="fondo">
+                                            `
+                                                ${(row.Estado ==0 && row.Coordinacion == "C9") ?
+                                                `
+                                                <div
+                                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-success-subtle`} border p-1 border border-dark" id="fondo">
 
-                                                                <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                                                    <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
+                                                </div>
 
+                                                `:
+                                                `
+                                                    <div
+                                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-success-subtle`} border p-1 border border-dark" id="fondo">
 
+                                                                    <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                                    </div>
 
+                                                `
 
-                                                            </div>
+                                                }
+
 
                                                             <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
                                                                     <div class="row g-0 border ">
