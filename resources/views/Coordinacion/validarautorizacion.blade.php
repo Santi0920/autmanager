@@ -58,7 +58,7 @@
         </div>
     @enderror
     <div class="container-fluid row p-4">
-        <form action="{{ route('solicitar.autorizacioncoor') }}" class="col m-3" method="POST"
+        <form action="{{ route('solicitar.autorizacion') }}" class="col m-3" method="POST"
             enctype= "multipart/form-data" id="pagare" onsubmit="return enviarFormulario()">
             @csrf
             <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
@@ -244,7 +244,7 @@
                         render: function(data, type, row) {
 
                             var id = row.IDAutorizacion; // Obtener el ID de la fila
-                            var url = "{{ route('updatecoor.autorizacion', ':id') }}";
+                            var url = "{{ route('update.autorizacion', ':id') }}";
                             url = url.replace(':id', id);
 
                             const cedula = row.Cedula;

@@ -80,7 +80,7 @@ class GerenciaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 5 OR (B.Estado = 0 AND B.Coordinacion = 'C9')
+        WHERE B.Estado = 5 OR ((B.Estado = 0) AND B.Coordinacion = 'C9')
         ORDER BY A.ID ASC");
 
 
@@ -973,9 +973,176 @@ class GerenciaController extends Controller
     }
 
 
+    public function dagencia(Request $request)
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' ORDER BY agenciau ASC");
 
 
 
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+    public function coordinaciones(Request $request)
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Coordinacion' ORDER BY agenciau ASC");
+
+
+
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+    public function jefaturas(Request $request)
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Jefatura' ORDER BY agenciau ASC");
+
+
+
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
+    public function cargaragencias(Request $request)
+    {
+        $cargos = DB::select("SELECT DISTINCT id,agenciau,name FROM users WHERE rol = 'Consultante' ORDER BY name ASC");
+        $agencias = DB::select("SELECT * FROM agencias ORDER BY NumAgencia ASC");
+
+
+        $jefaturas = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Jefatura'");
+        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas]);
+
+    }
+
+
+    public function crearusuario(Request $request){
+        $tipocreacion = $request->crear;
+        $nombre = $request->nombre;
+        $correo = $request->correo;
+        $password = $request->password;
+
+        $validacionnombre = DB::select('select * from users WHERE name = ?',[$nombre]);
+        $validacioncorreo = DB::select('select * from users WHERE email = ?',[$correo]);
+
+        if (!empty($validacionnombre) || !empty($validacioncorreo)) {
+
+            if (!empty($validacioncorreo) && isset($validacioncorreo[0]->email)) {
+                return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario vinculado al correo <b>".$correo."</b></span>");
+            }else if (!empty($validacionnombre) && isset($validacionnombre[0]->name)) {
+                return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario vinculado al nombre <b>".$nombre."</b></span>");
+            }
+        }
+
+
+        if($tipocreacion == "crearDAgencia"){
+            $id_insertado = DB::table('users')->insertGetId([
+                'name' => $nombre,
+                'rol' => 'Consultante',
+                'agenciau' => $request->agenciaDAgencia,
+                'email' => $correo,
+                'password' => bcrypt($password),
+                'activo' => 1
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente el director de agencia o auxiliar (<span class='badge bg-primary fw-bold'>".$nombre." - ".$request->agenciaDAgencia."</span>).</span>");
+        }else if($tipocreacion == "crearCoord"){
+            $selectedPeopleString = $request->input('selectedPeople');
+
+            $selectedPeople = json_decode($selectedPeopleString, true);
+
+
+
+            $id_insertado = DB::table('users')->insertGetId([
+                'name' => $nombre,
+                'rol' => 'Coordinacion',
+                'agenciau' => 'Coordinacion '.$request->selectcoordinacion,
+                'agencias_id' => json_encode($selectedPeople),
+                'email' => $correo,
+                'password' => bcrypt($password),
+                'activo' => 1
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la coordinación ".$request->selectcoordinacion." (<span class='badge bg-primary fw-bold'>".$nombre." - ".$request->selectcoordinacion."</span>).</span>");
+        }else if($tipocreacion == "crearJefatura"){
+            $validacionagenciau = DB::select("SELECT agenciau FROM users WHERE LOWER(agenciau) LIKE LOWER(?)", ["%{$request->jefatura}%"]);
+            $jefatura = $request->jefatura;
+            if(!empty($validacionagenciau)){
+                $jefatura = $validacionagenciau[0]->agenciau;
+            }
+            $id_insertado = DB::table('users')->insertGetId([
+                'name' => $nombre,
+                'rol' => 'Jefatura',
+                'agenciau' => $jefatura,
+                'email' => $correo,
+                'password' => bcrypt($password),
+                'activo' => 1
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la jefatura (<span class='badge bg-primary fw-bold'>".$nombre." - ".$jefatura."</span>).</span>");
+        }else if($tipocreacion == "crearAgencia"){
+            $id_insertado = DB::table('agencias')->insertGetId([
+                'NameAgencia' => $request->agencianombre,
+                'NumAgencia' => $request->centrocosto,
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la agencia (<span class='badge bg-primary fw-bold'>".$request->agencianombre." - ".$request->centrocosto."</span>).</span>");
+        }
+
+
+
+    }
+
+    public function guardarcoordinacion(Request $request)
+    {
+        $integrantesJson = json_encode($request->members);
+
+
+        $validarnombre = DB::select('SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?', [$request->name]);
+
+        if (empty($validarnombre)) {
+            $consultantes = DB::select('SELECT id FROM users WHERE rol = ?', ['D. de Agencia']);
+
+            // Crear un array con los IDs de los consultantes
+            $consultantesArray = [];
+            foreach ($consultantes as $consultante) {
+                $consultantesArray[] = $consultante->id;
+            }
+
+            // Combinar los miembros recibidos con los consultantes
+            $integrantesArray = array_merge($request->members, $consultantesArray);
+
+            // Convertir el array combinado a JSON
+            $integrantesJson = json_encode($integrantesArray);
+
+            // Insertar el nuevo grupo en la base de datos
+            $id_insertado = DB::table('grupos_otrabajo')->insertGetId([
+                'nombregrupo' => $request->name,
+                'integrantes' => $integrantesJson,
+            ]);
+            return response()->json(['success' => true, 'id' => $id_insertado]);
+        } else {
+            $grupoExistente = $validarnombre[0];
+            $integrantesExistentes = json_decode($grupoExistente->integrantes, true);
+            $nuevosIntegrantes = json_decode($integrantesJson, true);
+
+            $integrantesCombinados = array_unique(array_merge($integrantesExistentes, $nuevosIntegrantes));
+
+            DB::table('grupos_otrabajo')->where('nombregrupo', $request->name)->update([
+                'integrantes' => json_encode($integrantesCombinados)
+            ]);
+
+            return response()->json(['success2' => true]);
+        }
+    }
 
 
 }
