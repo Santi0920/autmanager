@@ -139,7 +139,7 @@
                                     <select id="agencias" class="form-select mb-3 fs-4 border-dark border-3">
                                         <option value="" disabled selected>Seleccione agencia(s)</option>
                                         @foreach ($agencias as $agencia)
-                                            <option value="{{$agencia->ID}}">{{$agencia->NameAgencia}}
+                                            <option value="{{$agencia->ID}}">{{$agencia->NumAgencia}} - @if($agencia->NameAgencia == "La Unión")La Unión Valle @else {{$agencia->NameAgencia}} @endif
                                         @endforeach
                                     </select>
                                     <input type="hidden" id="selectedPeopleInput" name="selectedPeople" value="">

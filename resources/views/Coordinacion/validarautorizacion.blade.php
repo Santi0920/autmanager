@@ -141,6 +141,7 @@
                 "order": [
                     [0, 'desc']
                 ],
+                "processing" : true,
                 scrollY: 420,
 
                 "columns": [{
