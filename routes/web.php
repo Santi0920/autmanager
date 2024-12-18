@@ -44,7 +44,7 @@ Route::get('/solicitudes', [DirectorController::class, 'data1'])->middleware('au
 
 Route::get('/solicitudes/datatable', [DirectorController::class, 'solicitudes'])->name('data.solicitudes')->middleware('auth.director');
 
-//Esta ruta es para crear autorizaciones en todos los usuarios
+//Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
 Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
 Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion');
