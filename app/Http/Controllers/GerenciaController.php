@@ -980,7 +980,7 @@ class GerenciaController extends Controller
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' ORDER BY agenciau ASC");
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante'  AND activo = 1 ORDER BY agenciau ASC");
 
 
 
@@ -994,7 +994,7 @@ class GerenciaController extends Controller
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Coordinacion' ORDER BY agenciau ASC");
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Coordinacion'  AND activo = 1 ORDER BY agenciau ASC");
 
 
 
@@ -1008,11 +1008,20 @@ class GerenciaController extends Controller
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Jefatura' ORDER BY agenciau ASC");
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Jefatura'  AND activo = 1 ORDER BY agenciau ASC");
 
 
 
         return datatables()->of($solicitudes)->toJson();
+    }
+
+    public function agenciastabla(Request $request)
+    {
+        $agencias = DB::select("SELECT * FROM agencias ORDER BY NameAgencia ASC");
+
+
+
+        return datatables()->of($agencias)->toJson();
     }
 
 
@@ -1097,7 +1106,6 @@ class GerenciaController extends Controller
 
 
 
-            dd('asd');
             $id_insertado = DB::table('users')->insertGetId([
                 'name' => $nombre,
                 'rol' => 'Coordinacion',
@@ -1135,6 +1143,37 @@ class GerenciaController extends Controller
 
     }
 
+    public function eliminarUsuario($id){
+
+        $usuarioActual = Auth::user();
+        $nombreauditoria = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeEliminoUsuarioenelpaneladmin', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id,
+            null,
+            $ip
+        ]);
+        $usuarioRol = DB::select("SELECT agenciau, name from users WHERE id = ?",[$id]);
+
+
+
+        DB::table('users')
+        ->where('id', $id)
+        ->update([
+            'activo' => 0
+        ]);
+        return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
+    }
+
     public function guardarcoordinacion(Request $request)
     {
         $integrantesJson = json_encode($request->members);
@@ -1145,19 +1184,19 @@ class GerenciaController extends Controller
         if (empty($validarnombre)) {
             $consultantes = DB::select('SELECT id FROM users WHERE rol = ?', ['D. de Agencia']);
 
-            // Crear un array con los IDs de los consultantes
+
             $consultantesArray = [];
             foreach ($consultantes as $consultante) {
                 $consultantesArray[] = $consultante->id;
             }
 
-            // Combinar los miembros recibidos con los consultantes
+
             $integrantesArray = array_merge($request->members, $consultantesArray);
 
-            // Convertir el array combinado a JSON
+
             $integrantesJson = json_encode($integrantesArray);
 
-            // Insertar el nuevo grupo en la base de datos
+
             $id_insertado = DB::table('grupos_otrabajo')->insertGetId([
                 'nombregrupo' => $request->name,
                 'integrantes' => $integrantesJson,

@@ -79,8 +79,8 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="estadisticas">Estadísticas Autorizaciones</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            {{-- <li><a class="dropdown-item fw-bold" href="estadisticas">Estadísticas Autorizaciones</a></li>
+                            <li><hr class="dropdown-divider"></li> --}}
                             <li><a class="dropdown-item fw-bold" href="otrabajo">Orden de Trabajo</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="admin">Panel Administrativo</a></li>
