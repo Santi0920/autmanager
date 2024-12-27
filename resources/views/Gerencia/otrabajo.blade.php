@@ -80,7 +80,7 @@
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
                     <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- ORDEN DE TRABAJO -⭐</b></span>
-                    <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
+                    <h2 class="p-3 mb-0 text-secondary text-end"><a href="estadisticas" id="btnAgencias" class="btn btn-dark fw-bold me-2" title="ESTADÍSTICAS ORDEN DE TRABAJO"><i class="fa-solid fa-chart-bar text-white"></i> &nbspESTADÍSTICAS</a><b><span id="fechaActual"></span></b></h2>
                 </div>
 
                 <script>

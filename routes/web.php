@@ -202,13 +202,15 @@ Route::get('dagencia/datatable', [GerenciaController::class, 'dagencia'])->name(
 
 Route::get('jefaturas/datatable', [GerenciaController::class, 'jefaturas'])->name('datager.jefaturas')->middleware('auth.gerencia');
 
-Route::get('agencias/datatable', [GerenciaController::class, 'agencias'])->name('datager.agencias')->middleware('auth.gerencia');
 
 Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
 ->name('cargarinfo');
 
 Route::post('/admin/crear', [GerenciaController::class, 'crearusuario'])
 ->name('crearusuario');
+
+Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
+->name('eliminarusuario');
 
 
 //JEFATURA

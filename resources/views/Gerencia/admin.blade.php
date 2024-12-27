@@ -143,10 +143,10 @@
                                         @endforeach
                                     </select>
                                     <input type="hidden" id="selectedPeopleInput" name="selectedPeople" value="">
-                                    <div class="text-danger" id="error-agencias"></div>
                                     <div class="mt-3" id="selectedPeople">
 
-                                    </div>
+                                        </div>
+                                    <div class="text-danger" id="error-agencias"></div>
 
                                     <label for="correo" class="form-label fw-bold">Correo de ingreso:</label>
                                     <input type="email" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="correo">
@@ -360,7 +360,7 @@
             </div>
         </div>
         <div class="table-responsive mb-5">
-            <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
+            <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered ">
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
@@ -373,7 +373,11 @@
 
                 </tbody>
             </table>
+
         </div>
+
+
+
 
     </div>
     <script src="ResourcesAll/dtables/jquery-3.5.1.js"></script>
@@ -409,7 +413,7 @@
                 }
             },
                     {
-                data: 'name',
+                data:null,
                         render: function(data, type, row) {
                             var ID = `<span class='fw-bold'>${row.name}</span>`
 
@@ -424,7 +428,7 @@
                         }
                     },
                     {
-                data: 'name',
+                data:null,
                         render: function(data, type, row) {
                             var agenciau = `<span class='text-danger fw-bold'>${row.agenciau}</span>`
 
@@ -439,17 +443,112 @@
                         }
                     },
                     {
-                data: 'name',
+                data:null,
                         render: function(data, type, row) {
-                            id = row.id
-                            var ModalInfo = `
-                            <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
-                                        data-id="${id}">
-                                        <i class="fa-solid fa-eye fs-5"></i>
-                            </a>
-                            `
+                            $(document).on('click', '.delete-btn', function(e) {
+                                e.preventDefault();
 
-                            return ModalInfo
+
+                                var url = $(this).data('url');
+                                var id = $(this).data('id');
+                                var name = $(this).data('name');
+
+
+                                Swal.fire({
+                                    title: `¿Está seguro de eliminar a ${name}?`,
+                                    text: "Esta acción no se puede deshacer.",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                    confirmButtonText: 'Sí, eliminar',
+                                    cancelButtonText: 'Cancelar',
+                                    customClass: {
+                                        confirmButton: 'btn-confirm',
+                                        cancelButton: 'btn-cancel'
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = url;
+                                    }
+                                });
+                            });
+                            var id = row.id;
+                            var name = row.name;
+                            var url = `admin/eliminar/${id}`;
+
+                            var ModalInfo = `
+                                <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}" data-id="${id}">
+                                    <i class="fa-solid fa-eye fs-5"></i>
+                                </a>
+
+                                <div class="modal fade" id="exampleModal_${id}" tabindex="-1" aria-labelledby="exampleModalLabel_${id}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-3 fw-bold" id="exampleModalLabel_${id}">
+                                                    Información Usuario (<span class="text-primary">${row.name}</span>)
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{route('crearusuario')}}" method="POST" id="dynamicForm_${id}">
+                                                    @csrf
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+
+                                                            <label for="nombre" class="form-label fw-bold fs-4">Nombre:</label>
+                                                            <input type="text" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="nombre">
+                                                            <div class="text-danger" id="error-nombre"></div>
+
+
+                                                            <label for="agencia" class="form-label fw-bold fs-4">Agencia:</label>
+                                                            <input type="text" id="agencia" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la agencia" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="agencia">
+                                                            <div class="text-danger" id="error-agencia"></div>
+                                                        </div>
+
+
+                                                        <div class="col-md-6">
+
+                                                            <label for="celular" class="form-label fw-bold fs-4">Número de celular:</label>
+                                                            <input type="tel" id="celular" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el número de celular" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="celular" maxlength="10">
+                                                            <div class="text-danger" id="error-celular"></div>
+
+
+                                                            <label for="correo" class="form-label fw-bold fs-4">Contraseña:</label>
+                                                            <input type="email" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="correo">
+                                                            <div class="text-danger" id="error-correo"></div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <label for="contraseña" class="form-label fw-bold fs-4">Correo de ingreso:</label>
+                                                            <input type="password" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="contraseña">
+                                                            <div class="text-danger" id="error-contraseña"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="text-end modal-footer">
+                                                         <button id="createButton" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                                <a type="button" class="btn btn-outline-danger delete-btn" data-url="${url}" data-id="${id}" data-name="${name}">
+                                    <i class="fa-solid fa-trash fs-5"></i>
+                                </a>
+                            `;
+
+                            return ModalInfo;
+
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
@@ -490,12 +589,13 @@
                 }
             },
             "initComplete": function(settings, json) {
-            var buttonsHtml = '<div class="custom-buttons mb-2 fs-5">' +
+            var buttonsHtml =
+                '<div class="custom-buttons mb-2 fs-5">' +
                     '<span class="fw-bold ">Cargar: </span>' +
                     '<button id="btnDAgencia" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="D. Agencia">D. Agencia</button>' +
                     '<button id="btnCoordinaciones" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Coordinaciones">Coordinaciones</button>' +
                     '<button id="btnJefaturas" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Jefaturas">Jefaturas</button>' +
-                    '<button id="btnAgencias" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Agencias">Agencias</button>' +
+                    // '<button id="btnAgencias" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Agencias">Agencias</button>' +
                 '</div>';
 
             $(buttonsHtml).prependTo('.dataTables_filter');
@@ -547,6 +647,19 @@
     </div>
     {{-- ESTILOS --}}
     <style>
+
+                .btn-confirm {
+                    font-size: 25px;
+                    font-weight: bold;
+                    padding: 10px 20px;
+                }
+
+                .btn-cancel {
+                    font-size: 25px;
+                    font-weight: bold;
+                    padding: 10px 20px;
+                }
+
 
                 .buttonpro {
                 border-radius: 0.9em;
