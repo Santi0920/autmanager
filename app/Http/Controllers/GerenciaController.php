@@ -644,7 +644,35 @@ class GerenciaController extends Controller
     public function cargaragcoorjef(Request $request)
     {//AND name != 'Santiago Henao'
         $cargos = DB::select("SELECT DISTINCT id,agenciau,name FROM users WHERE agenciau != 'Asociacion Virtual' AND name != 'Jesus H BOLAÑOS'  ORDER BY name ASC");
-        $gruposcreados = DB::select("SELECT DISTINCT * FROM grupos_otrabajo ORDER BY nombregrupo ASC");
+        $gruposcreados = DB::select("SELECT * FROM grupos_otrabajo");
+        foreach ($gruposcreados as $grupo) {
+
+            if (strpos($grupo->integrantes, '"') !== false) {
+
+                DB::table('grupos_otrabajo')
+                    ->where('id', $grupo->id)
+                    ->update(['integrantes' => str_replace('"', '', $grupo->integrantes)]);
+            }
+        }
+
+
+
+        $gruposcreados = DB::select("
+        SELECT
+            g.id AS grupo_id,
+            g.nombregrupo,
+            GROUP_CONCAT(u.name ORDER BY u.name ASC SEPARATOR ', ') AS integrantes
+        FROM
+            grupos_otrabajo g
+        LEFT JOIN
+            users u ON FIND_IN_SET(u.id, REPLACE(REPLACE(g.integrantes, '[', ''), ']', '')) > 0
+        GROUP BY
+            g.id, g.nombregrupo
+        ORDER BY
+            g.nombregrupo ASC
+        ");
+
+
 
         return view('Gerencia/otrabajo', ['cargos' => $cargos, 'gruposcreados' => $gruposcreados]);
 
@@ -677,110 +705,128 @@ class GerenciaController extends Controller
             'tipo' => $request->tipoorden,
             'fecha' => $fechaStringfechadeSolicitud,
             'descripcion' => $request->descripcion,
-            'asignado' => $request->nombreempleado,
+            'asignado' => $request->selectedPeopleInput2,
             'estado' => $request->estadopolitica,
         ]);
 
 
+        $selectedPeople = json_decode($request->selectedPeopleInput2, true);
 
-        $query = DB::select('SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?', [$request->nombreempleado]);
+        if (is_array($selectedPeople)) {
 
-        if (!empty($query)) {
-            $integrantes = json_decode($query[0]->integrantes, true);
-            DB::table('users')
-            ->whereIn('id', $integrantes)
-            ->increment('notificaciones', 1);
-            $idsString = implode(',', $integrantes);
+            $placeholders = implode(',', array_fill(0, count($selectedPeople), '?'));
 
-            $correos = DB::select("SELECT id,email,name,celular FROM users WHERE id IN ($idsString)");
 
-            $emails = array_map(function($user) {
-                if ($user->celular !== null) {
-                    return [
-                        'id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name,
-                        'celular' => $user->celular
-                    ];
-                }else{
-                    return [
-                        'id' => $user->id,
-                        'email' => $user->email,
-                        'name' => $user->name,
-                        'celular' => 0
-                    ];
+            $groups = DB::select("SELECT * FROM grupos_otrabajo WHERE nombregrupo IN ($placeholders)", $selectedPeople);
+
+
+            $users = DB::select("SELECT id, email, name, celular FROM users WHERE name IN ($placeholders)", $selectedPeople);
+
+            $debugData = [];
+
+
+            foreach ($groups as $group) {
+                if (!empty($group)) {
+                    $integrantes = json_decode($group->integrantes, true);
+
+                    DB::table('users')
+                        ->whereIn('id', $integrantes)
+                        ->increment('notificaciones', 1);
+
+                    $idsString = implode(',', $integrantes);
+
+                    $correos = DB::select("SELECT id, email, name, celular FROM users WHERE id IN ($idsString)");
+
+                    $emails = array_map(function ($user) {
+                        return [
+                            'id' => $user->id,
+                            'email' => $user->email,
+                            'name' => $user->name,
+                            'celular' => $user->celular ?? 0,
+                        ];
+                    }, $correos);
+
+                    foreach ($emails as $emailData) {
+                        SendCorreoJob::dispatch(
+                            $emailData['email'],
+                            $emailData['name'],
+                            $id_insertado,
+                            $fechaStringfechadeSolicitud
+                        );
+
+
+                        $debugData[] = [
+                            'from' => 'group',
+                            'integrantes' => $integrantes,
+                            'emailData' => $emailData,
+                        ];
+                    }
                 }
-            }, $correos);
-
-
-
-            foreach ($emails as $emailData) {
-
-                SendCorreoJob::dispatch($emailData['email'], $emailData['name'], $id_insertado, $fechaStringfechadeSolicitud);
-                // $url = 'https://aio2.sigmamovil.com/api/sms';
-                // $nombrecompleto = $emailData['name'];
-                // $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
-
-                // $data = [
-                //     "idSmsCategory" => 1,
-                //     "name" => "".$id_insertado."otrabajo",
-                //     "receiver" => [
-                //         [
-                //             "indicative" => 57,
-                //             "phone" => $emailData['celular'],
-                //             "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
-
-                //         ]
-                //     ],
-                //     "dateNow" => 1,
-                //     "type" => "lote",
-                //     "track" => 0,
-                //     "sendPush" => 0,
-                //     "api" => 1,
-                //     "notification" => 0,
-                //     "email" => "email@email.com.co",
-                //     "rne" => 0
-                // ];
-
-                // $response = Http::withToken($bearerToken)->post($url, $data);
             }
-        } else{
-            DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
-            $queryindividual = DB::select('SELECT * FROM users WHERE name = ?', [$request->nombreempleado]);
-            $email = $queryindividual[0]->email;
-            $nombrecompleto = $queryindividual[0]->name;
-            Mail::to($email)->send(new CorreoInfo($nombrecompleto, $id_insertado, $fechaStringfechadeSolicitud));
-            $querycelular = DB::select('SELECT celular FROM users WHERE name = ?', [$request->nombreempleado]);
-            $celular = $querycelular[0]->celular;
 
-            if(!empty($celular)){
-                $url = 'https://aio2.sigmamovil.com/api/sms';
 
-                $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+            foreach ($users as $user) {
+                SendCorreoJob::dispatch(
+                    $user->email,
+                    $user->name,
+                    $id_insertado,
+                    $fechaStringfechadeSolicitud
+                );
 
-                $data = [
-                    "idSmsCategory" => 1,
-                    "name" => "".$id_insertado."otrabajo",
-                    "receiver" => [
-                        [
-                            "indicative" => 57,
-                            "phone" => $celular,
-                            "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
-                        ]
-                    ],
-                    "dateNow" => 1,
-                    "type" => "lote",
-                    "track" => 0,
-                    "sendPush" => 0,
-                    "api" => 1,
-                    "notification" => 0,
-                    "email" => "email@email.com.co",
-                    "rne" => 0
+
+                $debugData[] = [
+                    'from' => 'users',
+                    'userId' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->name,
+                    'celular' => $user->celular ?? 0,
                 ];
-
-                $response = Http::withToken($bearerToken)->post($url, $data);
             }
+
+
+
         }
+
+
+
+
+        // else{
+        //     DB::table('users')->where('name', $request->nombreempleado)->increment('notificaciones', 1);
+        //     $queryindividual = DB::select('SELECT * FROM users WHERE name = ?', [$request->nombreempleado]);
+        //     $email = $queryindividual[0]->email;
+        //     $nombrecompleto = $queryindividual[0]->name;
+        //     Mail::to($email)->send(new CorreoInfo($nombrecompleto, $id_insertado, $fechaStringfechadeSolicitud));
+        //     $querycelular = DB::select('SELECT celular FROM users WHERE name = ?', [$request->nombreempleado]);
+        //     $celular = $querycelular[0]->celular;
+
+        //     if(!empty($celular)){
+        //         $url = 'https://aio2.sigmamovil.com/api/sms';
+
+        //         $bearerToken = '10827|FDDjj6eKpiYZxk68a1XJZ2xPxNxNZwMN6EEWe0Rz16607cfa';
+
+        //         $data = [
+        //             "idSmsCategory" => 1,
+        //             "name" => "".$id_insertado."otrabajo",
+        //             "receiver" => [
+        //                 [
+        //                     "indicative" => 57,
+        //                     "phone" => $celular,
+        //                     "message" => "Estimado(a) ".$nombrecompleto.", le informamos que ha sido asignado(a) a una nueva orden de trabajo por parte de la DIRECCIÓN GENERAL, identificada con el número ".$id_insertado.", con fecha ".$fechaStringfechadeSolicitud."."
+        //                 ]
+        //             ],
+        //             "dateNow" => 1,
+        //             "type" => "lote",
+        //             "track" => 0,
+        //             "sendPush" => 0,
+        //             "api" => 1,
+        //             "notification" => 0,
+        //             "email" => "email@email.com.co",
+        //             "rne" => 0
+        //         ];
+
+        //         $response = Http::withToken($bearerToken)->post($url, $data);
+        //     }
+        // }
 
 
 
@@ -1217,5 +1263,111 @@ class GerenciaController extends Controller
         }
     }
 
+
+    public function editarusuario(Request $request){
+        $nombre = $request->nombre;
+        $agencia = $request->agencia;
+        $celular= $request->celular;
+        $contrasena= $request->contrasena;
+        $correo = $request->correo;
+
+        $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
+        $rol = $consultaRol[0]->rol;
+
+        if($rol == "Coordinacion"){
+
+        }else{
+            if($contrasena == null){
+                DB::table('users')
+                ->where('email', $correo)
+                ->update([
+                    'name' => $nombre,
+                    'agenciau' => $agencia,
+                    'celular' => $celular,
+                    'password' => bcrypt($contrasena),
+                ]);
+            }else{
+                DB::table('users')
+                ->where('email', $correo)
+                ->update([
+                    'name' => $nombre,
+                    'agenciau' => $agencia,
+                    'celular' => $celular,
+                    'password' => bcrypt($contrasena),
+                ]);
+            }
+
+                return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente el usuario <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$agencia."</span>).</span>");
+        }
+
+
+    }
+
+
+
+    public function contarsolicitudesotrabajo(Request $request)
+    {
+
+            $permanentes = DB::table('ordentrabajo')->where('estado', "PERMANENTE")->count();
+            $laboracumplir = DB::table('ordentrabajo')->where('estado', "LABOR A CUMPLIR")->count();
+            $temporales = DB::table('ordentrabajo')->where('estado', "TEMPORAL")->count();
+            $aplazadas = DB::table('ordentrabajo')->where('estado', "APLAZADA")->count();
+            $derogadas = DB::table('ordentrabajo')->where('estado', "DEROGADA")->count();
+            $anuladas = DB::table('ordentrabajo')->where('estado', "ANULAR")->count();
+            $terminadas = DB::table('ordentrabajo')->where('estado', "TERMINADA")->count();
+
+
+            $total = $permanentes + $laboracumplir + $temporales + $aplazadas + $derogadas + $anuladas + $terminadas;
+
+
+            $porcentaje_permanentes = ($total != 0) ? ($permanentes / $total * 100) : 0;
+            $porcentaje_laboracumplir = ($total != 0) ? ($laboracumplir / $total * 100) : 0;
+            $porcentaje_temporales = ($total != 0) ? ($temporales / $total * 100) : 0;
+            $porcentaje_aplazadas = ($total != 0) ? ($aplazadas / $total * 100) : 0;
+            $porcentaje_derogadas = ($total != 0) ? ($derogadas / $total * 100) : 0;
+            $porcentaje_anuladas = ($total != 0) ? ($anuladas / $total * 100) : 0;
+            $porcentaje_terminadas = ($total != 0) ? ($terminadas / $total * 100) : 0;
+
+
+            $porcentaje_permanentes_con_decimales = round($porcentaje_permanentes, 2);
+            $porcentaje_laboracumplir_con_decimales = round($porcentaje_laboracumplir, 2);
+            $porcentaje_temporales_con_decimales = round($porcentaje_temporales, 2);
+            $porcentaje_aplazadas_con_decimales = round($porcentaje_aplazadas, 2);
+            $porcentaje_derogadas_con_decimales = round($porcentaje_derogadas, 2);
+            $porcentaje_anuladas_con_decimales = round($porcentaje_anuladas, 2);
+            $porcentaje_terminadas_con_decimales = round($porcentaje_terminadas, 2);
+
+
+            $suma_porcentajes = $porcentaje_permanentes_con_decimales + $porcentaje_laboracumplir_con_decimales + $porcentaje_temporales_con_decimales + $porcentaje_aplazadas_con_decimales + $porcentaje_derogadas_con_decimales + $porcentaje_anuladas_con_decimales + $porcentaje_terminadas_con_decimales;
+
+
+            $nombresAgencia = DB::table('autorizaciones')
+            ->select('NomAgencia')
+            ->distinct()
+            ->orderBy('NomAgencia', 'asc')
+            ->get();
+
+            return view('Gerencia/otraestadisticas', [
+                'permanentes' => $permanentes,
+                'laboracumplir' => $laboracumplir,
+                'temporales' => $temporales,
+                'aplazadas' => $aplazadas,
+                'derogadas' => $derogadas,
+                'anuladas' => $anuladas,
+                'terminadas' => $terminadas,
+                'total' => $total,
+                'porcentaje_permanentes' => $porcentaje_permanentes_con_decimales,
+                'porcentaje_laboracumplir' => $porcentaje_laboracumplir_con_decimales,
+                'porcentaje_temporales' => $porcentaje_temporales_con_decimales,
+                'porcentaje_aplazadas' => $porcentaje_aplazadas_con_decimales,
+                'porcentaje_derogadas' => $porcentaje_derogadas_con_decimales,
+                'porcentaje_anuladas' => $porcentaje_anuladas_con_decimales,
+                'porcentaje_terminadas' => $porcentaje_terminadas_con_decimales,
+                'suma_porcentajes' => $suma_porcentajes,
+                'nombresAgencia' => $nombresAgencia
+            ]);
+
+
+    }
 
 }

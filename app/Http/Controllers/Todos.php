@@ -15,27 +15,38 @@ class Todos extends Controller
         $name = $usuarioActual->name;
         $id = $usuarioActual->id;
 
-        //ESTABLECER NOTIFICACIONES EN 0 PORQUE YA REVISO
+
+        $selectedPeople = DB::table('grupos_otrabajo')
+            ->whereJsonContains('integrantes', $id)
+            ->get();
+
+
+        $nombreGrupos = [];
+        foreach ($selectedPeople as $grupos) {
+            $nombreGrupos[] = $grupos->nombregrupo;
+        }
+
+        // ESTABLECER NOTIFICACIONES EN 0 PORQUE YA REVISO
         DB::table('users')->where('name', $name)->update(['notificaciones' => 0]);
 
 
-        $grupos = DB::table('grupos_otrabajo')
-            ->where(function($query) use ($id) {
-                $query->whereJsonContains('integrantes', (string)$id)
-                      ->orWhereJsonContains('integrantes', $id);
-            })
-        ->get();
-
-        $nombreGrupos = $grupos->pluck('nombregrupo');
-
         $solicitudes = DB::table('ordentrabajo')
-        ->whereIn('asignado', $nombreGrupos)
-        ->orWhere('asignado', $name)
-        ->get();
+            ->where(function ($query) use ($nombreGrupos) {
+                foreach ($nombreGrupos as $grupo) {
+                    $query->orWhereJsonContains('asignado', $grupo);
+                }
+            })
+            ->orWhere(function ($query) use ($name) {
+                $query->orWhereJsonContains('asignado', $name);
+            })
+            ->get();
 
         return datatables()->of($solicitudes)->toJson();
-
     }
+
+
+
+
 
     public function celularpendiente(Request $request){
         $usuarioActual = Auth::user();

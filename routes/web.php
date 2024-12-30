@@ -171,7 +171,17 @@ Route::get('/estadisticas', [GerenciaController::class, 'contarsolicitudes'])
 Route::get('/estadisticas/actualizar-datos', [GerenciaController::class, 'actualizardatos'])
 ->name('actualizardatos');
 
+Route::get('/otrabajoestadisticas', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/otraestadisticas');
+})->middleware('auth.gerencia');
 
+Route::get('/otrabajoestadisticas', [GerenciaController::class, 'contarsolicitudesotrabajo'])
+->name('contarsolicitudesotrabajo');
+
+Route::get('/otrabajoestadisticas/actualizar-datos', [GerenciaController::class, 'actualizardatos'])
+->name('actualizardatos');
 
 Route::get('/estadisticasindividual', function () {
     Cookie::forget('laravel_session');
@@ -208,6 +218,9 @@ Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
 
 Route::post('/admin/crear', [GerenciaController::class, 'crearusuario'])
 ->name('crearusuario');
+
+Route::post('/admin/editar', [GerenciaController::class, 'editarusuario'])
+->name('editarusuario');
 
 Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
 ->name('eliminarusuario');
