@@ -2,6 +2,15 @@
    <div class="p-5">
         <section id="stats-subtitle">
             <div class="row">
+                <div class="text-start mb-3">
+                    <a href="aprobar" class="shadow-lg mt-3 buttonpro btn btn-warning ">
+                        <span>
+                            <i class="fa-solid fa-arrow-left me-3"></i>
+                            REGRESAR
+                        </span>
+                    </a>
+                    <h4 class="text-uppercase fw-bold fs-2 text-end"><button class="custom-btn me-2 fs-4" title="ACTUALIZAR ESTADÍSTICAS" onclick="reloadPage()"><i class="fa-solid fa-rotate-right"></i></button>Estadísticas AUTORIZACIONES</h4>
+                </div>
 
                 <span class="fs-2 fw-bold">Filtrar por:</span>
                 <form action="d-inline" class="d-flex align-items-center" id="form-actualizar-datos">
@@ -17,7 +26,9 @@
                             @endforeach
                         </select>
                     </div>
+
                 </form>
+
 
                 {{-- <div class="select ms-3 mb-3">
                     <select name="year" id="year" class="fw-semibold">
@@ -29,9 +40,9 @@
                 </div> --}}
 
 
-                <div class="col-12 mt-3 mb-1">
-                    <h4 class="text-uppercase fw-bold fs-2 text-end"><button class="custom-btn me-2 fs-4" title="ACTUALIZAR ESTADÍSTICAS" onclick="reloadPage()"><i class="fa-solid fa-rotate-right"></i></button>Estadísticas GENERALES</h4>
-                </div>
+
+
+
             </div>
 
             <div class="row mb-2 text-center">
@@ -160,7 +171,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </section>
         <p class="text-center mt-3 fw-bold fs-2">
             TOTAL: <span class="btn btn-secondary shadow value " style="padding: 0rem 0.8rem; border-radius: 10%; font-weight: 600; font-size: 25px;" akhi="{{$total}}" id="total"><b>0</b></span>
@@ -244,6 +255,23 @@
 
 
     <style>
+                .buttonpro {
+                border-radius: 0.9em;
+                cursor: pointer;
+                padding: 0.8em 1.2em 0.8em 1em;
+                transition: all ease-in-out 0.2s;
+                font-size: 20px;
+                }
+
+                .buttonpro span {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #000000;
+                font-weight: 600;
+                }
+
+
             select {
                 -webkit-appearance:none;
                 -moz-appearance:none;

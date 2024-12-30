@@ -2,7 +2,7 @@
 @include('layouts/head')
     <body class="antialiased">
         @include('layouts/nav')
-                @include('layouts/cards')
+                @include('layouts/cards2')
 
 
 

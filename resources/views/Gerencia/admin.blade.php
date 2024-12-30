@@ -477,6 +477,8 @@
                             var name = row.name;
                             var url = `admin/eliminar/${id}`;
 
+
+
                             var ModalInfo = `
                                 <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}" data-id="${id}">
                                     <i class="fa-solid fa-eye fs-5"></i>
@@ -492,31 +494,40 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{route('crearusuario')}}" method="POST" id="dynamicForm_${id}">
+                                                <form action="{{route('editarusuario')}}" method="POST" id="dynamicForm_${id}">
                                                     @csrf
                                                     <div class="row">
                                                         <div class="col-md-6">
 
                                                             <label for="nombre" class="form-label fw-bold fs-4">Nombre:</label>
-                                                            <input type="text" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="nombre">
+                                                            <input type="text" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="nombre" value="${row.name}">
                                                             <div class="text-danger" id="error-nombre"></div>
 
 
                                                             <label for="agencia" class="form-label fw-bold fs-4">Agencia:</label>
-                                                            <input type="text" id="agencia" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la agencia" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="agencia">
+                                                            <select id="agencia" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="agencia">
+                                                                <option value="${row.agenciau}" class="fw-bold" selected>${row.agenciau}</option>
+                                                                @foreach ($agencias as $agencia)
+                                                                    <option value="{{ $agencia->NameAgencia }}">
+                                                                        <b>{{ $agencia->NumAgencia }}</b> - {{ $agencia->NameAgencia }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
                                                             <div class="text-danger" id="error-agencia"></div>
+
+
                                                         </div>
 
 
                                                         <div class="col-md-6">
 
                                                             <label for="celular" class="form-label fw-bold fs-4">Número de celular:</label>
-                                                            <input type="tel" id="celular" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el número de celular" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="celular" maxlength="10">
+                                                            <input type="tel" id="celular" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el número de celular" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="celular" maxlength="10" value="${row.celular || 0}">
                                                             <div class="text-danger" id="error-celular"></div>
 
 
                                                             <label for="correo" class="form-label fw-bold fs-4">Contraseña:</label>
-                                                            <input type="email" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="correo">
+                                                            <input type="text" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="contrasena"    >
                                                             <div class="text-danger" id="error-correo"></div>
                                                         </div>
                                                     </div>
@@ -525,10 +536,20 @@
                                                     <div class="row">
                                                         <div class="col-12">
                                                             <label for="contraseña" class="form-label fw-bold fs-4">Correo de ingreso:</label>
-                                                            <input type="password" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="contraseña">
+                                                            <input type="email" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly name="correo" value="${row.email}">
                                                             <div class="text-danger" id="error-contraseña"></div>
                                                         </div>
                                                     </div>
+
+                                                    ${row.rol == "Coordinacion" ?
+                                                        `<div class="row">
+                                                            <div class="col-12">
+                                                                <label for="contraseña" class="form-label fw-bold fs-4">Agencias vinculadas ${row.agencias_id}</label>
+                                                                <div class="text-danger" id="error-contraseña"></div>
+                                                            </div>
+                                                        </div>`
+                                                        : ""
+                                                    }
 
                                                     <div class="text-end modal-footer">
                                                          <button id="createButton" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
