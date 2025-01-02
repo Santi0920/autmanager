@@ -137,6 +137,8 @@ Route::get('/otrabajo/buscar-grupos', [GerenciaController::class, 'buscarGrupos'
 
 Route::put('/otrabajo/actualizar-grupo/{grupoId}', [GerenciaController::class, 'updateNombreGrupo']);
 
+Route::get('/otrabajo/{id}/integrantes', [GerenciaController::class, 'getIntegrantes'])->name('grupo.integrantes');
+
 Route::get('aprobar', [GerenciaController::class, 'data1'])->middleware('auth.gerencia');
 
 Route::get('aprobar/datatable', [GerenciaController::class, 'solicitudes'])->name('datager.solicitudes')->middleware('auth.gerencia');
@@ -212,6 +214,8 @@ Route::get('dagencia/datatable', [GerenciaController::class, 'dagencia'])->name(
 
 Route::get('jefaturas/datatable', [GerenciaController::class, 'jefaturas'])->name('datager.jefaturas')->middleware('auth.gerencia');
 
+Route::get('agencias/datatable', [GerenciaController::class, 'agenciastabla'])->name('agenciastabla')->middleware('auth.gerencia');
+
 
 Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
 ->name('cargarinfo');
@@ -224,6 +228,11 @@ Route::post('/admin/editar', [GerenciaController::class, 'editarusuario'])
 
 Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
 ->name('eliminarusuario');
+
+Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
+
+Route::get('/admin/obtener-agencias-select/{id}', [GerenciaController::class, 'obtenerAgenciasSelect']);
+
 
 
 //JEFATURA

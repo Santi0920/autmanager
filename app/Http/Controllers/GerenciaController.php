@@ -1030,6 +1030,7 @@ class GerenciaController extends Controller
 
 
 
+
         return datatables()->of($solicitudes)->toJson();
     }
 
@@ -1063,11 +1064,11 @@ class GerenciaController extends Controller
 
     public function agenciastabla(Request $request)
     {
-        $agencias = DB::select("SELECT * FROM agencias ORDER BY NameAgencia ASC");
+        $solicitudes = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
 
 
-        return datatables()->of($agencias)->toJson();
+        return datatables()->of($solicitudes)->toJson();
     }
 
 
@@ -1078,7 +1079,8 @@ class GerenciaController extends Controller
 
 
         $jefaturas = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Jefatura'");
-        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas]);
+        $coordinaciones = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Coordinacion'");
+        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones]);
 
     }
 
@@ -1089,20 +1091,20 @@ class GerenciaController extends Controller
         $correo = $request->correo;
         $password = $request->password;
 
-        $validacionnombre = DB::select('select * from users WHERE name = ?',[$nombre]);
+
         $validacioncorreo = DB::select('select * from users WHERE email = ?',[$correo]);
 
         if (!empty($validacionnombre) || !empty($validacioncorreo)) {
 
             if (!empty($validacioncorreo) && isset($validacioncorreo[0]->email)) {
                 return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario vinculado al correo <b>".$correo."</b></span>");
-            }else if (!empty($validacionnombre) && isset($validacionnombre[0]->name)) {
-                return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario vinculado al nombre <b>".$nombre."</b></span>");
             }
         }
 
 
         if($tipocreacion == "crearDAgencia"){
+
+
             $id_insertado = DB::table('users')->insertGetId([
                 'name' => $nombre,
                 'rol' => 'Consultante',
@@ -1111,11 +1113,12 @@ class GerenciaController extends Controller
                 'password' => bcrypt($password),
                 'activo' => 1
             ]);
-            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente el director de agencia o auxiliar (<span class='badge bg-primary fw-bold'>".$nombre." - ".$request->agenciaDAgencia."</span>).</span>");
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente el director de agencia o auxiliar <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$request->agenciaDAgencia."</span>).</span>");
         }else if($tipocreacion == "crearCoord"){
             $selectedPeopleString = $request->input('selectedPeople');
 
             $selectedPeople = json_decode($selectedPeopleString, true);
+
             // Números en formato de cadenas para cada coordinación
             $selectedPeople1 = ['43', '76', '35', '34', '36', '37', '38', '40', '41', '87', '93', '96'];
             $selectedPeople2 = ['86', '33', '39', '46', '70', '77', '78', '80', '88', '92', '98'];
@@ -1161,7 +1164,7 @@ class GerenciaController extends Controller
                 'password' => bcrypt($password),
                 'activo' => 1
             ]);
-            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la coordinación ".$request->selectcoordinacion." (<span class='badge bg-primary fw-bold'>".$nombre." - ".$request->selectcoordinacion."</span>).</span>");
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la coordinación ".$request->selectcoordinacion." <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$request->selectcoordinacion."</span>).</span>");
         }else if($tipocreacion == "crearJefatura"){
             $validacionagenciau = DB::select("SELECT agenciau FROM users WHERE LOWER(agenciau) LIKE LOWER(?)", ["%{$request->jefatura}%"]);
             $jefatura = $request->jefatura;
@@ -1176,13 +1179,23 @@ class GerenciaController extends Controller
                 'password' => bcrypt($password),
                 'activo' => 1
             ]);
-            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la jefatura (<span class='badge bg-primary fw-bold'>".$nombre." - ".$jefatura."</span>).</span>");
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la jefatura <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$jefatura."</span>).</span>");
         }else if($tipocreacion == "crearAgencia"){
+            $consultaagencia = DB::table("agencias")->where("NameAgencia", $request->agencianombre)->count();
+            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $request->centrocosto)->count();
+
+            if ($consultaagencia > 0) {
+                return back()->with("incorrecto", "<span class='fs-4'>La agencia <b>" . $request->agencianombre . "</b> ya existe!</span>");
+            }else if($consultacentrocosto > 0){
+                return back()->with("incorrecto", "<span class='fs-4'>El centro de costo <b>" . $request->centrocosto . "</b> ya existe!</span>");
+            }
+
+
             $id_insertado = DB::table('agencias')->insertGetId([
                 'NameAgencia' => $request->agencianombre,
                 'NumAgencia' => $request->centrocosto,
             ]);
-            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la agencia (<span class='badge bg-primary fw-bold'>".$request->agencianombre." - ".$request->centrocosto."</span>).</span>");
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la agencia <br>(<span class='badge bg-primary fw-bold'>".$request->agencianombre." - ".$request->centrocosto."</span>).</span>");
         }
 
 
@@ -1208,16 +1221,47 @@ class GerenciaController extends Controller
             null,
             $ip
         ]);
+        $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->count();
+
         $usuarioRol = DB::select("SELECT agenciau, name from users WHERE id = ?",[$id]);
 
 
+        if($existeAgencia>0){
+            $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->get();
+            $idagencia = $existeAgencia[0]->NumAgencia;
 
-        DB::table('users')
-        ->where('id', $id)
-        ->update([
-            'activo' => 0
-        ]);
-        return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
+            DB::table('users')
+            ->where('agenciau', $id)
+            ->update([
+                'password' => bcrypt("bloqueada")
+            ]);
+
+
+            DB::table('agencias')
+                ->where('NameAgencia', $id)
+                ->update([
+                    'activo' => 0
+                ]);
+
+
+            DB::table('users')
+            ->whereJsonContains('agencias_id', $idagencia)
+            ->update([
+                'agencias_id' => DB::raw("JSON_REMOVE(agencias_id, JSON_UNQUOTE(JSON_SEARCH(agencias_id, 'one', '$idagencia')))")
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente la agencia<br>(<span class='badge bg-primary fw-bold'>".$id."</span>).</span>");
+        }else{
+
+            DB::table('users')
+            ->where('id', $id)
+            ->update([
+                'activo' => 0
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
+        }
+
+
+
     }
 
     public function guardarcoordinacion(Request $request)
@@ -1270,13 +1314,40 @@ class GerenciaController extends Controller
         $celular= $request->celular;
         $contrasena= $request->contrasena;
         $correo = $request->correo;
+        $agencianame = $request->agencianame;
+        $centrocosto = $request->cc;
+        $id = $request->id;
 
         $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
-        $rol = $consultaRol[0]->rol;
 
-        if($rol == "Coordinacion"){
 
+
+        if($agencianame != null || $centrocosto != null){
+            $consultaagencia = DB::table("agencias")->where("NameAgencia", $agencianame)->count();
+            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $centrocosto)->count();
+
+            if ($consultaagencia > 0) {
+                return back()->with("incorrecto", "<span class='fs-4'>La agencia <b>" . $agencianame . "</b> ya existe!</span>");
+            }else if($consultacentrocosto > 0){
+                return back()->with("incorrecto", "<span class='fs-4'>El centro de costo <b>" . $centrocosto . "</b> ya existe!</span>");
+            }
+
+
+            DB::table('agencias')
+            ->where('ID', $id)
+            ->update([
+                'NameAgencia' => $agencianame,
+                'NumAgencia' => $centrocosto,
+            ]);
+
+            return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente la agencia <br>(<span class='badge bg-primary fw-bold'>".$agencianame." - ".$centrocosto."</span>).</span>");
         }else{
+            $rol = $consultaRol[0]->rol;
+            if($rol == 'Jefatura'){
+                $agencia = $request->jefatura;
+            }else if($rol == 'Coordinacion'){
+                $agencia = $request->coordinacion2;
+            }
             if($contrasena == null){
                 DB::table('users')
                 ->where('email', $correo)
@@ -1285,6 +1356,7 @@ class GerenciaController extends Controller
                     'agenciau' => $agencia,
                     'celular' => $celular,
                     'password' => bcrypt($contrasena),
+                    'agencias_id' => $request->agencias_hidden ?: null
                 ]);
             }else{
                 DB::table('users')
@@ -1294,11 +1366,14 @@ class GerenciaController extends Controller
                     'agenciau' => $agencia,
                     'celular' => $celular,
                     'password' => bcrypt($contrasena),
+                    'agencias_id' => $request->agencias_hidden ?: null
                 ]);
             }
-
                 return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente el usuario <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$agencia."</span>).</span>");
-        }
+            }
+
+
+
 
 
     }
@@ -1369,5 +1444,92 @@ class GerenciaController extends Controller
 
 
     }
+
+    public function getIntegrantes($id)
+    {
+        $grupo = DB::table('grupos_otrabajo')
+            ->where('nombregrupo', $id)
+            ->first();
+
+
+        if ($grupo) {
+            $integrantesIds = json_decode($grupo->integrantes);
+
+            if (is_array($integrantesIds)) {
+                $nombres = DB::table('users')
+                ->whereIn('id', $integrantesIds)
+                ->pluck('name');
+            }
+            $integrantes = DB::table('grupos_otrabajo')
+                ->where('integrantes', $grupo->integrantes)
+                ->get();
+
+            return response()->json($nombres);
+        } else {
+            return response()->json(['error' => 'Grupo no encontrado'], 404);
+        }
+    }
+
+
+    public function obtenerAgencias($id)
+    {
+
+        $usuario = DB::table('users')->where('id', $id)->first();
+
+        if ($usuario && $usuario->agencias_id) {
+
+            $agenciasIds = json_decode($usuario->agencias_id, true);
+
+
+            if (is_array($agenciasIds)) {
+
+                $agencias = DB::table('agencias')
+                    ->whereIn('NumAgencia', $agenciasIds)
+                    ->select('NumAgencia', 'NameAgencia')
+                    ->get();
+
+
+                return response()->json($agencias);
+            }
+        }
+
+
+        return response()->json([]);
+    }
+
+
+    public function obtenerAgenciasSelect($id)
+    {
+        $usuario = DB::table('users')->where('id', $id)->first();
+
+        if ($usuario && $usuario->agencias_id) {
+
+            $agenciasIds = json_decode($usuario->agencias_id, true);
+
+            if (is_array($agenciasIds)) {
+
+
+                $agenciasExistentes = DB::table('agencias')
+                    ->whereIn('NumAgencia', $agenciasIds)
+                    ->pluck('NumAgencia')
+                    ->toArray();
+
+
+                $agenciasRestantes = DB::table('agencias')
+                    ->whereNotIn('NumAgencia', $agenciasIds)
+                    ->get();
+
+
+                return response()->json($agenciasRestantes);
+            }
+        }
+
+        return response()->json([]);
+    }
+
+
+
+
+
 
 }
