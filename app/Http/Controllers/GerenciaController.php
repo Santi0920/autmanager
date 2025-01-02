@@ -1390,6 +1390,8 @@ class GerenciaController extends Controller
             $derogadas = DB::table('ordentrabajo')->where('estado', "DEROGADA")->count();
             $anuladas = DB::table('ordentrabajo')->where('estado', "ANULAR")->count();
             $terminadas = DB::table('ordentrabajo')->where('estado', "TERMINADA")->count();
+            $tareas = DB::table('ordentrabajo')->where('tipo', "tarea")->count();
+            $politicas = DB::table('ordentrabajo')->where('tipo', "politica")->count();
 
 
             $total = $permanentes + $laboracumplir + $temporales + $aplazadas + $derogadas + $anuladas + $terminadas;
@@ -1402,6 +1404,8 @@ class GerenciaController extends Controller
             $porcentaje_derogadas = ($total != 0) ? ($derogadas / $total * 100) : 0;
             $porcentaje_anuladas = ($total != 0) ? ($anuladas / $total * 100) : 0;
             $porcentaje_terminadas = ($total != 0) ? ($terminadas / $total * 100) : 0;
+            $porcentaje_tareas = ($total != 0) ? ($tareas / $total * 100) : 0;
+            $porcentaje_politicas = ($total != 0) ? ($politicas / $total * 100) : 0;
 
 
             $porcentaje_permanentes_con_decimales = round($porcentaje_permanentes, 2);
@@ -1411,6 +1415,8 @@ class GerenciaController extends Controller
             $porcentaje_derogadas_con_decimales = round($porcentaje_derogadas, 2);
             $porcentaje_anuladas_con_decimales = round($porcentaje_anuladas, 2);
             $porcentaje_terminadas_con_decimales = round($porcentaje_terminadas, 2);
+            $porcentaje_tareas_con_decimales = round($porcentaje_tareas, 2);
+            $porcentaje_politicas_con_decimales = round($porcentaje_politicas, 2);
 
 
             $suma_porcentajes = $porcentaje_permanentes_con_decimales + $porcentaje_laboracumplir_con_decimales + $porcentaje_temporales_con_decimales + $porcentaje_aplazadas_con_decimales + $porcentaje_derogadas_con_decimales + $porcentaje_anuladas_con_decimales + $porcentaje_terminadas_con_decimales;
@@ -1430,6 +1436,8 @@ class GerenciaController extends Controller
                 'derogadas' => $derogadas,
                 'anuladas' => $anuladas,
                 'terminadas' => $terminadas,
+                'tareas' => $tareas,
+                'politicas' => $politicas,
                 'total' => $total,
                 'porcentaje_permanentes' => $porcentaje_permanentes_con_decimales,
                 'porcentaje_laboracumplir' => $porcentaje_laboracumplir_con_decimales,
@@ -1438,6 +1446,8 @@ class GerenciaController extends Controller
                 'porcentaje_derogadas' => $porcentaje_derogadas_con_decimales,
                 'porcentaje_anuladas' => $porcentaje_anuladas_con_decimales,
                 'porcentaje_terminadas' => $porcentaje_terminadas_con_decimales,
+                'porcentaje_tareas' => $porcentaje_tareas_con_decimales,
+                'porcentaje_politicas' => $porcentaje_politicas_con_decimales,
                 'suma_porcentajes' => $suma_porcentajes,
                 'nombresAgencia' => $nombresAgencia
             ]);
