@@ -230,6 +230,60 @@
                 </div>
             </div>
 
+            <div class="row mb-2 text-center">
+                <div class="col-xl-6 col-md-12 mb-3">
+                    <div class="card">
+                      <div class="card-content">
+                        <div class="card-body cleartfix">
+                          <div class="media align-items-stretch">
+                            <div class="align-self-center">
+                              <i class="icon-speech warning font-large-2 mr-2"></i>
+                            </div>
+                            <div class="media-body">
+                              <h3 class="fw-bold">TAREAS</h3>
+                            </div>
+                                <div class="text-center mt-3">
+                                    <div id="porcentaje-tramite-container">
+                                        <div style="display:inline;width:150px;height:150px;">
+                                            <canvas width="0" height="150"></canvas>
+                                            <input type="text" value="{{$porcentaje_tareas}}" id="porcentaje-tramite" class="knob hide-value responsive angle-offset" data-angleoffset="0" data-thickness=".15" data-linecap="round" data-width="150" data-height="150" data-inputcolor="black" data-readonly="true" data-fgcolor="#ff5733 " readonly="readonly" style="width: 79px; height: 50px; position: absolute; vertical-align: middle; margin-top: 50px; margin-left: -114px; border: 0px; background: none; font: bold 30px Arial; text-align: center; color: rgb(225, 225, 225); padding: 0px; appearance: none; display: none;">
+                                            <i class="knob-center-icon icon-note" style="width: 79px; height: 50px; position: absolute; vertical-align: middle; margin-top: 50px; margin-left: -114px; border: 0px; background: none; font: normal 30px Arial; text-align: center; color: rgb(225, 225, 225); padding: 0px; appearance: none;font-size: 50px;">
+                                                <h1 class="fw-bold value text-dark fs-3" akhi="{{$tareas}}" id="tramite">0</h1>
+                                            </i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-md-12 mb-3">
+                    <div class="card overflow-hidden">
+                    <div class="card-content">
+                        <div class="card-body cleartfix">
+                        <div class="media align-items-stretch">
+                            <div class="align-self-center">
+                            <i class="icon-pencil primary font-large-2 mr-2"></i>
+                            </div>
+                            <div class="media-body">
+                            <h3 class="fw-bold">POLÍTICAS</h3>
+                            </div>
+                            <div class="text-center mt-3">
+                                <div style="display:inline;width:150px;height:150px;">
+                                    <canvas width="0" height="150"></canvas>
+                                    <input type="text" value="{{$porcentaje_politicas}}" id="porcentaje-tramite" class="knob hide-value responsive angle-offset" data-angleoffset="0" data-thickness=".15" data-linecap="round" data-width="150" data-height="150" data-inputcolor="black" data-readonly="true" data-fgcolor="#ff5733 " readonly="readonly" style="width: 79px; height: 50px; position: absolute; vertical-align: middle; margin-top: 50px; margin-left: -114px; border: 0px; background: none; font: bold 30px Arial; text-align: center; color: rgb(225, 225, 225); padding: 0px; appearance: none; display: none;">
+                                    <i class="knob-center-icon icon-note" style="width: 79px; height: 50px; position: absolute; vertical-align: middle; margin-top: 50px; margin-left: -114px; border: 0px; background: none; font: normal 30px Arial; text-align: center; color: rgb(225, 225, 225); padding: 0px; appearance: none;font-size: 50px;">
+                                        <h1 class="fw-bold value text-dark fs-3" akhi="{{$politicas}}" id="tramite">0</h1>
+                                    </i>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
 
 
         </section>
