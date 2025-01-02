@@ -139,7 +139,7 @@
                                     <select id="agencias" class="form-select mb-3 fs-4 border-dark border-3">
                                         <option value="" disabled selected>Seleccione agencia(s)</option>
                                         @foreach ($agencias as $agencia)
-                                            <option value="{{$agencia->ID}}">{{$agencia->NumAgencia}} - @if($agencia->NameAgencia == "La Unión")La Unión Valle @else {{$agencia->NameAgencia}} @endif
+                                            <option value="{{$agencia->NumAgencia}}">{{$agencia->NumAgencia}} - @if($agencia->NameAgencia == "La Unión")La Unión Valle @else {{$agencia->NameAgencia}} @endif
                                         @endforeach
                                     </select>
                                     <input type="hidden" id="selectedPeopleInput" name="selectedPeople" value="">
@@ -169,7 +169,7 @@
 
 
                                 <label for="centrocosto" class="form-label fw-bold">Centro de costo de la agencia:</label>
-                                <input type="text" id="centrocosto" list="cuList" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la ubicación de la agencia" name="centrocosto">
+                                <input type="number" id="centrocosto" list="cuList" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la ubicación de la agencia" name="centrocosto">
                                 <div class="text-danger" id="error-centrocosto"></div>
 
                                 <datalist id="cuList">
@@ -286,6 +286,7 @@
                                 }
 
 
+
                             }
 
 
@@ -365,7 +366,7 @@
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
                         <th scope="col" class="text-center">NOMBRE</th>
-                        <th scope="col" class="text-center">ROL / AGENCIA</th>
+                        <th scope="col" class="text-center">ROL / AGENCIA / CC</th>
                         <th scope="col" class="text-center">DETALLES</th>
                     </tr>
                 </thead>
@@ -375,8 +376,6 @@
             </table>
 
         </div>
-
-
 
 
     </div>
@@ -417,6 +416,10 @@
                         render: function(data, type, row) {
                             var ID = `<span class='fw-bold'>${row.name}</span>`
 
+                            if(row.NameAgencia != null){
+                                var ID = `<span class='fw-bold'>${row.NameAgencia}</span>`
+                            }
+
                             return ID
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
@@ -432,6 +435,10 @@
                         render: function(data, type, row) {
                             var agenciau = `<span class='text-danger fw-bold'>${row.agenciau}</span>`
 
+                            if(row.NumAgencia != null){
+                                var agenciau = `<span class='text-danger fw-bold'>${row.NumAgencia}</span>`
+                            }
+
                             return agenciau
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
@@ -445,6 +452,8 @@
                     {
                 data:null,
                         render: function(data, type, row) {
+
+
                             $(document).on('click', '.delete-btn', function(e) {
                                 e.preventDefault();
 
@@ -452,6 +461,9 @@
                                 var url = $(this).data('url');
                                 var id = $(this).data('id');
                                 var name = $(this).data('name');
+                                if(row.NameAgencia != null){
+                                    var name = $(this).data('name');
+                                }
 
 
                                 Swal.fire({
@@ -475,7 +487,16 @@
                             });
                             var id = row.id;
                             var name = row.name;
+                            if(row.NameAgencia != null){
+                                name = row.NameAgencia
+                                id = row.NameAgencia
+                            }
+
+
                             var url = `admin/eliminar/${id}`;
+
+
+
 
 
 
@@ -489,67 +510,159 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-3 fw-bold" id="exampleModalLabel_${id}">
-                                                    Información Usuario (<span class="text-primary">${row.name}</span>)
+                                                    Información ${row.NameAgencia != null ? `Agencia`:`Usuario`} (<span class="text-primary">${row.NameAgencia != null ? `${row.NameAgencia}` : `${row.name}`}</span>)
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <form action="{{route('editarusuario')}}" method="POST" id="dynamicForm_${id}">
                                                     @csrf
-                                                    <div class="row">
-                                                        <div class="col-md-6">
 
-                                                            <label for="nombre" class="form-label fw-bold fs-4">Nombre:</label>
-                                                            <input type="text" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="nombre" value="${row.name}">
-                                                            <div class="text-danger" id="error-nombre"></div>
+                                                            ${row.NameAgencia != null ?
+                                                            `
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <label for="contraseña" class="form-label fw-bold fs-4">Nombre de la agencia:</label>
+                                                                        <input type="text" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese nombre de la agencia" autocomplete="off"  name="agencianame" value="${row.NameAgencia}">
+                                                                        <div class="text-danger" id="error-contraseña"></div>
+                                                                    </div>
+                                                                </div>
 
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <label for="contraseña" class="form-label fw-bold fs-4">Centro de costo de la agencia:</label>
+                                                                        <input type="number" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el centro de costo" autocomplete="off"  name="cc" value="${row.NumAgencia}">
+                                                                        <div class="text-danger" id="error-contraseña"></div>
+                                                                        <input type="hidden" name="id" value="${row.ID}">
+                                                                    </div>
+                                                                </div>
+                                                            `
 
-                                                            <label for="agencia" class="form-label fw-bold fs-4">Agencia:</label>
-                                                            <select id="agencia" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="agencia">
-                                                                <option value="${row.agenciau}" class="fw-bold" selected>${row.agenciau}</option>
-                                                                @foreach ($agencias as $agencia)
-                                                                    <option value="{{ $agencia->NameAgencia }}">
-                                                                        <b>{{ $agencia->NumAgencia }}</b> - {{ $agencia->NameAgencia }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            <div class="text-danger" id="error-agencia"></div>
-
-
-                                                        </div>
-
-
-                                                        <div class="col-md-6">
-
-                                                            <label for="celular" class="form-label fw-bold fs-4">Número de celular:</label>
-                                                            <input type="tel" id="celular" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el número de celular" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="celular" maxlength="10" value="${row.celular || 0}">
-                                                            <div class="text-danger" id="error-celular"></div>
+                                                            :
 
 
-                                                            <label for="correo" class="form-label fw-bold fs-4">Contraseña:</label>
-                                                            <input type="text" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="contrasena"    >
-                                                            <div class="text-danger" id="error-correo"></div>
-                                                        </div>
-                                                    </div>
 
 
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <label for="contraseña" class="form-label fw-bold fs-4">Correo de ingreso:</label>
-                                                            <input type="email" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly name="correo" value="${row.email}">
-                                                            <div class="text-danger" id="error-contraseña"></div>
-                                                        </div>
-                                                    </div>
+                                                            `
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <label for="nombre" class="form-label fw-bold fs-4">Nombre:</label>
+                                                                        <input type="text" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="nombre" value="${row.name}">
+                                                                        <div class="text-danger" id="error-nombre"></div>
 
-                                                    ${row.rol == "Coordinacion" ?
-                                                        `<div class="row">
-                                                            <div class="col-12">
-                                                                <label for="contraseña" class="form-label fw-bold fs-4">Agencias vinculadas ${row.agencias_id}</label>
-                                                                <div class="text-danger" id="error-contraseña"></div>
-                                                            </div>
-                                                        </div>`
-                                                        : ""
-                                                    }
+                                                                        ${row.rol == "Consultante" ?
+                                                                            `
+                                                                            <label for="agencia" class="form-label fw-bold fs-4">Agencia:</label>
+                                                                            <select id="agencia" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="agencia">
+                                                                                <option value="${row.agenciau}" class="fw-bold" selected>${row.agenciau}</option>
+                                                                                @foreach ($agencias as $agencia)
+                                                                                    <option value="{{ $agencia->NameAgencia }}">
+                                                                                        <b>{{ $agencia->NumAgencia }}</b> - {{ $agencia->NameAgencia }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                            <div class="text-danger" id="error-agencia"></div>
+                                                                            `
+                                                                        : row.rol == "Jefatura" ?
+                                                                            `
+                                                                            <label for="agencia" class="form-label fw-bold fs-4">Jefatura:</label>
+                                                                            <input type="text" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="jefatura" list="jefaturas" value="${row.agenciau}">
+                                                                            <datalist id="jefaturas">
+                                                                                @foreach ($jefaturas as $jefatura)
+                                                                                    <option value="{{ $jefatura->agenciau }}">
+                                                                                        {{ $jefatura->agenciau }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </datalist>
+                                                                            <div class="text-danger" id="error-agencia"></div>
+                                                                            `
+                                                                        : row.rol == "Coordinacion" ?
+                                                                            `
+                                                                                <label for="coordinacion2" class="form-label fw-bold fs-4">Coordinación:</label>
+                                                                                <select id="coordinacion2" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="coordinacion2">
+                                                                                    <option selected>${row.agenciau}</option>
+                                                                                        <option value="Coordinacion 1">Coordinación 1</option>
+                                                                                        <option value="Coordinacion 2">Coordinación 2</option>
+                                                                                        <option value="Coordinacion 3">Coordinación 3</option>
+                                                                                        <option value="Coordinacion 4">Coordinación 4</option>
+                                                                                        <option value="Coordinacion 5">Coordinación 5</option>
+                                                                                        <option value="Coordinacion 6">Coordinación 6</option>
+                                                                                        <option value="Coordinacion 7">Coordinación 7</option>
+                                                                                        <option value="Coordinacion 8">Coordinación 8</option>
+                                                                                        <option value="Coordinacion 9">Coordinación 9</option>
+                                                                                        <option value="Coordinacion 10">Coordinación 10</option>
+                                                                                        <option value="Coordinacion 11">Coordinación 11</option>
+                                                                                        <option value="Coordinacion 12">Coordinación 12</option>
+                                                                                        <option value="Coordinacion 13">Coordinación 13</option>
+                                                                                        <option value="Coordinacion 14">Coordinación 14</option>
+                                                                                        <option value="Coordinacion 15">Coordinación 15</option>
+                                                                                </select>
+
+                                                                            `
+                                                                        : ''}
+
+                                                                    </div>
+
+
+                                                                    <div class="col-md-6">
+
+                                                                        <label for="celular" class="form-label fw-bold fs-4">Número de celular:</label>
+                                                                        <input type="tel" id="celular" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el número de celular" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="celular" maxlength="10" value="${row.celular || 0}">
+                                                                        <div class="text-danger" id="error-celular"></div>
+
+
+                                                                        <label for="correo" class="form-label fw-bold fs-4">Contraseña:</label>
+                                                                        <input type="text" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="contrasena"    >
+                                                                        <div class="text-danger" id="error-correo"></div>
+                                                                    </div>
+                                                                </div>
+
+
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <label for="contraseña" class="form-label fw-bold fs-4">Correo de ingreso:</label>
+                                                                        <input type="email" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly name="correo" value="${row.email}">
+                                                                        <div class="text-danger" id="error-contraseña"></div>
+                                                                    </div>
+                                                                </div>
+
+                                                                ${row.rol == "Coordinacion" ?
+                                                                    `<div class="row">
+                                                                        <div class="col-12">
+
+                                                                                <label for="contraseña" class="form-label fw-bold fs-4 d-inline">Agencias vinculadas:
+                                                                                    ${row.agencias_id == null ?
+                                                                                    `
+                                                                                    <select id="agencia2" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="agencia">
+                                                                                        <option value="" class="fw-bold" selected>Vincular Nueva Agencia:</option>
+
+                                                                                    </select>
+                                                                                    `
+                                                                                    :`
+                                                                                    <select id="agencia2" class="form-control mb-3 fs-4 border-dark border-3 fw-bold" name="agencia">
+                                                                                        <option value="" class="fw-bold" selected>Vincular Nueva Agencia:</option>
+                                                                                    </select>
+                                                                                    `}
+                                                                                </label>
+
+                                                                                <ul class="list-group lista-agencias"></ul>
+
+                                                                                <input type="hidden" name="agencias_hidden" value="">
+                                                                            <div class="text-danger" id="error-contraseña"></div>
+                                                                        </div>
+                                                                    </div>`
+                                                                : ''}
+
+
+
+                                                            `}
+
+
+
+
+
+
+
 
                                                     <div class="text-end modal-footer">
                                                          <button id="createButton" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
@@ -616,10 +729,10 @@
                     '<button id="btnDAgencia" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="D. Agencia">D. Agencia</button>' +
                     '<button id="btnCoordinaciones" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Coordinaciones">Coordinaciones</button>' +
                     '<button id="btnJefaturas" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Jefaturas">Jefaturas</button>' +
-                    // '<button id="btnAgencias" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Agencias">Agencias</button>' +
+                    '<button id="btnAgencias" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Agencias">Agencias</button>' +
                 '</div>';
 
-            $(buttonsHtml).prependTo('.dataTables_filter');
+            $(buttonsHtml).prependTo('#personas_filter');
                 $('#btnDAgencia').on('click', function() {
                     var newAjaxSource = '{{ route("datager.dagencia") }}';
 
@@ -638,6 +751,12 @@
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
+                $('#btnAgencias').on('click', function() {
+                    var newAjaxSource = '{{ route("agenciastabla") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
                 const buttons = document.querySelectorAll('.custom-buttons button');
 
                 buttons.forEach(button => {
@@ -652,14 +771,195 @@
                         this.classList.add('btn-success');
                     });
                 });
+
+                $(document).on('click', `[data-bs-target^="#exampleModal_"]`, function (e) {
+                    const id = $(this).data('id');
+                    const modalId = `#exampleModal_${id}`;
+                    const modal = $(modalId);
+                    const listaAgencias = modal.find('.lista-agencias');
+                    const inputHidden = modal.find('input[name="agencias_hidden"]');
+                    const selectAgencia = modal.find('#agencia2'); // Seleccionar el <select>
+
+                    // Limpiar lista y campo oculto al abrir el modal
+                    listaAgencias.empty();
+                    inputHidden.val('');
+
+                    // Obtener agencias existentes del backend
+                    $.ajax({
+                        url: `admin/obtener-agencias/${id}`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.length > 0) {
+                                response.forEach(agencia => {
+                                    const listItem = `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ${agencia.NumAgencia} - <span class="agencia-name fw-bold">${agencia.NameAgencia}</span>
+                                            <button type="button" class="btn btn-danger btn-sm eliminar-agencia" data-id="${agencia.NumAgencia}">x</button>
+                                        </li>`;
+                                    listaAgencias.append(listItem);
+                                });
+                                if (response.length > 4) {
+                                    listaAgencias.addClass('scrollable-list');
+                                } else {
+                                    listaAgencias.removeClass('scrollable-list');
+                                }
+
+                                const ids = response.map(agencia => agencia.NumAgencia);
+                                inputHidden.val(JSON.stringify(ids));
+                            } else {
+                                listaAgencias.append('<li class="list-group-item text-muted">No hay agencias disponibles.</li>');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al obtener agencias: ", error);
+                        }
+                    });
+
+                        // Manejar la selección de agencias desde el <select>
+                        selectAgencia.off('change').on('change', function () {
+                            const selectedOption = $(this).find(':selected'); // Obtener opción seleccionada
+                            const agenciaId = selectedOption.val();
+                            const agenciaNameRaw = selectedOption.text();
+                            const agenciaName = agenciaNameRaw.split('-')[1]?.trim();
+
+
+                            // Verificar si la opción es válida y no está ya en la lista
+                            if (agenciaId && !listaAgencias.find(`[data-id="${agenciaId}"]`).length) {
+                                const listItem = `
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        ${agenciaId} - <span class="agencia-name fw-bold">${agenciaName}</span>
+                                        <button type="button" class="btn btn-danger btn-sm eliminar-agencia" data-id="${agenciaId}">x</button>
+                                    </li>`;
+                                listaAgencias.append(listItem);
+
+                                // Actualizar el campo oculto
+                                const existingIds = JSON.parse(inputHidden.val() || '[]');
+                                existingIds.push(agenciaId);
+                                inputHidden.val(JSON.stringify(existingIds));
+                            }
+                            // Reiniciar el select a la opción predeterminada
+                            $(this).val('');
+                        });
+
+
+                    });
+
+
+                $(document).on('click', '.eliminar-agencia', function () {
+                    const id = $(this).data('id').toString(); // ID de la agencia a eliminar
+                    const listItem = $(this).closest('li'); // Elemento de la lista a eliminar
+                    const modal = $(this).closest('.modal'); // Modal que contiene el select
+                    const inputHidden = modal.find('input[name="agencias_hidden"]'); // Input hidden que guarda los IDs de las agencias
+
+                    if (!inputHidden.length) {
+                        console.error("No se encontró el input hidden dentro del modal.");
+                        return;
+                    }
+
+                    let currentIds;
+                    try {
+                        currentIds = JSON.parse(inputHidden.val() || '[]');
+                    } catch (error) {
+                        console.error("Error al parsear el JSON del input hidden:", error);
+                        currentIds = [];
+                    }
+
+                    const updatedIds = currentIds.filter(agenciaId => agenciaId !== id);
+
+
+                    inputHidden.val(JSON.stringify(updatedIds));
+
+                    listItem.remove();
+
+                    const selectAgencia = modal.find('#agencia2');
+                    const agenciaName = listItem.find('span.agencia-name').text();
+                    console.log(agenciaName);
+
+                    const option = `<option value="${id}">${id} - ${agenciaName}</option>`;
+                    selectAgencia.append(option);
+                });
+
+
+                $(document).on('click', `[data-bs-target^="#exampleModal_"]`, function (e) {
+                    const id = $(this).data('id');
+                    const modalId = `#exampleModal_${id}`;
+                    const modal = $(modalId);
+                    const listaAgencias = modal.find('.lista-agencias');
+                    const inputHidden = modal.find('input[name="agencias_hidden"]');
+
+                    $.ajax({
+                        url: `admin/obtener-agencias-select/${id}`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            const selectAgencia = modal.find('#agencia2');
+
+                            selectAgencia.empty();
+                            selectAgencia.append('<option value="" class="fw-bold" selected>Vincular Nueva Agencia:</option>');
+
+                            if (response.length > 0) {
+                                response.forEach(agencia => {
+                                    const option = `<option value="${agencia.NumAgencia}">${agencia.NumAgencia} - ${agencia.NameAgencia}</option>`;
+                                    selectAgencia.append(option);
+                                });
+                            } else {
+                                selectAgencia.append(`
+                                    @foreach ($agencias as $agencia)
+                                        <option value="{{ $agencia->NameAgencia }}">
+                                            <b>{{ $agencia->NumAgencia }}</b> - {{ $agencia->NameAgencia }}
+                                        </option>
+                                    @endforeach`);
+                            }
+
+
+                            selectAgencia.off('change').on('change', function () {
+                                const selectedOption = $(this).find(':selected');
+                                const agenciaId = selectedOption.val();
+                                const agenciaNameRaw = selectedOption.text();
+                                const agenciaName = agenciaNameRaw.split('-')[1]?.trim();
+
+
+                                if (agenciaId) {
+                                    const listItem = `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ${agenciaId} - <span class="agencia-name fw-bold">${agenciaName}</span>
+                                            <button type="button" class="btn btn-danger btn-sm eliminar-agencia" data-id="${agenciaId}">x</button>
+                                        </li>`;
+                                    listaAgencias.append(listItem);
+
+
+                                    const existingIds = JSON.parse(inputHidden.val() || '[]');
+                                    existingIds.push(agenciaId);
+                                    inputHidden.val(JSON.stringify(existingIds));
+
+                                    selectedOption.remove();
+                                }
+
+                                $(this).val('');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al obtener agencias: ", error);
+                        }
+                    });
+                });
+
+
+
+
                 },
         });
+
 
 
         function csesion() {
             var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
         }
+
+
+
 
     </script>
 
@@ -669,6 +969,10 @@
     {{-- ESTILOS --}}
     <style>
 
+                .scrollable-list {
+                    max-height: 200px;
+                    overflow-y: auto;
+                }
                 .btn-confirm {
                     font-size: 25px;
                     font-weight: bold;
