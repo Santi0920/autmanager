@@ -20,7 +20,11 @@ class InstallCommand extends Command
     protected $signature = 'sail:install
                 {--with= : The services that should be included in the installation}
                 {--devcontainer : Create a .devcontainer configuration directory}
+<<<<<<< HEAD
                 {--php=8.3 : The PHP version that should be used}';
+=======
+                {--php=8.4 : The PHP version that should be used}';
+>>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
 
     /**
      * The console command description.

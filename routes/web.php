@@ -44,9 +44,10 @@ Route::get('/solicitudes', [DirectorController::class, 'data1'])->middleware('au
 
 Route::get('/solicitudes/datatable', [DirectorController::class, 'solicitudes'])->name('data.solicitudes')->middleware('auth.director');
 
-Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion')->middleware('auth.director');
+//Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
+Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
-Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion')->middleware('auth.director');
+Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion');
 
 Route::get('/filtrar', function () {
     Cookie::forget('laravel_session');
@@ -136,6 +137,8 @@ Route::get('/otrabajo/buscar-grupos', [GerenciaController::class, 'buscarGrupos'
 
 Route::put('/otrabajo/actualizar-grupo/{grupoId}', [GerenciaController::class, 'updateNombreGrupo']);
 
+Route::get('/otrabajo/{id}/integrantes', [GerenciaController::class, 'getIntegrantes'])->name('grupo.integrantes');
+
 Route::get('aprobar', [GerenciaController::class, 'data1'])->middleware('auth.gerencia');
 
 Route::get('aprobar/datatable', [GerenciaController::class, 'solicitudes'])->name('datager.solicitudes')->middleware('auth.gerencia');
@@ -170,7 +173,17 @@ Route::get('/estadisticas', [GerenciaController::class, 'contarsolicitudes'])
 Route::get('/estadisticas/actualizar-datos', [GerenciaController::class, 'actualizardatos'])
 ->name('actualizardatos');
 
+Route::get('/otrabajoestadisticas', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/otraestadisticas');
+})->middleware('auth.gerencia');
 
+Route::get('/otrabajoestadisticas', [GerenciaController::class, 'contarsolicitudesotrabajo'])
+->name('contarsolicitudesotrabajo');
+
+Route::get('/otrabajoestadisticas/actualizar-datos', [GerenciaController::class, 'actualizardatos'])
+->name('actualizardatos');
 
 Route::get('/estadisticasindividual', function () {
     Cookie::forget('laravel_session');
@@ -188,6 +201,37 @@ Route::get('filtrarconceptoger/datatable', [GerenciaController::class, 'filtrarc
 
 Route::get('/filtrarconceptoger', [GerenciaController::class, 'concepto']);
 
+
+Route::get('/admin', function () {
+    Cookie::forget('laravel_session');
+    Cache::flush();
+    return view('Gerencia/admin');
+})->middleware('auth.gerencia');
+
+Route::get('coordinaciones/datatable', [GerenciaController::class, 'coordinaciones'])->name('coordinaciones')->middleware('auth.gerencia');
+
+Route::get('dagencia/datatable', [GerenciaController::class, 'dagencia'])->name('datager.dagencia')->middleware('auth.gerencia');
+
+Route::get('jefaturas/datatable', [GerenciaController::class, 'jefaturas'])->name('datager.jefaturas')->middleware('auth.gerencia');
+
+Route::get('agencias/datatable', [GerenciaController::class, 'agenciastabla'])->name('agenciastabla')->middleware('auth.gerencia');
+
+
+Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
+->name('cargarinfo');
+
+Route::post('/admin/crear', [GerenciaController::class, 'crearusuario'])
+->name('crearusuario');
+
+Route::post('/admin/editar', [GerenciaController::class, 'editarusuario'])
+->name('editarusuario');
+
+Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
+->name('eliminarusuario');
+
+Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
+
+Route::get('/admin/obtener-agencias-select/{id}', [GerenciaController::class, 'obtenerAgenciasSelect']);
 
 
 

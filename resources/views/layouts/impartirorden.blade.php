@@ -1,6 +1,9 @@
 <div id="impartirtarea">
     <label for="" class="fw-bold fs-4 mb-3">Seleccionar grupo o empleado:</label>
-    <select class="form-select fs-4 border-dark border-3" aria-label="Default select example" name="nombreempleado" id="nombreempleado2" onchange="habilitarTipoOrden()" required>
+
+
+
+    <select class="form-select fs-4 border-dark border-3" aria-label="Default select example" name="nombreempleado" id="nombreempleado2" required>
         <option value="">Seleccionar una opción</option>
         <option class="fw-semibold" value="" disabled>↓-------- Grupos Creados --------↓</option>
         @foreach ($gruposcreados as $grupo)
@@ -11,6 +14,8 @@
             <option value="{{$cargo->name}}">{{$cargo->name ." - ". $cargo->agenciau}}</option>
         @endforeach
     </select>
+    <div id="selectedPeople2" style="display: block;"></div>
+    <input type="hidden" id="selectedPeopleInput2" name="selectedPeopleInput2">
 
     <label for="" class="fw-bold fs-4 mt-3">Seleccionar tipo de orden de trabajo:</label>
     <div class="form-check fs-4">
@@ -99,6 +104,122 @@
                 $('#buttonmodal').addClass('d-none');
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedPeople2 = [];  // Renombrado a selectedPeople2
+
+            // Seleccionamos el select y el contenedor para las personas seleccionadas
+            const nombreEmpleadoSelect = document.getElementById('nombreempleado2');
+            const selectedPeopleContainer = document.getElementById('selectedPeople2'); // Renombrado a selectedPeople2
+            const selectedPeopleInput = document.getElementById('selectedPeopleInput2'); // Si tienes un input oculto para los IDs
+
+            if (!nombreEmpleadoSelect || !selectedPeopleContainer) return;
+
+            // Event listener para manejar las selecciones en el select
+            nombreEmpleadoSelect.addEventListener('change', function() {
+                const selectedOption = nombreEmpleadoSelect.options[nombreEmpleadoSelect.selectedIndex];
+                const value = selectedOption.value;
+
+                // Depuración: Verificar el valor seleccionado
+                console.log('Opción seleccionada:', value);
+
+                if (value && !selectedPeople2.includes(value)) {  // Usando selectedPeople2
+                    // Si no está ya en selectedPeople2, lo añadimos
+                    selectedPeople2.push(value);
+
+                    // Crear el div con la persona seleccionada
+                    const personElement = document.createElement('div');
+                    personElement.classList.add('selected-person', 'fs-4', 'fw-bold', 'mt-2');
+
+                    personElement.innerHTML = `${selectedOption.text} <button class="btn btn-danger btn-sm remove-person mb-2" data-id="${value}">X</button>`;
+
+                    // Añadir la persona al contenedor
+                    selectedPeopleContainer.appendChild(personElement);
+
+                    // Deshabilitar la opción seleccionada en el select
+                    selectedOption.disabled = true;
+
+                    // Actualizamos el valor del input oculto
+                    if (selectedPeopleInput) {
+                        selectedPeopleInput.value = JSON.stringify(selectedPeople2);  // Usando selectedPeople2
+                    }
+
+                    // Traer los integrantes del grupo con AJAX al hacer clic en el grupo
+                    fetch(`otrabajo/${value}/integrantes`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Aquí puedes procesar la respuesta y añadir los integrantes al contenedor
+                            if (Array.isArray(data) && data.length > 0) {
+                                const integrantesList = document.createElement('ul');
+                                integrantesList.className = 'integrantes-list';
+                                integrantesList.id = `integrantes-list-${value}`;
+
+                                console.log(data);
+
+                                // Mostrar cada integrante
+                                data.forEach(integrante => {
+                                    const integranteItem = document.createElement('li');
+                                    integranteItem.classList.add('fs-5');
+                                    integranteItem.innerHTML = integrante;
+                                    integrantesList.appendChild(integranteItem);
+                                });
+
+                                if (data.length > 4) {
+                                    integrantesList.style.maxHeight = '150px';
+                                    integrantesList.style.overflowY = 'auto';
+                                    integrantesList.style.border = '1px solid #ccc';
+                                }
+
+                                // Agregar la lista al contenedor de personas seleccionadas
+                                selectedPeopleContainer.appendChild(integrantesList);
+                            } else {
+                                console.log('No hay integrantes disponibles');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al obtener los integrantes:', error);
+                        });
+
+                    // Depuración: Verificar los elementos seleccionados
+                    console.log('Personas seleccionadas:', selectedPeople2);  // Usando selectedPeople2
+                }
+            });
+
+            // Event listener para manejar la eliminación de personas seleccionadas
+            selectedPeopleContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-person')) {
+                    const employeeId = e.target.getAttribute('data-id');
+
+                    // Filtramos el ID eliminado
+                    selectedPeople2 = selectedPeople2.filter(id => id !== employeeId);  // Usando selectedPeople2
+
+                    // Eliminamos el div de la persona seleccionada
+                    e.target.parentElement.remove();
+
+                    // Habilitamos nuevamente la opción en el select
+                    const optionToEnable = nombreEmpleadoSelect.querySelector(`option[value="${employeeId}"]`);
+                    if (optionToEnable) {
+                        optionToEnable.disabled = false;
+                    }
+
+                    // Eliminamos la lista de integrantes si no hay más personas de ese grupo
+                    const groupIntegrantesList = document.getElementById(`integrantes-list-${employeeId}`);
+                    if (groupIntegrantesList) {
+                        groupIntegrantesList.remove();
+                    }
+
+                    // Actualizamos el valor del input oculto
+                    if (selectedPeopleInput) {
+                        selectedPeopleInput.value = JSON.stringify(selectedPeople2);  // Usando selectedPeople2
+                    }
+
+                    // Depuración: Verificar los elementos seleccionados después de la eliminación
+                    console.log('Personas seleccionadas después de eliminar:', selectedPeople2);  // Usando selectedPeople2
+                }
+            });
+        });
+
+
 
 
     </script>
