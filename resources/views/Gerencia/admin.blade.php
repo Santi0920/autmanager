@@ -113,6 +113,15 @@
                                     </datalist>
                                     <div class="text-danger" id="error-departamento"></div>
 
+                                    <label for="departamento" class="form-label fw-bold">Codigo del departamento o área:</label>
+                                    <input type="number" id="departamento" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el codigo" list="dptoList2" autocomplete="off" name="codigo">
+                                    <datalist id="dptoList2">
+                                        @foreach ($codigos as $codigo)
+                                            <option value="{{$codigo->codigo}}">
+                                        @endforeach
+                                    </datalist>
+                                    <div class="text-danger" id="error-departamento"></div>
+
                                     <label for="correo" class="form-label fw-bold">Correo de ingreso:</label>
                                     <input type="email" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el correo" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="correo">
                                     <div class="text-danger" id="error-correo"></div>
@@ -433,7 +442,7 @@
                     {
                 data:null,
                         render: function(data, type, row) {
-                            var agenciau = `<span class='text-danger fw-bold'>${row.agenciau}</span>`
+                            var agenciau = `<span class='text-danger fw-bold'>${row.agenciau} <span class="text-dark">${row.codigo ? ` - ${row.codigo}` : ``}</span></span>`
 
                             if(row.NumAgencia != null){
                                 var agenciau = `<span class='text-danger fw-bold'>${row.NumAgencia}</span>`
@@ -610,14 +619,32 @@
                                                                         <input type="tel" id="celular" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el número de celular" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="celular" maxlength="10" value="${row.celular || 0}">
                                                                         <div class="text-danger" id="error-celular"></div>
 
-
-                                                                        <label for="correo" class="form-label fw-bold fs-4">Contraseña:</label>
+                                                                    ${row.rol != "Jefatura" ?
+                                                                       `<label for="correo" class="form-label fw-bold fs-4">Contraseña:</label>
                                                                         <input type="text" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="contrasena"    >
+                                                                        <div class="text-danger" id="error-correo"></div>`
+                                                                        :
+                                                                        `
+                                                                        <label for="correo" class="form-label fw-bold fs-4">Codigo Departamento:</label>
+                                                                        <input type="number" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el codigo de departamento" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="codigodpto">
                                                                         <div class="text-danger" id="error-correo"></div>
+                                                                        `
+                                                                    }
                                                                     </div>
                                                                 </div>
 
-
+                                                                ${row.rol == "Jefatura" ?
+                                                                `
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <label for="contraseña" class="form-label fw-bold fs-4">Contraseña:</label>
+                                                                        <input type="text" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la contraseña" autocomplete="off" name="contrasena" value="">
+                                                                        <div class="text-danger" id="error-contraseña"></div>
+                                                                    </div>
+                                                                </div>
+                                                                `:
+                                                                ``
+                                                                }
                                                                 <div class="row">
                                                                     <div class="col-12">
                                                                         <label for="contraseña" class="form-label fw-bold fs-4">Correo de ingreso:</label>
