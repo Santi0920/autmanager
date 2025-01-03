@@ -1079,8 +1079,9 @@ class GerenciaController extends Controller
 
 
         $jefaturas = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Jefatura'");
+        $codigos = DB::select("SELECT DISTINCT codigo FROM users WHERE rol = 'Jefatura'");
         $coordinaciones = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Coordinacion'");
-        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones]);
+        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones, 'codigos' => $codigos]);
 
     }
 
@@ -1168,6 +1169,7 @@ class GerenciaController extends Controller
         }else if($tipocreacion == "crearJefatura"){
             $validacionagenciau = DB::select("SELECT agenciau FROM users WHERE LOWER(agenciau) LIKE LOWER(?)", ["%{$request->jefatura}%"]);
             $jefatura = $request->jefatura;
+            $codigo = $request->codigo;
             if(!empty($validacionagenciau)){
                 $jefatura = $validacionagenciau[0]->agenciau;
             }
@@ -1175,6 +1177,7 @@ class GerenciaController extends Controller
                 'name' => $nombre,
                 'rol' => 'Jefatura',
                 'agenciau' => $jefatura,
+                'codigo' => $codigo,
                 'email' => $correo,
                 'password' => bcrypt($password),
                 'activo' => 1
@@ -1343,17 +1346,50 @@ class GerenciaController extends Controller
             return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente la agencia <br>(<span class='badge bg-primary fw-bold'>".$agencianame." - ".$centrocosto."</span>).</span>");
         }else{
             $rol = $consultaRol[0]->rol;
+            $codigodpto = null;
             if($rol == 'Jefatura'){
                 $agencia = $request->jefatura;
+                $codigodpto = $request->codigodpto;
             }else if($rol == 'Coordinacion'){
                 $agencia = $request->coordinacion2;
             }
+
+            $agenciasConCodigos = [
+                'Reporte Bogota' => 13,
+                'Juridico Zona Centro' => 2150,
+                'Juridico Zona Norte' => 2250,
+                'Juridico Zona Sur' => 2350,
+                'Gerencia General' => 28,
+                'Monitoreo' => null,
+                'Tesoreria' => 15,
+                'Contabilidad' => 18,
+                'Sistemas' => 19,
+                'Talento Humano' => 10,
+                'Auditoria Interna' => 12,
+                'Reporte Cali' => 14,
+                'Meridian' => null,
+                'Seguros' => 2300,
+                'Asesora M-76' => 2400,
+                'Fondo Solidaridad' => null,
+                'Oficial de Cumplimiento' => 2805,
+                'Programacion' => null,
+                'Ficidet' => 2500,
+            ];
+
+
+            foreach ($agenciasConCodigos as $nombreAgencia => $codigo) {
+                DB::table('users')
+                    ->where('agenciau', $nombreAgencia)
+                    ->update(['codigo' => $codigo]);
+            }
+
             if($contrasena == null){
                 DB::table('users')
                 ->where('email', $correo)
                 ->update([
                     'name' => $nombre,
                     'agenciau' => $agencia,
+                    'codigo' => $codigodpto ?: null,
                     'celular' => $celular,
                     'password' => bcrypt($contrasena),
                     'agencias_id' => $request->agencias_hidden ?: null
@@ -1364,6 +1400,7 @@ class GerenciaController extends Controller
                 ->update([
                     'name' => $nombre,
                     'agenciau' => $agencia,
+                    'codigo' => $codigodpto ?: null,
                     'celular' => $celular,
                     'password' => bcrypt($contrasena),
                     'agencias_id' => $request->agencias_hidden ?: null
@@ -1465,11 +1502,23 @@ class GerenciaController extends Controller
         if ($grupo) {
             $integrantesIds = json_decode($grupo->integrantes);
 
-            if (is_array($integrantesIds)) {
+            if($id == "D. de Agencia"){
+                $nombres = DB::table('users')
+                ->join('agencias', 'users.agenciau', '=', 'agencias.NameAgencia')
+                ->whereIn('users.id', $integrantesIds)
+                ->select(DB::raw("CONCAT(COALESCE(users.name, ''), ' - ', COALESCE(users.agenciau, ''), ' - ', COALESCE(agencias.NumAgencia, '')) as detalle"))
+                ->pluck('detalle');
+
+            }else{
                 $nombres = DB::table('users')
                 ->whereIn('id', $integrantesIds)
-                ->pluck('name');
+                ->select(DB::raw("CONCAT(COALESCE(name, ''), ' - ', COALESCE(agenciau, ''),
+                    CASE WHEN codigo IS NOT NULL THEN CONCAT(' - ', codigo) ELSE '' END) as detalle"))
+                ->pluck('detalle');
+
             }
+
+
             $integrantes = DB::table('grupos_otrabajo')
                 ->where('integrantes', $grupo->integrantes)
                 ->get();
