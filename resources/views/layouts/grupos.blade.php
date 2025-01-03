@@ -37,6 +37,7 @@
     const nombreEmpleadoSelect = document.getElementById('nombreempleado');
     const selectedPeopleContainer = document.getElementById('selectedPeople');
     let selectedPeople = [];
+        console.log(nombreEmpleadoSelect);
 
     nombreEmpleadoSelect.addEventListener('change', function () {
         const selectedOption = nombreEmpleadoSelect.options[nombreEmpleadoSelect.selectedIndex];

@@ -79,9 +79,11 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="estadisticas">Estadísticas Autorizaciones</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            {{-- <li><a class="dropdown-item fw-bold" href="estadisticas">Estadísticas Autorizaciones</a></li>
+                            <li><hr class="dropdown-divider"></li> --}}
                             <li><a class="dropdown-item fw-bold" href="otrabajo">Orden de Trabajo</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="admin">Panel Administrativo</a></li>
                         @elseif (auth()->user()->rol == 'Coordinacion')
                             <li><a class="dropdown-item fw-bold" href="validar">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -98,14 +100,28 @@
 
 
 
-{{--
-                        <!-- <li><a class="dropdown-item" href="#">Another action</a></li> -->
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item fw-bold" href="#">Coord 9</a></li> --}}
+
                     </ul>
                     </span>
                 </li>
 
+                {{-- @if (auth()->user()->rol == 'Gerencia')
+                <li class="nav-item dropdown">
+                    <span class="nav-link pe-3" style="font-weight: 600;font-size: 18px; margin-top:5.5px" aria-current="page"
+                    href="#">
+                        <a class="dropdown-toggle text-light text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ADMIN
+                        </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item fw-bold" href="aprobar">D. de Agencia</a></li>
+                            {{-- <li><a class="dropdown-item fw-bold" href="#" title="EN PROCESO">&nbsp&nbsp&nbsp• Bloqueados</a></li>
+                            <li><a class="dropdown-item fw-bold" href="coordinaciones">Coordinaciones</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold" href="filtrar">Jefaturas</a></li>
+                    </ul>
+                    </span>
+                </li>
+                @endif --}}
             </ul>
             <div class="text-white m-1 p-3">
                 <button class="buttontroll me-3" data-text="Awesome">
