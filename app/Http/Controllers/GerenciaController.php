@@ -1120,42 +1120,6 @@ class GerenciaController extends Controller
 
             $selectedPeople = json_decode($selectedPeopleString, true);
 
-            // Números en formato de cadenas para cada coordinación
-            $selectedPeople1 = ['43', '76', '35', '34', '36', '37', '38', '40', '41', '87', '93', '96'];
-            $selectedPeople2 = ['86', '33', '39', '46', '70', '77', '78', '80', '88', '92', '98'];
-            $selectedPeople3 = ['73', '32', '42', '47', '81', '82', '83', '85', '90', '94'];
-            $selectedPeople4 = ['44', '13', '45', '48', '49', '74', '75', '84', '89', '95', '97'];
-
-            // Actualizar para "Coordinacion 1"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 1')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople1)
-                ]);
-
-            // Actualizar para "Coordinacion 2"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 2')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople2)
-                ]);
-
-            // Actualizar para "Coordinacion 3"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 3')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople3)
-                ]);
-
-            // Actualizar para "Coordinacion 4"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 4')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople4)
-                ]);
-
-
-
             $id_insertado = DB::table('users')->insertGetId([
                 'name' => $nombre,
                 'rol' => 'Coordinacion',
@@ -1260,6 +1224,31 @@ class GerenciaController extends Controller
             ->update([
                 'activo' => 0
             ]);
+
+            $grupos = DB::table('grupos_otrabajo')
+            ->whereRaw("JSON_SEARCH(integrantes, 'one', ?) IS NOT NULL", [$id])
+            ->get();
+
+
+
+
+            foreach ($grupos as $grupo) {
+                $integrantes = json_decode($grupo->integrantes, true);
+
+                if (($key = array_search($id, $integrantes)) !== false) {
+                    unset($integrantes[$key]);
+                }
+
+
+                $nuevoIntegrantes = array_values($integrantes);
+                $nuevoJson = json_encode($nuevoIntegrantes);
+
+                DB::table('grupos_otrabajo')
+                    ->where('id', $grupo->id)
+                    ->update(['integrantes' => $nuevoJson]);
+            }
+
+
             return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
         }
 
@@ -1322,6 +1311,39 @@ class GerenciaController extends Controller
         $id = $request->id;
 
         $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
+        // Números en formato de cadenas para cada coordinación
+        $selectedPeople1 = ['43', '76', '35', '34', '36', '37', '38', '40', '41', '87', '93', '96'];
+        $selectedPeople2 = ['86', '33', '39', '46', '70', '77', '78', '80', '88', '92', '98'];
+        $selectedPeople3 = ['73', '32', '42', '47', '81', '82', '83', '85', '90', '94'];
+        $selectedPeople4 = ['44', '13', '45', '48', '49', '74', '75', '84', '89', '95', '97'];
+
+        // Actualizar para "Coordinacion 1"
+        DB::table('users')
+            ->where('agenciau', 'Coordinacion 1')
+            ->update([
+                'agencias_id' => json_encode($selectedPeople1)
+            ]);
+
+        // Actualizar para "Coordinacion 2"
+        DB::table('users')
+            ->where('agenciau', 'Coordinacion 2')
+            ->update([
+                'agencias_id' => json_encode($selectedPeople2)
+            ]);
+
+        // Actualizar para "Coordinacion 3"
+        DB::table('users')
+            ->where('agenciau', 'Coordinacion 3')
+            ->update([
+                'agencias_id' => json_encode($selectedPeople3)
+            ]);
+
+        // Actualizar para "Coordinacion 4"
+        DB::table('users')
+            ->where('agenciau', 'Coordinacion 4')
+            ->update([
+                'agencias_id' => json_encode($selectedPeople4)
+            ]);
 
 
 
