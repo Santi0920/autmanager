@@ -626,7 +626,7 @@
                                                                         :
                                                                         `
                                                                         <label for="correo" class="form-label fw-bold fs-4">Codigo Departamento:</label>
-                                                                        <input type="number" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el codigo de departamento" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="codigodpto">
+                                                                        <input type="number" id="correo" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el codigo de departamento" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" name="codigodpto" value="${row.codigo}">
                                                                         <div class="text-danger" id="error-correo"></div>
                                                                         `
                                                                     }
