@@ -80,7 +80,7 @@
             </div>
 
             <div class="row mb-2 text-center">
-                <div class="col-xl-4 col-md-12">
+                <div class="col-xl-3 col-md-12">
                     <div class="card">
                       <div class="card-content">
                         <div class="card-body cleartfix">
@@ -108,15 +108,15 @@
                       </div>
                     </div>
                 </div>
-                <div class="col-xl-4 col-md-12">
+                <div class="col-xl-3 col-md-12">
                     <div class="card overflow-hidden">
-                    <div class="card-content">
-                        <div class="card-body cleartfix">
+                    <div class="card-content ">
+                        <div class="card-body cleartfix ">
                         <div class="media align-items-stretch">
-                            <div class="align-self-center">
+                            <div class="align-self-center ">
                             <i class="icon-pencil primary font-large-2 mr-2"></i>
                             </div>
-                            <div class="media-body">
+                            <div class="media-body p-3">
                             <h3 class="fw-bold">🟢VALIDADOS🟢</h3>
                             <span class="fs-4 fst-italic">por Coordinaciones 1,2,3,4,5,9</span>
                             </div>
@@ -130,7 +130,7 @@
                 </div>
 
 
-                <div class="col-xl-4 col-md-12">
+                <div class="col-xl-3 col-md-12">
                     <div class="card overflow-hidden">
                     <div class="card-content">
                         <div class="card-body cleartfix">
@@ -150,10 +150,9 @@
                     </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row text-center mb-2">
-                <div class="col-xl-6 col-md-12">
+
+                <div class="col-xl-3 col-md-12">
                     <div class="card">
                     <div class="card-content">
                         <div class="card-body cleartfix">
@@ -161,7 +160,7 @@
                             <div class="align-self-center">
                             <i class="icon-speech warning font-large-2 mr-2"></i>
                             </div>
-                            <div class="media-body">
+                            <div class="media-body p-3">
                             <h3 class="fw-bold">🟢APROBADOS🟢</h3>
                             <span class="fs-4 fst-italic">por GERENCIA</span>
                             </div>
@@ -171,12 +170,14 @@
                         </div>
                         </div>
                     </div>
-                    </div>
-
                 </div>
 
+            </div>
 
-                <div class="col-xl-6 col-md-12">
+
+
+
+                <div class="col-xl-12 col-md-12">
                     <div class="card">
                       <div class="card-content">
                         <div class="card-body cleartfix">
