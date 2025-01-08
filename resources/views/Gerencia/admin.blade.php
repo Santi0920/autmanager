@@ -442,7 +442,8 @@
                     {
                 data:null,
                         render: function(data, type, row) {
-                            var agenciau = `<span class='text-danger fw-bold'>${row.agenciau} <span class="text-dark">${row.codigo ? ` - ${row.codigo}` : ``}</span></span>`
+                            var agenciau = `<span class='text-danger fw-bold'>${row.agenciau} <span class="text-dark">${row.codigo ? ` - ${row.codigo}` : (row.agencia_comparada ? ` - ${row.agencia_comparada}` : '')}</span></span>`;
+
 
                             if(row.NumAgencia != null){
                                 var agenciau = `<span class='text-danger fw-bold'>${row.NumAgencia}</span>`

@@ -107,11 +107,7 @@ trait InteractsWithDockerComposeServices
 
         $yaml = Yaml::dump($compose, Yaml::DUMP_OBJECT_AS_MAP);
 
-<<<<<<< HEAD
-        $yaml = str_replace('{{PHP_VERSION}}', $this->hasOption('php') ? $this->option('php') : '8.3', $yaml);
-=======
         $yaml = str_replace('{{PHP_VERSION}}', $this->hasOption('php') ? $this->option('php') : '8.4', $yaml);
->>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
 
         file_put_contents($this->laravel->basePath('docker-compose.yml'), $yaml);
     }

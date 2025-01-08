@@ -5,9 +5,9 @@
 
     <select class="form-select fs-4 border-dark border-3 mt-3 w-75" aria-label="Default select example" name="nombreempleado" id="nombreempleado">
         <option value="">Añadir personas al grupo:</option>
-        @foreach ($cargos as $cargo)
-            <option value="{{$cargo->id}}">{{$cargo->name ." - ". $cargo->agenciau}}</option>
-        @endforeach
+        @include('layouts/selectpersonas')
+
+
     </select>
 
     <div class="mt-3" id="selectedPeople">
@@ -286,9 +286,7 @@
 
                 nombreEmpleadoSelect.innerHTML += `
                     <option class="fw-semibold" value="" disabled>↓-------- Individual --------↓</option>
-                    @foreach ($cargos as $cargo)
-                        <option value="{{$cargo->name}}">{{$cargo->name ." - ". $cargo->agenciau}}</option>
-                    @endforeach
+
                 `;
             });
         }
