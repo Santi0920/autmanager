@@ -643,7 +643,14 @@ class GerenciaController extends Controller
 
     public function cargaragcoorjef(Request $request)
     {//AND name != 'Santiago Henao'
-        $cargos = DB::select("SELECT DISTINCT id,agenciau,name FROM users WHERE agenciau != 'Asociacion Virtual' AND name != 'Jesus H BOLAÑOS'  ORDER BY name ASC");
+        $cargos = DB::select("
+            SELECT DISTINCT users.id, users.agenciau, users.name, users.rol, users.codigo, agencias.NumAgencia
+            FROM users
+            LEFT JOIN agencias ON users.agenciau = agencias.NameAgencia
+            WHERE users.agenciau != 'Asociacion Virtual'
+            AND users.name != 'Jesus H BOLAÑOS'
+            ORDER BY users.name ASC
+        ");
         $gruposcreados = DB::select("SELECT * FROM grupos_otrabajo");
         foreach ($gruposcreados as $grupo) {
 
@@ -671,10 +678,23 @@ class GerenciaController extends Controller
         ORDER BY
             g.nombregrupo ASC
         ");
+        $cargosConNameAgencia = collect($cargos)->map(function ($cargo) {
+            return (object) [
+                'id' => $cargo->id,
+                'agenciau' => $cargo->agenciau,
+                'name' => $cargo->name,
+                'rol' => $cargo->rol,
+                'codigo' => $cargo->codigo,
+                'NumAgencia' => $cargo->NumAgencia,
+            ];
+        });
+
+        return view('Gerencia/otrabajo', [
+            'cargos' => $cargosConNameAgencia,
+            'gruposcreados' => $gruposcreados
+        ]);
 
 
-
-        return view('Gerencia/otrabajo', ['cargos' => $cargos, 'gruposcreados' => $gruposcreados]);
 
     }
 
@@ -881,16 +901,25 @@ class GerenciaController extends Controller
         $grupos = DB::table('grupos_otrabajo')->get();
 
         $result = $grupos->map(function ($grupo) {
-            $integrantesArray = json_decode($grupo->integrantes, true);
+        $integrantesArray = json_decode($grupo->integrantes, true);
 
-            $integrantesDetalles = DB::table('users')
-                ->whereIn('id', $integrantesArray)
-                ->select('name', 'agenciau')
-                ->get();
+        $integrantesDetalles = DB::table('users')
+        ->whereIn('users.id', $integrantesArray)
+        ->leftJoin('agencias', 'users.agenciau', '=', 'agencias.NameAgencia')
+        ->select('users.name', 'users.agenciau', 'users.codigo', 'users.rol', 'agencias.NumAgencia')
+        ->get();
 
-            $nombresIntegrantes = $integrantesDetalles->map(function ($integrante) {
+
+        $nombresIntegrantes = $integrantesDetalles->map(function ($integrante) {
+            if ($integrante->rol === 'Consultante') {
+                return $integrante->name . ' - ' . $integrante->agenciau . ' - ' . $integrante->NumAgencia;
+            } elseif ($integrante->rol === 'Jefatura') {
+                return $integrante->name . ' - ' . $integrante->agenciau. ' - ' . $integrante->codigo;
+            } else {
                 return $integrante->name . ' - ' . $integrante->agenciau;
-            });
+            }
+        });
+
 
             return [
                 'id' => $grupo->id,
@@ -1024,15 +1053,25 @@ class GerenciaController extends Controller
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
 
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante'  AND activo = 1 ORDER BY agenciau ASC");
-
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
 
 
+        $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
-        return datatables()->of($solicitudes)->toJson();
+
+        return datatables()->of($solicitudes)
+            ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
+                foreach ($agenciasActivas as $agencia) {
+                    if ($row->agenciau == $agencia->NameAgencia) {
+                        return $agencia->NumAgencia;
+                    }
+                }
+                return '';
+            })
+            ->toJson();
     }
+
 
     public function coordinaciones(Request $request)
     {
