@@ -10,9 +10,7 @@
             <option class="fw-bold" value="{{$grupo->nombregrupo}}">{{$grupo->nombregrupo}}</option>
         @endforeach
         <option class="fw-semibold" value="" disabled>↓-------- Individual --------↓</option>
-        @foreach ($cargos as $cargo)
-            <option value="{{$cargo->name}}">{{$cargo->name ." - ". $cargo->agenciau}}</option>
-        @endforeach
+        @include('layouts/selectpersonas')
     </select>
     <div id="selectedPeople2" style="display: block;"></div>
     <input type="hidden" id="selectedPeopleInput2" name="selectedPeopleInput2">

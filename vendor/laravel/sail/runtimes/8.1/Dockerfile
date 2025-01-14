@@ -3,7 +3,11 @@ FROM ubuntu:24.04
 LABEL maintainer="Taylor Otwell"
 
 ARG WWWGROUP
+<<<<<<< HEAD
+ARG NODE_VERSION=20
+=======
 ARG NODE_VERSION=22
+>>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
 ARG POSTGRES_VERSION=17
 
 WORKDIR /var/www/html

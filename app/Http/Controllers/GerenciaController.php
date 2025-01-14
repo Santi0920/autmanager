@@ -643,7 +643,14 @@ class GerenciaController extends Controller
 
     public function cargaragcoorjef(Request $request)
     {//AND name != 'Santiago Henao'
-        $cargos = DB::select("SELECT DISTINCT id,agenciau,name FROM users WHERE agenciau != 'Asociacion Virtual' AND name != 'Jesus H BOLAÑOS'  ORDER BY name ASC");
+        $cargos = DB::select("
+            SELECT DISTINCT users.id, users.agenciau, users.name, users.rol, users.codigo, agencias.NumAgencia
+            FROM users
+            LEFT JOIN agencias ON users.agenciau = agencias.NameAgencia
+            WHERE users.agenciau != 'Asociacion Virtual'
+            AND users.name != 'Jesus H BOLAÑOS'
+            ORDER BY users.name ASC
+        ");
         $gruposcreados = DB::select("SELECT * FROM grupos_otrabajo");
         foreach ($gruposcreados as $grupo) {
 
@@ -671,10 +678,23 @@ class GerenciaController extends Controller
         ORDER BY
             g.nombregrupo ASC
         ");
+        $cargosConNameAgencia = collect($cargos)->map(function ($cargo) {
+            return (object) [
+                'id' => $cargo->id,
+                'agenciau' => $cargo->agenciau,
+                'name' => $cargo->name,
+                'rol' => $cargo->rol,
+                'codigo' => $cargo->codigo,
+                'NumAgencia' => $cargo->NumAgencia,
+            ];
+        });
+
+        return view('Gerencia/otrabajo', [
+            'cargos' => $cargosConNameAgencia,
+            'gruposcreados' => $gruposcreados
+        ]);
 
 
-
-        return view('Gerencia/otrabajo', ['cargos' => $cargos, 'gruposcreados' => $gruposcreados]);
 
     }
 
@@ -881,16 +901,25 @@ class GerenciaController extends Controller
         $grupos = DB::table('grupos_otrabajo')->get();
 
         $result = $grupos->map(function ($grupo) {
-            $integrantesArray = json_decode($grupo->integrantes, true);
+        $integrantesArray = json_decode($grupo->integrantes, true);
 
-            $integrantesDetalles = DB::table('users')
-                ->whereIn('id', $integrantesArray)
-                ->select('name', 'agenciau')
-                ->get();
+        $integrantesDetalles = DB::table('users')
+        ->whereIn('users.id', $integrantesArray)
+        ->leftJoin('agencias', 'users.agenciau', '=', 'agencias.NameAgencia')
+        ->select('users.name', 'users.agenciau', 'users.codigo', 'users.rol', 'agencias.NumAgencia')
+        ->get();
 
-            $nombresIntegrantes = $integrantesDetalles->map(function ($integrante) {
+
+        $nombresIntegrantes = $integrantesDetalles->map(function ($integrante) {
+            if ($integrante->rol === 'Consultante') {
+                return $integrante->name . ' - ' . $integrante->agenciau . ' - ' . $integrante->NumAgencia;
+            } elseif ($integrante->rol === 'Jefatura') {
+                return $integrante->name . ' - ' . $integrante->agenciau. ' - ' . $integrante->codigo;
+            } else {
                 return $integrante->name . ' - ' . $integrante->agenciau;
-            });
+            }
+        });
+
 
             return [
                 'id' => $grupo->id,
@@ -1024,15 +1053,25 @@ class GerenciaController extends Controller
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
 
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante'  AND activo = 1 ORDER BY agenciau ASC");
-
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
 
 
+        $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
-        return datatables()->of($solicitudes)->toJson();
+
+        return datatables()->of($solicitudes)
+            ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
+                foreach ($agenciasActivas as $agencia) {
+                    if ($row->agenciau == $agencia->NameAgencia) {
+                        return $agencia->NumAgencia;
+                    }
+                }
+                return '';
+            })
+            ->toJson();
     }
+
 
     public function coordinaciones(Request $request)
     {
@@ -1079,8 +1118,9 @@ class GerenciaController extends Controller
 
 
         $jefaturas = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Jefatura'");
+        $codigos = DB::select("SELECT DISTINCT codigo FROM users WHERE rol = 'Jefatura'");
         $coordinaciones = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Coordinacion'");
-        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones]);
+        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones, 'codigos' => $codigos]);
 
     }
 
@@ -1119,42 +1159,6 @@ class GerenciaController extends Controller
 
             $selectedPeople = json_decode($selectedPeopleString, true);
 
-            // Números en formato de cadenas para cada coordinación
-            $selectedPeople1 = ['43', '76', '35', '34', '36', '37', '38', '40', '41', '87', '93', '96'];
-            $selectedPeople2 = ['86', '33', '39', '46', '70', '77', '78', '80', '88', '92', '98'];
-            $selectedPeople3 = ['73', '32', '42', '47', '81', '82', '83', '85', '90', '94'];
-            $selectedPeople4 = ['44', '13', '45', '48', '49', '74', '75', '84', '89', '95', '97'];
-
-            // Actualizar para "Coordinacion 1"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 1')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople1)
-                ]);
-
-            // Actualizar para "Coordinacion 2"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 2')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople2)
-                ]);
-
-            // Actualizar para "Coordinacion 3"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 3')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople3)
-                ]);
-
-            // Actualizar para "Coordinacion 4"
-            DB::table('users')
-                ->where('agenciau', 'Coordinacion 4')
-                ->update([
-                    'agencias_id' => json_encode($selectedPeople4)
-                ]);
-
-
-
             $id_insertado = DB::table('users')->insertGetId([
                 'name' => $nombre,
                 'rol' => 'Coordinacion',
@@ -1168,6 +1172,7 @@ class GerenciaController extends Controller
         }else if($tipocreacion == "crearJefatura"){
             $validacionagenciau = DB::select("SELECT agenciau FROM users WHERE LOWER(agenciau) LIKE LOWER(?)", ["%{$request->jefatura}%"]);
             $jefatura = $request->jefatura;
+            $codigo = $request->codigo;
             if(!empty($validacionagenciau)){
                 $jefatura = $validacionagenciau[0]->agenciau;
             }
@@ -1175,6 +1180,7 @@ class GerenciaController extends Controller
                 'name' => $nombre,
                 'rol' => 'Jefatura',
                 'agenciau' => $jefatura,
+                'codigo' => $codigo,
                 'email' => $correo,
                 'password' => bcrypt($password),
                 'activo' => 1
@@ -1257,6 +1263,31 @@ class GerenciaController extends Controller
             ->update([
                 'activo' => 0
             ]);
+
+            $grupos = DB::table('grupos_otrabajo')
+            ->whereRaw("JSON_SEARCH(integrantes, 'one', ?) IS NOT NULL", [$id])
+            ->get();
+
+
+
+
+            foreach ($grupos as $grupo) {
+                $integrantes = json_decode($grupo->integrantes, true);
+
+                if (($key = array_search($id, $integrantes)) !== false) {
+                    unset($integrantes[$key]);
+                }
+
+
+                $nuevoIntegrantes = array_values($integrantes);
+                $nuevoJson = json_encode($nuevoIntegrantes);
+
+                DB::table('grupos_otrabajo')
+                    ->where('id', $grupo->id)
+                    ->update(['integrantes' => $nuevoJson]);
+            }
+
+
             return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
         }
 
@@ -1319,6 +1350,39 @@ class GerenciaController extends Controller
         $id = $request->id;
 
         $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
+        // // Números en formato de cadenas para cada coordinación
+        // $selectedPeople1 = ['43', '76', '35', '34', '36', '37', '38', '40', '41', '87', '93', '96'];
+        // $selectedPeople2 = ['86', '33', '39', '46', '70', '77', '78', '80', '88', '92', '98'];
+        // $selectedPeople3 = ['73', '32', '42', '47', '81', '82', '83', '85', '90', '94'];
+        // $selectedPeople4 = ['44', '13', '45', '48', '49', '74', '75', '84', '89', '95', '97'];
+
+        // // Actualizar para "Coordinacion 1"
+        // DB::table('users')
+        //     ->where('agenciau', 'Coordinacion 1')
+        //     ->update([
+        //         'agencias_id' => json_encode($selectedPeople1)
+        //     ]);
+
+        // // Actualizar para "Coordinacion 2"
+        // DB::table('users')
+        //     ->where('agenciau', 'Coordinacion 2')
+        //     ->update([
+        //         'agencias_id' => json_encode($selectedPeople2)
+        //     ]);
+
+        // // Actualizar para "Coordinacion 3"
+        // DB::table('users')
+        //     ->where('agenciau', 'Coordinacion 3')
+        //     ->update([
+        //         'agencias_id' => json_encode($selectedPeople3)
+        //     ]);
+
+        // // Actualizar para "Coordinacion 4"
+        // DB::table('users')
+        //     ->where('agenciau', 'Coordinacion 4')
+        //     ->update([
+        //         'agencias_id' => json_encode($selectedPeople4)
+        //     ]);
 
 
 
@@ -1343,17 +1407,50 @@ class GerenciaController extends Controller
             return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente la agencia <br>(<span class='badge bg-primary fw-bold'>".$agencianame." - ".$centrocosto."</span>).</span>");
         }else{
             $rol = $consultaRol[0]->rol;
+            $codigodpto = null;
             if($rol == 'Jefatura'){
                 $agencia = $request->jefatura;
+                $codigodpto = $request->codigodpto;
             }else if($rol == 'Coordinacion'){
                 $agencia = $request->coordinacion2;
             }
+
+            $agenciasConCodigos = [
+                'Reporte Bogota' => 13,
+                'Juridico Zona Centro' => 2150,
+                'Juridico Zona Norte' => 2250,
+                'Juridico Zona Sur' => 2350,
+                'Gerencia General' => 28,
+                'Monitoreo' => null,
+                'Tesoreria' => 15,
+                'Contabilidad' => 18,
+                'Sistemas' => 19,
+                'Talento Humano' => 10,
+                'Auditoria Interna' => 12,
+                'Reporte Cali' => 14,
+                'Meridian' => null,
+                'Seguros' => 2300,
+                'Asesora M-76' => 2400,
+                'Fondo Solidaridad' => null,
+                'Oficial de Cumplimiento' => 2805,
+                'Programacion' => null,
+                'Ficidet' => 2500,
+            ];
+
+
+            foreach ($agenciasConCodigos as $nombreAgencia => $codigo) {
+                DB::table('users')
+                    ->where('agenciau', $nombreAgencia)
+                    ->update(['codigo' => $codigo]);
+            }
+
             if($contrasena == null){
                 DB::table('users')
                 ->where('email', $correo)
                 ->update([
                     'name' => $nombre,
                     'agenciau' => $agencia,
+                    'codigo' => $codigodpto ?: null,
                     'celular' => $celular,
                     'password' => bcrypt($contrasena),
                     'agencias_id' => $request->agencias_hidden ?: null
@@ -1364,6 +1461,7 @@ class GerenciaController extends Controller
                 ->update([
                     'name' => $nombre,
                     'agenciau' => $agencia,
+                    'codigo' => $codigodpto ?: null,
                     'celular' => $celular,
                     'password' => bcrypt($contrasena),
                     'agencias_id' => $request->agencias_hidden ?: null
@@ -1465,11 +1563,23 @@ class GerenciaController extends Controller
         if ($grupo) {
             $integrantesIds = json_decode($grupo->integrantes);
 
-            if (is_array($integrantesIds)) {
+            if($id == "D. de Agencia"){
+                $nombres = DB::table('users')
+                ->join('agencias', 'users.agenciau', '=', 'agencias.NameAgencia')
+                ->whereIn('users.id', $integrantesIds)
+                ->select(DB::raw("CONCAT(COALESCE(users.name, ''), ' - ', COALESCE(users.agenciau, ''), ' - ', COALESCE(agencias.NumAgencia, '')) as detalle"))
+                ->pluck('detalle');
+
+            }else{
                 $nombres = DB::table('users')
                 ->whereIn('id', $integrantesIds)
-                ->pluck('name');
+                ->select(DB::raw("CONCAT(COALESCE(name, ''), ' - ', COALESCE(agenciau, ''),
+                    CASE WHEN codigo IS NOT NULL THEN CONCAT(' - ', codigo) ELSE '' END) as detalle"))
+                ->pluck('detalle');
+
             }
+
+
             $integrantes = DB::table('grupos_otrabajo')
                 ->where('integrantes', $grupo->integrantes)
                 ->get();

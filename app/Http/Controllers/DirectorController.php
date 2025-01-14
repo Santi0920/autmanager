@@ -72,6 +72,7 @@ class DirectorController extends Controller
             $existeAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agenciaU]);
             $numAgencia = $existeAgencia[0]->NumAgencia;
         }else if($rol == 'Coordinacion'){
+
             if($usuarioActual->agenciau == 'Coordinacion 1'){
                 $numAgencia = 'C1';
             }else if($usuarioActual->agenciau == 'Coordinacion 2'){
@@ -370,6 +371,15 @@ class DirectorController extends Controller
             }
         }
 
+        if($rol == 'Coordinacion'){
+            $estado = 6;
+            $validacion = 1;
+        }else{
+            $estado = 2;
+            $validacion = 0;
+        }
+
+
         //insercion
         $id_insertado = DB::table('autorizaciones')->insertGetId([
             'Fecha' => $fechaStringfechadeSolicitud,
@@ -381,8 +391,9 @@ class DirectorController extends Controller
             'Cedula' => $cedula,
             'NombrePersona' => $nombre,
             'Detalle' => $detalle,
-            'Estado' => 2,
+            'Estado' => $estado,
             'Solicitud' => 1,
+            'Validacion' => $validacion,
             'SolicitadoPor' => $nombreU,
             'ID_Persona' => $idpersona,
             'ID_Concepto' => $idconcepto,

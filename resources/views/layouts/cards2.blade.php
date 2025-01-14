@@ -2,14 +2,6 @@
    <div class="p-5">
         <section id="stats-subtitle">
             <div class="row">
-                <div class="text-start mb-3">
-                    <a href="otrabajo" class="shadow-lg mt-3 buttonpro btn btn-warning ">
-                        <span>
-                            <i class="fa-solid fa-arrow-left me-3"></i>
-                            REGRESAR
-                        </span>
-                    </a>
-                </div>
                 {{-- <span class="fs-2 fw-bold">Filtrar por:</span>
                 <form action="d-inline" class="d-flex align-items-center" id="form-actualizar-datos">
                     <input class="input1 ms-3 mb-3 p-2 btn btn-outline-secondary text-dark fw-bold" style="width: 9em;" type="date" id="start" name="start" value="" min="2024-03-01" max="{{ now()->format('Y-m-d') }}" title="Mes Inicial"/>
@@ -36,8 +28,48 @@
                 </div> --}}
 
 
-                <div class="col-12 mt-3 mb-1">
+                <div class="col-12 mb-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="otrabajo" class="shadow-lg buttonpro btn btn-warning">
+                            <span>
+                                <i class="fa-solid fa-arrow-left me-3"></i>
+                                REGRESAR
+                            </span>
+                        </a>
+                        <h2 class="mb-0 text-secondary text-end">
+                            <b><span id="fechaActual"></span></b>
+                        </h2>
+                    </div>
+                    <script>
+                        function obtenerFechaActual() {
+                            const fecha = new Date();
+                            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                            const mes = meses[fecha.getMonth()];
+                            const dia = fecha.getDate();
+                            const anio = fecha.getFullYear();
+                            let horas = fecha.getHours();
+                            let amPm = horas >= 12 ? 'PM' : 'AM'; // Se establece 'AM' si horas es menor a 12, de lo contrario, se establece 'PM'
+
+                            // Convertir 0 a 12 AM
+                            horas = horas % 12 || 12;
+
+                            const minutos = fecha.getMinutes();
+                            const segundos = fecha.getSeconds();
+
+                            return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
+                        }
+
+                        function actualizarFechaActual() {
+                            const elementoFecha = document.getElementById('fechaActual');
+                            elementoFecha.textContent = obtenerFechaActual();
+                        }
+
+                        setInterval(actualizarFechaActual, 1000);
+                </script>
                     <h4 class="text-uppercase fw-bold fs-2 text-end"><button class="custom-btn me-2 fs-4" title="ACTUALIZAR ESTADÍSTICAS" onclick="reloadPage()"><i class="fa-solid fa-rotate-right"></i></button>Estadísticas ORDEN DE TRABAJO</h4>
+                    <p class="text-center mt-1 fw-bold fs-1">
+                        TOTAL: <span class="btn btn-secondary shadow value fs-1" style="padding: 0rem 0.8rem; border-radius: 10%; font-weight: 600; font-size: 25px;" akhi="{{$total}}" id="total"><b>0</b></span>
+                    </p>
                 </div>
             </div>
 
@@ -230,10 +262,12 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 7c432638e9295e7b589d0f8bb66b44313659b3cc
         </section>
-        <p class="text-center mt-3 fw-bold fs-2">
-            TOTAL: <span class="btn btn-secondary shadow value " style="padding: 0rem 0.8rem; border-radius: 10%; font-weight: 600; font-size: 25px;" akhi="{{$total}}" id="total"><b>0</b></span>
-        </p>
     </div>
 
     <script src="ResourcesAll/cards/vendors.min.js.descarga"></script>
