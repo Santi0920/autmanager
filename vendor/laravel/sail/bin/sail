@@ -523,6 +523,8 @@ elif [ "$1" == "root-shell" ] || [ "$1" == "root-bash" ]; then
         ARGS+=(exec -u root)
         [ ! -t 0 ] && ARGS+=(-T)
         ARGS+=("$APP_SERVICE" bash)
+<<<<<<< HEAD
+=======
     else
         sail_is_not_running
     fi
@@ -535,6 +537,7 @@ elif [ "$1" == "mongodb" ]; then
         ARGS+=(exec)
         [ ! -t 0 ] && ARGS+=(-T)
         ARGS+=(mongodb mongosh --port "${FORWARD_MONGODB_PORT:-27017}" --username "$MONGODB_USERNAME" --password "$MONGODB_PASSWORD" --authenticationDatabase admin)
+>>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
     else
         sail_is_not_running
     fi
