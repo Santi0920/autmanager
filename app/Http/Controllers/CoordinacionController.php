@@ -33,6 +33,7 @@ class CoordinacionController extends Controller
 
 
         $coordinaciones = DB::select("SELECT DISTINCT agenciau, agencias_id FROM users WHERE agenciau = ? AND id = ?", [$agenciaU, $id]);
+
         $agenciasIdArray = json_decode($coordinaciones[0]->agencias_id, true);
         if ($agenciasIdArray === null) {
             $agenciasIdArray = [];

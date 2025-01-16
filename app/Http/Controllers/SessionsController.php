@@ -54,6 +54,7 @@ class SessionsController extends Controller
 
             if ($user['email'] == strtolower($request->email) && Hash::check($request->password, $user['password'])) {
                 session([
+                    'id' => $user['id'],
                     'email' => $user['email'],
                     'rol' => $user['rol'],
                     'agenciau' => $user['agenciau'],
