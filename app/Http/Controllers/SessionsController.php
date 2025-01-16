@@ -63,7 +63,7 @@ class SessionsController extends Controller
                     'activo' => $user['activo'],
                     'codigo' => $user['codigo'],
                     'agencias_id' => $user['agencias_id'],
-                    'expires_at' => now()->addHours(1) // Sesión expira en 1 hora
+                    'expires_at' => now()->addHour(1)
                 ]);
 
                 //auditoria
@@ -75,17 +75,17 @@ class SessionsController extends Controller
 
                 $fechaHoraActual = date('Y-m-d H:i:s');
                 $ip = $_SERVER['REMOTE_ADDR'];
-                // $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Accion_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
-                //     $fechaHoraActual,
-                //     $nombre,
-                //     $rol,
-                //     $agencia,
-                //     'IngresoaAutorizaciones',
-                //     $fechaHoraActual,
-                //     null,
-                //     null,
-                //     $ip
-                // ]);
+                $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+                    $fechaHoraActual,
+                    $nombre,
+                    $rol,
+                    $agencia,
+                    'IngresoaAutorizaciones',
+                    $fechaHoraActual,
+                    null,
+                    null,
+                    $ip
+                ]);
                 if($user['rol'] == 'Consultante'){
                     return redirect()->to('/solicitudes');
                 }else if($user['rol'] == 'Jefatura'){
