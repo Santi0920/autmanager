@@ -1,5 +1,4 @@
-@if($celular == null)
-
+@if(session('celular') == null)
 <div class="modal fade" id="celularModal" tabindex="-1" role="dialog" aria-labelledby="celularModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -16,7 +15,7 @@
                         <label for="numeroCelular" class="text-start">Para poder enviar notificaciones importantes de <b>DIRECCIÓN GENERAL</b>, por favor ingresa tu número de <b>celular personal</b> o <b>corporativo</b>. ¡Gracias por tu colaboración!</label>
                         <input type="text" class="form-control fs-1" name="numeroCelular" id="numeroCelular" placeholder="Ej: 3001234567" required maxlength="10" pattern="\d{10}" title="Solo se permiten 10 dígitos." oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                     </div>
-                
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -35,7 +34,7 @@
 
         $('#submitBtn').click(function () {
             const numeroCelular = $('#numeroCelular').val();
-            if (numeroCelular.length === 10) { 
+            if (numeroCelular.length === 10) {
                 console.log('Número de celular ingresado:', numeroCelular);
             } else {
                 alert('Por favor, ingrese un número de celular válido (10 dígitos).');

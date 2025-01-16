@@ -19,7 +19,7 @@
                         href="#">
                         Bienvenido: <div class="btn btn-warning shadow pe-none"
                             style="padding: 0.4rem 0.7rem; border-radius: 10%;font-weight: 600;font-size: 16px;"><label
-                                style="margin-bottom: 0px;">{{ auth()->user()->name }}</strong></div>
+                                style="margin-bottom: 0px;">{{ session('name') }}</strong></div>
                     </span>
                 </li>
 
@@ -30,12 +30,12 @@
                         <div class="btn btn-warning shadow"
                             style="padding: 0.4rem 0.7rem; border-radius: 10%;font-weight: 600;font-size: 16px;">
                             <label style="margin-bottom: 0px;">
-                                @if (auth()->user()->rol == 'Consultante')
+                                @if (session('rol') == 'Consultante')
                                     Director
-                                @elseif(auth()->user()->rol == 'Jefatura')
+                                @elseif(session('rol') == 'Jefatura')
                                     Jefatura
                                 @else
-                                    {{ auth()->user()->rol }}
+                                    {{ session('rol') }}
                                 @endif
                             </label>
                         </div>
@@ -48,10 +48,10 @@
                         Agencia: <div class="btn btn-warning shadow pe-none"
                             style="padding: 0.4rem 0.7rem; border-radius: 10%;font-weight: 600;font-size: 16px;"><label
                                 style="margin-bottom: 0px;">
-                                @if (auth()->user()->agenciau == 'Gerencia General')
+                                @if (session('agenciau') == 'Gerencia General')
                                     Cali
                                 @else
-                                    {{ auth()->user()->agenciau }}
+                                    {{ session('agenciau') }}
                                 @endif
                                 </strong></div>
                     </span>
@@ -65,13 +65,13 @@
                             OPCIONES
                         </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @if (auth()->user()->rol == 'Consultante')
+                        @if (session('rol') == 'Consultante')
                             <li><a class="dropdown-item fw-bold" href="solicitudes">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="ordentrabajo">Orden de Trabajo</a></li>
-                        @elseif (auth()->user()->rol == 'Gerencia')
+                        @elseif (session('rol') == 'Gerencia')
                             <li><a class="dropdown-item fw-bold" href="aprobar">Gerencia</a></li>
                             {{-- <li><a class="dropdown-item fw-bold" href="#" title="EN PROCESO">&nbsp&nbsp&nbsp• Bloqueados</a></li> --}}
                             <li><hr class="dropdown-divider"></li>
@@ -84,13 +84,13 @@
                             <li><a class="dropdown-item fw-bold" href="otrabajo">Orden de Trabajo</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="admin">Panel Administrativo</a></li>
-                        @elseif (auth()->user()->rol == 'Coordinacion')
+                        @elseif (session('rol') == 'Coordinacion')
                             <li><a class="dropdown-item fw-bold" href="validar">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="ordentrabajo">Orden de Trabajo</a></li>
-                        @elseif (auth()->user()->rol == 'Jefatura')
+                        @elseif (session('rol') == 'Jefatura')
                             <li><a class="dropdown-item fw-bold" href="solicitudesjefatura">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
@@ -105,7 +105,7 @@
                     </span>
                 </li>
 
-                {{-- @if (auth()->user()->rol == 'Gerencia')
+                {{-- @if (session('rol') == 'Gerencia')
                 <li class="nav-item dropdown">
                     <span class="nav-link pe-3" style="font-weight: 600;font-size: 18px; margin-top:5.5px" aria-current="page"
                     href="#">

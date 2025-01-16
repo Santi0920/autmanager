@@ -1,6 +1,6 @@
 
     <a href="
-    @if (auth()->user()->rol == 'Gerencia')
+    @if (session('rol') == 'Gerencia')
     otrabajo
     @else
     ordentrabajo

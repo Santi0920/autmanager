@@ -16,8 +16,10 @@ class GerenciaController extends Controller
 {
     public function solicitudes(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -34,8 +36,10 @@ class GerenciaController extends Controller
 
 
     public function aprobados(){
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
 
         $ultimoId = DB::table('persona')->max('ID');
@@ -70,8 +74,10 @@ class GerenciaController extends Controller
 
 
     public function rechazados(){
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -88,8 +94,10 @@ class GerenciaController extends Controller
     }
 
     public function tramite(){
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -106,8 +114,10 @@ class GerenciaController extends Controller
     }
 
     public function anulados(){
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -124,8 +134,10 @@ class GerenciaController extends Controller
     }
 
     public function bloqueados(){
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -143,9 +155,9 @@ class GerenciaController extends Controller
 
     public function validarAutorizacion(Request $request, $id)
     {
-        $usuarioActual = Auth::user();
-        $nombre = $usuarioActual->name;
-        $rol = $usuarioActual->agenciau;
+
+        $nombre = session('name');
+        $rol = session('agenciau');
         $estadoautorizacion = $request->Estado;
 
         $fechadeSolicitud = Carbon::now('America/Bogota');
@@ -193,13 +205,13 @@ class GerenciaController extends Controller
             }
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionGerencia', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
@@ -219,8 +231,8 @@ class GerenciaController extends Controller
     public function data1()
     {
 
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+
+        $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
         return view('Gerencia/aprobar', ['user' => $user]);
@@ -229,8 +241,8 @@ class GerenciaController extends Controller
     public function data2()
     {
 
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+
+        $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
         return view('Gerencia/coordinacion9', ['user' => $user]);
@@ -238,8 +250,10 @@ class GerenciaController extends Controller
 
     public function solicitudescoordinacion(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -258,9 +272,9 @@ class GerenciaController extends Controller
 
     public function validarAutorizacioncoordinacion9(Request $request, $id)
     {
-        $usuarioActual = Auth::user();
-        $nombre = $usuarioActual->name;
-        $noCoordinacion = $usuarioActual->agenciau;
+
+        $nombre = session('name');
+        $noCoordinacion = session('agenciau');
         $estadoautorizacion = $request->Estado;
 
 
@@ -296,13 +310,13 @@ class GerenciaController extends Controller
         }
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionCoordinacion9', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
@@ -569,8 +583,8 @@ class GerenciaController extends Controller
 
     public function concepto()
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+
+        $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
         $agencia = DB::select("SELECT DISTINCT NomAgencia FROM autorizaciones ORDER BY NomAgencia ASC");
         $solicitadopor = DB::select("SELECT DISTINCT SolicitadoPor FROM autorizaciones ORDER BY SolicitadoPor ASC");
@@ -589,8 +603,10 @@ class GerenciaController extends Controller
 
         public function filtrarconcepto(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -700,7 +716,9 @@ class GerenciaController extends Controller
 
     public function otrabajodatatable(Request $request)
     {
-
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
         $solicitudes = DB::select("SELECT * FROM ordentrabajo");
 
 
@@ -1050,8 +1068,10 @@ class GerenciaController extends Controller
 
     public function dagencia(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
 
         $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
@@ -1075,8 +1095,10 @@ class GerenciaController extends Controller
 
     public function coordinaciones(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -1089,8 +1111,10 @@ class GerenciaController extends Controller
 
     public function jefaturas(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -1103,6 +1127,9 @@ class GerenciaController extends Controller
 
     public function agenciastabla(Request $request)
     {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
         $solicitudes = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
 
@@ -1210,13 +1237,13 @@ class GerenciaController extends Controller
 
     public function eliminarUsuario($id){
 
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeEliminoUsuarioenelpaneladmin', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,

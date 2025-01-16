@@ -2,6 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
+    @include('layouts.retornar')
     @if (session('correcto'))
         <div>
             <script>

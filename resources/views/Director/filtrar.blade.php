@@ -32,13 +32,13 @@
     @endif
 
     @php
-        if (auth()->user() && auth()->user()->rol == 'Consultante'){
+        if (session('rol') == 'Consultante'){
             $href = "solicitudes";
-        }else if(auth()->user() && auth()->user()->rol == 'Coordinacion'){
+        }else if(session('rol') == 'Coordinacion'){
             $href = "validar";
-        }else if(auth()->user() && auth()->user()->rol == 'Gerencia'){
+        }else if(session('rol') == 'Gerencia'){
             $href = "aprobar";
-        }else if(auth()->user() && auth()->user()->rol == 'Jefatura'){
+        }else if(session('rol') == 'Jefatura'){
             $href = "solicitudesjefatura";
         }
 
@@ -93,12 +93,13 @@
             </div>
         </div>
     </div>
-    @if (auth()->user()->rol == 'Gerencia')
+    @if (session('rol') == 'Gerencia')
     @else
         @include('layouts.notification')
     @endif
     @include('layouts.celular')
     @include('layouts.footer')
+    @include('layouts.retornar')
 
     <div class="loader d-none">
         <div class="truckWrapper">

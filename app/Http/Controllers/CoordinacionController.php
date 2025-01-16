@@ -13,8 +13,8 @@ class CoordinacionController extends Controller
 {
     public function data1()
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+
+        $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
         return view('Coordinacion/validarautorizacion', ['user' => $user]);
@@ -24,9 +24,11 @@ class CoordinacionController extends Controller
 
     public function solicitudes(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
-        $id = $usuarioActual->id;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $id = session('id');
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
 
@@ -37,7 +39,7 @@ class CoordinacionController extends Controller
         }
         $numero = preg_replace('/[^0-9]/', '', $coordinaciones[0]->agenciau);
 
-        if ($usuarioActual->agenciau == "Coordinacion $numero") {
+        if (session('agenciau') == "Coordinacion $numero") {
             $coordinacionVariable = "C" . $numero;
         }
 
@@ -101,10 +103,10 @@ class CoordinacionController extends Controller
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
         //TRAER INFORMACION DE LA AGENCIA Y EL ROL
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
-        $nombreU = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $agenciaU = session('agenciau');
+        $nombreU = session('name');
+        $rol = session('rol');
 
         // Número y letra del concepto
         if (str_contains($tipoautorizacion, '1100')||str_contains($tipoautorizacion, '1200')||str_contains($tipoautorizacion, '1300')||str_contains($tipoautorizacion, '1400')||str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '1600') || str_contains($tipoautorizacion, '1700') || str_contains($tipoautorizacion, '1800') ||str_contains($tipoautorizacion, '1900') || str_contains($tipoautorizacion, '2000') || str_contains($tipoautorizacion, '2100') ||str_contains($tipoautorizacion, '2200') || str_contains($tipoautorizacion, '2150') ||  str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300') ||str_contains($tipoautorizacion, '2400')|| str_contains($tipoautorizacion, '2500') || str_contains($tipoautorizacion, '2600') || str_contains($tipoautorizacion, '2700')){
@@ -125,21 +127,21 @@ class CoordinacionController extends Controller
 
 
         //si es igual a director
-        $numAgencia = $usuarioActual->rol;
+        $numAgencia = session('rol');
         if($rol == 'Consultante'){
             //traer el numero de agencia PARA INSERTARLO
             $existeAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agenciaU]);
             $numAgencia = $existeAgencia[0]->NumAgencia;
         }else if($rol == 'Coordinacion'){
-            if($usuarioActual->agenciau == 'Coordinacion 1'){
+            if(session('agenciau') == 'Coordinacion 1'){
                 $numAgencia = 'C1';
-            }else if($usuarioActual->agenciau == 'Coordinacion 2'){
+            }else if(session('agenciau') == 'Coordinacion 2'){
                 $numAgencia = 'C2';
-            }else if($usuarioActual->agenciau == 'Coordinacion 3'){
+            }else if(session('agenciau') == 'Coordinacion 3'){
                 $numAgencia = 'C3';
-            }else if($usuarioActual->agenciau == 'Coordinacion 4'){
+            }else if(session('agenciau') == 'Coordinacion 4'){
                 $numAgencia = 'C4';
-            }else if($usuarioActual->agenciau == 'Coordinacion 5'){
+            }else if(session('agenciau') == 'Coordinacion 5'){
                 $numAgencia = 'C5';
             }
         }
@@ -482,13 +484,13 @@ class CoordinacionController extends Controller
 
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoutorizacionCoordinador', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
@@ -507,9 +509,9 @@ class CoordinacionController extends Controller
 
     public function validarAutorizacion(Request $request, $id)
     {
-        $usuarioActual = Auth::user();
-        $nombre = $usuarioActual->name;
-        $noCoordinacion = $usuarioActual->agenciau;
+
+        $nombre = session('name');
+        $noCoordinacion = session('agenciau');
         $estadoautorizacion = $request->Estado;
 
         if($noCoordinacion == 'Coordinacion 1'){
@@ -531,13 +533,13 @@ class CoordinacionController extends Controller
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionCoordinador', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
@@ -862,13 +864,13 @@ class CoordinacionController extends Controller
 
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ModificoAutorizacionCoordinador', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
@@ -996,8 +998,10 @@ class CoordinacionController extends Controller
 
     public function filtrarconcepto(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
@@ -1051,8 +1055,8 @@ class CoordinacionController extends Controller
     public function data2()
     {
 
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+
+        $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
         return view('Coordinacion/filtrarconcepto', ['user' => $user]);

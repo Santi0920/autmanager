@@ -2,7 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
-    
+    @include('layouts.retornar')
     @if (session('correcto'))
         <div>
             <script>
@@ -111,12 +111,12 @@
                             <select name="" id="monthYearSelect" data-column="2" class="form-control filter-select fs-5 fw-bold w-100">
                                 <option value="" class="fw-bold">MES Y AÑO</option>
                             </select>
-                            
+
                             <script>
                                 const meses = ["Enero ", "Ferbrero ", "Marzo ", "Abril ", "Mayo ", "Junio ", "Julio ", "Agosto ", "Septiembre ", "Octubre ", "Noviembre ", "Diciembre "];
 
                                 const yearNow = new Date().getFullYear();
-                                
+
 
                                 let options = '';
                                 for (let year = yearNow; year > yearNow - 1; year--) {
@@ -124,7 +124,7 @@
                                         options += `<option value="${month} ${year}">${month} ${year}</option>`;
                                     }
                                 }
-                            
+
                                 // Insertar las opciones en el select
                                 document.getElementById('monthYearSelect').innerHTML += options;
                             </script>
@@ -143,7 +143,7 @@
 
                         </td>
                         <td>
-                            
+
                         </td>
                         <td>
 
