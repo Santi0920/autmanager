@@ -16,8 +16,7 @@ class JefaturaController extends Controller
     public function data1()
     {
 
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY ID ASC");
 
         return view('Jefatura/solicitudesjefatura', ['user' => $user]);
@@ -43,10 +42,9 @@ class JefaturaController extends Controller
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
         //TRAER INFORMACION DE LA AGENCIA Y EL ROL
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
-        $nombreU = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+        $agenciaU = session('agenciau');
+        $nombreU = session('name');
+        $rol = session('rol');
 
         // Número y letra del concepto
         if (str_contains($tipoautorizacion, '1100')||str_contains($tipoautorizacion, '1200')||str_contains($tipoautorizacion, '1300')||str_contains($tipoautorizacion, '1400')||str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '1600') || str_contains($tipoautorizacion, '1700') || str_contains($tipoautorizacion, '1800') ||str_contains($tipoautorizacion, '1900') || str_contains($tipoautorizacion, '2000') || str_contains($tipoautorizacion, '2100') ||str_contains($tipoautorizacion, '2200') || str_contains($tipoautorizacion, '2150') ||  str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300') ||str_contains($tipoautorizacion, '2400')|| str_contains($tipoautorizacion, '2500') || str_contains($tipoautorizacion, '2600') || str_contains($tipoautorizacion, '2700')){
@@ -67,21 +65,21 @@ class JefaturaController extends Controller
 
 
         //si es igual a director
-        $numAgencia = $usuarioActual->rol;
+        $numAgencia = session('rol');
         if($rol == 'Consultante'){
             //traer el numero de agencia PARA INSERTARLO
             $existeAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agenciaU]);
             $numAgencia = $existeAgencia[0]->NumAgencia;
         }else if($rol == 'Coordinacion'){
-            if($usuarioActual->agenciau == 'Coordinacion 1'){
+            if(session('agenciau') == 'Coordinacion 1'){
                 $numAgencia = 'C1';
-            }else if($usuarioActual->agenciau == 'Coordinacion 2'){
+            }else if(session('agenciau') == 'Coordinacion 2'){
                 $numAgencia = 'C2';
-            }else if($usuarioActual->agenciau == 'Coordinacion 3'){
+            }else if(session('agenciau') == 'Coordinacion 3'){
                 $numAgencia = 'C3';
-            }else if($usuarioActual->agenciau == 'Coordinacion 4'){
+            }else if(session('agenciau') == 'Coordinacion 4'){
                 $numAgencia = 'C4';
-            }else if($usuarioActual->agenciau == 'Coordinacion 5'){
+            }else if(session('agenciau') == 'Coordinacion 5'){
                 $numAgencia = 'C5';
             }
         }
@@ -426,13 +424,12 @@ class JefaturaController extends Controller
 
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
@@ -455,8 +452,10 @@ class JefaturaController extends Controller
 
     public function solicitudes(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $agenciaU = $usuarioActual->agenciau;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
         $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
         FROM persona A
         JOIN autorizaciones B ON B.ID_Persona = A.ID
@@ -754,13 +753,12 @@ class JefaturaController extends Controller
 
 
         //AUDITORIA
-        $usuarioActual = Auth::user();
-        $nombreauditoria = $usuarioActual->name;
-        $rol = $usuarioActual->rol;
+        $nombreauditoria = session('name');
+        $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = $usuarioActual->agenciau;
+        $agencia = session('agenciau');
         $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,

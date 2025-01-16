@@ -10,10 +10,13 @@ class Todos extends Controller
 {
     public function otrabajodatatable(Request $request)
     {
-        $usuarioActual = Auth::user();
-        $rol = $usuarioActual->rol;
-        $name = $usuarioActual->name;
-        $id = $usuarioActual->id;
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+
+        $rol = session('rol');
+        $name = session('name');
+        $id = session('id');
 
 
         $selectedPeople = DB::table('grupos_otrabajo')
@@ -49,10 +52,10 @@ class Todos extends Controller
 
 
     public function celularpendiente(Request $request){
-        $usuarioActual = Auth::user();
-        $rol = $usuarioActual->rol;
-        $name = $usuarioActual->name;
-        $id = $usuarioActual->id;
+
+        $rol = session('rol');
+        $name = session('name');
+        $id = session('id');
 
         DB::table('users')->where('id', $id)
         ->update([

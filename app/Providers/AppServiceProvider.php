@@ -23,34 +23,34 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('layouts.notification', function ($view) {
-            $usuarioActual = Auth::user();
-            $rol = $usuarioActual->rol;
-            $name = $usuarioActual->name;
+
+            $rol = session('rol');
+            $name = session('name');
             $notificaciones = 0;
-    
+
             if ($rol == 'Coordinacion') {
-                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]); 
-                
+                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]);
+
                 $notificaciones = $notificacionesindividual[0]->notificaciones;
-    
+
             } else if ($rol == 'Consultante') {
-                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]); 
-                
+                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]);
+
                 $notificaciones = $notificacionesindividual[0]->notificaciones;
 
             } else if ($rol == 'Jefatura') {
-                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]); 
-                
+                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]);
+
                 $notificaciones = $notificacionesindividual[0]->notificaciones;
-            } 
-    
+            }
+
             $view->with('notificaciones', $notificaciones);
         });
 
 
         View::composer('layouts.celular', function ($view) {
-            $usuarioActual = Auth::user();
-            $id = $usuarioActual->id;
+
+            $id = session('id');
 
             $celular = DB::table('users')->where('id', $id)->value('celular');
 
