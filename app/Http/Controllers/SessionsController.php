@@ -64,7 +64,7 @@ class SessionsController extends Controller
                     'activo' => $user['activo'],
                     'codigo' => $user['codigo'],
                     'agencias_id' => $user['agencias_id'],
-                    'expires_at' => now()->addHour(1)
+                    'expires_at' => now()->addHours(10)
                 ]);
 
                 //auditoria
