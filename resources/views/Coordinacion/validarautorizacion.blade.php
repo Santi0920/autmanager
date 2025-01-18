@@ -228,7 +228,7 @@
                             }
                              else {
                                 var Estado =
-                                    '<div class="btn btn-info shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">REMITIDO A GERENCIA</div>'
+                                    '<div class="btn btn-info shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                             }
 
                             return Estado;
