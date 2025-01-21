@@ -210,7 +210,7 @@
                             } else if (row.Estado == 5 && (row.NumAgencia == 'C1' || row.NumAgencia == 'C2' || row.NumAgencia == 'C3' || row.NumAgencia == 'C4' || row.NumAgencia == 'C5')) {
                                 var Estado =
                                     '<div class="btn btn-primary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR(GERENCIA)</div>'
-                            }else if (row.Estado == 1) {
+                            }else if (row.Estado == 1 || row.Estado == 6) {
                                 var Estado =
                                     `<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>`
                             }  else if (row.Estado == 2) {
