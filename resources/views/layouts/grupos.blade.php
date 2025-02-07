@@ -36,28 +36,39 @@
     document.addEventListener('DOMContentLoaded', function () {
     const nombreEmpleadoSelect = document.getElementById('nombreempleado');
     const selectedPeopleContainer = document.getElementById('selectedPeople');
-    let selectedPeople = [];
+let selectedPeople = [];
 
-    nombreEmpleadoSelect.addEventListener('change', function () {
-        const selectedOption = nombreEmpleadoSelect.options[nombreEmpleadoSelect.selectedIndex];
-        const employeeId = selectedOption.value;
-        const employeeName = selectedOption.text;
+nombreEmpleadoSelect.addEventListener('change', function () {
+    const selectedOption = nombreEmpleadoSelect.options[nombreEmpleadoSelect.selectedIndex];
+    const employeeId = selectedOption.value;
+    const employeeName = selectedOption.text;
 
-        if (employeeId && !selectedPeople.includes(employeeId)) {
-            selectedPeople.push(employeeId);
+    if (employeeId && !selectedPeople.includes(employeeId)) {
+        selectedPeople.push(employeeId);
 
-            const personElement = document.createElement('div');
-            personElement.className = 'selected-person';
-            personElement.innerHTML = `${employeeName} <button class="btn btn-danger btn-sm remove-person mb-2" data-id="${employeeId}">X</button>`;
-            selectedPeopleContainer.appendChild(personElement);
+        const orderNumber = selectedPeople.length;
+        const personElement = document.createElement('div');
+        personElement.className = 'selected-person';
+        personElement.innerHTML = `<b>${orderNumber}.</b> ${employeeName} <button class="btn btn-danger btn-sm remove-person mb-2" data-id="${employeeId}">X</button>`;
+        selectedPeopleContainer.appendChild(personElement);
 
-            selectedOption.disabled = true;
+
+        selectedOption.disabled = true;
+
+
+        if (selectedPeople.length > 4) {
+            selectedPeopleContainer.style.maxHeight = "100px";
+            selectedPeopleContainer.style.overflowY = "auto";
+        } else {
+            selectedPeopleContainer.style.maxHeight = "";
+            selectedPeopleContainer.style.overflowY = "visible";
         }
+    }
 
         // Reabrir el select después de seleccionar
         setTimeout(() => {
             nombreEmpleadoSelect.focus();
-            const maxVisibleOptions = 10; 
+            const maxVisibleOptions = 10;
             nombreEmpleadoSelect.size = Math.min(nombreEmpleadoSelect.options.length, maxVisibleOptions); // Limita el tamaño visible
         }, 100);
     });
