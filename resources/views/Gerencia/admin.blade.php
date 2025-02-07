@@ -307,7 +307,7 @@
 
                 </div>
                 <div class="modal-footer text-center">
-                    <button id="createButton" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Crear</button>
+                    <button id="createButton" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
                 </div>
             </form>
             </div>
@@ -375,8 +375,8 @@
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
-                        <th scope="col" class="text-center">NOMBRE</th>
                         <th scope="col" class="text-center">ROL / AGENCIA / CC</th>
+                        <th scope="col" class="text-center">NOMBRE</th>
                         <th scope="col" class="text-center">DETALLES</th>
                     </tr>
                 </thead>
@@ -421,6 +421,28 @@
                     });
                 }
             },
+
+                    {
+                data:null,
+                        render: function(data, type, row) {
+                            var agenciau = `<span class='text-danger fw-bold'>${row.codigo ? `${row.codigo}  - ` : (row.agencia_comparada ? `${row.agencia_comparada}  - ` : '')} <span class="text-dark">${row.agenciau} </span></span>`;
+
+
+                            if(row.NumAgencia != null){
+                                var agenciau = `<span class='text-danger fw-bold'>${row.NumAgencia}</span>`
+                            }
+
+                            return agenciau
+                        },
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td).css({
+                                'font-weight': '500',
+                                'font-size': '30px',
+                                'text-align': 'center',
+                            });
+                        }
+                    },
+
                     {
                 data:null,
                         render: function(data, type, row) {
@@ -431,26 +453,6 @@
                             }
 
                             return ID
-                        },
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            $(td).css({
-                                'font-weight': '500',
-                                'font-size': '30px',
-                                'text-align': 'center',
-                            });
-                        }
-                    },
-                    {
-                data:null,
-                        render: function(data, type, row) {
-                            var agenciau = `<span class='text-danger fw-bold'>${row.agenciau} <span class="text-dark">${row.codigo ? ` - ${row.codigo}` : (row.agencia_comparada ? ` - ${row.agencia_comparada}` : '')}</span></span>`;
-
-
-                            if(row.NumAgencia != null){
-                                var agenciau = `<span class='text-danger fw-bold'>${row.NumAgencia}</span>`
-                            }
-
-                            return agenciau
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({

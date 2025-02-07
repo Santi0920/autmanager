@@ -37,7 +37,6 @@
     const nombreEmpleadoSelect = document.getElementById('nombreempleado');
     const selectedPeopleContainer = document.getElementById('selectedPeople');
     let selectedPeople = [];
-        console.log(nombreEmpleadoSelect);
 
     nombreEmpleadoSelect.addEventListener('change', function () {
         const selectedOption = nombreEmpleadoSelect.options[nombreEmpleadoSelect.selectedIndex];
@@ -54,7 +53,16 @@
 
             selectedOption.disabled = true;
         }
+
+        // Reabrir el select después de seleccionar
+        setTimeout(() => {
+            nombreEmpleadoSelect.focus();
+            const maxVisibleOptions = 10; 
+            nombreEmpleadoSelect.size = Math.min(nombreEmpleadoSelect.options.length, maxVisibleOptions); // Limita el tamaño visible
+        }, 100);
     });
+
+
 
 
     selectedPeopleContainer.addEventListener('click', function (e) {
