@@ -1081,15 +1081,16 @@ class GerenciaController extends Controller
 
 
         return datatables()->of($solicitudes)
-            ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
-                foreach ($agenciasActivas as $agencia) {
-                    if ($row->agenciau == $agencia->NameAgencia) {
-                        return $agencia->NumAgencia;
-                    }
+        ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
+            foreach ($agenciasActivas as $agencia) {
+                if ($row->agenciau == $agencia->NameAgencia) {
+                    return $agencia->NumAgencia;
                 }
-                return '';
-            })
-            ->toJson();
+            }
+            return '';
+        })
+        ->toJson();
+
     }
 
 
@@ -1141,7 +1142,7 @@ class GerenciaController extends Controller
     public function cargaragencias(Request $request)
     {
         $cargos = DB::select("SELECT DISTINCT id,agenciau,name FROM users WHERE rol = 'Consultante' ORDER BY name ASC");
-        $agencias = DB::select("SELECT * FROM agencias ORDER BY NumAgencia ASC");
+        $agencias = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NumAgencia ASC");
 
 
         $jefaturas = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Jefatura'");
@@ -1214,8 +1215,8 @@ class GerenciaController extends Controller
             ]);
             return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la jefatura <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$jefatura."</span>).</span>");
         }else if($tipocreacion == "crearAgencia"){
-            $consultaagencia = DB::table("agencias")->where("NameAgencia", $request->agencianombre)->count();
-            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $request->centrocosto)->count();
+            $consultaagencia = DB::table("agencias")->where("NameAgencia", $request->agencianombre)->where("activo", 1)->count();
+            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $request->centrocosto)->where("activo", 1)->count();
 
             if ($consultaagencia > 0) {
                 return back()->with("incorrecto", "<span class='fs-4'>La agencia <b>" . $request->agencianombre . "</b> ya existe!</span>");
@@ -1414,8 +1415,9 @@ class GerenciaController extends Controller
 
 
         if($agencianame != null || $centrocosto != null){
-            $consultaagencia = DB::table("agencias")->where("NameAgencia", $agencianame)->count();
-            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $centrocosto)->count();
+            $consultaagencia = DB::table("agencias")->where("NameAgencia", $agencianame)->where("activo", 1)->count();
+            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $centrocosto)->where("activo", 1)->count();
+
 
             if ($consultaagencia > 0) {
                 return back()->with("incorrecto", "<span class='fs-4'>La agencia <b>" . $agencianame . "</b> ya existe!</span>");

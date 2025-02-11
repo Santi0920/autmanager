@@ -403,7 +403,7 @@
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datager.dagencia') }}",
             "order": [
-                [0, 'asc']
+                [1, 'asc']
             ],
             scrollY: 420,
             "processing" : true,
