@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -397,38 +397,28 @@ class DirectorController extends Controller
             'ID_Concepto' => $idconcepto,
         ]);
 
-        // Verificar si se subió un archivo
-        if (!$request->hasFile('SoporteScore')) {
-            return back()->withErrors(['message' => 'No se subió ningún archivo.']);
-        }
+	// Verificar si se subió un archivo
+	if (!$request->hasFile('SoporteScore')) {
+    		return back()->withErrors(['message' => 'No se subió ningún archivo.']);
+	}
 
-        $file = $request->file('SoporteScore');
-        $filename = $file->getClientOriginalName();
+	$file = $request->file('SoporteScore');
 
-        // Verificar si el archivo es PDF
-        if ($file->getClientOriginalExtension() != 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
-            return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
-        }
+	// Verificar si el archivo es PDF
+	if (strtolower($file->getClientOriginalExtension()) !== 'pdf') {
+    		return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
+	}
 
-        $newFilename = 'Soporte-' . $id_insertado.'.pdf';
+	$newFilename = 'soporteautorizaciones/Soporte-' . $id_insertado . '.pdf';
+	// Subir directamente a la raíz del bucket en S3
+	Storage::disk('s3')->put($newFilename, file_get_contents($file));
 
-
-        DB::table('autorizaciones')
-        ->where('ID', $id_insertado)
-        ->update([
-            'DocumentoSoporte' => $newFilename,
-        ]);
-
-
-
-        // Subir el archivo
-        $dir = 'Storage/files/soporteautorizaciones/';
-        if (!$file->move($dir, $newFilename)) {
-            return back()->withErrors(['message' => 'Error al subir el archivo.']);
-        }
-
-
-
+	// Guardar el nombre del archivo en la base de datos
+	DB::table('autorizaciones')
+    		->where('ID', $id_insertado)
+    		->update([
+        		'DocumentoSoporte' => $newFilename,
+    	]);
 
 
         //AUDITORIA

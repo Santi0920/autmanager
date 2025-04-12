@@ -31,8 +31,6 @@ Route::get('logout', [SessionsController::class, 'destroy'])
     ->name('login.destroy');
 
 
-
-
 //DIRECTOR
 Route::get('/solicitudes', function () {
     Cookie::forget('laravel_session');

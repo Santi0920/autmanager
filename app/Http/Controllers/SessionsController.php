@@ -23,7 +23,7 @@ class SessionsController extends Controller
     public function login_post(Request $request)
     {
 
-        $url = "http://srv-owncloud.coopserp.com/menu-datacredito/api/";
+        $url = "http://190.66.10.150:10100/menu-datacredito/api/";
         $attempts = 0;
         $maxAttempts = 3; // Intentos máximos
         $retryDelay = 1000; // Milisegundos
