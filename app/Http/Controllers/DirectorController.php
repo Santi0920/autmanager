@@ -397,28 +397,43 @@ class DirectorController extends Controller
             'ID_Concepto' => $idconcepto,
         ]);
 
-	// Verificar si se subió un archivo
+
 	if (!$request->hasFile('SoporteScore')) {
-    		return back()->withErrors(['message' => 'No se subió ningún archivo.']);
-	}
+    return back()->withErrors(['message' => 'No se subió ningún archivo.']);
+}
 
-	$file = $request->file('SoporteScore');
+$file = $request->file('SoporteScore');
+$filename = $file->getClientOriginalName();
 
-	// Verificar si el archivo es PDF
-	if (strtolower($file->getClientOriginalExtension()) !== 'pdf') {
-    		return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
-	}
+// Verificar si el archivo es PDF
+$extension = strtolower($file->getClientOriginalExtension());
+if ($extension != 'pdf') {
+    return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
+}
 
-	$newFilename = 'soporteautorizaciones/Soporte-' . $id_insertado . '.pdf';
-	// Subir directamente a la raíz del bucket en S3
-	Storage::disk('s3')->put($newFilename, file_get_contents($file));
+$newFilename = 'Soporte-' . $id_insertado . '.pdf';
 
-	// Guardar el nombre del archivo en la base de datos
-	DB::table('autorizaciones')
-    		->where('ID', $id_insertado)
-    		->update([
-        		'DocumentoSoporte' => $newFilename,
-    	]);
+// Subir el archivo a S3
+try {
+    $path = Storage::disk('s3')->putFileAs(
+        'soporteautorizaciones', // Carpeta en S3
+        $file,
+        $newFilename,
+        ['visibility' => 'public'] // Opcional: configura la visibilidad
+    );
+    
+    // Actualizar la base de datos con el nombre del archivo
+    DB::table('autorizaciones')
+        ->where('ID', $id_insertado)
+        ->update([
+            'DocumentoSoporte' => $newFilename,
+        ]);
+    
+} catch (\Exception $e) {
+    return back()->withErrors(['message' => 'Error al subir el archivo a S3: ' . $e->getMessage()]);
+}
+
+
 
 
         //AUDITORIA
