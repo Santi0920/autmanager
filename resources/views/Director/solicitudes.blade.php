@@ -523,7 +523,7 @@
                                                     <div class="row g-0">
                                                         ${row.Estado == 0 || row.Estado == 5 ?
                                                             `<div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" id="Detalle" name="Detalle" value="" required>${row.Detalle}</textarea>
+                                                                <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" id="Detalle" name="Detalle_${row.IDAutorizacion}" value="" required>${row.Detalle}</textarea>
                                                             </div>
                                                             <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
                                                                 <label for="file_${row.IDAutorizacion}" class="labelFile">

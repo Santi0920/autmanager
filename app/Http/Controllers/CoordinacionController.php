@@ -864,8 +864,6 @@ class CoordinacionController extends Controller
             DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update(['DocumentoSoporte' => $filename]);
-        } else {
-            return response()->json(['message' => 'No se subió ningún archivo.'], 400);
         }
 
         $tipoautorizacion = $request->CodigoAutorizacion;
