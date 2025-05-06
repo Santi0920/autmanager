@@ -625,7 +625,7 @@
 
 
 
-                                            ${row.Estado == 4 || row.Estado == 5 ?
+                                            ${row.Estado == 4 || row.Estado == 5 || row.Validacion == 1 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="EN TRÁMITE">
                                                 <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
