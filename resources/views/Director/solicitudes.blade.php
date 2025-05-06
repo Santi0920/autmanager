@@ -767,8 +767,8 @@
                     }
                 ],
                 "lengthMenu": [
-                    [1],
-                    [1]
+                    [5],
+                    [5]
                 ],
                 "drawCallback": function(settings) {
                     var api = this.api();
