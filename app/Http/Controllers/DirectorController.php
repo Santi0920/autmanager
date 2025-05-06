@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -397,41 +397,36 @@ class DirectorController extends Controller
             'ID_Concepto' => $idconcepto,
         ]);
 
+        // Verificar si se subió un archivo
+        if (!$request->hasFile('SoporteScore')) {
+            return back()->withErrors(['message' => 'No se subió ningún archivo.']);
+        }
 
-	if (!$request->hasFile('SoporteScore')) {
-    return back()->withErrors(['message' => 'No se subió ningún archivo.']);
-}
+        $file = $request->file('SoporteScore');
+        $filename = $file->getClientOriginalName();
 
-$file = $request->file('SoporteScore');
-$filename = $file->getClientOriginalName();
+        // Verificar si el archivo es PDF
+        if ($file->getClientOriginalExtension() != 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
+            return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
+        }
 
-// Verificar si el archivo es PDF
-$extension = strtolower($file->getClientOriginalExtension());
-if ($extension != 'pdf') {
-    return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
-}
+        $newFilename = 'Soporte-' . $id_insertado.'.pdf';
 
-$newFilename = 'Soporte-' . $id_insertado . '.pdf';
 
-// Subir el archivo a S3
-try {
-    $path = Storage::disk('s3')->putFileAs(
-        'soporteautorizaciones', // Carpeta en S3
-        $file,
-        $newFilename,
-        ['visibility' => 'public'] // Opcional: configura la visibilidad
-    );
-    
-    // Actualizar la base de datos con el nombre del archivo
-    DB::table('autorizaciones')
+        DB::table('autorizaciones')
         ->where('ID', $id_insertado)
         ->update([
             'DocumentoSoporte' => $newFilename,
         ]);
-    
-} catch (\Exception $e) {
-    return back()->withErrors(['message' => 'Error al subir el archivo a S3: ' . $e->getMessage()]);
-}
+
+
+
+        // Subir el archivo
+        $dir = 'Storage/files/soporteautorizaciones/';
+        if (!$file->move($dir, $newFilename)) {
+            return back()->withErrors(['message' => 'Error al subir el archivo.']);
+        }
+
 
 
 
@@ -473,7 +468,68 @@ try {
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.NomAgencia = '$agenciaU'");
+        WHERE (B.Estado = 2 OR B.Estado = 1) AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+    public function aprobados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 4 AND B.Aprobacion = 1 AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+    public function rechazados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE (B.Estado = 5 OR B.Estado = 0) AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+    public function bloqueados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Bloqueado = 1 AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
+    public function anulados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 7 AND B.NomAgencia = '$agenciaU'");
         return datatables()->of($solicitudes)->toJson();
     }
 

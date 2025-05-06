@@ -26,20 +26,21 @@ class AppServiceProvider extends ServiceProvider
 
             $rol = session('rol');
             $name = session('name');
+            $email = session('email');
             $notificaciones = 0;
 
             if ($rol == 'Coordinacion') {
-                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]);
+                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE email = ?', [$email]);
 
                 $notificaciones = $notificacionesindividual[0]->notificaciones;
 
             } else if ($rol == 'Consultante') {
-                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]);
+                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE email = ?', [$email]);
 
                 $notificaciones = $notificacionesindividual[0]->notificaciones;
 
             } else if ($rol == 'Jefatura') {
-                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE name = ?', [$name]);
+                $notificacionesindividual = DB::select('SELECT notificaciones FROM users WHERE email = ?', [$email]);
 
                 $notificaciones = $notificacionesindividual[0]->notificaciones;
             }

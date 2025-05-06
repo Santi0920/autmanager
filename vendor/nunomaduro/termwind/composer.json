@@ -12,19 +12,6 @@
     "require": {
         "php": "^8.1",
         "ext-mbstring": "*",
-<<<<<<< HEAD
-        "symfony/console": "^6.4.12"
-    },
-    "require-dev": {
-        "illuminate/console": "^10.48.22",
-        "illuminate/support": "^10.48.22",
-        "laravel/pint": "^1.18.1",
-        "pestphp/pest": "^2",
-        "pestphp/pest-plugin-mock": "2.0.0",
-        "phpstan/phpstan": "^1.12.6",
-        "phpstan/phpstan-strict-rules": "^1.6.1",
-        "symfony/var-dumper": "^6.4.11",
-=======
         "symfony/console": "^6.4.15"
     },
     "require-dev": {
@@ -36,7 +23,6 @@
         "phpstan/phpstan": "^1.12.11",
         "phpstan/phpstan-strict-rules": "^1.6.1",
         "symfony/var-dumper": "^6.4.15",
->>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
         "thecodingmachine/phpstan-strict-rules": "^1.0.0"
     },
     "autoload": {

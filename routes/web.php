@@ -42,6 +42,14 @@ Route::get('/solicitudes', [DirectorController::class, 'data1']);
 
 Route::get('/solicitudes/datatable', [DirectorController::class, 'solicitudes'])->name('data.solicitudes');
 
+Route::get('/solicitudesaprobadas/datatable', [DirectorController::class, 'aprobados'])->name('data.aprobados');
+
+Route::get('/solicitudesrechazadas/datatable', [DirectorController::class, 'rechazados'])->name('data.rechazados');
+
+Route::get('/solicitudesbloqueadas/datatable', [DirectorController::class, 'bloqueados'])->name('data.bloqueados');
+
+Route::get('/solicitudesanuladas/datatable', [DirectorController::class, 'anulados'])->name('data.anulados');
+
 //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
 Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
@@ -74,7 +82,15 @@ Route::post('/autorizacion', [DirectorController::class, 'buscarautorizacion'])
 
     Route::get('/validar', [CoordinacionController::class, 'data1']);
 
-    Route::get('validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes');
+    Route::get('/validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes');
+
+    Route::get('apropadoscoord/datatable', [CoordinacionController::class, 'aprobados'])->name('datacoor.aprobados');
+
+    Route::get('rechazadoscoord/datatable', [CoordinacionController::class, 'rechazados'])->name('datacoor.rechazados');
+
+    Route::get('anuladoscoord/datatable', [CoordinacionController::class, 'anulados'])->name('datacoor.anulados');
+
+    Route::get('bloqueadoscoord/datatable', [CoordinacionController::class, 'bloqueados'])->name('datacoor.bloqueados');
 
     Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
 

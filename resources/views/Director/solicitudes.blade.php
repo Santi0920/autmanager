@@ -159,7 +159,7 @@
                     [0, 'desc']
                 ],
                 scrollY: 420,
-
+                "processing" : true,
                 "columns": [{
                         data: 'IDAutorizacion',
                         render: function(data, type, row) {
@@ -629,7 +629,7 @@
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="EN TRÁMITE">
                                                 <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
                                             </div>`:
-                                            row.Estado == 1 &&  row.Aprobacion == 1 ?
+                                            row.Estado == 1 ||  row.Aprobacion == 1 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
                                                 <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
@@ -717,6 +717,34 @@
                                             ``
                                         }
 
+                                        ${row.Estado == 7 ?
+                                        `
+                                        <div class="row g-0 text-center">
+                                                <div
+                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-3 border border-dark">
+                                                    <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
+                                                </div>
+
+                                                <div class="col-md-12 col-lg-10">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-9 d-flex text-start border p-2">
+                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                        </div>
+                                                        <div class="col-md-3 border p-2">
+                                                            <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row g-0 border text-start p-2">
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ?`Ninguna.`:`${row.ObservacionesGer}`}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        `
+                                        :
+                                        ``
+                                        }
+
                                         </div>
                                         ${row.Estado == 0 || row.Estado == 5 ?
                                         `<div class=" text-center p-3">
@@ -763,13 +791,44 @@
                     }
                 },
                 "initComplete": function(settings, json) {
-                    var buttonsHtml = '<div class="custom-buttons">' +
-                        '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                        //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
-                        '</div>';
+                    var buttonsHtml = '<div class="custom-buttons mb-2">' +
+                        '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                        '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
+                        '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                        '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                        '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
+                    '</div>';
                     $(buttonsHtml).prependTo('.dataTables_filter');
                     $('#btnT').on('click', function() {
-                        table.ajax.reload(null, false);
+                        var newAjaxSource = '{{ route("data.solicitudes") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnA').on('click', function() {
+                        var newAjaxSource = '{{ route("data.aprobados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnR').on('click', function() {
+                        var newAjaxSource = '{{ route("data.rechazados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnAnulado').on('click', function() {
+                        var newAjaxSource = '{{ route("data.anulados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnBloqueado').on('click', function() {
+                        var newAjaxSource = '{{ route("data.bloqueados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                     });
                 },

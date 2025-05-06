@@ -782,16 +782,48 @@
                 },
                 "initComplete": function(settings, json) {
                     var buttonsHtml = '<div class="custom-buttons mb-2">' +
-                        '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                        '<a href="filtrarconcepto" class="ms-2"><button id="btnT" class="custom-btn" title="Filtrar por concepto">Filtrar por Concepto</button></a>' +
-                        //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
-                        '</div>';
+                        '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                        '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
+                        '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                        '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                        '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
+                        '<a href="filtrarconcepto"><button id="btnT" class="btn btn-secondary fw-bold mb-2 mb-lg-1" title="Filtrar por concepto">FILTRAR POR CONCEPTO</button></a>' +
+                    '</div>';
                     $(buttonsHtml).prependTo('.dataTables_filter');
+
                     $('#btnT').on('click', function() {
-                        table.ajax.reload(null, false);
+                        var newAjaxSource = '{{ route("datacoor.solicitudes") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnA').on('click', function() {
+                        var newAjaxSource = '{{ route("datacoor.aprobados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnR').on('click', function() {
+                        var newAjaxSource = '{{ route("datacoor.rechazados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                     });
-                },
+
+                    $('#btnAnulado').on('click', function() {
+                        var newAjaxSource = '{{ route("datacoor.anulados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnBloqueado').on('click', function() {
+                        var newAjaxSource = '{{ route("datacoor.bloqueados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+                    },
 
             });
 
@@ -1401,8 +1433,8 @@
         }
 
         .custom-buttons {
-            display: absolute;
-            margin-right: 10px;
+            display: inline-block;
+
         }
 
         .custom-btn {

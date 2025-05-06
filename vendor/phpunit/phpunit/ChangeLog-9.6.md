@@ -2,15 +2,19 @@
 
 All notable changes of the PHPUnit 9.6 release series are documented in this file using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
-<<<<<<< HEAD
-=======
+## [9.6.23] - 2025-05-02
+
+### Changed
+
+* [#5956](https://github.com/sebastianbergmann/phpunit/issues/5956): Improved handling of deprecated `E_STRICT` constant
+* Improved message when test is considered risky for printing unexpected output
+
 ## [9.6.22] - 2024-12-05
 
 ### Fixed
 
 * [#6071](https://github.com/sebastianbergmann/phpunit/issues/6071): PHP Archives (PHARs) of PHPUnit 8.5 and PHPUnit 9.6 bundle outdated versions of Prophecy
 
->>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
 ## [9.6.21] - 2024-09-19
 
 ### Changed
@@ -165,10 +169,8 @@ All notable changes of the PHPUnit 9.6 release series are documented in this fil
 * [#5064](https://github.com/sebastianbergmann/phpunit/issues/5064): Deprecate `PHPUnit\Framework\TestCase::getMockClass()`
 * [#5132](https://github.com/sebastianbergmann/phpunit/issues/5132): Deprecate `Test` suffix for abstract test case classes
 
-<<<<<<< HEAD
-=======
+[9.6.23]: https://github.com/sebastianbergmann/phpunit/compare/9.6.22...9.6.23
 [9.6.22]: https://github.com/sebastianbergmann/phpunit/compare/9.6.21...9.6.22
->>>>>>> 739cc1c25878a1524cf603ac1b5ba9237c319058
 [9.6.21]: https://github.com/sebastianbergmann/phpunit/compare/9.6.20...9.6.21
 [9.6.20]: https://github.com/sebastianbergmann/phpunit/compare/9.6.19...9.6.20
 [9.6.19]: https://github.com/sebastianbergmann/phpunit/compare/9.6.18...9.6.19
