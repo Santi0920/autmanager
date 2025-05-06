@@ -526,7 +526,7 @@
                                                                 <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" id="Detalle" name="Detalle" value="" required>${row.Detalle}</textarea>
                                                             </div>
                                                             <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
-                                                                <label for="file" class="labelFile">
+                                                                <label for="file_${row.IDAutorizacion}" class="labelFile">
                                                                     <span><svg
                                                                         xml:space="preserve"
                                                                         viewBox="0 0 184.69 184.69"
@@ -565,9 +565,10 @@
                                                                             </g>
                                                                         </g></svg>
                                                                     </span>
-                                                                    <p id="uploadMessage">Adjunta el archivo aquí!</p>
+                                                                    <p id="uploadMessage_${row.IDAutorizacion}">Adjunta el archivo aquí!</p>
                                                                 </label>
-                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file" type="file" onchange="fileUploaded()" />${row.DocumentoSoporte}
+                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file_${row.IDAutorizacion}" type="file" accept="application/pdf" onchange="fileUploaded(${row.IDAutorizacion})" />
+                                                                <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${row.DocumentoSoporte}" />
                                                             </div>
                                                 </form>
                                                                                                                             ` :
@@ -848,12 +849,12 @@
                 var Cuentamodal = $(`#Cuentamodal${id}`).val();
                 var Nombremodal = $(`#Nombremodal${id}`).val();
                 var Convencionmodal = $(`#Convencionmodal${id}`).val();
-                var Detalle = $('textarea[name="Detalle"]').val();
-                var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
+                var Detalle = $(`textarea[name="Detalle_${id}"]`).val();
+                var Soporte = document.querySelector(`input[name="Soporte_${id}"]`).files[0];
+                var DocumentoSoporte = $(`#DocumentoSoporte_${id}`).val();
 
 
                 var formData = new FormData();
-                console.log(CodigoAutorizacion + " ** "+ _token + " ** "+ Cedulamodal + " ** "+ Nombremodal + " ** "+ Convencionmodal + " ** "+ Detalle + " ** "+ Soporte);
                 formData.append('_token', _token);
                 formData.append('Detalle', Detalle);
                 formData.append('CodigoAutorizacion', CodigoAutorizacion);
@@ -864,7 +865,9 @@
 
                 // Verificar si hay un archivo adjunto
                 if (Soporte) {
-                    formData.append('Soporte', Soporte);
+                    formData.append('Soporte_' + id, Soporte);
+                } else {
+                    formData.append('DocumentoSoporte', DocumentoSoporte);
                 }
 
                 Swal.fire({
@@ -1265,26 +1268,27 @@
                         `);
                 }
             });
-            function enviarFormulario() {
+        function enviarFormulario() {
                 const boton = document.getElementById("agregar");
                 boton.disabled = true;
                 return true;
             }
 
-            function fileUploaded() {
-                // Obtiene el elemento input de tipo file
-                var fileInput = document.getElementById("file");
+        function fileUploaded(id) {
+            // Obtiene el elemento input de tipo file dinámicamente
+            var fileInput = document.getElementById(`file_${id}`);
 
-                // Obtiene el nombre del archivo
-                var fileName = "";
-                if (fileInput.files.length > 0) {
-                    fileName = fileInput.files[0].name;
-                }
-
-                // Muestra el mensaje de confirmación con el nombre del archivo
-                document.getElementById("uploadMessage").innerHTML = fileName + "' subido.";
-                document.getElementById("uploadMessage").style.display = "block";
+            // Obtiene el nombre del archivo
+            var fileName = "";
+            if (fileInput.files.length > 0) {
+                fileName = fileInput.files[0].name;
             }
+
+            // Muestra el mensaje de confirmación con el nombre del archivo
+            var uploadMessage = document.getElementById(`uploadMessage_${id}`);
+            uploadMessage.innerHTML = fileName + " subido.";
+            uploadMessage.style.display = "block";
+        }
         </script>
     </div>
 

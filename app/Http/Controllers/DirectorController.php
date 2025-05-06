@@ -543,14 +543,20 @@ class DirectorController extends Controller
         $nombre_documento = $documento[0]->DocumentoSoporte;
         $nombre_archivo = 'Soporte-'.$id.'.pdf';
 
-        if ($request->hasFile('Soporte')) {
-            $soporte = $request->file('Soporte');
-            $dir = 'Storage/files/soporteautorizaciones/';
+        $inputName = 'Soporte_' . $id;
 
-            // Mover el archivo con el nuevo nombre
-            $soporte->move($dir, $nombre_archivo);
+        if ($request->hasFile($inputName)) {
+            $file = $request->file($inputName);
+            $filename = 'Soporte-' . $id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('Storage/files/soporteautorizaciones'), $filename);
+
+            // Actualiza el registro en la base de datos
+            DB::table('autorizaciones')
+                ->where('ID', $id)
+                ->update(['DocumentoSoporte' => $filename]);
+        } else {
+            return response()->json(['message' => 'No se subió ningún archivo.'], 400);
         }
-
         $tipoautorizacion = $request->CodigoAutorizacion;
         $convencion = null;
         $cuenta = null;
