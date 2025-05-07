@@ -60,7 +60,7 @@ class CoordinacionController extends Controller
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
                 JOIN documentosintesis D ON A.ID = D.ID_Persona
-                WHERE ((B.Estado = 2 OR B.Estado = 6 OR B.Validacion = 1 AND B.AprobadoPor = null) AND B.Bloqueado = 0 AND B.NumAgencia IN (" . implode(',', array_fill(0, count($agenciasIdArray), '?')) . ", ?))",
+                WHERE (((B.Estado = 2 OR B.Estado = 6) OR (B.Validacion = 1 AND B.AprobadoPor = null)) AND B.Bloqueado = 0 AND B.NumAgencia IN (" . implode(',', array_fill(0, count($agenciasIdArray), '?')) . ", ?))",
                 array_merge($agenciasIdArray, [$coordinacionVariable])
             );
         } else {
