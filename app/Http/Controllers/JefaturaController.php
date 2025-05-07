@@ -461,9 +461,58 @@ class JefaturaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.NomAgencia = '$agenciaU'");
+        WHERE B.Estado = 2 AND B.NomAgencia = '$agenciaU'");
         return datatables()->of($solicitudes)->toJson();
     }
+
+    public function aprobados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 4 AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
+    public function rechazados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 0 AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
+
+    public function anulados(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 7 AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
 
     public function actualizardetalle(Request $request, $id)
     {
@@ -475,12 +524,17 @@ class JefaturaController extends Controller
         $nombre_documento = $documento[0]->DocumentoSoporte;
         $nombre_archivo = 'Soporte-'.$id.'.pdf';
 
-        if ($request->hasFile('Soporte')) {
-            $soporte = $request->file('Soporte');
-            $dir = 'Storage/files/soporteautorizaciones/';
+        $inputName = 'Soporte_' . $id;
 
-            // Mover el archivo con el nuevo nombre
-            $soporte->move($dir, $nombre_archivo);
+        if ($request->hasFile($inputName)) {
+            $file = $request->file($inputName);
+            $filename = 'Soporte-' . $id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('Storage/files/soporteautorizaciones'), $filename);
+
+            // Actualiza el registro en la base de datos
+            DB::table('autorizaciones')
+                ->where('ID', $id)
+                ->update(['DocumentoSoporte' => $filename]);
         }
 
         $tipoautorizacion = $request->CodigoAutorizacion;

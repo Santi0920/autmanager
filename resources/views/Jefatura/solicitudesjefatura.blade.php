@@ -142,7 +142,7 @@
                     [0, 'desc']
                 ],
                 scrollY: 420,
-
+                "processing" : true,
                 "columns": [{
                         data: 'IDAutorizacion',
                         render: function(data, type, row) {
@@ -502,7 +502,7 @@
                                                                 <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" id="Detalle" name="Detalle" value="" required>${row.Detalle}</textarea>
                                                             </div>
                                                             <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
-                                                                <label for="file" class="labelFile">
+                                                                <label for="file_${row.IDAutorizacion}" class="labelFile">
                                                                     <span><svg
                                                                         xml:space="preserve"
                                                                         viewBox="0 0 184.69 184.69"
@@ -541,9 +541,10 @@
                                                                             </g>
                                                                         </g></svg>
                                                                     </span>
-                                                                    <p id="uploadMessage">Adjunta el archivo aquí!</p>
+                                                                    <p id="uploadMessage_${row.IDAutorizacion}">Adjunta el archivo aquí!</p>
                                                                 </label>
-                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file" type="file" onchange="fileUploaded()" />
+                                                                <input class="input" name="Soporte_${row.IDAutorizacion}" id="file_${row.IDAutorizacion}" type="file" accept="application/pdf" onchange="fileUploaded(${row.IDAutorizacion})" />
+                                                                <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${row.DocumentoSoporte}" />
                                                             </div>
                                                 </form>
                                                             ` :
@@ -786,8 +787,8 @@
                     }
                 ],
                 "lengthMenu": [
-                    [1],
-                    [1]
+                    [5],
+                    [5]
                 ],
                 "drawCallback": function(settings) {
                     var api = this.api();
@@ -811,13 +812,36 @@
                     }
                 },
                 "initComplete": function(settings, json) {
-                    var buttonsHtml = '<div class="custom-buttons">' +
-                        '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                        //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
-                        '</div>';
+                    var buttonsHtml = '<div class="custom-buttons mb-2">' +
+                        '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                        '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
+                        '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                        '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
+                    '</div>';
                     $(buttonsHtml).prependTo('.dataTables_filter');
                     $('#btnT').on('click', function() {
-                        table.ajax.reload(null, false);
+                        var newAjaxSource = '{{ route("data.solicitudesjef") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnA').on('click', function() {
+                        var newAjaxSource = '{{ route("data.aprobadosjef") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnR').on('click', function() {
+                        var newAjaxSource = '{{ route("data.rechazadosjef") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnAnulado').on('click', function() {
+                        var newAjaxSource = '{{ route("data.anuladosjef") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                     });
                 },
@@ -838,9 +862,10 @@
             var Cuentamodal = $(`#Cuentamodal${id}`).val();
             var Nombremodal = $(`#Nombremodal${id}`).val();
             var Convencionmodal = $(`#Convencionmodal${id}`).val();
-            var Detalle = $('textarea[name="Detalle"]').val();
-            var Soporte = $('input[name="Soporte_' + id + '"]')[0].files[0];
-            console.log(Nombremodal);
+            var Detalle = $(`textarea[name="Detalle_${id}"]`).val();
+            var Soporte = document.querySelector(`input[name="Soporte_${id}"]`).files[0];
+            var DocumentoSoporte = $(`#DocumentoSoporte_${id}`).val();
+
 
             var formData = new FormData();
             formData.append('_token', _token);
@@ -851,11 +876,11 @@
             formData.append('Nombremodal', Nombremodal);
             formData.append('Convencionmodal', Convencionmodal);
 
-            console.log(Cedulamodal);
-
             // Verificar si hay un archivo adjunto
             if (Soporte) {
-                formData.append('Soporte', Soporte);
+                formData.append('Soporte_' + id, Soporte);
+            } else {
+                formData.append('DocumentoSoporte', DocumentoSoporte);
             }
 
             Swal.fire({
@@ -1255,9 +1280,9 @@
                 return true;
             }
 
-            function fileUploaded() {
-                // Obtiene el elemento input de tipo file
-                var fileInput = document.getElementById("file");
+            function fileUploaded(id) {
+                // Obtiene el elemento input de tipo file dinámicamente
+                var fileInput = document.getElementById(`file_${id}`);
 
                 // Obtiene el nombre del archivo
                 var fileName = "";
@@ -1266,8 +1291,9 @@
                 }
 
                 // Muestra el mensaje de confirmación con el nombre del archivo
-                document.getElementById("uploadMessage").innerHTML = fileName + "' subido.";
-                document.getElementById("uploadMessage").style.display = "block";
+                var uploadMessage = document.getElementById(`uploadMessage_${id}`);
+                uploadMessage.innerHTML = fileName + " subido.";
+                uploadMessage.style.display = "block";
             }
         </script>
 
