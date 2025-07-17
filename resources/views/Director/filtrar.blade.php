@@ -40,6 +40,8 @@
             $href = "aprobar";
         }else if(session('rol') == 'Jefatura'){
             $href = "solicitudesjefatura";
+        }else{
+            $href = "solicitudes";
         }
 
     @endphp

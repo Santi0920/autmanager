@@ -41,11 +41,11 @@ class GerenciaController extends Controller
         }
         $agenciaU = session('agenciau');
 
+        $ultimoId = DB::table('autorizaciones')->max('ID');
 
-        $ultimoId = DB::table('persona')->max('ID');
 
+        $limiteId = $ultimoId - 2000;
 
-        $limiteId = $ultimoId - 1000;
 
         $solicitudes = DB::select("
             SELECT DISTINCT
@@ -64,7 +64,7 @@ class GerenciaController extends Controller
             WHERE
                 B.Aprobacion = 1
                 AND B.Estado = 4
-                AND B.ID > 4000
+                AND B.ID > $limiteId
             ORDER BY A.ID ASC
         ");
 

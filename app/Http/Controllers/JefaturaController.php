@@ -35,8 +35,9 @@ class JefaturaController extends Controller
         $cuenta = null;
         $idpersona = 7323;
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
+        
 
-        //fecha de la solicitud del director
+        //fecha de l    a solicitud del director
         $fechadeSolicitud = Carbon::now('America/Bogota');
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
@@ -294,6 +295,7 @@ class JefaturaController extends Controller
                 $nombre = $nombres . ' '.$apellidos;
             }
         }else if($tipoautorizacion == '10D'){
+
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
             $cedula = "805.004.034";

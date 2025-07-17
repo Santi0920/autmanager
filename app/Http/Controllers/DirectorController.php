@@ -108,6 +108,11 @@ class DirectorController extends Controller
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
             $retryDelay = 500; // Milisegundos
+            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
+            if(empty($existingPerson)){
+                $idpersona = 7323;
+            }
+            $idpersona = $existingPerson[0]->ID;
 
             do {
                 try {
@@ -295,7 +300,9 @@ class DirectorController extends Controller
         }else if($tipoautorizacion == '10D'){
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
-            $cedula = "805.004.034-9";
+            $cedula = "805.004.034";
+            $cuenta = 9;
+            $idpersona = 14920;
         }else{
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
@@ -749,8 +756,11 @@ class DirectorController extends Controller
             }
         }else if($tipoautorizacion == '10D'){
             //NOMBRE EMPRESA
+
             $nombre = "COOPSERP";
-            $cedula = "805.004.034-9";
+            $cedula = "805.004.034";
+            $cuenta = 9;
+            $idpersona = 14920;
         }else{
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
