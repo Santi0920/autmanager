@@ -153,6 +153,48 @@ class GerenciaController extends Controller
         return datatables()->of($solicitudes)->toJson();
     }
 
+
+    public function standby(){
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 8
+        ORDER BY A.ID ASC");
+
+
+        return datatables()->of($solicitudes)->toJson();
+    }
+
+
+    public function aprobarStandBy(){
+        $nombre = session('name');
+        $fechadeSolicitud = Carbon::now('America/Bogota');
+        Carbon::setLocale('es');
+        $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
+
+        $standbyCount = DB::table('autorizaciones')->where('Estado', 8)->count();
+
+        $aprobartodos = DB::table('autorizaciones')
+            ->where('Estado', 8)
+            ->update([
+                'Estado' => 4,
+                'AprobadoPor' => $nombre,
+                'FechaAprobacion' => $fechaStringfechadeSolicitud,
+                'Aprobacion' => 1,
+            ]);
+
+        return back()->with("correcto", "<span class='fs-4'>Se han aprobado todas las solicitudes con estado <span class='fw-bold'>STAND BY</span>(".$standbyCount.")</span>");
+    }
+
     public function validarAutorizacion(Request $request, $id)
     {
 
@@ -296,7 +338,7 @@ class GerenciaController extends Controller
                     'FechaValidacion' => $fechaStringfechadeSolicitud
                 ]);
             //si fue validado
-        } else if ($estadoautorizacion == '1') {
+        } else if ($estadoautorizacion == '8') {
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([

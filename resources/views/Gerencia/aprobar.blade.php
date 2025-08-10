@@ -254,7 +254,11 @@
                         }else if(row.Estado == 0 && row.Coordinacion == "C9"){
                             var Estado =
                                 '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO COORDINACIÓN 9</div>'
-                        }else{
+                        }else if(row.Estado == 8){
+                            var Estado =
+                                '<div class="btn btn-dark shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
+                        }
+                        else{
                             var Estado =
                                 '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">SOLICITUD DE COORDINACIÓN</div>'
                         }
@@ -505,191 +509,208 @@
                                                                     </div>
                                                             </div>`}
                                         </div>
-
-                                        ${row.Aprobacion == 0 && row.Bloqueado == 0 ?
-                                        `
-                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
-                                                @csrf
-                                            <div class="row g-0 text-center">
-                                                <div
-                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border border-dark">
-                                                    <label class="label">
-                                                        <input value="4" type="radio" name="Estado" id="Estado" required>
-                                                        <span>APROBAR</span>
-                                                    </label>
-                                                    <label class="label">
-                                                        <input value="5" type="radio" name="Estado" id="Estado" required>
-                                                        <span>RECHAZAR</span>
-                                                    </label>
-                                                    <label class="label">
-                                                        <input value="1" type="radio" name="Estado" id="Estado" required>
-                                                        <span>BLOQUEAR</span>
-                                                    </label>
-
-
-                                                </div>
-                                                <div class="col-md-12 col-lg-10">
-                                                    <div class="row g-0">
-                                                        <div class="col-md-9 d-flex text-start border p-2">
-                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
-                                                        </div>
-                                                        <div class="col-md-3 border p-2">
-                                                            <span class="mb-0 fs-5">${row.FechaAprobacion == null ? `Pendiente...`:`${row.FechaAprobacion}`}</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
-                                                    onkeydown="return event.key != 'Enter';"
-                                                    placeholder="Escribe aquí tu Observación."
-                                                    ${row.ObservacionesGer == null ? `` : `value="${row.ObservacionesGer}"`} autocomplete="off">
-                                                        </input>
-
-                                                </div>
-                                            </div>
-                                            </form>
-
-                                        </div>
-                                        <div class=" text-center p-3">
-                                            <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button></div>
-                                        </div>
-                                    </div>
-                                    `:
-                                    `
-                                    ${row.Estado == 4 && row.Bloqueado == 0 || row.Estado == 7 ?
-                                        `
-                                        <div class="row g-0 text-center">
-                                            <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-info-subtle'} border p-1 border-dark" id="fondo">
-                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : row.Estado == 7 ? `AN` : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADO' : row.Estado == 7 ? `ANULADO`: 'RECHAZADO'}</span></span>
-                                            </div>
-
-                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
-                                                <div class="row g-0 border">
-                                                    <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
-                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
-                                                    </div>
-                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
-                                                        <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row g-0">
-                                                    <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
-                                                        <span>${row.ObservacionesGer == null ? 'Ninguna.' : `${row.ObservacionesGer}`}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        ` : row.Bloqueado == 1 || (row.Estado == 4 || row.Aprobacion == 1 || row.Estado == 5 || row.Estado == 2) ?
-                                        `  ${row.Estado == 2 ? `` : row.Estado == 5 || row.Estado == 4 ? `
+                                        ${row.Estado == 8 ?
+                                            `
                                                 <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
-                                                @csrf
-                                                <div class="row g-0 text-center">
-                                                    <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border-dark">
-                                                        <label class="label">
-                                                            <input value="7" type="radio" name="Estado" id="Estado" required>
-                                                            <span>ANULAR</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-md-12 col-lg-10">
-                                                        <div class="row g-0">
-                                                            <div class="col-md-9 d-flex text-start border p-2">
-                                                                <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
-                                                            </div>
-                                                            <div class="col-md-3 border p-2">
-                                                                <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
-                                                            </div>
+                                                    @csrf
+                                                    <div class="row g-0 text-center">
+                                                        <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border border-dark">
+                                                            <label class="label">
+                                                                        <input value="7" type="radio" name="Estado" id="Estado" required>
+                                                                        <span>ANULAR</span>
+                                                            </label>
                                                         </div>
-                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                        <div class="col-md-12 col-lg-10">
+                                                            <div class="row g-0">
+                                                                <div class="col-md-9 d-flex text-start border p-2">
+                                                                    <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                                </div>
+                                                                <div class="col-md-3 border p-2">
+                                                                    <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                                </div>
+                                                            </div>
+                                                            <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
+                                                                onkeydown="return event.key != 'Enter';"
+                                                                placeholder="Escribe aquí tu Observación."
+                                                                ${row.ObservacionesGer == null ? `` : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                            </input>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                </form>
                                                 <div class="text-center p-3">
                                                     <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
                                                 </div>
-                                            </form>
+                                            `:``}
 
 
-                                        `: `
-
-                                                                                                                            <div class="row g-0 text-center">
-                                            <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-success-subtle'} border p-1 border-dark" id="fondo">
-                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADOs' : 'RECHAZADO'}</span></span>
-                                            </div>
-
-                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
-                                                <div class="row g-0 border">
-                                                    <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
-                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
-                                                    </div>
-                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
-                                                        <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="row g-0">
-                                                    <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
-                                                        <span>${row.ObservacionesGer == null ? 'Ninguna.' : `${row.ObservacionesGer}`}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        `}
-
-                                        ` : `
-                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
-                                                @csrf
-                                                <div class="row g-0 text-center">
-                                                    <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border-dark">
-                                                        <label class="label">
-                                                            <input value="0" type="radio" name="Estado" id="Estado" required>
-                                                            <span>DESBLOQUEAR</span>
-                                                        </label>
-                                                        <label class="label">
-                                                            <input value="7" type="radio" name="Estado" id="Estado" required>
-                                                            <span>ANULAR</span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-md-12 col-lg-10">
-                                                        <div class="row g-0">
-                                                            <div class="col-md-9 d-flex text-start border p-2">
-                                                                <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                        ${row.Estado != 8 ?
+                                            `
+                                                ${row.Aprobacion == 0 && row.Bloqueado == 0 ?
+                                                `
+                                                    <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                        @csrf
+                                                        <div class="row g-0 text-center">
+                                                            <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border border-dark">
+                                                                <label class="label">
+                                                                    <input value="4" type="radio" name="Estado" id="Estado" required>
+                                                                    <span>APROBAR</span>
+                                                                </label>
+                                                                <label class="label">
+                                                                    <input value="5" type="radio" name="Estado" id="Estado" required>
+                                                                    <span>RECHAZAR</span>
+                                                                </label>
+                                                                <label class="label">
+                                                                    <input value="1" type="radio" name="Estado" id="Estado" required>
+                                                                    <span>BLOQUEAR</span>
+                                                                </label>
                                                             </div>
-                                                            <div class="col-md-3 border p-2">
-                                                                <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                            <div class="col-md-12 col-lg-10">
+                                                                <div class="row g-0">
+                                                                    <div class="col-md-9 d-flex text-start border p-2">
+                                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                                    </div>
+                                                                    <div class="col-md-3 border p-2">
+                                                                        <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
+                                                                    onkeydown="return event.key != 'Enter';"
+                                                                    placeholder="Escribe aquí tu Observación."
+                                                                    ${row.ObservacionesGer == null ? `` : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                                </input>
                                                             </div>
                                                         </div>
-                                                        <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                    </form>
+                                                    <div class="text-center p-3">
+                                                        <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
                                                     </div>
-                                                </div>
-                                                <div class="text-center p-3">
-                                                    <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
-                                                </div>
-                                            </form>
-
-                                        `
-                                    }
-                                        </div>
-                                    </div>
-
-
-                                    <div class="modal fade" id="modalSoportePdf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="--bs-modal-zindex:1056;">
-                                        <div class="modal-dialog modal-dialog-centered modal-xl">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h6 class="modal-title" id="exampleModalLongTitle"
-                                                    style="color: #646464;font-weight: 700;font-size: 22px">PDF</h6>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body p-0">
-                                                    <div class="embed-responsive embed-responsive-16by9">
-                                                        <iframe class="embed-responsive-item" src="" frameborder="0" style="width:90%; height: 680px;"></iframe>
+                                                    `
+                                                :
+                                                    row.Estado == 4 && row.Bloqueado == 0 || row.Estado == 7 ?
+                                                    `
+                                                    <div class="row g-0 text-center">
+                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-info-subtle'} border p-1 border-dark" id="fondo">
+                                                            <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : row.Estado == 7 ? `AN` : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADO' : row.Estado == 7 ? `ANULADO` : 'RECHAZADO'}</span></span>
+                                                        </div>
+                                                        <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                            <div class="row g-0 border">
+                                                                <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
+                                                                    <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                                </div>
+                                                                <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                                    <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row g-0">
+                                                                <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                                    <span>${row.ObservacionesGer == null ? 'Ninguna.' : `${row.ObservacionesGer}`}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary fs-5" data-bs-dismiss="modal">Cerrar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                        `
-                                    }
+                                                    `
+                                                :
+                                                    row.Bloqueado == 1 || (row.Estado == 4 || row.Aprobacion == 1 || row.Estado == 5 || row.Estado == 2) ?
+                                                    `
+                                                    ${row.Estado == 2 ? `` : row.Estado == 5 || row.Estado == 4 ?
+                                                        `
+                                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                            @csrf
+                                                            <div class="row g-0 text-center">
+                                                                <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border-dark">
+                                                                    <label class="label">
+                                                                        <input value="7" type="radio" name="Estado" id="Estado" required>
+                                                                        <span>ANULAR</span>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-md-12 col-lg-10">
+                                                                    <div class="row g-0">
+                                                                        <div class="col-md-9 d-flex text-start border p-2">
+                                                                            <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                                        </div>
+                                                                        <div class="col-md-3 border p-2">
+                                                                            <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
+                                                                        onkeydown="return event.key != 'Enter';"
+                                                                        placeholder="Escribe aquí tu Observación."
+                                                                        ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center p-3">
+                                                                <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
+                                                            </div>
+                                                        </form>
+                                                        `
+                                                    :
+                                                        `
+                                                        <div class="row g-0 text-center">
+                                                            <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center ${row.Estado == 0 ? 'bg-danger-subtle' : row.Estado == 1 ? 'bg-success-subtle' : row.Estado == 5 ? 'bg-danger-subtle' : 'bg-success-subtle'} border p-1 border-dark" id="fondo">
+                                                                <span class="h1 fw-bold mb-0">${row.Estado == 4 ? 'A' : 'R'}<br><span class="fs-5 fw-normal">${row.Estado == 4 ? 'APROBADOs' : 'RECHAZADO'}</span></span>
+                                                            </div>
+                                                            <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                                <div class="row g-0 border">
+                                                                    <div class="text-start col-md-9 d-flex border p-2 flex-grow-4">
+                                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                                    </div>
+                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                                        <span class="mb-0 fs-5">${row.FechaAprobacion}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row g-0">
+                                                                    <div class="text-start fs-5 col-md-12 d-flex border p-2 w-100 text-center" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';">
+                                                                        <span>${row.ObservacionesGer == null ? 'Ninguna.' : `${row.ObservacionesGer}`}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        `
+                                                    }
+                                                    `
+                                                :
+                                                    `
+                                                    <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                        @csrf
+                                                        <div class="row g-0 text-center">
+                                                            <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border-dark">
+                                                                <label class="label">
+                                                                    <input value="0" type="radio" name="Estado" id="Estado" required>
+                                                                    <span>DESBLOQUEAR</span>
+                                                                </label>
+                                                                <label class="label">
+                                                                    <input value="7" type="radio" name="Estado" id="Estado" required>
+                                                                    <span>ANULAR</span>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-md-12 col-lg-10">
+                                                                <div class="row g-0">
+                                                                    <div class="col-md-9 d-flex text-start border p-2">
+                                                                        <span class="fs-5 fw-bold mb-0">DIRECCION GENERAL</span>
+                                                                    </div>
+                                                                    <div class="col-md-3 border p-2">
+                                                                        <span class="mb-0 fs-5">${row.FechaAprobacion == null ? 'Pendiente...' : `${row.FechaAprobacion}`}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 w-100" id="Observaciones" name="Observaciones"
+                                                                    onkeydown="return event.key != 'Enter';"
+                                                                    placeholder="Escribe aquí tu Observación."
+                                                                    ${row.ObservacionesGer == null ? '' : `value="${row.ObservacionesGer}"`} autocomplete="off">
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-center p-3">
+                                                            <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
+                                                        </div>
+                                                    </form>
+                                                    `
+                                                }
+
+
+                                            `
+                                        :
+
+                                        ``}
+
                             `;
 
                         return modalEditar;
@@ -732,9 +753,20 @@
 
 
             "initComplete": function(settings, json) {
-            var buttonsHtml = '<div class="custom-buttons mb-2">' +
+                var buttonsHtml = '<div class="d-flex flex-nowrap align-items-center gap-2" style="overflow-x: auto; white-space: nowrap;">' +
                     '<button class="custom-btn2 mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel text-white"></i></a></button>' +
                     '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                    `
+                    <div class="dropdown d-inline" title="Solicitudes de jefaturas">
+                        <button class="btn btn-dark fw-bold dropdown-toggle mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            STAND BY
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item fw-bold" href="#" id="btnStandBy">VER</a></li>
+                            <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}">APROBAR TODOS</a></li>
+                        </ul>
+                    </div>
+                    ` +
                     '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">APROBADOS</button>' +
                     '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="RECHAZADOS">RECHAZADOS</button>' +
                     '<button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="EN TRÁMITE">EN TRÁMITE</button>' +
@@ -778,6 +810,13 @@
 
                 $('#btnAnulado').on('click', function() {
                     var newAjaxSource = '{{ route("datager.anulados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnStandBy').on('click', function() {
+                    var newAjaxSource = '{{ route("datager.standby") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 

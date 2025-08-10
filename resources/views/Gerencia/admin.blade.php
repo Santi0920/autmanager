@@ -34,7 +34,7 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-3 fw-bold" id="exampleModalLabel">Crear usuario o agencia</h1>
+                <h1 class="modal-title fs-3 fw-bold" id="exampleModalLabel">Crear usuario, agencia o concepto</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -64,6 +64,13 @@
                         <input class="form-check-input border-dark border-3" type="radio" name="crear" id="crearAgencia" value="crearAgencia">
                         <label class="form-check-label" for="crearAgencia">
                             Crear Agencia
+                        </label>
+                    </div>
+
+                    <div class="form-check fs-4">
+                        <input class="form-check-input border-dark border-3" type="radio" name="crear" id="crearConcepto" value="crearConcepto">
+                        <label class="form-check-label" for="crearConcepto">
+                            Crear Conceptos de Solicitudes
                         </label>
                     </div>
 

@@ -167,6 +167,10 @@ Route::post('/autorizacion', [DirectorController::class, 'buscarautorizacion'])
 
     Route::get('anulados/datatable', [GerenciaController::class, 'anulados'])->name('datager.anulados');
 
+    Route::get('standby/datatable', [GerenciaController::class, 'standby'])->name('datager.standby');
+
+    Route::get('standby/aprobar', [GerenciaController::class, 'aprobarStandBy'])->name('datager.aprobarstandby');
+
     Route::post('aprobar/actualizar-{id}', [GerenciaController::class, 'validarAutorizacion'])->name('updateger.autorizacion');
 
     Route::get('coordinacion9', [GerenciaController::class, 'data2']);

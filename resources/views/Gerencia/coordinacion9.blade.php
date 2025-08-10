@@ -416,8 +416,8 @@
                                                         row.Estado == 0 && row.ValidadoPor !== null ?
                                                         `<span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>`:
                                                         `<label class="label mt-2">
-                                                            <input value="1" type="radio" name="Estado" id="Estado">
-                                                            <span>VALIDAR</span>
+                                                            <input value="8" type="radio" name="Estado" id="Estado">
+                                                            <span>STAND BY</span>
                                                         </label>`
                                                     }
 

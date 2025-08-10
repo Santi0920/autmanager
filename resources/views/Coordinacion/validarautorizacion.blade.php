@@ -114,9 +114,7 @@
                     <thead style="background-color: #646464;">
                         <tr class="text-white">
                             <th scope="col" class="text-center">#</th>
-                            <th scope="col" class="text-center" style="width: 10%">CÉDULA</th>
                             <th scope="col" class="text-center" style="width: 35%">CONCEPTO</th>
-                            <th scope="col" class="text-center">FECHA SOLICITUD</th>
                             <th scope="col" class="text-center" style="width: 20%">ESTADO</th>
                             <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
                         </tr>
@@ -160,24 +158,87 @@
                             });
                         }
                     },
-                    {
-                        data: 'Cedula',
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            $(td).css({
-                                'font-weight': '500',
-                                'font-size': '20px',
-                                'text-align': 'center'
-                            });
-                        }
-                    },
 
                     {
                         data: 'CodigoAutorizacion',
                         render: function(data, type, row) {
-                            var Codigo =
-                                `${row.Concepto}`
+                            fechaSolicitud = row.Fecha;
+                            fechaValidacion = row.FechaValidacion;
+                            const fechaActualDate = new Date();
+                            const months = {
+                                "enero": "01",
+                                "febrero": "02",
+                                "marzo": "03",
+                                "abril": "04",
+                                "mayo": "05",
+                                "junio": "06",
+                                "julio": "07",
+                                "agosto": "08",
+                                "septiembre": "09",
+                                "octubre": "10",
+                                "noviembre": "11",
+                                "diciembre": "12"
+                            };
 
-                            return Codigo
+                            const parts = fechaSolicitud.split(' ');
+                            const month = months[parts[0]?.toLowerCase()];
+                            const day = parts[1];
+                            const yearTime = parts[2]?.split('-');
+
+                            const year = yearTime ? yearTime[0] : null;
+                            const time = yearTime ? yearTime[1] : null;
+
+                            const formattedDateString = `${year}-${month}-${day} ${time}`;
+                            const fechaSolicitudDate = new Date(formattedDateString);
+
+
+                            const parts2 = fechaValidacion.split(' ');
+                            const month2 = months[parts2[0]?.toLowerCase()];
+                            const day2 = parts2[1];
+                            const yearTime2 = parts2[2]?.split('-');
+
+                            const year2 = yearTime2 ? yearTime2[0] : null;
+                            const time2 = yearTime2 ? yearTime2[1] : null;
+
+                            const formattedDateString2 = `${year2}-${month2}-${day2} ${time2}`;
+                            const fechaValidacionDate = new Date(formattedDateString2);
+
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                const totalMinutos = Math.floor(totalSegundos / 60);
+                                const totalHoras = Math.floor(totalMinutos / 60);
+
+                                const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                const horas = String(totalHoras).padStart(2, '0');
+
+                                return { horas, minutos, segundos };
+                            }
+                            const diferencia = calcularDiferencia(fechaSolicitudDate, fechaValidacionDate);
+                            var demoravalidacion = `<span class="text-dark fw-semibold">Coordinación: <span class="fw-normal">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span></span>`;
+
+
+
+
+                            var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumAgencia} - ${row.NomAgencia} - ${row.SolicitadoPor}
+                                    <div>
+                                        <span class="text-dark" title="Fecha Solicitud">
+                                        ${
+                                            row.Estado == 2
+                                            ? 'Falta por validar'
+                                            : (row.Estado == 4 && row.Coordinacion == 'C#')
+                                            ? ''
+                                            : demoravalidacion
+                                        }
+                                        </span>
+
+                                    </div>
+                                </div>
+                            `
+
+                            return Contenido
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
@@ -188,16 +249,6 @@
                         }
                     },
 
-                    {
-                        data: 'Fecha',
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            $(td).css({
-                                'font-weight': '500',
-                                'font-size': '20px',
-                                'text-align': 'center'
-                            });
-                        }
-                    },
                     {
                         data: 'Estado',
                         render: function(data, type, row) {
@@ -784,8 +835,8 @@
                     var buttonsHtml = '<div class="custom-buttons mb-2">' +
                         '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                         '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
-                        '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
-                        '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
+                        // '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                        // '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
                         '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
                         '<a href="filtrarconcepto"><button id="btnT" class="btn btn-secondary fw-bold mb-2 mb-lg-1" title="Filtrar por concepto">FILTRAR POR CONCEPTO</button></a>' +
                     '</div>';
@@ -1089,147 +1140,46 @@
             }
 
             $('#autorizaciones').on('change', function() {
+
                 // Obtener el valor seleccionado
                 var valorSeleccionado = $(this).val();
-                if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
+                console.log("Valor seleccionado:", valorSeleccionado);
+
+
+                if (valorSeleccionado == "10D") {
                     $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
                                     class="text-danger" style="font-size:20px;">*</span></label>
                             <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
 
                         </div>
+
+
+
                         <div class="mb-4 w-100" style="">
                             <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
                                 class="text-danger" style="font-size:20px;"> *</span></label>
                             <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
                         </div>
-
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
-                } else if (valorSeleccionado == "11L") {
+                }else{
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
                                     style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS Y CAPTURA DE ESTADO DE CUENTA F6<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                } else if (valorSeleccionado == "11B") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="Cuenta" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                } else if (valorSeleccionado == "11K") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
-
-                        </div>
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                }else if (valorSeleccionado == "11C") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                            <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9 (código de verificación).<span class="text-danger"> NOTA</span></p>
+                            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
                                 required>
 
                         </div>
 
                         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE COMPLETO <span class="text-danger"
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
                                     style="font-size:20px;">*</span></label>
                             <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
                                 required>
@@ -1244,7 +1194,6 @@
 
                         </div>
 
-
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
                                     class="text-danger" style="font-size:20px;">*</span></label>
@@ -1261,71 +1210,12 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                }else if (valorSeleccionado == "10D") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                }else{
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                                                                <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9.<span class="text-danger"> NOTA</span></p>
-                            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }
             });
+
         function enviarFormulario() {
                 const boton = document.getElementById("agregar");
                 boton.disabled = true;

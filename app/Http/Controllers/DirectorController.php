@@ -85,225 +85,14 @@ class DirectorController extends Controller
         }
 
         //ASOCIACION POR SCORE BAJO
-        if($tipoautorizacion == '11A'){
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-
-            if(empty($existingPerson)){
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
-            }
-            //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-            $idpersona = $existingID[0]->ID;
-
-            $nombres = $existingID[0]->Nombre;
-            $apellidos = $existingID[0]->Apellidos;
-            $nombre = $nombres . ' '.$apellidos;
-
-        //ASOCIACION < 90 DIAS ENTREGAR BONO
-        }
-        else if($tipoautorizacion == '11B'){
-
-            $cuenta = $request->Cuenta;
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-            if(empty($existingPerson)){
-                $idpersona = 7323;
-            }
-            $idpersona = $existingPerson[0]->ID;
-
-            do {
-                try {
-                    $response = Http::get($url . 'retiro/' . $cuenta);
-                    $data = $response->json();
-
-                    $response2 = Http::get($url . 'nombre/' . $cedula);
-                    $data2 = $response2->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            $estado = $data2['status'];
-            if ($estado == '200') {
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
-
-            $fretiro = $data['asociado']['RETIRO'];
-
-            if($fretiro != 0){
-                $fechaActual = Carbon::now('America/Bogota');
-
-                // Extraer los componentes de la fecha (año, mes, día)
-                $año = substr($fretiro, 1, 2);
-                $mes = substr($fretiro, 3, 2);
-                $dia = substr($fretiro, 5, 2);
-
-                // Corregir el año si es necesario
-                if ($año < 200) {
-                    $año += 2000; // Si el año es menor que 100, se asume que es en este siglo.
-                }
-                // Crear un objeto de fecha con los componentes
-                $fecha_retiro = Carbon::create($año, $mes, $dia);
-                $dias_restantes = $fechaActual->diffInDays($fecha_retiro);
-
-
-                if($dias_restantes > 120){
-                        return back()->with("incorrecto", "No necesita autorización, tiene ".$dias_restantes." dias asociado a COOPSERP.!");
-                }
-
-            }else{
-                return back()->with("incorrecto","No aplica porque aun está vinculado a COOPSERP.");
-            }
-
-        //AUTORIZACION POR CREDITO SCORE BAJO
-        }
-        else if($tipoautorizacion == '11D'){
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            $estado = $data['status'];
-            if ($estado == '200') {
-                $cuenta = $data['asociado']['CUENTA'];
-            }
-
-
-            if(empty($existingPerson)){
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
-            }
-            //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$cedula]);
-            $idpersona = $existingID[0]->ID;
-
-            $nombres = $existingID[0]->Nombre;
-            $apellidos = $existingID[0]->Apellidos;
-            $nombre = $nombres . ' '.$apellidos;
-            //Desembolso Creditos por Transferencia Electronica
-        }else if($tipoautorizacion == '11L'){
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-
-            $estado = $data['status'];
-            if ($estado == '200') {
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
-
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-            if(empty($existingPerson)){
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-                $idpersona = $existingID[0]->ID;
-                $nombres = $existingID[0]->Nombre;
-                $apellidos = $existingID[0]->Apellidos;
-                $nombre = $nombres . ' '.$apellidos;
-            }
-
-        //DISPOSICINES
-        }else if($tipoautorizacion == '11K'){
-
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            $estado = $data['status'];
-            if ($estado == '200') {
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
-
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-            if(empty($existingPerson)){
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-                $idpersona = $existingID[0]->ID;
-                $nombres = $existingID[0]->Nombre;
-                $apellidos = $existingID[0]->Apellidos;
-                $nombre = $nombres . ' '.$apellidos;
-            }
-
-            $convencion = $request->convencion;
-
-            //< 1 AÑO
-        }else if($tipoautorizacion == '11C'){
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-
-            if(empty($existingPerson)){
-                $nombre = $request->nombre;
-                $cuenta = $request->cuenta;
-            }else{
-                //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-                $idpersona = $existingID[0]->ID;
-
-                $nombres = $existingID[0]->Nombre;
-                $apellidos = $existingID[0]->Apellidos;
-                $nombre = $nombres . ' '.$apellidos;
-            }
-        }else if($tipoautorizacion == '10D'){
+        if($tipoautorizacion == '10D'){
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
             $cedula = "805.004.034";
             $cuenta = 9;
             $idpersona = 14920;
         }else{
+            $cuenta = $request->cuenta;
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
             ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
@@ -331,31 +120,31 @@ class DirectorController extends Controller
             }
 
 
-            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
-            $cuenta = null;
+            // //Y LA CEDULA LA ESTA TOMANDO COMO NIT
+            // $cuenta = null;
 
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
+            // $attempts = 0;
+            // $maxAttempts = 3; // INTENTOS MÁXIMOS
+            // $retryDelay = 500; // Milisegundos
 
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            if(!empty($data['status'])){
-                if ($data['status'] == '200') {
-                    $cuenta = $data['asociado']['CUENTA'];
-                }
-            }else{
-                $cuenta = null;
-            }
+            // do {
+            //     try {
+            //         $response = Http::get($url . 'nombre/' . $cedula);
+            //         $data = $response->json();
+            //       // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+            //         break;
+            //     } catch (\Exception $e) {
+            //         $attempts++;
+            //         usleep($retryDelay * 1000);
+            //     }
+            // } while ($attempts < $maxAttempts);
+            // if(!empty($data['status'])){
+            //     if ($data['status'] == '200') {
+            //         $cuenta = $data['asociado']['CUENTA'];
+            //     }
+            // }else{
+            //     $cuenta = null;
+            // }
 
         }
 
@@ -475,7 +264,14 @@ class DirectorController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE (B.Estado = 2 OR B.Estado = 1) AND B.NomAgencia = '$agenciaU'");
+        WHERE
+            B.ID > 10000
+            AND (
+                B.Estado IN (0, 1, 2, 5)
+                OR B.Bloqueado = 1
+            )
+            AND B.NomAgencia = '$agenciaU'
+        ");
         return datatables()->of($solicitudes)->toJson();
     }
 
