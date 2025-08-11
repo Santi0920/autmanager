@@ -35,7 +35,7 @@ class JefaturaController extends Controller
         $cuenta = null;
         $idpersona = 7323;
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
-        
+
 
         //fecha de l    a solicitud del director
         $fechadeSolicitud = Carbon::now('America/Bogota');
@@ -463,7 +463,10 @@ class JefaturaController extends Controller
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
         JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 2 AND B.NomAgencia = '$agenciaU'");
+        WHERE
+        B.ID > 6000
+        AND (B.Estado = 2 OR B.Estado = 0)
+        AND B.NomAgencia = '$agenciaU'");
         return datatables()->of($solicitudes)->toJson();
     }
 

@@ -46,6 +46,7 @@ class CoordinacionController extends Controller
         }
 
         if (count($agenciasIdArray) > 0) {
+            //APARECEN RECHAZADOS AQUI Y FALTARIA BLOQUEADO
             $solicitudes = DB::select(
                 "SELECT DISTINCT
                     A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
@@ -60,7 +61,17 @@ class CoordinacionController extends Controller
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
                 JOIN documentosintesis D ON A.ID = D.ID_Persona
-                WHERE (((B.Estado = 2 OR B.Estado = 6 OR B.Estado = 1) OR (B.Validacion = 1 AND B.AprobadoPor = null)) AND B.Bloqueado = 0 AND B.NumAgencia IN (" . implode(',', array_fill(0, count($agenciasIdArray), '?')) . ", ?))",
+                WHERE
+                    B.ID > 10000
+                    AND (
+                        (B.Estado IN (0, 1, 2, 5, 6))
+                        OR (B.Validacion = 1 AND B.AprobadoPor IS NULL)
+                        OR (B.Estado = 5 OR B.Estado = 0)
+                        OR B.Bloqueado = 1
+                    )
+
+                    AND B.NumAgencia IN (" . implode(',', array_fill(0, count($agenciasIdArray), '?')) . ", ?)
+                ",
                 array_merge($agenciasIdArray, [$coordinacionVariable])
             );
         } else {
@@ -79,7 +90,7 @@ class CoordinacionController extends Controller
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
                 JOIN documentosintesis D ON A.ID = D.ID_Persona
-                WHERE ((B.Estado = 2 OR B.Estado = 6) AND B.NumAgencia = ?)",
+                WHERE ((B.Estado = 2 OR B.Estado = 6) AND B.NumAgencia = ? AND A.ID > 6000)",
                 [$coordinacionVariable]
             );
         }

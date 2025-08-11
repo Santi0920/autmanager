@@ -146,15 +146,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <style>
         .dropdown-menu {
-            margin-top: 0;
-        }
-
-        .dropdown:hover .dropdown-menu{
-            display: block;
-        }
-
-        .dropdown:hover .dropdown-menu{
-
             background-color: #ffc107;
         }
 

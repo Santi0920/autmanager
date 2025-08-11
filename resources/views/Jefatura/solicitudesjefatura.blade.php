@@ -113,9 +113,7 @@
                     <thead style="background-color: #646464;">
                         <tr class="text-white">
                             <th scope="col" class="text-center">#</th>
-                            <th scope="col" class="text-center" style="width: 10%">CÉDULA</th>
                             <th scope="col" class="text-center" style="width: 35%">CONCEPTO</th>
-                            <th scope="col" class="text-center">FECHA SOLICITUD</th>
                             <th scope="col" class="text-center" style="width: 20%">ESTADO</th>
                             <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
                         </tr>
@@ -158,24 +156,20 @@
                             });
                         }
                     },
-                    {
-                        data: 'Cedula',
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            $(td).css({
-                                'font-weight': '500',
-                                'font-size': '20px',
-                                'text-align': 'center'
-                            });
-                        }
-                    },
 
                     {
                         data: 'CodigoAutorizacion',
                         render: function(data, type, row) {
-                            var Codigo =
-                                `${row.Concepto}`
+                            var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumAgencia} - ${row.NomAgencia} - ${row.SolicitadoPor}
+                                    <div>
+                                        <span class="text-dark" title="Fecha Solicitud">
+                                            ${row.Fecha.charAt(0).toUpperCase() + row.Fecha.slice(1)}
+                                        </span>
+                                    </div>
+                                </div>
+                            `
 
-                            return Codigo
+                            return Contenido
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
@@ -186,16 +180,7 @@
                         }
                     },
 
-                    {
-                        data: 'Fecha',
-                        createdCell: function(td, cellData, rowData, row, col) {
-                            $(td).css({
-                                'font-weight': '500',
-                                'font-size': '20px',
-                                'text-align': 'center'
-                            });
-                        }
-                    },
+
                     {
                         data: 'Estado',
                         render: function(data, type, row) {
@@ -815,7 +800,7 @@
                     var buttonsHtml = '<div class="custom-buttons mb-2">' +
                         '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                         '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
-                        '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                        // '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
                         '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
                     '</div>';
                     $(buttonsHtml).prependTo('.dataTables_filter');
@@ -1036,184 +1021,13 @@
             }
 
             $('#autorizaciones').on('change', function() {
+
                 // Obtener el valor seleccionado
                 var valorSeleccionado = $(this).val();
                 console.log("Valor seleccionado:", valorSeleccionado);
 
-                if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
 
-                        </div>
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                } else if (valorSeleccionado == "11L") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS Y CAPTURA DE ESTADO DE CUENTA F6<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                } else if (valorSeleccionado == "11B") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="Cuenta" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR ANÁLISIS<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                } else if (valorSeleccionado == "11K") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
-
-                        </div>
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                }else if (valorSeleccionado == "11C") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE COMPLETO <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
-                        </div>
-                        `);
-                }else if (valorSeleccionado == "10D") {
+                if (valorSeleccionado == "10D") {
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
@@ -1231,7 +1045,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }else{
@@ -1253,6 +1067,14 @@
 
                         </div>
 
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
                                     class="text-danger" style="font-size:20px;">*</span></label>
@@ -1269,7 +1091,7 @@
                         </div>
                         <div class="text-center">
                             <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;">SOLICITAR</button>
+                                style="background-color: #646464;" >SOLICITAR</button>
                         </div>
                         `);
                 }
