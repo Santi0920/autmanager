@@ -753,7 +753,7 @@
 
 
             "initComplete": function(settings, json) {
-                var buttonsHtml = '<div class="d-flex flex-nowrap align-items-center gap-2" style="overflow-x: auto; white-space: nowrap;">' +
+                var buttonsHtml = '<div class="d-flex flex-wrap align-items-center gap-2">' +
                     '<button class="custom-btn2 mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel text-white"></i></a></button>' +
                     '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                     `
