@@ -1027,7 +1027,43 @@
                 console.log("Valor seleccionado:", valorSeleccionado);
 
 
-                if (valorSeleccionado == "10D") {
+                if (valorSeleccionado == "11K") {
+                    $("#cuerpo").html(`
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                        </div>
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio">
+                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
+                                    class="text-danger" style="font-size:20px;">*</span></label>
+                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
+
+                        </div>
+
+
+                        <div class="mb-4 w-100" style="">
+                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
+                                class="text-danger" style="font-size:20px;"> *</span></label>
+                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
+                        </div>
+                        <div class="text-center">
+                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                                style="background-color: #646464;" >SOLICITAR</button>
+                        </div>
+                        `);
+                }else if (valorSeleccionado == "10D") {
                     $("#cuerpo").html(`
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span

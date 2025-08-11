@@ -84,8 +84,28 @@ class DirectorController extends Controller
             }
         }
 
-        //ASOCIACION POR SCORE BAJO
-        if($tipoautorizacion == '10D'){
+        //DISPOSICIONES
+        if($tipoautorizacion == '11K'){
+
+            $cuenta = $request->cuenta;
+            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
+
+            if(empty($existingPerson)){
+                $nombre = $request->nombre;
+
+            }else{
+                //traer el ID
+                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
+                $idpersona = $existingID[0]->ID;
+                $nombres = $existingID[0]->Nombre;
+                $apellidos = $existingID[0]->Apellidos;
+                $nombre = $nombres . ' '.$apellidos;
+            }
+
+            $convencion = $request->convencion;
+
+            //< 1 AÑO
+        }else if($tipoautorizacion == '10D'){
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
             $cedula = "805.004.034";
