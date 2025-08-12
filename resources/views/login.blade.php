@@ -16,6 +16,18 @@
 </head>
 
 <body>
+    @if (session('correcto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'warning',
+                    title: "¡Advertencia!",
+                    html: "{!! session('correcto') !!}",
+                    confirmButtonColor: '#646464'
+                });
+            </script>
+        </div>
+    @endif
     @if (session('message'))
         <div class="alert alert-warning">
             {{ session('message') }}
