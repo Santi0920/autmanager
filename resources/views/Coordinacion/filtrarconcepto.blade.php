@@ -828,7 +828,7 @@
             }
     </style>
     </div>
-    @include('layouts.notification')
+
     @include('layouts.celular')
     @include('layouts.footer')
     @include('layouts.retornar')
