@@ -244,7 +244,16 @@ class GerenciaController extends Controller
                     'FechaAprobacion' => $fechaStringfechadeSolicitud,
                     'Aprobacion' => 1
                 ]);
-            }
+        }else if ($estadoautorizacion == '8') {
+            $update = DB::table('autorizaciones')
+                ->where('ID', $id)
+                ->update([
+                    'ObservacionesGer' => $request->Observaciones,
+                    'Estado' => $request->input('Estado'),
+                    'AprobadoPor' => $nombre,
+                    'FechaAprobacion' => $fechaStringfechadeSolicitud,
+                ]);
+        }
 
         //AUDITORIA
 
