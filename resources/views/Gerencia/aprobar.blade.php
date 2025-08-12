@@ -563,6 +563,10 @@
                                                                     <input value="1" type="radio" name="Estado" id="Estado" required>
                                                                     <span>BLOQUEAR</span>
                                                                 </label>
+                                                                <label class="label">
+                                                                    <input value="8" type="radio" name="Estado" id="Estado" required>
+                                                                    <span>STAND BY</span>
+                                                                </label>
                                                             </div>
                                                             <div class="col-md-12 col-lg-10">
                                                                 <div class="row g-0">
