@@ -182,9 +182,7 @@
                                 //     <label for="area" class="form-label fw-bold">Area:</label>
                                 //     <select id="area" class="form-select mb-3 fs-4 border-dark border-3" name="area">
                                 //         <option value="" disabled selected>Seleccione un área</option>
-                                //         @foreach ($areas as $area)
-                                //             <option value="{{$area->NameArea}}">{{$area->NameArea}}</option>
-                                //         @endforeach
+
                                 //     </select>
                                 //     <div class="text-danger" id="error-area"></div>
                                 // `
