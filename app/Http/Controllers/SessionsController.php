@@ -15,8 +15,6 @@ class SessionsController extends Controller
 {
     public function login()
     {
-        Cookie::forget('laravel_session');
-        Cache::flush();
         return view("login");
     }
 
@@ -67,6 +65,8 @@ class SessionsController extends Controller
                     'expires_at' => now()->addHours(10)
                 ]);
 
+                session()->flash('bienvenida', 'Bienvenido,' . $user['name'] . ' 👋');
+
                 //auditoria
                 $nombre = session('name');
                 $rol = session('rol');
@@ -108,6 +108,9 @@ class SessionsController extends Controller
     {
         $request->session()->invalidate(); // Invalida la sesión activa
         $request->session()->regenerateToken(); // Regenera el token CSRF
+
+        $request->session()->forget('expires_at');
+
         Cookie::forget('laravel_session');
         Cache::flush();
 

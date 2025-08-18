@@ -34,8 +34,8 @@ Route::get('logout', [SessionsController::class, 'destroy'])
 //DIRECTOR
 Route::middleware(['session.expired'])->group(function () {
     Route::get('/solicitudes', function () {
-        Cookie::forget('laravel_session');
-        Cache::flush();
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
         return view('Director/solicitudes');
     });
 
@@ -57,14 +57,14 @@ Route::middleware(['session.expired'])->group(function () {
     Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion');
 
     Route::get('/filtrar', function () {
-        Cookie::forget('laravel_session');
-        Cache::flush();
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
         return view('Director.filtrar');
     });
 
     Route::get('/autorizacion', function () {
-        Cookie::forget('laravel_session');
-        Cache::flush();
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
         return view('Director.mostrarautorizacion');
     });
 
@@ -256,8 +256,8 @@ Route::middleware(['session.expired'])->group(function () {
 
     //JEFATURA
     Route::get('/solicitudesjefatura', function () {
-        Cookie::forget('laravel_session');
-        Cache::flush();
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
         return view('Jefatura/solicitudesjefatura');
     });
 
@@ -279,8 +279,8 @@ Route::middleware(['session.expired'])->group(function () {
     //TODOS LOS PERFILES
 
     Route::get('/ordentrabajo', function () {
-        Cookie::forget('laravel_session');
-        Cache::flush();
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
         return view('otrabajo');
     });
 

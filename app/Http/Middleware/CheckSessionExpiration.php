@@ -16,15 +16,19 @@ class CheckSessionExpiration
      */
     public function handle(Request $request, Closure $next)
     {
-        // Verifica si la sesión ha expirado
-        if (session('expires_at') && now()->greaterThan(session('expires_at'))) {
-            // Invalida la sesión
+        if (!session('expires_at')) {
+            // Si no hay fecha de expiración, establecer una
+            session(['expires_at' => now()->addMinutes(config('session.lifetime'))]);
+        }
+
+        if (now()->greaterThan(session('expires_at'))) {
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
-            // Redirige al login con un mensaje de sesión expirada
             return redirect()->route('login')->with('message', 'Sesión expirada. Por favor, inicia sesión de nuevo.');
         }
+
+        // Renovar la sesión en cada request
+        session(['expires_at' => now()->addMinutes(config('session.lifetime'))]);
 
         return $next($request);
     }

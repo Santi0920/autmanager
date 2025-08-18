@@ -3,18 +3,17 @@
 <body class="antialiased">
     @include('layouts/nav')
     @include('layouts.retornar')
-    @if (session('correcto'))
-        <div>
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: "¡Correcto!",
-                    html: "{!! session('correcto') !!}",
-                    confirmButtonColor: '#646464'
-                });
-            </script>
-        </div>
-    @endif
+    @if(session('bienvenida'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: '{{ session('bienvenida') }}',
+        showConfirmButton: false,
+        timer: 3000
+    });
+</script>
+@endif
+
 
     @if (session('incorrecto'))
         <div>

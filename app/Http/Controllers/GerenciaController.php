@@ -347,7 +347,7 @@ class GerenciaController extends Controller
                     'FechaValidacion' => $fechaStringfechadeSolicitud
                 ]);
             //si fue validado
-        } else if ($estadoautorizacion == '8') {
+        } else if ($estadoautorizacion == '8' || $estadoautorizacion== "1") {
             $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([

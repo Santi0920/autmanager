@@ -92,7 +92,7 @@ class DirectorController extends Controller
 
             if(empty($existingPerson)){
                 $nombre = $request->nombre;
-
+                
             }else{
                 //traer el ID
                 $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
@@ -100,6 +100,7 @@ class DirectorController extends Controller
                 $nombres = $existingID[0]->Nombre;
                 $apellidos = $existingID[0]->Apellidos;
                 $nombre = $nombres . ' '.$apellidos;
+
             }
 
             $convencion = $request->convencion;
