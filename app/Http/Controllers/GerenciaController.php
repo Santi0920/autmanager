@@ -640,11 +640,12 @@ class GerenciaController extends Controller
         $agencia = DB::select("SELECT DISTINCT NomAgencia FROM autorizaciones ORDER BY NomAgencia ASC");
         $solicitadopor = DB::select("SELECT DISTINCT SolicitadoPor FROM autorizaciones ORDER BY SolicitadoPor ASC");
         $validadopor = DB::select("SELECT DISTINCT ValidadoPor FROM autorizaciones ORDER BY ValidadoPor ASC");
-
+        $area = DB::select("SELECT DISTINCT Areas FROM concepto_autorizaciones ORDER BY Areas ASC");
 
         return view('Gerencia/filtrarconcepto', [
             'user' => $user,
             'agencia' => $agencia,
+            'area' => $area,
             'solicitadopor' => $solicitadopor,
             'validadopor' => $validadopor
         ]);
