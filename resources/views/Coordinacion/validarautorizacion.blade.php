@@ -3,18 +3,16 @@
 <body class="antialiased">
     @include('layouts/nav')
     @include('layouts.retornar')
-    @if (session('correcto'))
-        <div>
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: "¡Correcto!",
-                    html: "{!! session('correcto') !!}",
-                    confirmButtonColor: '#646464'
-                });
-            </script>
-        </div>
-    @endif
+    @if(session('bienvenida'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: '{{ session('bienvenida') }}',
+        showConfirmButton: false,
+        timer: 3000
+    });
+</script>
+@endif
 
     @if (session('incorrecto'))
         <div>
@@ -1156,7 +1154,22 @@
 
                         </div>
 
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                                required>
 
+                        </div>
+
+                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
+                                    style="font-size:20px;">*</span></label>
+                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
+                                required>
+
+                        </div>
+                        
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
                                     class="text-danger" style="font-size:20px;">*</span></label>
