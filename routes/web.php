@@ -51,6 +51,10 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/solicitudesanuladas/datatable', [DirectorController::class, 'anulados'])->name('data.anulados');
 
+    Route::get('/solicitudesstandby/datatable', [DirectorController::class, 'standby'])->name('data.standby');
+
+
+
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
     Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 

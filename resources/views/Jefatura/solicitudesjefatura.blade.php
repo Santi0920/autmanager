@@ -14,6 +14,20 @@
     </script>
     @endif
 
+    @if (session('correcto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: "¡Correcto!",
+                    html: "{!! session('correcto') !!}",
+                    confirmButtonColor: '#646464',
+
+                });
+            </script>
+        </div>
+    @endif
+
     @if (session('incorrecto'))
         <div>
             <script>
@@ -204,6 +218,9 @@
                             else if (row.Estado == 7) {
                                 var Estado =
                                     '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
+                            } else if (row.Estado == 8) {
+                                var Estado =
+                                    '<div class="btn btn-dark shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
                             } else {
                                 var Estado =
                                     '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
@@ -392,6 +409,8 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
+                                                            row.Estado == 8 ?
+                                                            '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>'
                                                         }
                                                     </div>
@@ -798,6 +817,7 @@
                     var buttonsHtml = '<div class="custom-buttons mb-2">' +
                         '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                         '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
+                        '<button id="btnStandBy" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">STAND BY</button>' +
                         // '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
                         '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
                     '</div>';
@@ -823,6 +843,14 @@
 
                     $('#btnAnulado').on('click', function() {
                         var newAjaxSource = '{{ route("data.anuladosjef") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+
+                                        $('#btnStandBy').on('click', function() {
+                        var newAjaxSource = '{{ route("data.standby") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
 

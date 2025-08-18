@@ -62,7 +62,7 @@ class CoordinacionController extends Controller
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
                 JOIN documentosintesis D ON A.ID = D.ID_Persona
                 WHERE
-                    B.ID > 10000
+                    B.ID > 6000
                     AND (
                         (B.Estado IN (0, 1, 2, 5, 6))
                         OR (B.Validacion = 1 AND B.AprobadoPor IS NULL)

@@ -65,7 +65,7 @@ class SessionsController extends Controller
                     'expires_at' => now()->addHours(10)
                 ]);
 
-                session()->flash('bienvenida', 'Bienvenido,' . $user['name'] . ' 👋');
+                session()->flash('bienvenida', 'Bienvenido/a,' . $user['name'] . ' 👋');
 
                 //auditoria
                 $nombre = session('name');

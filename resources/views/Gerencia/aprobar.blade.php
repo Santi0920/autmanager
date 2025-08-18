@@ -14,6 +14,20 @@
 </script>
 @endif
 
+    @if (session('correcto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: "¡Correcto!",
+                    html: "{!! session('correcto') !!}",
+                    confirmButtonColor: '#646464',
+
+                });
+            </script>
+        </div>
+    @endif
+
 
     @if (session('incorrecto'))
         <div>
@@ -389,6 +403,8 @@
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
                                                             row.Estado == 7 ?
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>':
+                                                            row.Estado == 8 ?
+                                                            '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>':
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">SOLICITUD DE COORDINACIÓN</button>'
                                                         }
                                                     </div>

@@ -14,6 +14,20 @@
 </script>
 @endif
 
+    @if (session('correcto'))
+        <div>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: "¡Correcto!",
+                    html: "{!! session('correcto') !!}",
+                    confirmButtonColor: '#646464',
+
+                });
+            </script>
+        </div>
+    @endif
+
     @if (session('incorrecto'))
         <div>
             <script>
@@ -271,7 +285,10 @@
                             } else if (row.Estado == 4) {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
-                            }else if (row.Estado == 5) {
+                            }  else if (row.Estado == 8) {
+                                var Estado =
+                                    '<div class="btn btn-dark shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
+                            } else if (row.Estado == 5) {
                                 var Estado =
                                     '<div class="btn btn-danger blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECHAZADO POR GERENCIA</div>'
                             }
@@ -469,6 +486,8 @@
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
                                                             row.Estado == 6 ?
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>':
+                                                            row.Estado == 8 ?
+                                                            '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">ANULADO</button>'
                                                         }
                                                     </div>
@@ -833,6 +852,7 @@
                     var buttonsHtml = '<div class="custom-buttons mb-2">' +
                         '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                         '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
+                        '<button id="btnStandBy" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">STAND BY</button>' +
                         // '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
                         // '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
                         '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
@@ -868,6 +888,14 @@
 
                     $('#btnBloqueado').on('click', function() {
                         var newAjaxSource = '{{ route("datacoor.bloqueados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+
+                    $('#btnStandBy').on('click', function() {
+                        var newAjaxSource = '{{ route("data.standby") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
@@ -1169,7 +1197,7 @@
                                 required>
 
                         </div>
-                        
+
                         <div class="mb-3 w-100" title="Este campo es obligatorio">
                             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
                                     class="text-danger" style="font-size:20px;">*</span></label>

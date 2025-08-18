@@ -92,7 +92,7 @@ class DirectorController extends Controller
 
             if(empty($existingPerson)){
                 $nombre = $request->nombre;
-                
+
             }else{
                 //traer el ID
                 $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
@@ -356,6 +356,22 @@ class DirectorController extends Controller
         WHERE B.Estado = 7 AND B.NomAgencia = '$agenciaU'");
         return datatables()->of($solicitudes)->toJson();
     }
+
+    public function standby(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte,B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        JOIN documentosintesis D ON A.ID = D.ID_Persona
+        WHERE B.Estado = 8 AND B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
+
 
     public function actualizardetalle(Request $request, $id)
     {
