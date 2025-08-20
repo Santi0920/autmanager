@@ -352,17 +352,17 @@
 
 
 
-                            if (row.CodigoAutorizacion == 31 || row.CodigoAutorizacion == 34) {
+                            if (row.ID_Concepto == 31 || row.ID_Concepto == 34) {
                                 var inputs = inputcedula;
-                            } else if (row.CodigoAutorizacion == 42) {
+                            } else if (row.ID_Concepto == 42) {
                                 var inputs = inputcedula;
-                            } else if (row.CodigoAutorizacion == 32) {
+                            } else if (row.ID_Concepto == 32) {
                                 var inputs = inputcedula + inputcuenta;
-                            } else if (row.CodigoAutorizacion == 41) {
+                            } else if (row.ID_Concepto == 41) {
                                 var inputs = (inputcedula + inputconvencion);
-                            } else if (row.CodigoAutorizacion == 33) {
+                            } else if (row.ID_Concepto == 33) {
                                 var inputs = (inputcedula + inputnombre + inputcuenta);
-                            } else if (row.CodigoAutorizacion == 22) {
+                            } else if (row.ID_Concepto == 22) {
                                 var inputs =(`
                                     <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
                                     <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
@@ -482,8 +482,8 @@
                                                         </div>
                                                         <div
                                                         class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                        ${row.CodigoAutorizacion == "41" ?
-                                                        `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
+                                                        ${row.ID_Concepto == 41 ?
+                                                        `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:`${row.ID_Concepto}`
                                                         }
                                                         </div>
                                                     </div>
