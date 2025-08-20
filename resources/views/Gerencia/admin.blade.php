@@ -82,6 +82,7 @@
                             document.addEventListener('DOMContentLoaded', function () {
                                 const dynamicFields = document.getElementById('dynamicFields');
 
+
                                 // Campos para Director de Agencia
                                 const directorFields = `
                                     <label for="nombre" class="form-label fw-bold">Nombre del funcionario:</label>
@@ -176,40 +177,53 @@
 
                                 const conceptoFields = `
                                     <label for="concepto" class="form-label fw-bold">Nombre del concepto:</label>
-                                    <input type="text" id="concepto" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre del concepto" name="concepto">
+                                    <input type="text" id="concepto" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre del concepto" name="concepto" autocomplete="off" required>
                                     <div class="text-danger" id="error-concepto"></div>
 
-                                    <label for="area" class="form-label fw-bold">Area:</label>
-                                    <select id="area" class="form-select mb-3 fs-4 border-dark border-3" name="area">
+                                    <label for="area" class="form-label fw-bold">Área:</label>
+                                    <select id="area" class="form-select mb-3 fs-4 border-dark border-3" name="area" required>
                                         <option value="" disabled selected>Seleccione un área</option>
-
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->Areas }}">{{ $area->Areas }}</option>
+                                        @endforeach
+                                        <option value="OTRO">OTRO</option>
                                     </select>
+                                    <div class="text-danger" id="error-area"></div>
+
+                                    <!-- Input oculto que aparece solo si seleccionan OTRO -->
+                                    <div id="otro-container" class="mt-2" style="display:none;">
+                                        <label for="otroArea" class="form-label fw-bold">Ingrese el área:</label>
+                                        <input type="text" id="otroArea" name="otroArea" class="form-control fs-4 mb-3 border-dark border-3" placeholder="Ingrese el nombre del área" required>
+
+                                        <label for="codigoarea" class="form-label fw-bold">Ingrese el código identificativo del área:</label>
+                                        <input type="number" id="codigoarea" name="codigoarea" class="form-control fs-4 border-dark border-3" placeholder="Ingrese el código del área" required>
+                                    </div>
                                     <div class="text-danger" id="error-area"></div>
                                 `
 
-                                agenciaFields = `
-                                <label for="nombre" class="form-label fw-bold">Nombre de la agencia:</label>
-                                <input type="text" list="agenciaList" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre de la agencia" name="agencianombre">
-                                <div class="text-danger" id="error-nombre"></div>
-                                <datalist id="agenciaList">
-                                    @foreach ($agencias as $agencia)
-                                        <option value="{{$agencia->NameAgencia}}">
-                                    @endforeach
-                                </datalist>
 
 
-                                <label for="centrocosto" class="form-label fw-bold">Centro de costo de la agencia:</label>
-                                <input type="number" id="centrocosto" list="cuList" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la ubicación de la agencia" name="centrocosto">
-                                <div class="text-danger" id="error-centrocosto"></div>
-
-                                <datalist id="cuList">
+                                const agenciaFields = `
+                                    <label for="nombre" class="form-label fw-bold">Nombre de la agencia:</label>
+                                    <input type="text" list="agenciaList" id="nombre" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el nombre de la agencia" name="agencianombre">
+                                    <div class="text-danger" id="error-nombre"></div>
+                                    <datalist id="agenciaList">
                                         @foreach ($agencias as $agencia)
-                                            <option value="{{$agencia->NumAgencia}}">
+                                            <option value="{{$agencia->NameAgencia}}">
                                         @endforeach
-                                </datalist>
+                                    </datalist>
+
+
+                                    <label for="centrocosto" class="form-label fw-bold">Centro de costo de la agencia:</label>
+                                    <input type="number" id="centrocosto" list="cuList" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese la ubicación de la agencia" name="centrocosto">
+                                    <div class="text-danger" id="error-centrocosto"></div>
+
+                                    <datalist id="cuList">
+                                            @foreach ($agencias as $agencia)
+                                                <option value="{{$agencia->NumAgencia}}">
+                                            @endforeach
+                                    </datalist>
                                 `;
-
-
 
                                 // Actualizar campos dinámicos
                                 function updateFields(selectedId) {
@@ -218,19 +232,37 @@
                                     } else if (selectedId === 'crearCoord') {
                                         dynamicFields.innerHTML = coordinacionFields;
                                         initializeCoordinationLogic();
-
-
-
-
-
                                     } else if (selectedId === 'crearAgencia') {
                                         dynamicFields.innerHTML = agenciaFields;
                                     } else if (selectedId === 'crearJefatura') {
                                         dynamicFields.innerHTML = jefaturaFields;
                                     } else if (selectedId === 'crearConcepto') {
                                         dynamicFields.innerHTML = conceptoFields;
+
+                                    // 🔹 Aquí sí existen los elementos
+                                    const selectArea = document.getElementById('area');
+                                    const otroContainer = document.getElementById('otro-container');
+                                    const otroInput = document.getElementById('otroArea');
+                                    const codigoAreaInput = document.getElementById('codigoarea');
+
+                                    selectArea.addEventListener('change', function () {
+                                        if (this.value === 'OTRO') {
+                                            otroContainer.style.display = 'block';
+                                            otroInput.setAttribute('required', 'required');
+                                            codigoAreaInput.setAttribute('required', 'required');
+                                            otroInput.focus();
+                                        } else {
+                                            otroContainer.style.display = 'none';
+                                            otroInput.removeAttribute('required');
+                                            codigoAreaInput.removeAttribute('required');
+                                            codigoAreaInput.value = '';
+                                            otroInput.value = '';
+                                        }
+                                    });
+
                                     }
                                 }
+
 
                                 document.querySelectorAll('input[name="crear"]').forEach(radio => {
                                     radio.addEventListener('change', function () {
@@ -264,6 +296,8 @@
                                         event.preventDefault();
                                     }
                                 });
+
+
                             });
 
                             function initializeCoordinationLogic() {
@@ -319,10 +353,9 @@
 
 
 
+
+
                             }
-
-
-
                         </script>
                     </div>
 
@@ -397,11 +430,12 @@
                 <thead style="background-color: #646464;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
-                        <th scope="col" class="text-center">ROL / AGENCIA / CC</th>
-                        <th scope="col" class="text-center">NOMBRE</th>
+                        <th id="thRolAgencia" scope="col" class="text-center">ROL / AGENCIA / CC</th>
+                        <th id="thNombre" scope="col" class="text-center">NOMBRE</th>
                         <th scope="col" class="text-center">DETALLES</th>
                     </tr>
                 </thead>
+
                 <tbody class="table-group-divider">
 
                 </tbody>
@@ -424,9 +458,6 @@
 
         var table = $('#personas').DataTable({
             "ajax": "{{ route('datager.dagencia') }}",
-            "order": [
-                [1, 'asc']
-            ],
             scrollY: 420,
             "processing" : true,
             "columns": [{
@@ -454,6 +485,10 @@
                                 var agenciau = `<span class='text-danger fw-bold'>${row.NumAgencia}</span>`
                             }
 
+
+                            if(row.Concepto != null){
+                                var agenciau = `<span class='fw-bold'>${row.Concepto}</span>`
+                            }
                             return agenciau
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
@@ -472,6 +507,10 @@
 
                             if(row.NameAgencia != null){
                                 var ID = `<span class='fw-bold'>${row.NameAgencia}</span>`
+                            }
+
+                            if(row.Areas != null){
+                                var ID = `<span class='fw-bold'>${row.Areas}</span>`
                             }
 
                             return ID
@@ -496,29 +535,70 @@
                                 var url = $(this).data('url');
                                 var id = $(this).data('id');
                                 var name = $(this).data('name');
+                                var concepto = $(this).data('concepto');
+                                var area = $(this).data('area');
+
+
                                 if(row.NameAgencia != null){
                                     var name = $(this).data('name');
                                 }
 
+                                if(row.Concepto != null){
+                                    var name = $(this).data('concepto');
+                                    Swal.fire({
+                                        title: `¿Qué desea eliminar?`,
+                                        html: `
+                                            <p class="mb-3">Ha seleccionado: <strong>${name}</strong></p>
+                                            <p class="mb-3">Área: <strong>${area}</strong></p>
+                                            <p class="text-muted">Elija si quiere eliminar el concepto completo o solo el área asociada.</p>
+                                        `,
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        showDenyButton: true,
+                                        confirmButtonText: '🗑️ Eliminar concepto',
+                                        denyButtonText: '📂 Eliminar área de la lista',
+                                        cancelButtonText: 'Cancelar',
+                                        confirmButtonColor: '#d33',
+                                        denyButtonColor: '#f39c12',
+                                        cancelButtonColor: '#3085d6',
+                                        customClass: {
+                                            confirmButton: 'btn-confirm swal2-btn-lg',
+                                            denyButton: 'btn-deny swal2-btn-lg',
+                                            cancelButton: 'btn-cancel swal2-btn-lg'
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            // 🔴 Ruta para eliminar concepto (usuario)
+                                            window.location.href = `admin/eliminar/${id}`;
+                                        } else if (result.isDenied) {
+                                            // 🟠 Ruta para eliminar área
+                                            window.location.href = `admin/eliminararea/${id}/${area}`;
+                                        }
+                                    });
 
-                                Swal.fire({
-                                    title: `¿Está seguro de eliminar a ${name}?`,
-                                    text: "Esta acción no se puede deshacer.",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#d33',
-                                    cancelButtonColor: '#3085d6',
-                                    confirmButtonText: 'Sí, eliminar',
-                                    cancelButtonText: 'Cancelar',
-                                    customClass: {
-                                        confirmButton: 'btn-confirm',
-                                        cancelButton: 'btn-cancel'
-                                    }
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = url;
-                                    }
-                                });
+
+                                }else{
+
+                                        Swal.fire({
+                                        title: `¿Está seguro de eliminar a ${name}?`,
+                                        text: "Esta acción no se puede deshacer.",
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#d33',
+                                        cancelButtonColor: '#3085d6',
+                                        confirmButtonText: 'Sí, eliminar',
+                                        cancelButtonText: 'Cancelar',
+                                        customClass: {
+                                            confirmButton: 'btn-confirm',
+                                            cancelButton: 'btn-cancel'
+                                        }
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = url;
+                                        }
+                                    });
+                                }
+
                             });
                             var id = row.id;
                             var name = row.name;
@@ -527,10 +607,13 @@
                                 id = row.NameAgencia
                             }
 
+                            if(row.Concepto != null){
+                                name = row.Concepto
+                                id = row.ConceptoID
+                            }
+
 
                             var url = `admin/eliminar/${id}`;
-
-
 
 
 
@@ -545,7 +628,13 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-3 fw-bold" id="exampleModalLabel_${id}">
-                                                    Información ${row.NameAgencia != null ? `Agencia`:`Usuario`} (<span class="text-primary">${row.NameAgencia != null ? `${row.NameAgencia}` : `${row.name}`}</span>)
+                                                    Información ${row.Concepto != null
+                                                    ? `Concepto`
+                                                    : (row.NameAgencia != null ? `Agencia` : `Usuario`)}
+
+                                                    (<span class="text-primary">${row.Concepto != null
+                                                    ? `${row.Areas}`
+                                                    : (row.NameAgencia != null ? `${row.NameAgencia}` : `${row.name}`)}</span>)
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
@@ -573,12 +662,43 @@
                                                                 </div>
                                                             `
 
-                                                            :
-
-
-
-
+                                                            : row.Concepto != null ?
                                                             `
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <label for="concepto" class="form-label fw-bold fs-4">Concepto:</label>
+                                                                    <textarea id="concepto" class="form-control mb-3 fs-4 border-dark border-3"
+                                                                            placeholder="Ingrese el concepto" autocomplete="off"
+                                                                            name="concepto">${row.Concepto}</textarea>
+                                                                    <div class="text-danger" id="error-concepto"></div>
+
+                                                                    <input type="hidden" name="id" value="${row.ConceptoID}">
+
+                                                                    <label for="area" class="form-label fw-bold fs-4">Área:</label>
+                                                                    <select id="area_${id}" class="form-select mb-3 fs-4 border-dark border-3" name="area">
+                                                                        <option value="${row.Areas}" selected disabled>${row.Areas}</option>
+                                                                        @foreach ($areas as $area)
+                                                                            <option value="{{ $area->Areas }}">{{ $area->Areas }}</option>
+                                                                        @endforeach
+                                                                        <option value="OTRO">OTRO</option>
+                                                                    </select>
+
+                                                                    <div id="otro-container_${id}" class="mt-2" style="display:none;">
+                                                                        <label for="otroArea_${id}" class="form-label fw-bold fs-4">Ingrese el área:</label>
+                                                                        <input type="text" id="otroArea_${id}" name="otroArea" class="form-control fs-4 mb-3 border-dark border-3" placeholder="Ingrese el nombre del área">
+
+                                                                        <label for="codigoarea_${id}" class="form-label fw-bold fs-4">Ingrese el código identificativo del área:</label>
+                                                                        <input type="number" id="codigoarea_${id}" name="codigoarea" class="form-control fs-4 border-dark border-3" placeholder="Ingrese el código del área">
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+
+
+
+
+                                                            ` : `
                                                                 <div class="row">
                                                                     <div class="col-md-6">
                                                                         <label for="nombre" class="form-label fw-bold fs-4">Nombre:</label>
@@ -729,11 +849,40 @@
 
 
 
-                                <a type="button" class="btn btn-outline-danger delete-btn" data-url="${url}" data-id="${id}" data-name="${name}">
+                                <a type="button"
+                                    class="btn btn-outline-danger delete-btn"
+                                    data-url="${url}"
+                                    data-id="${id}"
+                                    data-name="${name}"
+                                    ${row.Concepto != null ? `data-concepto="${row.Concepto}" data-area="${row.Areas}"` : ``}>
                                     <i class="fa-solid fa-trash fs-5"></i>
                                 </a>
+
                             `;
 
+
+                            document.addEventListener('change', function (e) {
+                                if (e.target && e.target.id.startsWith("area_")) {
+                                    let id = e.target.id.split("_")[1]; // extrae el ID dinámico
+                                    let selectArea = document.getElementById(`area_${id}`);
+                                    let otroContainer = document.getElementById(`otro-container_${id}`);
+                                    let otroInput = document.getElementById(`otroArea_${id}`);
+                                    let codigoAreaInput = document.getElementById(`codigoarea_${id}`);
+
+                                    if (selectArea.value === 'OTRO') {
+                                        otroContainer.style.display = 'block';
+                                        otroInput.setAttribute('required', 'required');
+                                        codigoAreaInput.setAttribute('required', 'required');
+                                        otroInput.focus();
+                                    } else {
+                                        otroContainer.style.display = 'none';
+                                        otroInput.removeAttribute('required');
+                                        codigoAreaInput.removeAttribute('required');
+                                        codigoAreaInput.value = '';
+                                        otroInput.value = '';
+                                    }
+                                }
+                            });
                             return ModalInfo;
 
                         },
@@ -783,9 +932,13 @@
                     '<button id="btnCoordinaciones" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Coordinaciones">Coordinaciones</button>' +
                     '<button id="btnJefaturas" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Jefaturas">Jefaturas</button>' +
                     '<button id="btnAgencias" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Agencias">Agencias</button>' +
+                    '<button id="btnConceptos" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Conceptos">Conceptos</button>' +
                 '</div>';
 
             $(buttonsHtml).prependTo('#personas_filter');
+
+
+
                 $('#btnDAgencia').on('click', function() {
                     var newAjaxSource = '{{ route("datager.dagencia") }}';
 
@@ -810,6 +963,25 @@
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
+
+
+                $('#btnConceptos').on('click', function() {
+                    $('#thRolAgencia').text('CONCEPTO');
+                    $('#thNombre').text('AREA');
+
+                    var newAjaxSource = '{{ route("conceptos") }}';
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                });
+
+                $('#btnDAgencia, #btnCoordinaciones, #btnJefaturas, #btnAgencias').on('click', function() {
+                    // vuelve a su estado normal
+                    $('#thRolAgencia').text('ROL / AGENCIA / CC');
+                    $('#thNombre').text('NOMBRE');
+                });
+
+
+
+
                 const buttons = document.querySelectorAll('.custom-buttons button');
 
                 buttons.forEach(button => {

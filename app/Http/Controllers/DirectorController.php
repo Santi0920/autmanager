@@ -18,9 +18,17 @@ class DirectorController extends Controller
     {
 
         $agenciaU = session('agenciau');
-        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
-        return view('Director/solicitudes', ['user' => $user]);
+        // Traemos todo ordenado
+        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY No ASC, Letra ASC");
+
+        // Agrupar por No
+        $grupos = [];
+        foreach ($user as $u) {
+            $grupos[$u->No][] = $u;
+        }
+
+        return view('Director/solicitudes', ['grupos' => $grupos, 'user' => $user]);
     }
 
 
@@ -46,20 +54,11 @@ class DirectorController extends Controller
         $nombreU = session('name');
         $rol = session('rol');
 
-        // Número y letra del concepto
-        if (str_contains($tipoautorizacion, '1100')||str_contains($tipoautorizacion, '1200')||str_contains($tipoautorizacion, '1300')||str_contains($tipoautorizacion, '1400')||str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '1600') || str_contains($tipoautorizacion, '1700') || str_contains($tipoautorizacion, '1800') ||str_contains($tipoautorizacion, '1900') || str_contains($tipoautorizacion, '2000') || str_contains($tipoautorizacion, '2100') ||str_contains($tipoautorizacion, '2200') || str_contains($tipoautorizacion, '2150') ||  str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300') ||str_contains($tipoautorizacion, '2400')|| str_contains($tipoautorizacion, '2500') || str_contains($tipoautorizacion, '2600') || str_contains($tipoautorizacion, '2700')){
-            // Número y letra del concepto
-            $No = substr($tipoautorizacion, 0, 4);
-            $letra = substr($tipoautorizacion, 4, 3); // Cambiado a 1 para obtener solo una letra
-        } else {
-            // Número y letra del concepto
-            $No = substr($tipoautorizacion, 0, 2);
-            $letra = substr($tipoautorizacion, 2, 3); // Cambiado a 1 para obtener solo una letra
-        }
+        $No = substr($tipoautorizacion, 0, 2);
 
 
         //concepto traer el id
-        $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ? AND Letra = ?', [$No, $letra]);
+        $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ?', [$No]);
         $idconcepto = $existingConcepto[0]->ID;
 
 

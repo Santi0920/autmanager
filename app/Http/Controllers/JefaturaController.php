@@ -17,12 +17,19 @@ class JefaturaController extends Controller
     {
 
         $agenciaU = session('agenciau');
-        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY ID ASC");
 
-        return view('Jefatura/solicitudesjefatura', ['user' => $user]);
+        // Traemos todo ordenado
+        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY No ASC, Letra ASC");
 
+        // Agrupar por No
+        $grupos = [];
+        foreach ($user as $u) {
+            $grupos[$u->No][] = $u;
+        }
 
+        return view('Jefatura/solicitudesjefatura', ['grupos' => $grupos, 'user' => $user]);
     }
+
 
 
     public function solicitarAutorizacion(Request $request)

@@ -239,6 +239,8 @@ Route::middleware(['session.expired'])->group(function () {
 
         Route::get('agencias/datatable', [GerenciaController::class, 'agenciastabla'])->name('agenciastabla');
 
+        Route::get('conceptos/datatable', [GerenciaController::class, 'conceptos'])->name('conceptos');
+
 
         Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
         ->name('cargarinfo');
@@ -251,6 +253,9 @@ Route::middleware(['session.expired'])->group(function () {
 
         Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
         ->name('eliminarusuario');
+
+                Route::get('/admin/eliminararea/{id}/{area}', [GerenciaController::class, 'eliminarConcepto'])
+        ->name('eliminararea');
 
         Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
 

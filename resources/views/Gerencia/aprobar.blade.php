@@ -777,12 +777,16 @@
                     '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                     `
                     <div class="dropdown d-inline" title="Solicitudes de jefaturas">
-                        <button class="btn btn-dark fw-bold dropdown-toggle mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-dark fw-bold dropdown-toggle mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1"
+                                type="button"
+                                id="dropdownMenuButton"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
                             STAND BY
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li><a class="dropdown-item fw-bold" href="#" id="btnStandBy">VER</a></li>
-                            <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}">APROBAR TODOS</a></li>
+                            <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}" id="btnAprobarTodos">APROBAR TODOS</a></li>
                         </ul>
                     </div>
                     ` +
@@ -840,6 +844,34 @@
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
+
+                // Evitar que aprueba directamente
+                document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
+                    e.preventDefault(); // Evita que se vaya directo al enlace
+
+                    let url = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: '¿Está seguro?',
+                        html: '<span style="font-size:21px;">¿Desea aprobar todas las solicitudes con estado <b>STAND BY</b>?</span>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#198754',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, aprobar',
+                        cancelButtonText: 'Cancelar',
+                        customClass: {
+                            confirmButton: 'swal2-confirm btn-lg custom-btn',
+                            cancelButton: 'swal2-cancel btn-lg custom-btn'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url; // Redirige a la ruta
+                        }
+                    });
+                });
+
+
 
                 },
                 // responsive: "true",
@@ -952,6 +984,7 @@
                     e); // Llamar a la función para manejar la actualización de la autorización
             }
         });
+
     </script>
 
 

@@ -1117,33 +1117,32 @@ class GerenciaController extends Controller
         ]);
     }
 
+public function dagencia(Request $request)
+{
+    if (session('email') == null) {
+        return redirect()->route('login');
+    }
 
-    public function dagencia(Request $request)
-    {
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
+    $agenciaU = session('agenciau');
 
+    $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
 
-        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
+    $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
+    $conceptos = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Areas ASC");
 
-        $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
-
-
-        return datatables()->of($solicitudes)
+    return datatables()->of($solicitudes)
         ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
             foreach ($agenciasActivas as $agencia) {
                 if ($row->agenciau == $agencia->NameAgencia) {
                     return $agencia->NumAgencia;
                 }
             }
-            return '';
+            return ''; // por si no encuentra coincidencia
         })
         ->toJson();
+}
 
-    }
 
 
     public function coordinaciones(Request $request)
@@ -1178,6 +1177,26 @@ class GerenciaController extends Controller
         return datatables()->of($solicitudes)->toJson();
     }
 
+    public function conceptos(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+
+        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+        $solicitudes = DB::select("
+            SELECT ID as ConceptoID, Concepto, Areas, Activo
+            FROM concepto_autorizaciones
+            WHERE Activo = 1
+            ORDER BY ID ASC
+        ");
+
+
+        return datatables()->of($solicitudes)->toJson();
+    }
+
     public function agenciastabla(Request $request)
     {
         if (session('email') == null) {
@@ -1190,7 +1209,7 @@ class GerenciaController extends Controller
         return datatables()->of($solicitudes)->toJson();
     }
 
-
+    //compact
     public function cargaragencias(Request $request)
     {
         $cargos = DB::select("SELECT DISTINCT id,agenciau,name FROM users WHERE rol = 'Consultante' ORDER BY name ASC");
@@ -1200,7 +1219,8 @@ class GerenciaController extends Controller
         $jefaturas = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Jefatura'");
         $codigos = DB::select("SELECT DISTINCT codigo FROM users WHERE rol = 'Jefatura'");
         $coordinaciones = DB::select("SELECT DISTINCT agenciau FROM users WHERE rol = 'Coordinacion'");
-        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones, 'codigos' => $codigos]);
+        $areas = DB::select("SELECT DISTINCT Areas FROM concepto_autorizaciones ORDER BY Areas ASC");
+        return view('Gerencia/admin', ['cargos' => $cargos, 'agencias' => $agencias, 'jefaturas' => $jefaturas, 'coordinaciones' => $coordinaciones, 'codigos' => $codigos, 'areas' => $areas]);
 
     }
 
@@ -1282,6 +1302,43 @@ class GerenciaController extends Controller
                 'NumAgencia' => $request->centrocosto,
             ]);
             return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente la agencia <br>(<span class='badge bg-primary fw-bold'>".$request->agencianombre." - ".$request->centrocosto."</span>).</span>");
+        }else if($tipocreacion == "crearConcepto"){
+            $nombreConcepto = $request->concepto;
+            $area = $request->area;
+            $codigoArea = $request->codigoarea;
+
+            $existeConcepto = DB::table('concepto_autorizaciones')
+                ->where('Areas', $area)
+                ->get();
+
+            if ($codigoArea != null){
+                $existeCodigoArea = DB::table('concepto_autorizaciones')
+                    ->where('No', $codigoArea)
+                    ->get();
+
+                if ($existeCodigoArea->isNotEmpty()) {
+                    return back()->with("incorrecto", "<span class='fs-4'>Ya existe un <b>ÁREA</b> con el código <b>" . $codigoArea . "</b> vinculado a: <b>" . $existeCodigoArea[0]->Areas . "</b></span>");
+                }
+            }
+
+
+            if ($existeConcepto->isNotEmpty()) {
+                $codigoArea = $existeConcepto[0]->No;
+            }else{
+                $codigoArea = 00;
+            }
+
+            if($area == 'OTRO'){
+                $area = $request->otroArea;
+                $codigoArea = $request->codigoarea;
+            }
+
+            $id_insertado = DB::table('concepto_autorizaciones')->insertGetId([
+                'Concepto' => $nombreConcepto,
+                'Areas' => $area,
+                'No' => $codigoArea,
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se creo satisfactoriamente el concepto <br>(<span class='badge bg-primary fw-bold'>".$nombreConcepto." - ".$area."</span>).</span>");
         }
 
 
@@ -1308,11 +1365,21 @@ class GerenciaController extends Controller
             $ip
         ]);
         $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->count();
+        $existeConcepto = DB::table('concepto_autorizaciones')->where('ID', $id)->count();
 
         $usuarioRol = DB::select("SELECT agenciau, name from users WHERE id = ?",[$id]);
 
+        if($existeConcepto>0){
+            $existeConcepto = DB::table('concepto_autorizaciones')->where('ID', $id)->get();
 
-        if($existeAgencia>0){
+
+            DB::table('concepto_autorizaciones')
+                ->where('ID', $id)
+                ->update([
+                    'activo' => 0
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el concepto (<span class='fw-bold'>".$id."</span>).</span>");
+        }else if($existeAgencia>0){
             $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->get();
             $idagencia = $existeAgencia[0]->NumAgencia;
 
@@ -1375,6 +1442,35 @@ class GerenciaController extends Controller
 
     }
 
+    public function eliminarConcepto($id, $area)
+    {
+        $nombreauditoria = session('name');
+        $rol = session('rol');
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = session('agenciau');
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeEliminoConceptoenelpaneladmin', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id,
+            null,
+            $ip
+        ]);
+
+
+        DB::table('concepto_autorizaciones')
+            ->where('Areas', $area)
+            ->update([
+                'Areas' => 'GLOBAL',
+                'No' => 00,
+            ]);
+        return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el ÁREA (<span class='fw-bold'>".$area."</span>).</span>");
+    }
+
     public function guardarcoordinacion(Request $request)
     {
         $integrantesJson = json_encode($request->members);
@@ -1428,45 +1524,65 @@ class GerenciaController extends Controller
         $agencianame = $request->agencianame;
         $centrocosto = $request->cc;
         $id = $request->id;
+        $nombreConcepto = $request->concepto;
+        $area = $request->area;
+        $codigoArea = $request->codigoarea;
 
         $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
-        // // Números en formato de cadenas para cada coordinación
-        // $selectedPeople1 = ['43', '76', '35', '34', '36', '37', '38', '40', '41', '87', '93', '96'];
-        // $selectedPeople2 = ['86', '33', '39', '46', '70', '77', '78', '80', '88', '92', '98'];
-        // $selectedPeople3 = ['73', '32', '42', '47', '81', '82', '83', '85', '90', '94'];
-        // $selectedPeople4 = ['44', '13', '45', '48', '49', '74', '75', '84', '89', '95', '97'];
 
-        // // Actualizar para "Coordinacion 1"
-        // DB::table('users')
-        //     ->where('agenciau', 'Coordinacion 1')
-        //     ->update([
-        //         'agencias_id' => json_encode($selectedPeople1)
-        //     ]);
-
-        // // Actualizar para "Coordinacion 2"
-        // DB::table('users')
-        //     ->where('agenciau', 'Coordinacion 2')
-        //     ->update([
-        //         'agencias_id' => json_encode($selectedPeople2)
-        //     ]);
-
-        // // Actualizar para "Coordinacion 3"
-        // DB::table('users')
-        //     ->where('agenciau', 'Coordinacion 3')
-        //     ->update([
-        //         'agencias_id' => json_encode($selectedPeople3)
-        //     ]);
-
-        // // Actualizar para "Coordinacion 4"
-        // DB::table('users')
-        //     ->where('agenciau', 'Coordinacion 4')
-        //     ->update([
-        //         'agencias_id' => json_encode($selectedPeople4)
-        //     ]);
+            if ($area != null || $concepto != null) {
+                $consultaConcepto = DB::table("concepto_autorizaciones")
+                ->where("Concepto", $nombreConcepto)
+                ->where("Areas", $area)->count();
+                if ($consultaConcepto > 0) {
+                    return back()->with("incorrecto", "<span class='fs-4'>El concepto <b>" . $concepto . "</b> ya existe!</span>");
+                } else {
 
 
+                        //CONTINUAR Y LUEGO FALTA CLICK CUANDO LE DEL SE VAYA A LA VALIDACION
+                            $existeConcepto = DB::table('concepto_autorizaciones')
+                                ->where('Areas', $area)
+                                ->get();
 
-        if($agencianame != null || $centrocosto != null){
+
+                            if ($codigoArea != null){
+                                $existeCodigoArea = DB::table('concepto_autorizaciones')
+                                    ->where('No', $codigoArea)
+                                    ->get();
+
+                                if ($existeCodigoArea->isNotEmpty()) {
+                                    return back()->with("incorrecto", "<span class='fs-4'>Ya existe un <b>ÁREA</b> con el código <b>" . $codigoArea . "</b> vinculado a: <b>" . $existeCodigoArea[0]->Areas . "</b></span>");
+                                }
+                            }
+
+
+                            if ($existeConcepto->isNotEmpty()) {
+                                $codigoArea = $existeConcepto[0]->No;
+                            }else{
+                                $codigoArea = 00;
+                            }
+
+                            if($area == 'OTRO'){
+                                $area = $request->otroArea;
+                                $codigoArea = $request->codigoarea;
+                            }
+
+                            $id_insertado = DB::table('concepto_autorizaciones')->insertGetId([
+                                'Concepto' => $nombreConcepto,
+                                'Areas' => $area,
+                                'No' => $codigoArea,
+                            ]);
+
+                            DB::table('concepto_autorizaciones')
+                            ->where('ID', $id)
+                            ->update([
+                            'Concepto' => $nombreConcepto,
+                            'Areas' => $area,
+                            'No' => $codigoArea,
+                    ]);
+                    return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente el concepto(<b>".$nombreConcepto."</b>).</span>");
+                }
+            }else if($agencianame != null || $centrocosto != null){
             $consultaagencia = DB::table("agencias")->where("NameAgencia", $agencianame)->where("activo", 1)->count();
             $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $centrocosto)->where("activo", 1)->count();
 

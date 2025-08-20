@@ -12,13 +12,22 @@ use Illuminate\Support\Facades\Mail;
 
 class CoordinacionController extends Controller
 {
+
     public function data1()
     {
 
         $agenciaU = session('agenciau');
-        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
 
-        return view('Coordinacion/validarautorizacion', ['user' => $user]);
+        // Traemos todo ordenado
+        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY No ASC, Letra ASC");
+
+        // Agrupar por No
+        $grupos = [];
+        foreach ($user as $u) {
+            $grupos[$u->No][] = $u;
+        }
+
+        return view('Coordinacion/validarautorizacion', ['grupos' => $grupos, 'user' => $user]);
     }
 
 
