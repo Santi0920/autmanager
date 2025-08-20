@@ -54,12 +54,13 @@ class DirectorController extends Controller
         $nombreU = session('name');
         $rol = session('rol');
 
-        $No = substr($tipoautorizacion, 0, 2);
+
 
 
         //concepto traer el id
-        $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ?', [$No]);
+        $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
         $idconcepto = $existingConcepto[0]->ID;
+
 
 
         //si es igual a director
@@ -84,7 +85,7 @@ class DirectorController extends Controller
         }
 
         //DISPOSICIONES
-        if($tipoautorizacion == '11K'){
+        if($tipoautorizacion == '41'){
 
             $cuenta = $request->cuenta;
             $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
@@ -105,7 +106,7 @@ class DirectorController extends Controller
             $convencion = $request->convencion;
 
             //< 1 AÑO
-        }else if($tipoautorizacion == '10D'){
+        }else if($tipoautorizacion == '22'){
             //NOMBRE EMPRESA
             $nombre = "COOPSERP";
             $cedula = "805.004.034";

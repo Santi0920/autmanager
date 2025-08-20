@@ -15,7 +15,7 @@
             </option>
 
             @foreach ($items as $autorizacion)
-                <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                <option class="fw-semibold" value="{{ $autorizacion->ID }}">
                     {{ $autorizacion->Concepto }}
                 </option>
             @endforeach

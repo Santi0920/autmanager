@@ -419,60 +419,52 @@
                                                 <span class="h1 fw-bold mb-0">S<br><span class="fs-5 fw-normal">SOLICITUD<span></span>
 
                                             </div>
-
                                             <div class="col-sm-12 col-md-12 col-lg-10">
-                                                <div class="row g-0 justify-content-start">
-                                                     <div class="row g-0  justify-content-center">
+                                                <!-- Fila principal que actúa como botón -->
+                                                <div class="row g-0 justify-content-center" data-bs-toggle="collapse" data-bs-target="#secondaryData_${id}" style="cursor:pointer;">
                                                     <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b></span>
+                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b><br>👉(Click para mostrar/ocultar)👈</span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                         <span class="mb-0 fs-5">${row.Fecha}</span>
                                                     </div>
-                                                    </div>
                                                 </div>
-                                                <div class="row g-0 row-cols-2 d-flex justify-content-start">
-                                                    <div
-                                                    class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                    <span class="fs-5">${row.Concepto} -
-                                                                    @include('layouts.optionvercodigo')</span>
-                                                    </div>
-                                                    <div
-                                                    class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                    ${row.CodigoAutorizacion == "11K" ?
-                                                    `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
-                                                    }
-                                                    </div>
-                                                </div>
-                                                <div class="row g-0">
-                                                    <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                        <span class="fs-5">${cedulaFormateada} -
-                                                            ${visualizarnit ?
-                                                                `${row.CuentaAsociado == null ?` N/A`:` ${row.CuentaAsociado}`} `
-                                                                : ` ${row.CuentaAsociado == null ?` N/A`:``} `}- ${row.NombrePersona}
-                                                                ${(row.Score >= 650 ?
-                                                                    `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                    (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                )
-                                                                }
 
+                                                <!-- Datos secundarios colapsables -->
+                                                <div class="collapse" id="secondaryData_${id}">
+                                                    <div class="row g-0 row-cols-2 d-flex justify-content-start">
+                                                        <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
+                                                            <span class="fs-5">${row.Concepto} - @include('layouts.optionvercodigo')</span>
+                                                        </div>
+                                                        <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
+                                                            ${row.CodigoAutorizacion == "11K" ? `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>` : ``}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row g-0">
+                                                        <div class="col-md-12 d-flex justify-content-start border p-2">
+                                                            <span class="fs-5">${cedulaFormateada} -
+                                                                ${visualizarnit ? `${row.CuentaAsociado == null ? `N/A` : ` ${row.CuentaAsociado}`} ` : `${row.CuentaAsociado == null ? `N/A` : ``}`} - ${row.NombrePersona}
+                                                                ${(row.Score >= 650 ? `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` :
+                                                                `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`))}
                                                             </span>
-
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="row g-0">
-                                                    <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+
+                                                    <div class="row g-0">
+                                                        <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                             <span class="mb-0">${row.Detalle}</span>
                                                         </div>
-                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank"
-                                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
-                                                                <span class="h1 fw-bold mb-0">
-                                                                    <img src="img/pdf.png" style="height: 4.5rem">
-                                                                </span>
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank" class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
+                                                            <span class="h1 fw-bold mb-0">
+                                                                <img src="img/pdf.png" style="height: 4.5rem">
+                                                            </span>
                                                         </a>
-
+                                                    </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                         <div class=" row g-0 text-center ">
                                             ${(row.Estado ==6 && row.Validacion == 1) || row.Coordinacion == "C#" ?

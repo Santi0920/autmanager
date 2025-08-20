@@ -406,17 +406,17 @@
 
 
 
-                            if (row.CodigoAutorizacion == "11A" || row.CodigoAutorizacion == "11D") {
+                            if (row.CodigoAutorizacion == 31 || row.CodigoAutorizacion == 34) {
                                 var inputs = inputcedula;
-                            } else if (row.CodigoAutorizacion == "11L") {
+                            } else if (row.CodigoAutorizacion == 42) {
                                 var inputs = inputcedula;
-                            } else if (row.CodigoAutorizacion == "11B") {
+                            } else if (row.CodigoAutorizacion == 32) {
                                 var inputs = inputcedula + inputcuenta;
-                            } else if (row.CodigoAutorizacion == "11K") {
+                            } else if (row.CodigoAutorizacion == 41) {
                                 var inputs = (inputcedula + inputconvencion);
-                            } else if (row.CodigoAutorizacion == "11C") {
+                            } else if (row.CodigoAutorizacion == 33) {
                                 var inputs = (inputcedula + inputnombre + inputcuenta);
-                            } else if (row.CodigoAutorizacion == "10D") {
+                            } else if (row.CodigoAutorizacion == 22) {
                                 var inputs =(`
                                     <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
                                     <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
@@ -1143,17 +1143,17 @@
                     </div>
                 `
 
-                if (valorSeleccionado == "11A" || valorSeleccionado == "11D") {
+                if (valorSeleccionado == 31 || valorSeleccionado == 34) {
                     $("#inputs" + id).html(inputcedula);
-                } else if (valorSeleccionado == "11L") {
+                } else if (valorSeleccionado == 42) {
                     $("#inputs" + id).html(inputcedula);
-                } else if (valorSeleccionado == "11B") {
+                } else if (valorSeleccionado == 32) {
                     $("#inputs" + id).html(inputcedula + inputcuenta);
-                } else if (valorSeleccionado == "11K") {
+                } else if (valorSeleccionado == 41) {
                     $("#inputs" + id).html(inputcedula + inputconvencion);
-                } else if (valorSeleccionado == "11C") {
+                } else if (valorSeleccionado == 33) {
                     $("#inputs" + id).html(inputcedula + inputnombre + inputcuenta);
-                } else if (valorSeleccionado == "10D") {
+                } else if (valorSeleccionado == 22) {
                     $("#inputs" + id).html(`
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
