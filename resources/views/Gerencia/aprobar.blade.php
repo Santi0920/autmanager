@@ -420,17 +420,22 @@
 
                                             </div>
                                             <div class="col-sm-12 col-md-12 col-lg-10">
-                                                <!-- Fila principal que actúa como botón -->
-                                                <div class="row g-0 justify-content-center" data-bs-toggle="collapse" data-bs-target="#secondaryData_${id}" style="cursor:pointer;">
+                                                <!-- Fila principal -->
+                                                <div class="row g-0 justify-content-center hover-trigger"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#secondaryData_${id}"
+                                                    style="cursor:pointer;">
                                                     <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b><br>👉(Click para mostrar/ocultar)👈</span>
+                                                        <span class="fs-5">
+                                                            ${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}<br>👉(Click para mostrar)👈</b>
+                                                        </span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                         <span class="mb-0 fs-5">${row.Fecha}</span>
                                                     </div>
                                                 </div>
 
-                                                <!-- Datos secundarios colapsables -->
+                                                <!-- Contenido colapsable -->
                                                 <div class="collapse" id="secondaryData_${id}">
                                                     <div class="row g-0 row-cols-2 d-flex justify-content-start">
                                                         <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
@@ -837,6 +842,21 @@
 
                 });
 
+                document.querySelectorAll('.hover-trigger').forEach(el => {
+                    const targetId = el.getAttribute('data-bs-target');
+                    const target = document.querySelector(targetId);
+
+                    el.addEventListener('mouseenter', () => {
+                        const collapse = new bootstrap.Collapse(target, { show: true, toggle: false });
+                        collapse.show();
+                    });
+
+                    el.addEventListener('mouseleave', () => {
+                        const collapse = new bootstrap.Collapse(target, { show: false, toggle: false });
+                        collapse.hide();
+                    });
+                });
+
                 // Evitar que aprueba directamente
                 document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
                     e.preventDefault(); // Evita que se vaya directo al enlace
@@ -976,6 +996,7 @@
                     e); // Llamar a la función para manejar la actualización de la autorización
             }
         });
+
 
     </script>
 
