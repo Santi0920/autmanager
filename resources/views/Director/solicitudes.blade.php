@@ -1042,7 +1042,7 @@ var valorSeleccionado = $(this).val();
 console.log("Valor seleccionado:", valorSeleccionado);
 
 
-if (valorSeleccionado == "11K") {
+if (valorSeleccionado == "41") {
     $("#cuerpo").html(`
         <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
             <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
@@ -1093,7 +1093,7 @@ if (valorSeleccionado == "11K") {
                 style="background-color: #646464;" >SOLICITAR</button>
         </div>
         `);
-}else if (valorSeleccionado == "10D") {
+}else if (valorSeleccionado == "22") {
     $("#cuerpo").html(`
         <div class="mb-3 w-100" title="Este campo es obligatorio">
             <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
