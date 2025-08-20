@@ -842,20 +842,7 @@
 
                 });
 
-                document.querySelectorAll('.hover-trigger').forEach(el => {
-                    const targetId = el.getAttribute('data-bs-target');
-                    const target = document.querySelector(targetId);
 
-                    el.addEventListener('mouseenter', () => {
-                        const collapse = new bootstrap.Collapse(target, { show: true, toggle: false });
-                        collapse.show();
-                    });
-
-                    el.addEventListener('mouseleave', () => {
-                        const collapse = new bootstrap.Collapse(target, { show: false, toggle: false });
-                        collapse.hide();
-                    });
-                });
 
                 // Evitar que aprueba directamente
                 document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
