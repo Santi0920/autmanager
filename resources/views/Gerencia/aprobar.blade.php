@@ -442,7 +442,7 @@
                                                             <span class="fs-5">${row.Concepto} - @include('layouts.optionvercodigo')</span>
                                                         </div>
                                                         <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                            ${row.ID_Concepto == "41" ? `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>` : ``}
+                                                            ${row.ID_Concepto == 41 ? `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>` : `junior es troll`}
                                                         </div>
                                                     </div>
 
