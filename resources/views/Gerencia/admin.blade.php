@@ -676,7 +676,7 @@
 
                                                                     <label for="area" class="form-label fw-bold fs-4">Área:</label>
                                                                     <select id="area_${id}" class="form-select mb-3 fs-4 border-dark border-3" name="area">
-                                                                        <option value="${row.Areas}" selected disabled>${row.Areas}</option>
+                                                                        <option value="${row.Areas}" selected>${row.Areas}</option>
                                                                         @foreach ($areas as $area)
                                                                             <option value="{{ $area->Areas }}">{{ $area->Areas }}</option>
                                                                         @endforeach

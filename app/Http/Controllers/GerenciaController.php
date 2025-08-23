@@ -1531,12 +1531,13 @@ public function dagencia(Request $request)
         $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
 
             if ($area != null || $nombreConcepto != null) {
-                $consultaConcepto = DB::table("concepto_autorizaciones")
-                ->where("Concepto", $nombreConcepto)
-                ->where("Areas", $area)->count();
-                if ($consultaConcepto > 0) {
-                    return back()->with("incorrecto", "<span class='fs-4'>El concepto <b>" . $concepto . "</b> ya existe!</span>");
-                } else {
+                        $consultaConcepto = DB::table("concepto_autorizaciones")
+                            ->where("Concepto", $nombreConcepto)
+                            ->first();
+
+                        if ($consultaConcepto && $nombreConcepto != $consultaConcepto->Concepto) {
+                            return back()->with("incorrecto", "<span class='fs-4'>El concepto <b>" . $nombreConcepto . "</b> ya existe!</span>");
+                        } else {
 
 
                         //CONTINUAR Y LUEGO FALTA CLICK CUANDO LE DEL SE VAYA A LA VALIDACION
@@ -1567,11 +1568,7 @@ public function dagencia(Request $request)
                                 $codigoArea = $request->codigoarea;
                             }
 
-                            $id_insertado = DB::table('concepto_autorizaciones')->insertGetId([
-                                'Concepto' => $nombreConcepto,
-                                'Areas' => $area,
-                                'No' => $codigoArea,
-                            ]);
+
 
                             DB::table('concepto_autorizaciones')
                             ->where('ID', $id)

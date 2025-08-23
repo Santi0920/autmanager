@@ -395,6 +395,7 @@ class DirectorController extends Controller
                 ->where('ID', $id)
                 ->update(['DocumentoSoporte' => $filename]);
         }
+
         $tipoautorizacion = $request->CodigoAutorizacion;
         $convencion = null;
         $cuenta = null;
@@ -403,133 +404,12 @@ class DirectorController extends Controller
 
 
 
-        // Número y letra del concepto
-        if (str_contains($tipoautorizacion, '1100')||str_contains($tipoautorizacion, '1200')||str_contains($tipoautorizacion, '1300')||str_contains($tipoautorizacion, '1400')||str_contains($tipoautorizacion, '1500') || str_contains($tipoautorizacion, '1600') || str_contains($tipoautorizacion, '1700') || str_contains($tipoautorizacion, '1800') ||str_contains($tipoautorizacion, '1900') || str_contains($tipoautorizacion, '2000') || str_contains($tipoautorizacion, '2100') ||str_contains($tipoautorizacion, '2200') || str_contains($tipoautorizacion, '2150') ||  str_contains($tipoautorizacion, '2250') || str_contains($tipoautorizacion, '2350') || str_contains($tipoautorizacion, '2300') ||str_contains($tipoautorizacion, '2400')|| str_contains($tipoautorizacion, '2500') || str_contains($tipoautorizacion, '2600') || str_contains($tipoautorizacion, '2700')){
-            // Número y letra del concepto
-            $No = substr($tipoautorizacion, 0, 4);
-            $letra = substr($tipoautorizacion, 4, 3);
-            $actual = 'actual';
-            $tipoautorizacion = $No . $letra;
-        } else {
-            // Número y letra del concepto
-            $No = substr($tipoautorizacion, 0, 2);
-            $letra = substr($tipoautorizacion, 2, 1);
-            $actual = 'actual';
-            $tipoautorizacion = $No . $letra;
-        }
-
-
-
         //concepto traer el id
-        $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ? AND Letra = ?', [$No, $letra]);
+        $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
         $idconcepto = $existingConcepto[0]->ID;
-
-        //ASOCIACION POR SCORE BAJO
-        if($tipoautorizacion == '11A'){
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-
-            if(empty($existingPerson)){
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
-            }
-            //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-            $idpersona = $existingID[0]->ID;
-
-            $nombres = $existingID[0]->Nombre;
-            $apellidos = $existingID[0]->Apellidos;
-            $nombre = $nombres . ' '.$apellidos;
-
-        //ASOCIACION < 90 DIAS ENTREGAR BONO
-        }
-        else if($tipoautorizacion == '11B'){
-            $cuenta = $request->Cuentamodal;
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'retiro/' . $cuenta);
-                    $data = $response->json();
-
-                    $response2 = Http::get($url . 'nombre/' . $cedula);
-                    $data2 = $response2->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            $estado = $data2['status'];
-            if ($estado == '200') {
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
-
-        //AUTORIZACION POR CREDITO SCORE BAJO
-        }
-        else if($tipoautorizacion == '11D'){
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-
-            if(empty($existingPerson)){
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN DATACRÉDITO!");
-            }
-            //traer el ID
-            $existingID = DB::select('SELECT ID, Nombre, Apellidos, CuentaAsociada FROM persona WHERE Cedula = ?', [$cedula]);
-            $idpersona = $existingID[0]->ID;
-
-            $nombres = $existingID[0]->Nombre;
-            $apellidos = $existingID[0]->Apellidos;
-            $nombre = $nombres . ' '.$apellidos;
-            $cuenta = $existingID[0]->CuentaAsociada;
-            //Desembolso Creditos por Transferencia Electronica
-        }else if($tipoautorizacion == '11L'){
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-
-
-            $estado = $data['status'];
-            if ($estado == '200') {
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
-            }
-
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-            if(empty($existingPerson)){
-                $nombre = $data['asociado']['NOMBRES'];
-                $cuenta = $data['asociado']['CUENTA'];
-            }else{
-                //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-                $idpersona = $existingID[0]->ID;
-                $nombres = $existingID[0]->Nombre;
-                $apellidos = $existingID[0]->Apellidos;
-                $nombre = $nombres . ' '.$apellidos;
-            }
-
-        //DISPOSICINES
-        }else if($tipoautorizacion == '11K'){
+        Log::info('ID Concepto: ' . $idconcepto);
+        //DISPOSICIONES
+        if($tipoautorizacion == '41'){
 
             $attempts = 0;
             $maxAttempts = 3; // INTENTOS MÁXIMOS
@@ -571,25 +451,8 @@ class DirectorController extends Controller
             $convencion = $request->Convencionmodal;
 
             //< 1 AÑO
-        }else if($tipoautorizacion == '11C'){
-            $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
-
-
-            if(empty($existingPerson)){
-                $nombre = $request->Nombremodal;
-                $cuenta = $request->Cuentamodal;
-            }else{
-                //traer el ID
-                $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
-                $idpersona = $existingID[0]->ID;
-
-                $nombres = $existingID[0]->Nombre;
-                $apellidos = $existingID[0]->Apellidos;
-                $nombre = $nombres . ' '.$apellidos;
-            }
-        }else if($tipoautorizacion == '10D'){
+        }else if($tipoautorizacion == '22'){
             //NOMBRE EMPRESA
-
             $nombre = "COOPSERP";
             $cedula = "805.004.034";
             $cuenta = 9;
@@ -650,6 +513,13 @@ class DirectorController extends Controller
 
         }
 
+        if($validacion == 1){
+            $estado='2';
+        }else{
+            $estado='2';
+        }
+
+
         $cedulaSinPuntos = str_replace('.', '', $cedula);
         $proveedores = DB::table('proveedor')
         ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
@@ -661,33 +531,25 @@ class DirectorController extends Controller
         }
 
 
-        if($validacion == 1){
-            $estado='2';
-        }else{
-            $estado='2';
-        }
-
         //AUDITORIA
-
         $nombreauditoria = session('name');
         $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
         $ip = $_SERVER['REMOTE_ADDR'];
         $agencia = session('agenciau');
-        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionDirector', ?, ?, ?, ?)", [
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)", [
             null,
             $nombreauditoria,
             $rol,
             $agencia,
             $fechaHoraActual,
-            $cedula . ' '. $id,
+            $id . ' '.$cedula,
             null,
             $ip
         ]);
 
-
-        //fecha de la solicitud del director
+        //fecha de la solicitud de la jefatura corregida
         $fechadeSolicitud = Carbon::now('America/Bogota');
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
@@ -705,17 +567,15 @@ class DirectorController extends Controller
                     'Convencion' => $convencion,
                     'NombrePersona' => $nombre,
                     'ID_Persona' => $idpersona,
-                    'CodigoAutorizacion' => $No.$letra,
-                    'Estado' => $estado,
                     'DocumentoSoporte' => $nombre_archivo,
+                    'Estado' => $estado,
+                    'Solicitud' => 1,
                     'Validacion' => 0,
                     'Aprobacion' => 0,
                     'ObservacionesGer' => null,
                     'Observaciones' => null,
                     'ID_Concepto' => $idconcepto,
                 ]);
-
-
 
             // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
             return response()->json(['message' => 'Datos recibidos correctamente']);
@@ -731,9 +591,9 @@ class DirectorController extends Controller
                     'Convencion' => $convencion,
                     'NombrePersona' => $nombre,
                     'ID_Persona' => $idpersona,
-                    'CodigoAutorizacion' => $No.$letra,
-                    'Estado' => $estado,
                     'DocumentoSoporte' => $nombre_archivo,
+                    'Estado' => $estado,
+                    'Solicitud' => 1,
                     'Validacion' => 0,
                     'Aprobacion' => 0,
                     'ObservacionesGer' => null,
@@ -744,65 +604,6 @@ class DirectorController extends Controller
         }
 
 
-    }
-
-
-
-    public function buscarautorizacion(Request $request){
-        {
-            $id = $request->idautorizacion;
-            $autorizacion = DB::table('autorizaciones')
-                ->join('persona', 'autorizaciones.ID_Persona', '=', 'persona.ID')
-                ->join('concepto_autorizaciones', 'autorizaciones.ID_Concepto', '=', 'concepto_autorizaciones.ID')
-                ->join('documentosintesis', 'persona.ID', '=', 'documentosintesis.ID_Persona')
-                ->select('autorizaciones.*', 'autorizaciones.Cedula as CedulaAutorizacion', 'autorizaciones.Estado as EstadoAutorizacion', 'persona.Cedula as CedulaPersona', 'persona.*' , 'documentosintesis.*', 'concepto_autorizaciones.*', 'autorizaciones.Observaciones as Observaciones')
-                ->where('autorizaciones.ID', $id)
-                ->first();
-            if(!empty($autorizacion)){
-                $fechaInsercion = Carbon::parse($autorizacion->FechaInsercion);
-                $fechaActual = Carbon::now();
-                $diferenciaDias = $fechaActual->diffInDays($fechaInsercion);
-
-
-
-                // Definir el estado según la diferencia en días
-                if($autorizacion->FechaInsercion == null){
-                    $estado = '<span class="fs-2">⚪⚪⚪</span>';
-                }
-                else if ($diferenciaDias > 179) {
-                    $estado = '<span class="fs-2">⚪⚪🔴</span>';
-                } elseif ($diferenciaDias > 169) {
-                    $estado = '<span class="fs-2">⚪🟡⚪</span>';
-                } else {
-                    $estado = '<span class="fs-2">🟢⚪⚪</span>';
-                }
-            }
-
-            //AUDITORIA
-
-            $nombreauditoria = session('name');
-            $rol = session('rol');
-            date_default_timezone_set('America/Bogota');
-            $fechaHoraActual = date('Y-m-d H:i:s');
-            $ip = $_SERVER['REMOTE_ADDR'];
-            $agencia = session('agenciau');
-            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'BuscoAutorizacionDirector', ?, ?, ?, ?)", [
-                null,
-                $nombreauditoria,
-                $rol,
-                $agencia,
-                $fechaHoraActual,
-                $id,
-                null,
-                $ip
-            ]);
-
-            if(empty($autorizacion)){
-                return back()->with("incorrecto", "Autorización No.$id, NO EXISTE!");
-            }else{
-                return view('Director/mostrarautorizacion', ['id' => $id,'autorizacion' => $autorizacion, 'estado' => $estado]);
-            }
-        }
     }
 
 
