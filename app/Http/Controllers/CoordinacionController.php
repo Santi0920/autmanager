@@ -137,7 +137,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -156,7 +156,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -200,7 +200,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -219,7 +219,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -265,7 +265,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -284,7 +284,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -329,7 +329,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A
@@ -348,7 +348,7 @@ class CoordinacionController extends Controller
                     B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona,
                     B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion,
                     B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor,
-                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado,
+                    B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
                     C.Letra, C.No, C.Concepto, C.Areas,
                     D.FechaInsercion
                 FROM persona A

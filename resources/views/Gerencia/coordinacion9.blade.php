@@ -348,63 +348,61 @@
                                                 </div>
 
                                                 <div class="col-sm-12 col-md-12 col-lg-10">
-                                                    <div class="row g-0 justify-content-start">
-                                                        <div class="row g-0  justify-content-center">
-                                                        <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                            <span class="fs-5">${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}</b></span>
-                                                        </div>
-                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
-                                                            <span class="mb-0 fs-5">${row.Fecha}</span>
-                                                        </div>
-                                                        </div>
+                                                <!-- Fila principal -->
+                                                <div class="row g-0 justify-content-center hover-trigger"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#secondaryData_${id}"
+                                                    style="cursor:pointer;">
+                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                        <span class="fs-5">
+                                                            ${row.NumAgencia} - ${row.NomAgencia} - <b>${row.SolicitadoPor}<br>👉(Click para mostrar)👈</b>
+                                                        </span>
                                                     </div>
+                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                        <span class="mb-0 fs-5">${row.Fecha}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Contenido colapsable -->
+                                                <div class="collapse" id="secondaryData_${id}">
                                                     <div class="row g-0 row-cols-2 d-flex justify-content-start">
-                                                        <div
-                                                        class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                        <span class="fs-5">${row.Concepto} - @include('layouts.optionvercodigo')</span>
+                                                        <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
+                                                            <span class="fs-5">${row.Concepto} - @include('layouts.optionvercodigo')</span>
                                                         </div>
-                                                        <div
-                                                        class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                        ${row.ID_Concepto == "41" ?
-                                                        `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
-                                                        }
+                                                        <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
+                                                            ${row.ID_Concepto == "41" ? `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>` : ``}
                                                         </div>
                                                     </div>
+
                                                     <div class="row g-0">
                                                         <div class="col-md-12 d-flex justify-content-start border p-2">
                                                             <span class="fs-5">${cedulaFormateada} -
-                                                                ${visualizarnit ?
-                                                                `${row.CuentaAsociado == null ?` N/A`:` ${row.CuentaAsociado}`} `
-                                                                : `- ${row.CuentaAsociado == null ?`- N/A`:``} `}- ${row.NombrePersona}
-                                                                ${(row.Score >= 650 ?
-                                                                    `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                    (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                )
-                                                                }
-
-                                                                </span>
-
+                                                                ${visualizarnit ? `${row.CuentaAsociado == null ? `N/A` : ` ${row.CuentaAsociado}`} ` : `${row.CuentaAsociado == null ? `N/A` : ``}`} - ${row.NombrePersona}
+                                                                ${(row.Score >= 650 ? `- <span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                (row.Score === 'S/E' ? `- <span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` :
+                                                                `- <span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`))}
+                                                            </span>
                                                         </div>
                                                     </div>
+
                                                     <div class="row g-0">
                                                         <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                <span class="mb-0">${row.Detalle}</span>
-                                                            </div>
-                                                            <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank"
-                                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
-                                                                <span class="h1 fw-bold mb-0">
-                                                                    <img src="img/pdf.png" style="height: 4.5rem">
-                                                                </span>
-                                                            </a>
+                                                            <span class="mb-0">${row.Detalle}</span>
+                                                        </div>
+                                                        <a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank" class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3">
+                                                            <span class="h1 fw-bold mb-0">
+                                                                <img src="img/pdf.png" style="height: 4.5rem">
+                                                            </span>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
                                             ${row.Estado != 6 && (row.NumAgencia !== "C1" && row.NumAgencia !== "C2" && row.NumAgencia !== "C3" && row.NumAgencia !== "C4" && row.NumAgencia !== "C5") ?
                                             `<form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                     @csrf
-                                            <div class=" row g-0 text-center ">
+                                            <div class=" row g-0">
                                                 <div
-                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Aprobacion == 1 ?`bg-success-subtle`:row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
+                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start ${row.Aprobacion == 1 ?`bg-success-subtle`:row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-3 border border-dark" id="fondo">
 
                                                     ${row.Aprobacion == 1 ?
                                                         `
@@ -420,7 +418,7 @@
                                                             <input value="1" type="radio" name="Estado" id="Estado">
                                                             <span>VALIDAR</span>
                                                         </label>
-                                                        <label class="label mt-2">
+                                                        <label class="label">
                                                             <input value="8" type="radio" name="Estado" id="Estado">
                                                             <span>STAND BY</span>
                                                         </label>`

@@ -642,9 +642,9 @@
                                         ${row.Estado != 6 && (row.NumAgencia !== "C1" && row.NumAgencia !== "C2" && row.NumAgencia !== "C3" && row.NumAgencia !== "C4" && row.NumAgencia !== "C5") ?
                                         `<form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
-                                        <div class=" row g-0 text-center ">
+                                        <div class=" row g-0">
                                             <div
-                                                class="col-sm-12 col-md-12 col-lg-2 d-flex  flex-column  align-items-center justify-content-center ${row.Aprobacion == 1 ?`bg-success-subtle`:row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-1 border border-dark" id="fondo">
+                                                class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start ${row.Aprobacion == 1 ?`bg-success-subtle`:row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-dark-subtle`} border p-3 border border-dark" id="fondo">
 
                                                 ${row.Aprobacion == 1 ?
                                                     `
