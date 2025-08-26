@@ -404,6 +404,7 @@ class DirectorController extends Controller
 
 
 
+
         //concepto traer el id
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
         $idconcepto = $existingConcepto[0]->ID;
