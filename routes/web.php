@@ -97,6 +97,8 @@ Route::middleware(['session.expired'])->group(function () {
 
         Route::get('bloqueadoscoord/datatable', [CoordinacionController::class, 'bloqueados'])->name('datacoor.bloqueados');
 
+        Route::get('standbycoord/datatable', [CoordinacionController::class, 'standby'])->name('datacoor.standby');
+
         Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
 
         Route::post('/validarautorizacion/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatevalidarcoor.autorizacion');

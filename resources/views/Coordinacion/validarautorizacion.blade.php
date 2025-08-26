@@ -639,7 +639,7 @@
                                                     </div>
                                             </div>
                                         </div>
-                                        ${row.Estado != 6 && (row.NumAgencia !== "C1" && row.NumAgencia !== "C2" && row.NumAgencia !== "C3" && row.NumAgencia !== "C4" && row.NumAgencia !== "C5") ?
+                                        ${row.Estado != 6 && row.Estado != 8 && (row.NumAgencia !== "C1" && row.NumAgencia !== "C2" && row.NumAgencia !== "C3" && row.NumAgencia !== "C4" && row.NumAgencia !== "C5") ?
                                         `<form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                 @csrf
                                         <div class=" row g-0">
@@ -691,7 +691,7 @@
 
 
 
-                                                    </div>
+                                            </div>
                                                     <div class="row g-0">
 
                                                             <input class="fs-5 col-md-12 d-flex text-start border p-3 w-100" style="resize: horizontal;" id="Observaciones" name="Observaciones" onkeydown="return event.key != 'Enter';" placeholder="Escribe aquí tu Observación." ${row.Observaciones == null ?``:`value="${row.Observaciones}"`} required></input>
@@ -700,7 +700,30 @@
                                                     </div>
                                             </div>
                                         </div>
-                                    </form>`:``
+                                    </form>`:
+                                    `
+                                    <div class=" row g-0">
+                                        <div
+                                            class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-center justify-content-start ${row.Aprobacion == 1 ?`bg-success-subtle`:row.Estado == 0 ?`bg-danger-subtle`:row.Estado == 1 ? `bg-success-subtle`: row.Estado == 3 ? `bg-info-subtle`:`bg-success-subtle`} border p-3 border border-dark" id="fondo">
+
+                                            <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-10 h-100 d-flex flex-column">
+                                                        <div class="row g-0 border">
+
+                                                            <div class="text-start col-md-9 d-flex text-start border p-2 flex-grow-4">
+                                                                <span class="fs-5 fw-bold mb-0">${row.Coordinacion} - ${row.ValidadoPor}</span>
+                                                            </div>
+                                                            <div class="col-md-3 d-flex align-items-center justify-content-center border p-3 ">
+                                                                <span class="mb-0 fs-5">${row.FechaValidacion}</span>
+                                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+                                    `
                                     }
 
                                         ${row.Aprobacion == 1  || row.Estado == 5?
@@ -895,7 +918,7 @@
 
 
                     $('#btnStandBy').on('click', function() {
-                        var newAjaxSource = '{{ route("data.standby") }}';
+                        var newAjaxSource = '{{ route("datacoor.standby") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
