@@ -404,18 +404,8 @@
 
 
 
-
-
-                            if (row.ID_Concepto == 31 || row.ID_Concepto == 34) {
-                                var inputs = inputcedula;
-                            } else if (row.ID_Concepto == 42) {
-                                var inputs = inputcedula;
-                            } else if (row.ID_Concepto == 32) {
-                                var inputs = inputcedula + inputcuenta;
-                            } else if (row.ID_Concepto == 41) {
+                            if (row.ID_Concepto == 41) {
                                 var inputs = (inputcedula + inputconvencion);
-                            } else if (row.ID_Concepto == 33) {
-                                var inputs = (inputcedula + inputnombre + inputcuenta);
                             } else if (row.ID_Concepto == 22) {
                                 var inputs =(`
                                     <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
@@ -1166,16 +1156,8 @@
                     </div>
                 `
 
-                if (valorSeleccionado == 31 || valorSeleccionado == 34) {
-                    $("#inputs" + id).html(inputcedula);
-                } else if (valorSeleccionado == 42) {
-                    $("#inputs" + id).html(inputcedula);
-                } else if (valorSeleccionado == 32) {
-                    $("#inputs" + id).html(inputcedula + inputcuenta);
-                } else if (valorSeleccionado == 41) {
+                if (valorSeleccionado == 41) {
                     $("#inputs" + id).html(inputcedula + inputconvencion);
-                } else if (valorSeleccionado == 33) {
-                    $("#inputs" + id).html(inputcedula + inputnombre + inputcuenta);
                 } else if (valorSeleccionado == 22) {
                     $("#inputs" + id).html(`
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
