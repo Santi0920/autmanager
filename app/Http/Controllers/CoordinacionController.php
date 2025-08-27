@@ -929,7 +929,6 @@ class CoordinacionController extends Controller
 
     public function actualizardetalle(Request $request, $id)
     {
-
         $documento = DB::select('SELECT DocumentoSoporte, Validacion FROM autorizaciones WHERE ID = ?', [$id]);
         $cedula = $request->Cedulamodal;
         $validacion = $documento[0]->Validacion;
@@ -1013,6 +1012,7 @@ class CoordinacionController extends Controller
             $cuenta = 9;
             $idpersona = 14920;
         }else{
+
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
             ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
@@ -1040,31 +1040,7 @@ class CoordinacionController extends Controller
             }
 
 
-            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
-            $cuenta = null;
-
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            if(!empty($data['status'])){
-                if ($data['status'] == '200') {
-                    $cuenta = $data['asociado']['CUENTA'];
-                }
-            }else{
-                $cuenta = null;
-            }
+            $cuenta = $request->Cuentamodal;
 
         }
 

@@ -404,7 +404,6 @@ class DirectorController extends Controller
 
 
 
-
         //concepto traer el id
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
         $idconcepto = $existingConcepto[0]->ID;
@@ -459,6 +458,7 @@ class DirectorController extends Controller
             $cuenta = 9;
             $idpersona = 14920;
         }else{
+
             $cedulaSinPuntos = str_replace('.', '', $cedula);
             $proveedores = DB::table('proveedor')
             ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
@@ -486,31 +486,7 @@ class DirectorController extends Controller
             }
 
 
-            //Y LA CEDULA LA ESTA TOMANDO COMO NIT
-            $cuenta = null;
-
-            $attempts = 0;
-            $maxAttempts = 3; // INTENTOS MÁXIMOS
-            $retryDelay = 500; // Milisegundos
-
-            do {
-                try {
-                    $response = Http::get($url . 'nombre/' . $cedula);
-                    $data = $response->json();
-                  // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                    break;
-                } catch (\Exception $e) {
-                    $attempts++;
-                    usleep($retryDelay * 1000);
-                }
-            } while ($attempts < $maxAttempts);
-            if(!empty($data['status'])){
-                if ($data['status'] == '200') {
-                    $cuenta = $data['asociado']['CUENTA'];
-                }
-            }else{
-                $cuenta = null;
-            }
+            $cuenta = $request->Cuentamodal;
 
         }
 
@@ -605,6 +581,64 @@ class DirectorController extends Controller
         }
 
 
+    }
+
+
+    public function buscarautorizacion(Request $request){
+        {
+            $id = $request->idautorizacion;
+            $autorizacion = DB::table('autorizaciones')
+                ->join('persona', 'autorizaciones.ID_Persona', '=', 'persona.ID')
+                ->join('concepto_autorizaciones', 'autorizaciones.ID_Concepto', '=', 'concepto_autorizaciones.ID')
+                ->join('documentosintesis', 'persona.ID', '=', 'documentosintesis.ID_Persona')
+                ->select('autorizaciones.*', 'autorizaciones.Cedula as CedulaAutorizacion', 'autorizaciones.Estado as EstadoAutorizacion', 'persona.Cedula as CedulaPersona', 'persona.*' , 'documentosintesis.*', 'concepto_autorizaciones.*', 'autorizaciones.Observaciones as Observaciones')
+                ->where('autorizaciones.ID', $id)
+                ->first();
+            if(!empty($autorizacion)){
+                $fechaInsercion = Carbon::parse($autorizacion->FechaInsercion);
+                $fechaActual = Carbon::now();
+                $diferenciaDias = $fechaActual->diffInDays($fechaInsercion);
+
+
+
+                // Definir el estado según la diferencia en días
+                if($autorizacion->FechaInsercion == null){
+                    $estado = '<span class="fs-2">⚪⚪⚪</span>';
+                }
+                else if ($diferenciaDias > 179) {
+                    $estado = '<span class="fs-2">⚪⚪🔴</span>';
+                } elseif ($diferenciaDias > 169) {
+                    $estado = '<span class="fs-2">⚪🟡⚪</span>';
+                } else {
+                    $estado = '<span class="fs-2">🟢⚪⚪</span>';
+                }
+            }
+
+            //AUDITORIA
+
+            $nombreauditoria = session('name');
+            $rol = session('rol');
+            date_default_timezone_set('America/Bogota');
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $agencia = session('agenciau');
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'BuscoAutorizacionDirector', ?, ?, ?, ?)", [
+                null,
+                $nombreauditoria,
+                $rol,
+                $agencia,
+                $fechaHoraActual,
+                $id,
+                null,
+                $ip
+            ]);
+
+            if(empty($autorizacion)){
+                return back()->with("incorrecto", "Autorización No.$id, NO EXISTE!");
+            }else{
+                return view('Director/mostrarautorizacion', ['id' => $id,'autorizacion' => $autorizacion, 'estado' => $estado]);
+            }
+        }
     }
 
 

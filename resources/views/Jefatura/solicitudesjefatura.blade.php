@@ -347,7 +347,7 @@
                                     <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
                                 `);
                             }else {
-                                var inputs =(inputcedula + inputnombre);
+                                var inputs =(inputcedula + inputnombre + inputcuenta);
                             }
 
                         var modalEditar = `
@@ -1040,7 +1040,7 @@
                         <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
                     `);
                 }else {
-                    $("#inputs"+id).html(inputcedula + inputnombre);
+                    $("#inputs"+id).html(inputcedula + inputnombre + inputcuenta);
                 }
 
                 $('[data-bs-toggle="tooltip"]').tooltip();
