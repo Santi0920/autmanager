@@ -527,6 +527,15 @@
                                                     @csrf
                                                     <div class="row g-0 text-center">
                                                         <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border border-dark">
+
+                                                            <label class="label">
+                                                                <input value="4" type="radio" name="Estado" id="estado_aprobar" required>
+                                                                <span>APROBAR</span>
+                                                            </label>
+                                                            <label class="label">
+                                                                <input value="5" type="radio" name="Estado" id="estado_rechazar" required>
+                                                                <span>RECHAZAR</span>
+                                                            </label>
                                                             <label class="label">
                                                                         <input value="7" type="radio" name="Estado" id="Estado" required>
                                                                         <span>ANULAR</span>
