@@ -526,7 +526,7 @@
                                                 <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                     @csrf
                                                     <div class="row g-0 text-center">
-                                                        <div class="col-sm-6 col-md-12 col-lg-2 d-flex flex-column align-items-center justify-content-center bg-dark-subtle border p-3 border border-dark">
+                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start bg-dark-subtle border p-3 border border-dark">
 
                                                             <label class="label">
                                                                 <input value="4" type="radio" name="Estado" id="estado_aprobar" required>
