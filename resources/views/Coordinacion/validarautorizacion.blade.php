@@ -528,7 +528,7 @@
                                                         <div
                                                         class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
                                                         ${row.ID_Concepto == "41" ?
-                                                        `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
+                                                        `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${row.Convencion}</span>`:``
                                                         }
                                                         </div>
                                                     </div>
@@ -1526,14 +1526,6 @@
             /* Cambia el cursor al pasar el mouse */
         }
 
-
-        .tooltip-container {
-            position: relative;
-            display: inline-block;
-            margin: 0px;
-            }
-
-
             .col::-webkit-scrollbar {
             width: 10px;  /*Ancho de la barra de desplazamiento */
             }
@@ -1555,46 +1547,8 @@
             cursor: pointer;
             }
 
-            .tooltip {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            visibility: hidden;
-            background: #898989;
-            color: #fff;
-            font-weight: bold;
-            padding: 7px;
-            border-radius: 4px;
-            transition: opacity 0.3s, visibility 0.3s, top 0.3s, background 0.3s;
-            z-index: 1;
-            width: 500px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
-            }
-
-            .tooltip::before {
-            content: "";
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            border-width: 8px;
-            border-style: solid;
-            border-color: transparent transparent #898989 transparent;
-            transform: translateX(-50%);
-
-            }
-
-            .tooltip-container:hover .tooltip {
-            top: 120%;
-            opacity: 1;
-            visibility: visible;
-            background: #898989;
-            transform: translate(-50%, 0px);
-
-            }
     </style>
+    @include('layouts.tooltipstyle')
     </div>
 
     @include('layouts.celular')

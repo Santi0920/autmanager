@@ -279,14 +279,16 @@ class GerenciaController extends Controller
             return response()->json(['success' => true]);
         }
 
+    //TOOLTIP
     public function data1()
     {
 
 
         $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
+        $convencion = DB::select("SELECT * FROM convenciones ORDER BY ID ASC");
 
-        return view('Gerencia/aprobar', ['user' => $user]);
+        return view('Gerencia/aprobar', ['user' => $user, 'convencion' => $convencion]);
     }
 
     public function data2()
@@ -295,8 +297,9 @@ class GerenciaController extends Controller
 
         $agenciaU = session('agenciau');
         $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Letra ASC");
+        $convencion = DB::select("SELECT * FROM convenciones ORDER BY ID ASC");
 
-        return view('Gerencia/coordinacion9', ['user' => $user]);
+        return view('Gerencia/coordinacion9', ['user' => $user, 'convencion' => $convencion]);
     }
 
     public function solicitudescoordinacion(Request $request)

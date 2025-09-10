@@ -15,15 +15,15 @@
             <div class="row align-items-start">
                 <div class="col" style="font-size: 18px; overflow-y: auto; max-height: 140px;">
 
-                    @foreach (collect($user)->groupBy('No') as $grupo)
+                    
                         <span class="text-light">
-                            ⬇--- {{ isset($grupo->first()->Areas) ? strtoupper($grupo->first()->Areas) : 'GLOBAL' }} ---⬇
+                            ⬇CONVENCIONES⬇
                         </span><br>
-
-                        @foreach ($grupo as $autorizacion)
-                            <span class="text-dark">- {{ $autorizacion->Concepto }}</span><br>
+                        
+                        @foreach($convencion as $conv)
+                            <span class="text-dark">( <span class="text-light fw-bold">{{$conv->Codigo}}</span> ) {{$conv->Concepto}}</span><br>
                         @endforeach
-                    @endforeach
+    
 
                 </div>
             </div>

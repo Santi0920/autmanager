@@ -27,8 +27,9 @@ class DirectorController extends Controller
         foreach ($user as $u) {
             $grupos[$u->No][] = $u;
         }
+        $convencion = DB::select("SELECT * FROM convenciones ORDER BY ID ASC");
 
-        return view('Director/solicitudes', ['grupos' => $grupos, 'user' => $user]);
+        return view('Director/solicitudes', ['grupos' => $grupos, 'user' => $user, 'convencion' => $convencion]);
     }
 
 

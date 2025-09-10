@@ -26,8 +26,10 @@ class CoordinacionController extends Controller
         foreach ($user as $u) {
             $grupos[$u->No][] = $u;
         }
+        $convencion = DB::select("SELECT * FROM convenciones ORDER BY ID ASC");
 
-        return view('Coordinacion/validarautorizacion', ['grupos' => $grupos, 'user' => $user]);
+
+        return view('Coordinacion/validarautorizacion', ['grupos' => $grupos, 'user' => $user, 'convencion' => $convencion]);
     }
 
 
