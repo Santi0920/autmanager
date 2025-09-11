@@ -49,7 +49,7 @@ class JefaturaController extends Controller
         JOIN documentosintesis D ON A.ID = D.ID_Persona
         WHERE
         B.ID > 6000
-        AND (B.Estado = 2 OR B.Estado = 0)
+        AND (B.Estado = 2 OR B.Estado = 0 OR B.Estado = 5)
         AND B.NomAgencia = '$agenciaU'");
         return datatables()->of($solicitudes)->toJson();
     }
