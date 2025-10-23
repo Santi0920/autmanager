@@ -87,14 +87,10 @@ class SessionsController extends Controller
                     null,
                     $ip
                 ]);
-                if($user['rol'] == 'Consultante'){
+                if($user['rol'] == 'Consultante' || $user['rol'] == 'Jefatura' || $user['rol'] == 'Coordinacion'){
                     return redirect()->to('/solicitudes');
-                }else if($user['rol'] == 'Jefatura'){
-                    return redirect()->to('/solicitudesjefatura');
                 }else if($user['rol'] == 'Gerencia'){
                     return redirect()->to('/aprobar');
-                }else if($user['rol'] == 'Coordinacion'){
-                    return redirect()->to('/validar');
                 }
             }
         }

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\CoordinacionController;
-use App\Http\Controllers\DirectorController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\JefaturaController;
 use App\Http\Controllers\Todos;
@@ -10,17 +10,7 @@ use App\Http\Controllers\SessionsController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
+//LOGIN
 Route::get('/', [SessionsController::class, 'login'])
     ->name('login.index');
 
@@ -31,34 +21,34 @@ Route::get('logout', [SessionsController::class, 'destroy'])
     ->name('login.destroy');
 
 
-//DIRECTOR
+//USUARIO
 Route::middleware(['session.expired'])->group(function () {
     Route::get('/solicitudes', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
-        return view('Director/solicitudes');
+        return view('Usuario/solicitudes');
     });
 
-    Route::get('/solicitudes', [DirectorController::class, 'data1']);
+    Route::get('/solicitudes', [UsuarioController::class, 'data1']);
 
-    Route::get('/solicitudes/datatable', [DirectorController::class, 'solicitudes'])->name('data.solicitudes');
+    Route::get('/solicitudes/datatable', [UsuarioController::class, 'solicitudes'])->name('data.solicitudes');
 
-    Route::get('/solicitudesaprobadas/datatable', [DirectorController::class, 'aprobados'])->name('data.aprobados');
+    Route::get('/solicitudesaprobadas/datatable', [UsuarioController::class, 'aprobados'])->name('data.aprobados');
 
-    Route::get('/solicitudesrechazadas/datatable', [DirectorController::class, 'rechazados'])->name('data.rechazados');
+    Route::get('/solicitudesrechazadas/datatable', [UsuarioController::class, 'rechazados'])->name('data.rechazados');
 
-    Route::get('/solicitudesbloqueadas/datatable', [DirectorController::class, 'bloqueados'])->name('data.bloqueados');
+    Route::get('/solicitudesbloqueadas/datatable', [UsuarioController::class, 'bloqueados'])->name('data.bloqueados');
 
-    Route::get('/solicitudesanuladas/datatable', [DirectorController::class, 'anulados'])->name('data.anulados');
+    Route::get('/solicitudesanuladas/datatable', [UsuarioController::class, 'anulados'])->name('data.anulados');
 
-    Route::get('/solicitudesstandby/datatable', [DirectorController::class, 'standby'])->name('data.standby');
+    Route::get('/solicitudesstandby/datatable', [UsuarioController::class, 'standby'])->name('data.standby');
 
 
 
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
-    Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
+    Route::post('/solicitudes/crear', [UsuarioController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
-    Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion');
+    Route::post('/solicitudes/actualizar-{id}', [UsuarioController::class, 'actualizardetalle'])->name('update.autorizacion');
 
     Route::get('/filtrar', function () {
         // Cookie::forget('laravel_session');
@@ -72,7 +62,7 @@ Route::middleware(['session.expired'])->group(function () {
         return view('Director.mostrarautorizacion');
     });
 
-    Route::post('/autorizacion', [DirectorController::class, 'buscarautorizacion'])
+    Route::post('/autorizacion', [UsuarioController::class, 'buscarautorizacion'])
     ->name('buscarautorizacion');
 
 
