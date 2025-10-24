@@ -23,15 +23,79 @@ class GerenciaController extends Controller
 
         $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE  B.Bloqueado = 0 AND ((B.Estado = 1 AND B.Validacion = 1) OR (B.Estado = 6 AND B.Validacion = 1 ))");
+        // 🔹 Traer solo las autorizaciones relacionadas con la agencia
+        $autorizaciones = DB::table('autorizaciones_2 AS B')
+            ->join('persona AS A', 'A.ID', '=', 'B.ID_Persona')
+            ->join('concepto_autorizaciones AS C', 'B.ID_Concepto', '=', 'C.ID')
+            ->join('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+            ->whereNotIn('B.ID_User', function ($sub) {
+                $sub->select('id')
+                    ->from('users')
+                    ->where('rol', 'Jefatura');
+            })
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('historialestado AS H')
+                    ->whereRaw('H.ID_Autorizacion = B.ID')
+                    ->where(function ($sub) {
+                        $sub->where('H.Estado', 'VALIDADO')
+                            ->orWhere('H.Estado', 'REMITIDO');
+                    });
+            })
+            ->select([
+                'A.ID AS IDPersona',
+                'A.Score',
+                'A.CuentaAsociada',
+                'A.Nombre',
+                'A.Apellidos',
+                'B.ID AS IDAutorizacion',
+                'B.Convencion',
+                'B.Cedula',
+                'B.CuentaAsociado',
+                'B.NombrePersona',
+                'B.Detalle',
+                'B.ID_User',
+                'B.ID_Concepto',
+                'C.Letra',
+                'C.No',
+                'C.Concepto',
+                'C.Areas',
+                'D.FechaInsercion'
+            ])
+            ->distinct()
+            ->get();
+
+        // 🔹 Agregar historial completo + fecha del primer estado
+        foreach ($autorizaciones as $aut) {
+            $historial = DB::table('historialestado')
+                ->where('ID_Autorizacion', $aut->IDAutorizacion)
+                ->orderBy('ID', 'asc')
+                ->get();
+
+            $aut->historial = $historial;
+
+            if ($historial->isNotEmpty()) {
+                $primerEstado = $historial->first();
+                $ultimoEstado = $historial->last();
+                $aut->Fecha = $primerEstado->Fecha;
+                $aut->FechaStringEstado = $primerEstado->FechaString;
+                $aut->Usuario = $primerEstado->Nombre;
+                $aut->NumArea = $primerEstado->NumArea;
+                $aut->NomArea = $primerEstado->NomArea;
+                $aut->PrimerEstado = $primerEstado->Estado;
+                $aut->UltimoEstado = $ultimoEstado->Estado;
+            } else {
+                $aut->Fecha = null;
+                $aut->FechaStringEstado = null;
+                $aut->Usuario = null;
+                $aut->NumArea = null;
+                $aut->NomArea = null;
+                $aut->Estado = null;
+            }
+        }
 
 
-        return datatables()->of($solicitudes)->toJson();
+        return response()->json(['data' => $autorizaciones]);
     }
 
 

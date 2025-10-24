@@ -57,10 +57,58 @@
                 }
 
 
-            .input {
-                max-width: 190px;
-                display: none;
-            }
+        .label {
+            cursor: pointer;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 0em;
+            font-size: 15px
+
+        }
+
+        .label input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .label input:checked+span {
+            background-color: #646464;
+            color: white;
+        }
+
+        .label input:checked+span:before {
+            box-shadow: inset 0 0 0 0.4375em #393939;
+        }
+
+        .label span {
+            display: flex;
+            align-items: center;
+            padding: 0.375em 0.75em 0.375em 0.375em;
+            border-radius: 99em;
+            transition: 0.25s ease;
+            color: #646464;
+            font-weight: bold;
+        }
+
+        .label span:hover {
+            background-color: #d6d6e5;
+        }
+
+        .label span:before {
+            display: flex;
+            flex-shrink: 0;
+            content: "";
+            background-color: #fff;
+            width: 1.5em;
+            height: 1.5em;
+            border-radius: 50%;
+            margin-right: 0.375em;
+            transition: 0.25s ease;
+            box-shadow: inset 0 0 0 0.125em #393939;
+        }
+
+
 
             .labelFile {
                 display: flex;
@@ -89,21 +137,7 @@
                 margin-right: 10px;
             }
 
-            .custom-btn {
-                background-color: #646464;
-                font-weight: bold;
-                font-size: 20px;
-                color: white;
-                padding: 5px 10px;
-                margin: 2px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
 
-            .custom-btn:hover {
-                background-color: #aeaeae;
-            }
 
             .input {
                 width: 100%;
@@ -178,6 +212,36 @@
                 color: #333;
                 font-size: 18px;
                 cursor: pointer;
+            }
+
+            .custom-btn {
+                background-color: #646464;
+                font-weight: bold;
+                font-size: 21px;
+                color: white;
+                padding: 6px 12px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .custom-btn:hover {
+                background-color: #aeaeae;
+            }
+
+            .custom-btn2 {
+                background-color: #168400;
+                font-weight: bold;
+                font-size: 21px;
+                color: white;
+                padding: 6px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .custom-btn2:hover {
+                background-color: #1eb200;
             }
 
 

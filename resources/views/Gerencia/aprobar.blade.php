@@ -46,7 +46,7 @@
     {{-- FECHA --}}
     <div class="col-11" style="margin-left:3.5%">
         <div class="">
-            <form action="" method="post">1
+            <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
                     <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- DIRECCIÓN GENERAL -⭐</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><a href="estadisticas" id="btnAgencias" class="btn btn-dark fw-bold me-2" title="ESTADÍSTICAS AUTORIZACIONES"><i class="fa-solid fa-chart-bar text-white"></i> &nbspESTADÍSTICAS</a><b><span id="fechaActual"></span></b></h2>
@@ -805,97 +805,97 @@
                     '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="ANULADOS">ANULADOS</button>' +
                 '</div>';
 
-            $(buttonsHtml).prependTo('.dataTables_filter');
-                $('#btnT').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.solicitudes") }}';
+                $(buttonsHtml).prependTo('.dataTables_filter');
+                    $('#btnT').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.solicitudes") }}';
 
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-                });
-
-                $('#btnA').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.aprobados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-                });
-
-                $('#btnR').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.rechazados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                });
-
-                $('#btnTramite').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.tramite") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                });
-
-                $('#btnBloqueado').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.bloqueados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                });
-
-                $('#btnAnulado').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.anulados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                });
-
-                $('#btnStandBy').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.standby") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                });
-
-
-
-                // Evitar que aprueba directamente
-                document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
-                    e.preventDefault(); // Evita que se vaya directo al enlace
-
-                    let url = this.getAttribute('href');
-
-                    Swal.fire({
-                        title: '¿Está seguro?',
-                        html: '<span style="font-size:21px;">¿Desea aprobar todas las solicitudes con estado <b>STAND BY</b>?</span>',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#198754',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sí, aprobar',
-                        cancelButtonText: 'Cancelar',
-                        customClass: {
-                            confirmButton: 'swal2-confirm btn-lg custom-btn',
-                            cancelButton: 'swal2-cancel btn-lg custom-btn'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = url; // Redirige a la ruta
-                        }
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
+
+                    $('#btnA').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.aprobados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnR').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.rechazados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnTramite').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.tramite") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnBloqueado').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.bloqueados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnAnulado').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.anulados") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnStandBy').on('click', function() {
+                        var newAjaxSource = '{{ route("datager.standby") }}';
+
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+
+
+                    // Evitar que aprueba directamente
+                    document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
+                        e.preventDefault(); // Evita que se vaya directo al enlace
+
+                        let url = this.getAttribute('href');
+
+                        Swal.fire({
+                            title: '¿Está seguro?',
+                            html: '<span style="font-size:21px;">¿Desea aprobar todas las solicitudes con estado <b>STAND BY</b>?</span>',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#198754',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sí, aprobar',
+                            cancelButtonText: 'Cancelar',
+                            customClass: {
+                                confirmButton: 'swal2-confirm btn-lg custom-btn',
+                                cancelButton: 'swal2-cancel btn-lg custom-btn'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = url; // Redirige a la ruta
+                            }
+                        });
+                    });
+
+
+
+                    },
+                    // responsive: "true",
+                    //     dom: 'Bfrtilp',
+                    //     buttons:[
+                    //         {
+                    //             extend:    'excelHtml5',
+                    //             text:      '<i class="fas fa-file-excel"></i> ',
+                    //             titleAttr: 'Exportar a Excel',
+                    //             className: 'btn btn-success btn-md'
+                    //         }
+                    // ],
+
                 });
-
-
-
-                },
-                // responsive: "true",
-                //     dom: 'Bfrtilp',
-                //     buttons:[
-                //         {
-                //             extend:    'excelHtml5',
-                //             text:      '<i class="fas fa-file-excel"></i> ',
-                //             titleAttr: 'Exportar a Excel',
-                //             className: 'btn btn-success btn-md'
-                //         }
-                // ],
-
-        });
 
 
         function csesion() {
@@ -914,71 +914,71 @@
 
         function formEditarAutorizacion(id, event) {
 
-    var form = $("#formEditarAutorizacion" + id);
+            var form = $("#formEditarAutorizacion" + id);
 
-    if (form.data('submitted')) {
-        return;
-    }
-
-
-    form.data('submitted', true);
-
-    var formDataArray = form.serializeArray();
-
-
-    var estado, observaciones;
-
-    formDataArray.forEach(function(input) {
-        if (input.name === "Estado") {
-            estado = input.value;
-        } else if (input.name === "Observaciones") {
-            observaciones = input.value;
-            event.preventDefault();
-        }
-    });
-    console.log(estado + ' ' + observaciones);
-    if (typeof estado === 'undefined') {
-        alert('Por favor, seleccione un estado.');
-
-        form.data('submitted', false);
-
-            return;
-        }
-
-
-        var currentPage = $('#personas').DataTable().page();
-
-
-        $.ajax({
-            url: "{{ route('updateger.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-            type: "POST",
-            data: {
-                Observaciones: observaciones,
-                Estado: estado,
-                _token: $('input[name="_token"]').val()
-            },
-            success: function(response) {
-                if (response) {
-                    $(`#exampleModal_${id}`).modal('hide');
-                    console.log('¡Éxito!');
-
-                    $('#personas').DataTable().ajax.reload(function() {
-                        $('#personas').DataTable().page(currentPage).draw('page');
-                    });
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: "¡ACTUALIZADO!",
-                        html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                            id + "</span></span>",
-                        confirmButtonColor: '#646464'
-                    });
-                }
-            },
-            error: function(error) {
-                console.log('Error');
+            if (form.data('submitted')) {
+                return;
             }
-        });
+
+
+            form.data('submitted', true);
+
+            var formDataArray = form.serializeArray();
+
+
+            var estado, observaciones;
+
+            formDataArray.forEach(function(input) {
+                if (input.name === "Estado") {
+                    estado = input.value;
+                } else if (input.name === "Observaciones") {
+                    observaciones = input.value;
+                    event.preventDefault();
+                }
+            });
+            console.log(estado + ' ' + observaciones);
+            if (typeof estado === 'undefined') {
+                alert('Por favor, seleccione un estado.');
+
+                form.data('submitted', false);
+
+                return;
+            }
+
+
+            var currentPage = $('#personas').DataTable().page();
+
+
+            $.ajax({
+                url: "{{ route('updateger.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                type: "POST",
+                data: {
+                    Observaciones: observaciones,
+                    Estado: estado,
+                    _token: $('input[name="_token"]').val()
+                },
+                success: function(response) {
+                    if (response) {
+                        $(`#exampleModal_${id}`).modal('hide');
+                        console.log('¡Éxito!');
+
+                        $('#personas').DataTable().ajax.reload(function() {
+                            $('#personas').DataTable().page(currentPage).draw('page');
+                        });
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: "¡ACTUALIZADO!",
+                            html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                                id + "</span></span>",
+                            confirmButtonColor: '#646464'
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.log('Error');
+                }
+            });
         }
 
 
