@@ -285,47 +285,7 @@ class UsuarioController extends Controller
         if($rol == "Coordinacion"){
             $id = session('id');
 
-            // Obtener coordinaciones del usuario
-            $coordinaciones = DB::table('users')
-                ->select('agenciau', 'agencias_id')
-                ->where('agenciau', $agenciaU)
-                ->where('id', $id)
-                ->first();
-
-            $agenciasIdArray = json_decode($coordinaciones->agencias_id ?? '[]', true);
-            $numero = preg_replace('/[^0-9]/', '', $coordinaciones->agenciau);
-            $coordinacionVariable = session('agenciau') == "Coordinacion $numero" ? "C" . $numero : null;
-
-            // Query base con columnas originales
-            $autorizaciones = DB::table('historialestado AS H')
-                ->join('autorizaciones_2 AS B', 'B.ID', '=', 'H.ID_Autorizacion')
-                ->join('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                ->join('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-                ->join('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-                ->whereNotIn('H.ID_User', function ($sub) {
-                    $sub->select('id')
-                        ->from('users')
-                        ->where('rol', 'Jefatura');
-                })
-                ->select([
-                    'A.ID AS IDPersona',
-                    'A.Score',
-                    'A.CuentaAsociada',
-                    'A.Nombre',
-                    'A.Apellidos',
-                    'B.ID AS IDAutorizacion',
-                    'C.Letra',
-                    'C.No',
-                    'C.Concepto',
-                    'C.Areas',
-                    'D.FechaInsercion',
-                    'H.Estado',
-                    'H.Observaciones',
-                    'H.Fecha'
-                ])
-                ->distinct()
-                ->get();
-
+            
 
 
         }elseif($rol == "Gerencia"){
