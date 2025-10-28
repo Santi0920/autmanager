@@ -453,100 +453,100 @@ class GerenciaController extends Controller
 
 
     public function contarsolicitudes(Request $request)
-        {
-            $directorestramite = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 2)
-            ->get()
-            ->count();
+    {
+        $directorestramite = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 2)
+        ->get()
+        ->count();
 
-            $coordinadorestramite = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 6)
-            ->get()
-            ->count();
+        $coordinadorestramite = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 6)
+        ->get()
+        ->count();
 
-            //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
-            $coordinadorestramitecorregir = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 3)
-            ->get()
-            ->count();
+        //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
+        $coordinadorestramitecorregir = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 3)
+        ->get()
+        ->count();
 
-            //sumatoria de todos los que estan en tramite
-            $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
-
-
-
-            $validadocoordinadores = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 1)
-            ->get()
-            ->count();
-
-
-            $rechazadogerencia = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 5)
-            ->get()
-            ->count();
-
-            $rechazadocoordinacion = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 0)
-            ->get()
-            ->count();
-
-            $rechazados = $rechazadocoordinacion + $rechazadogerencia;
-
-            $aprobadogerencia = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 4)
-            ->get()
-            ->count();
-
-            $anuladosgerencia = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 7)
-            ->get()
-            ->count();
-
-            $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia + $anuladosgerencia;
-
-            $nombresAgencia = DB::table('autorizaciones')
-            ->select('NomAgencia')
-            ->distinct()
-            ->orderBy('NomAgencia', 'asc')
-            ->get();
-
-            $year = DB::table('autorizaciones')
-            ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
-            ->distinct()
-            ->orderBy('year', 'asc')
-            ->get();
+        //sumatoria de todos los que estan en tramite
+        $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
 
 
 
-            //esto se hace con el fin de que se rellene los circulo de forma dinamica
-            $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
-            $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
-
-            $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
-            $decimalvalidados = round($porcentajevalidos, 2);
-
-            $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
-            $decimalrechazados = round($porcentajerechazados, 2);
-
-            $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
-            $decimalaprobados = round($porcentajeaprobados, 2);
-
-            $porcentajeanulados = ($anuladosgerencia != 0) ? ($anuladosgerencia / $total * 100) : 0;
-            $decimalanulados = round($porcentajeanulados, 2);
+        $validadocoordinadores = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 1)
+        ->get()
+        ->count();
 
 
-            return view('Gerencia/estadisticas', ['porcentajeanulados' => $porcentajeanulados,'anuladosgerencia' => $anuladosgerencia,'decimalanulados' => $decimalanulados,'decimalaprobados' => $decimalaprobados, 'decimalrechazados' => $decimalrechazados, 'decimalvalidados' => $decimalvalidados, 'porcentajetramite' => $porcentaje_tramite_con_decimales, 'tramite' => $tramite, 'validadocoordinadores' => $validadocoordinadores, 'rechazados' => $rechazados, 'aprobadogerencia' => $aprobadogerencia, 'total' => $total, 'nombresAgencia' => $nombresAgencia, 'year' => $year]);
+        $rechazadogerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 5)
+        ->get()
+        ->count();
 
-        }
+        $rechazadocoordinacion = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 0)
+        ->get()
+        ->count();
+
+        $rechazados = $rechazadocoordinacion + $rechazadogerencia;
+
+        $aprobadogerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 4)
+        ->get()
+        ->count();
+
+        $anuladosgerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 7)
+        ->get()
+        ->count();
+
+        $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia + $anuladosgerencia;
+
+        $nombresAgencia = DB::table('autorizaciones')
+        ->select('NomAgencia')
+        ->distinct()
+        ->orderBy('NomAgencia', 'asc')
+        ->get();
+
+        $year = DB::table('autorizaciones')
+        ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
+        ->distinct()
+        ->orderBy('year', 'asc')
+        ->get();
+
+
+
+        //esto se hace con el fin de que se rellene los circulo de forma dinamica
+        $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
+        $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
+
+        $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
+        $decimalvalidados = round($porcentajevalidos, 2);
+
+        $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
+        $decimalrechazados = round($porcentajerechazados, 2);
+
+        $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
+        $decimalaprobados = round($porcentajeaprobados, 2);
+
+        $porcentajeanulados = ($anuladosgerencia != 0) ? ($anuladosgerencia / $total * 100) : 0;
+        $decimalanulados = round($porcentajeanulados, 2);
+
+
+        return view('Gerencia/estadisticas', ['porcentajeanulados' => $porcentajeanulados,'anuladosgerencia' => $anuladosgerencia,'decimalanulados' => $decimalanulados,'decimalaprobados' => $decimalaprobados, 'decimalrechazados' => $decimalrechazados, 'decimalvalidados' => $decimalvalidados, 'porcentajetramite' => $porcentaje_tramite_con_decimales, 'tramite' => $tramite, 'validadocoordinadores' => $validadocoordinadores, 'rechazados' => $rechazados, 'aprobadogerencia' => $aprobadogerencia, 'total' => $total, 'nombresAgencia' => $nombresAgencia, 'year' => $year]);
+
+    }
 
 
     public function actualizardatos(Request $request)
@@ -720,7 +720,7 @@ class GerenciaController extends Controller
 
 
 
-        public function filtrarconcepto(Request $request)
+    public function filtrarconcepto(Request $request)
     {
         if (session('email') == null) {
             return redirect()->route('login');
@@ -1184,31 +1184,31 @@ class GerenciaController extends Controller
         ]);
     }
 
-public function dagencia(Request $request)
-{
-    if (session('email') == null) {
-        return redirect()->route('login');
-    }
+    public function dagencia(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
 
-    $agenciaU = session('agenciau');
+        $agenciaU = session('agenciau');
 
-    $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
 
-    $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
+        $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
-    $conceptos = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Areas ASC");
+        $conceptos = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Areas ASC");
 
-    return datatables()->of($solicitudes)
-        ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
-            foreach ($agenciasActivas as $agencia) {
-                if ($row->agenciau == $agencia->NameAgencia) {
-                    return $agencia->NumAgencia;
+        return datatables()->of($solicitudes)
+            ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
+                foreach ($agenciasActivas as $agencia) {
+                    if ($row->agenciau == $agencia->NameAgencia) {
+                        return $agencia->NumAgencia;
+                    }
                 }
-            }
-            return ''; // por si no encuentra coincidencia
-        })
-        ->toJson();
-}
+                return ''; // por si no encuentra coincidencia
+            })
+            ->toJson();
+    }
 
 
 

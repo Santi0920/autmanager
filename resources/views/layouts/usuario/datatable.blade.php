@@ -7,6 +7,7 @@
             var table = $('#personas').DataTable({
                 "ajax": {
                     "url": "{{ route('data.solicitudes') }}",
+                    url: '/autmanager/public/solicitudes/datatable',
                     "dataType": "json", // Indicar que se espera una respuesta JSON
                     "error": function(xhr, error, thrown) {
                         // Verificar si el error es debido a una respuesta JSON inválida
@@ -40,7 +41,181 @@
                     {
                         data: 'Fecha',
                         render: function(data, type, row) {
-                            var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}
+
+                        if('{{ session('rol') }}' == 'Gerencia'){
+
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                const totalMinutos = Math.floor(totalSegundos / 60);
+                                const totalHoras = Math.floor(totalMinutos / 60);
+
+                                const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                const horas = String(totalHoras).padStart(2, '0');
+
+                                return { horas, minutos, segundos };
+                            }
+
+
+                            fechaSolicitud = row.UltimaFechaDoneTramite;
+                            fechaValidacion = row.UltimaFechaCoordinacion;
+
+                            const months = {
+                                "enero": "01",
+                                "febrero": "02",
+                                "marzo": "03",
+                                "abril": "04",
+                                "mayo": "05",
+                                "junio": "06",
+                                "julio": "07",
+                                "agosto": "08",
+                                "septiembre": "09",
+                                "octubre": "10",
+                                "noviembre": "11",
+                                "diciembre": "12"
+                            };
+
+                            if (fechaSolicitud) {
+                                const parts = fechaSolicitud.split(' ');
+                                const month = months[parts[0]?.toLowerCase()];
+                                const day = parts[1];
+                                const yearTime = parts[2]?.split('-');
+
+                                const year = yearTime ? yearTime[0] : null;
+                                const time = yearTime ? yearTime[1] : null;
+
+                                const formattedDateString = `${year}-${month}-${day} ${time}`;
+                                const fechaSolicitudDate = new Date(formattedDateString);
+
+                                if (fechaValidacion == null) {
+                                    function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                        const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                        const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                        const totalMinutos = Math.floor(totalSegundos / 60);
+                                        const totalHoras = Math.floor(totalMinutos / 60);
+
+                                        const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                        const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                        const horas = String(totalHoras).padStart(2, '0');
+
+                                        return { horas, minutos, segundos };
+                                    }
+
+                                    const fechaActualDate = new Date();
+                                    const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
+
+                                    var demoracoord = ``;
+                                    var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">C9: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
+
+
+                                } else {
+                                    if (fechaValidacion) {
+                                        const parts2 = fechaValidacion.split(' ');
+                                        const month2 = months[parts2[0]?.toLowerCase()];
+                                        const day2 = parts2[1];
+                                        const yearTime2 = parts2[2]?.split('-');
+
+                                        const year2 = yearTime2 ? yearTime2[0] : null;
+                                        const time2 = yearTime2 ? yearTime2[1] : null;
+
+                                        const formattedDateString2 = `${year2}-${month2}-${day2} ${time2}`;
+                                        const fechaValidacionDate = new Date(formattedDateString2);
+
+                                        const diferencia = calcularDiferencia(fechaSolicitudDate, fechaValidacionDate);
+                                        const diferencia2 = calcularDiferencia(fechaValidacionDate, new Date());
+
+                                        var demoracoord = `<span title="Fecha Solicitud: ${fechaSolicitud} . Fecha Validacion: ${fechaValidacion}" class="" >${row.UltimaAreaCoordinacion}: <span class="text-dark fw-semibold ">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span>`;
+                                        var demoradireccion = `<span title="Fecha Validacion: ${fechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
+                                    }
+                                }
+                            }
+                            
+                            var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}</div>
+                                        ${demoracoord}
+                                        ${demoradireccion}`
+                        }else if('{{ session('rol') }}' == 'Coordinacion'){
+
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                const totalMinutos = Math.floor(totalSegundos / 60);
+                                const totalHoras = Math.floor(totalMinutos / 60);
+
+                                const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                const horas = String(totalHoras).padStart(2, '0');
+
+                                return { horas, minutos, segundos };
+                            }
+
+
+                            fechaSolicitud = row.UltimaFechaDoneTramite;
+                            fechaValidacion = row.UltimaFechaCoordinacion;
+
+                            const months = {
+                                "enero": "01",
+                                "febrero": "02",
+                                "marzo": "03",
+                                "abril": "04",
+                                "mayo": "05",
+                                "junio": "06",
+                                "julio": "07",
+                                "agosto": "08",
+                                "septiembre": "09",
+                                "octubre": "10",
+                                "noviembre": "11",
+                                "diciembre": "12"
+                            };
+
+                            if (fechaSolicitud) {
+                                const parts = fechaSolicitud.split(' ');
+                                const month = months[parts[0]?.toLowerCase()];
+                                const day = parts[1];
+                                const yearTime = parts[2]?.split('-');
+
+                                const year = yearTime ? yearTime[0] : null;
+                                const time = yearTime ? yearTime[1] : null;
+
+                                const formattedDateString = `${year}-${month}-${day} ${time}`;
+                                const fechaSolicitudDate = new Date(formattedDateString);
+
+                                if (fechaSolicitud) {
+                                    function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                        const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+
+                                        const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
+                                        const totalMinutos = Math.floor(totalSegundos / 60);
+                                        const totalHoras = Math.floor(totalMinutos / 60);
+
+                                        const segundos = String(totalSegundos % 60).padStart(2, '0');
+                                        const minutos = String(totalMinutos % 60).padStart(2, '0');
+                                        const horas = String(totalHoras).padStart(2, '0');
+
+                                        return { horas, minutos, segundos };
+                                    }
+
+                                    const fechaActualDate = new Date();
+                                    const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
+
+                                    var demoracoord = ``;
+                                    var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">${row.UltimaAreaCoordinacion}: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
+
+
+                                }else{
+
+                                }
+                            }
+                                var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}</div>
+                                        ${demoracoord}
+                                        ${demoradireccion}`
+
+
+                        }else{
+                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}
                                     <div>
                                         <span class="text-dark" title="Fecha Solicitud">
                                         ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
@@ -48,6 +223,16 @@
                                     </div>
                                 </div>
                             `
+                        }
+
+
+
+
+
+
+
+
+
 
                             return Contenido
                         },
@@ -64,22 +249,15 @@
                         data: 'UltimoEstado',
                         render: function(data, type, row) {
                             ultimoEstado = row.UltimoEstado
-                            if (ultimoEstado == "REMITIDO") {
+                            if (ultimoEstado == "REMITIDO" || ultimoEstado == "VALIDADO") {
                                 var Estado =
                                     '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>REMITIDO A GERENCIA</div>';
-                            }
-                            else if(row.Bloqueado == 1){
-                                var Estado =
-                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>';
                             }else if (ultimoEstado == "CORREGIR") {
                                 var Estado =
                                     '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>CORREGIR</div>';
                             } else if (ultimoEstado == "TRÁMITE") {
                                 var Estado =
                                     `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
-                            }else if (ultimoEstado == "VALIDADO") {
-                                var Estado =
-                                    `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">VALIDADO</div>`
                             }else if (ultimoEstado == "APROBADO") {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
@@ -91,7 +269,7 @@
                                     '<div class="btn btn-dark blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
                             } else {
                                 var Estado =
-                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR(GERENCIA)</div>'
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>'
                             }
 
                             return Estado;
@@ -163,8 +341,6 @@
                                                     <div class="row g-0 align-items-center justify-content-center border p-2">
                                                         ${row.UltimoEstado == "TRÁMITE"?
                                                             `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
-                                                            row.UltimoEstado == "VALIDADO" ?
-                                                            `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">V - VALIDADO</button>` :
                                                             row.UltimoEstado == "APROBADO" ?
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.UltimoEstado == "CORREGIR" ?
@@ -173,9 +349,9 @@
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
                                                             row.UltimoEstado == "STAND BY" ?
                                                             '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
-                                                            row.UltimoEstado == "REMITIDO" ?
+                                                            row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
-                                                            '<h1>nada</h1>'
+                                                            '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
                                                         }
                                                     </div>
                                                     </div>
@@ -294,9 +470,10 @@
                                                     const año = fechaInsercionDate.getFullYear();
                                                     const fechaFormateada = `${mes} ${dia} del ${año}`;
 
-
+                                                    
+                                                    
                                                     // Si el estado es "EN TRÁMITE", renderiza el bloque especial
-                                                    if (item.Estado === 'TRÁMITE' || item.Estado === 'DONE' || item.Estado === 'REMITIDO' && item.Estado !== 'VALIDADO') {
+                                                    if (item.Estado === 'TRÁMITE' || item.Estado === 'DONE' || item.Estado === 'REMITIDO'  || item.Estado === 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDOCORREGIR' && item.Estado !== 'VALIDADO') {
                                                         return `
                                         <div class="row g-0 text-center">
                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
@@ -309,7 +486,7 @@
                                                 style="cursor:pointer;">
                                                     <div class="row g-0 row-cols-2 justify-content-center">
                                                         <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                            <span class="fs-5">${item.NomArea} - ${item.NumArea} - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
+                                                            <span class="fs-5">${item.NumArea} - ${item.NomArea} - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
                                                         </div>
                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                             <span class="mb-0 fs-5">${item.FechaString}</span>
@@ -321,15 +498,15 @@
                                                     <div class="collapse" id="secondaryData_${id}">
                                                         <div class="row g-0 row-cols-2 d-flex justify-content-start">
                                                             <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                                ${row.UltimoEstado == 'CORREGIR' && item.Estado !== 'DONE'  && '{{ session('rol') }}' !== 'Coordinacion'  ? `
+                                                                ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
                                                                     <div class="mb-3 w-100" id="id">
                                                                         <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" 
                                                                             onChange="autorizacionesModalChange(${row.IDAutorizacion},'${item.Cedula}','${item.CuentaAsociado}', '${item.NombrePersona}', '${item.Convencion}', event)" required>
-                                                                            <option selected class="fw-bold" value="${item.ID_Concepto}">**Concepto Actual** -> ${row.Concepto}</option>
+                                                                            <option selected class="fw-bold" value="${item.ID_Concepto}">**Concepto Actual** -> ${item.Concepto}</option>
                                                                             @include('layouts.optionmodal')
                                                                         </select>
                                                                     </div>
-                                                                ` : `<span class="fs-5">${row.Concepto} - @include('layouts.optionvercodigo')</span>`}
+                                                                ` : `<span class="fs-5">${item.Concepto} - @include('layouts.optionvercodigo')</span>`}
                                                             </div>
                                                             <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
                                                                 ${item.ID_Concepto == 41 ? `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${item.Convencion}</span>` : ``}
@@ -339,7 +516,7 @@
 
                                                     
                                                         ${
-                                                            (row.UltimoEstado == 'CORREGIR' && item.Estado !== 'DONE' && '{{ session('rol') }}' !== 'Coordinacion' 
+                                                            (row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'
                                                                 ? `
                                                                         <div class="row g-0">
                                                                             <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
@@ -361,7 +538,7 @@
                                                                         </div>
                                                                     `
                                                                     
-                                                                : (item.Estado == 'DONE' || item.Estado == 'TRÁMITE')
+                                                                : (item.Estado == 'DONE' || item.Estado == 'TRÁMITE'|| item.Estado == 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDO')
                                                                     ? `
                                                                     <div class="row g-0">
                                                                         <div class="col-md-12 d-flex justify-content-start border p-2">
@@ -384,7 +561,7 @@
 
 
                                                         <div class="row g-0">
-                                                            ${row.UltimoEstado == 'CORREGIR' && item.Estado != 'DONE' && '{{ session('rol') }}' !== 'Coordinacion'  ? `
+                                                            ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
                                                                 <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                                     <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" 
                                                                         id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${item.Detalle}</textarea>
@@ -428,7 +605,7 @@
                                     
                                         ${
                                             // Coordinación para VALIDAR o Gerencia para REMITIDO
-                                            ((item.Estado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion' && item.Observaciones !== 'NADA'))
+                                            ((item.Estado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion' && item.Observaciones !== 'NADA') || (item.NumArea == 'Jefatura' && '{{ session('rol') }}' == 'Gerencia') && (row.UltimoEstado != "CORREGIR" && row.UltimoEstado != "APROBADO" && row.UltimoEstado != "VALIDADO" && item.Estado != "DONE"))
                                                 ? `
                                                     <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                         @csrf
@@ -439,7 +616,7 @@
                                                                     <span>VALIDAR</span>
                                                                 </label>
                                                                 <label class="label">
-                                                                    <input value="CORREGIR" type="radio" name="Estado" required>
+                                                                    <input value="${'{{ session('rol') }}' == 'Gerencia' ? `"CORREGIRJEFATURA"`:`"CORREGIR"`} type="radio" name="Estado" required>
                                                                     <span>RECHAZAR</span>
                                                                 </label>
                                                             </div>
@@ -488,7 +665,7 @@
                                                                         <span>RECHAZAR</span>
                                                                     </label>
                                                                     <label class="label">
-                                                                        <input value="1" type="radio" name="Estado" id="estado_bloquear" required>
+                                                                        <input value="BLOQUEADO" type="radio" name="Estado" id="estado_bloquear" required>
                                                                         <span>BLOQUEAR</span>
                                                                     </label>
                                                                     <label class="label">
@@ -547,6 +724,8 @@
                                                 item.Estado === 'APROBADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'CORREGIR' ? 'bg-primary-subtle' :
                                                 item.Estado === 'REMITIDO' ? 'bg-info-subtle' :
+                                                item.Estado == 'BLOQUEADO' ? 'bg-danger-subtle' :
+                                                item.Estado == 'STAND BY' ? 'bg-dark-subtle' :
                                                 'bg-secondary-subtle'
                                             } border p-2 border border-dark" title="${item.Estado}">
                                                 <span class="h1 fw-bold mb-0">
@@ -643,8 +822,8 @@
 
 
                                         </div>
-                                ${
-                                    row.UltimoEstado == 'CORREGIR' && '{{ session('rol') }}' !== 'Coordinacion' 
+                                ${//BOTONES
+                                    row.UltimoEstado == 'CORREGIR'  && '{{ session('rol') }}' !== 'Coordinacion' && '{{ session('rol') }}' !== 'Gerencia'
                                         ? `
                                         <div class="text-center p-3">
                                             <button id="boton${row.IDAutorizacion}" 
@@ -656,7 +835,11 @@
                                             </button>
                                         </div>
                                         `
-                                        : (row.UltimoEstado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion')
+                                        :   (
+                                                (row.UltimoEstado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion') ||
+                                                (row.NumArea == 'Jefatura' && '{{ session('rol') }}' == 'Gerencia') && (row.UltimoEstado != "CORREGIR" && row.UltimoEstado != "APROBADO" && row.UltimoEstado != "VALIDADO" && row.UltimoEstado != "DONE")
+                                            )
+
                                             ? `
                                             <div class="text-center p-3">
                                                 <button id="boton${row.IDAutorizacion}" 
@@ -679,8 +862,18 @@
                                                     onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
                                                     GUARDAR
                                                 </button>
+                                            </div>`
+                                        : (row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' && '{{ session('rol') }}' === 'Coordinacion')
+                                            ? `
+                                            <div class="text-center p-3">
+                                                <button id="boton${row.IDAutorizacion}" 
+                                                    type="button" 
+                                                    class="btn btn-outline-success fs-5 fw-bold w-50" 
+                                                    name="btnregistrar" 
+                                                    onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
+                                                    GUARDAR
+                                                </button>
                                             </div>
-                                            
                                             `:''
                                 }
 
@@ -724,74 +917,130 @@
                     }
                 },
                 "initComplete": function(settings, json) {
-                    var buttonsHtml = '<div class="d-flex flex-wrap align-items-center gap-2">' +
-                        '<button class="custom-btn2 mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel text-white"></i></a></button>' +
-                        '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
-                        `
-                        <div class="dropdown d-inline" title="Solicitudes de jefaturas">
-                            <button class="btn btn-dark fw-bold dropdown-toggle mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1"
-                                    type="button"
-                                    id="dropdownMenuButton"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                var buttonsHtml = `
+                <div>
+                    <button class="custom-btn2 mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN">
+                        <a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL">
+                            <i class="fas fa-file-excel text-white"></i>
+                        </a>
+                    </button>
+
+                    <button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                ${('{{ session('rol') }}' === 'Gerencia')
+                ? `    
+                            <button id="btnC9" class="btn btn-secondary fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="C9">
+                                COORDINACIÓN 9
+                            </button>
+
+                            <div class="dropdown d-inline" title="Solicitudes de jefaturas">
+                                <button class="btn btn-dark fw-bold dropdown-toggle mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1"
+                                        type="button"
+                                        id="dropdownMenuButton"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    STAND BY
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item fw-bold" href="#" id="btnStandBy">VER</a></li>
+                                    <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}" id="btnAprobarTodos">APROBAR TODOS</a></li>
+                                </ul>
+                            </div>
+
+                            <button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="APROBADOS">
+                                APROBADOS
+                            </button>
+                            <button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2  me-1" title="RECHAZADOS">
+                                RECHAZADOS
+                            </button>
+
+                            <button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="EN TRÁMITE">
+                                EN TRÁMITE
+                            </button>
+
+                            <button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="BLOQUEADOS">
+                                BLOQUEADOS
+                            </button>
+
+                            <button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ANULADOS">
+                                ANULADOS
+                            </button>
+                            `://AQUI ES LO DE LOS USUARIOS
+
+                            `
+                            <button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="APROBADOS">
+                                APROBADOS
+                            </button>
+
+                            <button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ANULADOS">
+                                ANULADOS
+                            </button>
+
+                            <button id="btnStandBy" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2  me-1" title="STAND BY">
                                 STAND BY
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li><a class="dropdown-item fw-bold" href="#" id="btnStandBy">VER</a></li>
-                                <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}" id="btnAprobarTodos">APROBAR TODOS</a></li>
-                            </ul>
-                        </div>
-                        ` +
-                        '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">APROBADOS</button>' +
-                        '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="RECHAZADOS">RECHAZADOS</button>' +
-                        '<button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="EN TRÁMITE">EN TRÁMITE</button>' +
-                        '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
-                        '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="ANULADOS">ANULADOS</button>' +
-                    '</div>';
+                    </div>
+                    `
+                }
+                    
+
+                
+                `;
+
+
 
                     $(buttonsHtml).prependTo('.dataTables_filter');
                         $('#btnT').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.solicitudes") }}';
+                            var newAjaxSource = '{{ route("data.solicitudes") }}';
+                            var newAjaxSource = '/autmanager/public/solicitudes/datatable';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
                         });
 
+                        $('#btnC9').on('click', function() {
+                            var newAjaxSource = '{{ route("data.c9") }}';
+
+                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                        });
+
                         $('#btnA').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.aprobados") }}';
+                            var newAjaxSource = '{{ route("data.aprobados") }}';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
                         });
 
                         $('#btnR').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.rechazados") }}';
+                            var newAjaxSource = '{{ route("data.rechazados") }}';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                         });
 
                         $('#btnTramite').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.tramite") }}';
+                            var newAjaxSource = '{{ route("data.tramite") }}';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                         });
 
                         $('#btnBloqueado').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.bloqueados") }}';
+                            var newAjaxSource = '{{ route("data.bloqueados") }}';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                         });
 
                         $('#btnAnulado').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.anulados") }}';
+                            var newAjaxSource = '{{ route("data.anulados") }}';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                         });
 
                         $('#btnStandBy').on('click', function() {
-                            var newAjaxSource = '{{ route("datager.standby") }}';
+                            var newAjaxSource = '{{ route("data.standby") }}';
 
                             $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
@@ -883,6 +1132,7 @@
                         // Realizar la solicitud AJAX mientras se muestra el mensaje de carga
                         $.ajax({
                             url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                            url: "/autmanager/public/solicitudes/actualizar-" + id,
                             type: "POST",
                             data: formData,
                             contentType: false,
@@ -988,6 +1238,7 @@
                 // Realizar la solicitud AJAX para actualizar la autorización
                 $.ajax({
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                    url: "/autmanager/public/solicitudes/actualizar-" + id,
                     type: "POST",
                     data: {
                         Observaciones: observaciones,
@@ -1058,6 +1309,7 @@
                 // Realizar la solicitud AJAX para actualizar la autorización
                 $.ajax({
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                    url: "/autmanager/public/solicitudes/actualizar-" + id,
                     type: "POST",
                     data: {
                         Observaciones: observaciones,

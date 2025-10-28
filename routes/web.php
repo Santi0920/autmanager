@@ -33,10 +33,14 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/solicitudes/datatable', [UsuarioController::class, 'solicitudes'])->name('data.solicitudes');
 
+    Route::get('/solicitudesc9/datatable', [UsuarioController::class, 'c9'])->name('data.c9');
+
     Route::get('/solicitudesaprobadas/datatable', [UsuarioController::class, 'aprobados'])->name('data.aprobados');
 
     Route::get('/solicitudesrechazadas/datatable', [UsuarioController::class, 'rechazados'])->name('data.rechazados');
-
+    
+    Route::get('/solicitudestramite/datatable', [UsuarioController::class, 'tramite'])->name('data.tramite');
+    
     Route::get('/solicitudesbloqueadas/datatable', [UsuarioController::class, 'bloqueados'])->name('data.bloqueados');
 
     Route::get('/solicitudesanuladas/datatable', [UsuarioController::class, 'anulados'])->name('data.anulados');

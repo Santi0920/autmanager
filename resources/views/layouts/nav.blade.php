@@ -65,17 +65,15 @@
                             OPCIONES
                         </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @if (session('rol') == 'Consultante')
+                        @if (session('rol') == 'Consultante' || session('rol') == 'Jefatura' ||  session('rol') == 'Coordinacion')
                             <li><a class="dropdown-item fw-bold" href="solicitudes">Solicitar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="ordentrabajo">Orden de Trabajo</a></li>
                         @elseif (session('rol') == 'Gerencia')
-                            <li><a class="dropdown-item fw-bold" href="aprobar">Gerencia</a></li>
+                            <li><a class="dropdown-item fw-bold" href="solicitudes">Gerencia</a></li>
                             {{-- <li><a class="dropdown-item fw-bold" href="#" title="EN PROCESO">&nbsp&nbsp&nbsp• Bloqueados</a></li> --}}
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="coordinacion9">Coordinación 9</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -84,18 +82,6 @@
                             <li><a class="dropdown-item fw-bold" href="otrabajo">Orden de Trabajo</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-bold" href="admin">Panel Administrativo</a></li>
-                        @elseif (session('rol') == 'Coordinacion')
-                            <li><a class="dropdown-item fw-bold" href="validar">Solicitar Autorización</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="ordentrabajo">Orden de Trabajo</a></li>
-                        @elseif (session('rol') == 'Jefatura')
-                            <li><a class="dropdown-item fw-bold" href="solicitudesjefatura">Solicitar Autorización</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="filtrar">Consultar Autorización</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold" href="ordentrabajo">Orden de Trabajo</a></li>
                         @endif
 
 
