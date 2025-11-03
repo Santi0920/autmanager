@@ -20,86 +20,128 @@ class SessionsController extends Controller
 
     public function login_post(Request $request)
     {
-$attempts = 0;
-$maxAttempts = 3; // Intentos máximos
-$retryDelay = 1000; // Milisegundos
-$user = null;
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-do {
-    try {
-        // Buscar el usuario localmente
-        $user = DB::table('users')
-            ->whereRaw('LOWER(email) = ?', [strtolower($request->email)])
-            ->first();
+        $email = strtolower($request->email);
+        $password = $request->password;
 
-        if (!$user) {
-            throw new \Exception('Usuario no encontrado');
+        // Buscar usuario en la tabla local 'users'
+        $user = User::where('email', $email)->first();
+
+        if (!$user || !Hash::check($password, $user->password)) {
+            return back()->with('message', 'El usuario o la contraseña es incorrecto!');
+        }
+        $displayAgencias = ''; // Variable que contendrá el resultado final
+
+        if ($user->rol === 'Consultante') {
+            // Quitar los dos últimos ceros
+            $userCC = substr((string)$user->codigo, 0, -2);
+
+            // Traer agencias según el código
+            $agencias = DB::select(
+                'SELECT agenciau 
+                FROM users 
+                WHERE agencias_id LIKE ?',
+                ['%"' . $userCC . '"%']
+            );
+
+            // Convertir a abreviación C1, C3, etc.
+            $agenciasString = implode(', ', array_map(function($item) {
+                preg_match('/\d+/', $item->agenciau, $matches);
+                return isset($matches[0]) ? 'C'.$matches[0] : $item->agenciau;
+            }, $agencias));
+
+            $displayAgencias = $agenciasString;
+
+        } elseif ($user->rol === 'Coordinacion') {
+            // Obtener los IDs de agencias desde el campo JSON agencias_id
+            $agenciasIDs = json_decode($user->agencias_id, true); // Supongo que es JSON
+            
+            if ($agenciasIDs && is_array($agenciasIDs)) {
+                $agencias = DB::table('agencias')
+                    ->whereIn('NumAgencia', $agenciasIDs)
+                    ->get(); // traemos toda la fila
+                    $agenciasFormatted = $agencias->map(function($item) {
+                        return '<span style="display:inline-block; margin:2px 5px; padding:2px 6px; background-color:#f0f0f0; border-radius:5px;">
+                                    ' . htmlspecialchars($item->NameAgencia) . ' <strong>(' . $item->NumAgencia . ')</strong>
+                                </span>';
+                    })->toArray();
+
+                    // Unir en un string separado por comas
+                    $displayAgencias = implode(' ', $agenciasFormatted);
+            }
         }
 
-        break; // Usuario encontrado, salir del bucle
+        // Información para auditoría
+        $nombreauditoria = $user->name ?? null;
+        $rol = $user->rol ?? null;
+        $agencia = $user->agenciau ?? null;
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = now()->format('Y-m-d H:i:s');
 
-    } catch (\Exception $e) {
-        $attempts++;
-        Log::warning("Intento $attempts fallido al consultar usuario: " . $e->getMessage());
-        usleep($retryDelay * 1000); // Esperar antes de reintentar
-    }
-} while ($attempts < $maxAttempts);
-    $userCC = substr((string)$user->codigo, 0, -2); // quitar los dos últimos ceros
+        // Último acceso (antes del actual)
+        $ultimoAcceso = DB::table('auditoria')
+            ->where('Usuario_nombre', $nombreauditoria)
+            ->orderByDesc('Hora_Accion')
+            ->skip(1) // saltar el último registro
+            ->value('Hora_Accion');
 
-    $agencias = DB::select(
-        'SELECT agenciau 
-        FROM users 
-        WHERE agencias_id LIKE ?',
-        ['%"' . $userCC . '"%']
-    );
+        // Última acción
+        $ultimaAccion = DB::table('auditoria')
+            ->where('Usuario_nombre', $nombreauditoria)
+            ->orderByDesc('Hora_Accion')
+            ->value('Acción_realizada');
 
-    // Convertir a abreviación C1, C3, etc.
-    $agenciasString = implode(', ', array_map(function($item) {
-        // Extraer el número del string "Coordinacion X"
-        preg_match('/\d+/', $item->agenciau, $matches);
-        return isset($matches[0]) ? 'C'.$matches[0] : $item->agenciau;
-    }, $agencias));
+        // Últimos 3 logins (fecha y hora)
+        $loginsRecientes = DB::table('auditoria')
+            ->where('Usuario_nombre', $nombreauditoria)
+            ->orderByDesc('Hora_Accion')
+            ->limit(3)
+            ->pluck('Hora_Accion')
+            ->toArray();
 
-// Verificar autenticación con los datos locales
-if ($user && Hash::check($request->password, $user->password)) {
-    // Crear sesión
-    session([
-        'id' => $user->id,
-        'email' => $user->email,
-        'rol' => $user->rol ?? null,
-        'agenciau' => $user->agenciau ?? null,
-        'name' => $user->name ?? null,
-        'celular' => $user->celular ?? null,
-        'notificaciones' => $user->notificaciones ?? null,
-        'activo' => $user->activo ?? null,
-        'codigo' => $user->codigo ?? null,
-        'agencias_id' => $user->agencias_id ?? null,
-        'coordasignadas' => $agenciasString ?? '',
-        'expires_at' => now()->addHours(10),
-    ]);
+        $loginsRecientesFormatted = implode(', ', array_map(function($fecha){
+            return date('Y-m-d H:i:s', strtotime($fecha));
+        }, $loginsRecientes));
 
-    // Redirigir o retornar éxito
-    return redirect('/solicitudes');
-    
-} else {
+        // Registrar auditoría del login actual
+        DB::table('auditoria')->insert([
+            'Hora_login' => null,
+            'Usuario_nombre' => $nombreauditoria,
+            'Usuario_Rol' => $rol,
+            'AgenciaU' => $agencia,
+            'Acción_realizada' => 'Login',
+            'Hora_Accion' => $fechaHoraActual,
+            'cerro_sesion' => null,
+            'IP' => $ip
+        ]);
+
+        // Guardar datos en sesión
         session([
-        'id' => $user->id,
-        'email' => $user->email,
-        'rol' => $user->rol ?? null,
-        'agenciau' => $user->agenciau ?? null,
-        'name' => $user->name ?? null,
-        'celular' => $user->celular ?? null,
-        'notificaciones' => $user->notificaciones ?? null,
-        'activo' => $user->activo ?? null,
-        'codigo' => $user->codigo ?? null,
-        'agencias_id' => $user->agencias_id ?? null,
-        'expires_at' => now()->addHours(10),
-    ]);
-    return redirect('/solicitudes');
-}
+            'id' => $user->id,
+            'email' => $user->email,
+            'rol' => $rol,
+            'agenciau' => $agencia,
+            'name' => $nombreauditoria,
+            'celular' => $user->celular ?? null,
+            'notificaciones' => $user->notificaciones ?? null,
+            'activo' => $user->activo ?? null,
+            'codigo' => $user->codigo ?? null,
+            'agencias_id' => $user->agencias_id ?? null,
+            'coordasignadas' => $displayAgencias ?? '',
+            'expires_at' => now()->addHours(10),
+            'ultimo_acceso' => $ultimoAcceso,
+            'ultima_accion' => $ultimaAccion,
+            'logins_recientes' => $loginsRecientesFormatted,
+        ]);
 
- 
+        session()->flash('bienvenida', 'Bienvenido/a, ' . $nombreauditoria . ' 👋');
 
+        return redirect()->to('/solicitudes');
     }
 
     public function destroy(Request $request)

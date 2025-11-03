@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
+use App\Models\User;
 class UsuarioController extends Controller
 {
     //ENVIAR DATOS A LA VISTA, PARA CARGAR SELECTS DINAMICAMENTE
@@ -30,8 +34,18 @@ class UsuarioController extends Controller
         $convencion = DB::select("SELECT * FROM convenciones ORDER BY ID ASC");
 
         $usuariosEnviara = DB::select("SELECT * FROM users WHERE rol = 'Consultante' OR rol = 'Coordinacion' OR rol = 'Jefatura' ORDER BY name ASC");
-        
-        return view('Usuario/solicitudes', ['grupos' => $grupos, 'user' => $user, 'convencion' => $convencion, 'usuariosEnviara' => $usuariosEnviara]);
+
+        $userId = session('id'); // tu ID de usuario
+        $userFiltrado = User::find($userId);
+        $name = $userFiltrado->name;
+        $celular = $userFiltrado->celular;
+
+        return view('Usuario/solicitudes', [
+            'user' => $user,
+            'grupos' => $grupos,
+            'convencion' => $convencion,
+            'usuariosEnviara' => $usuariosEnviara,
+        ]);
     }
 
     //LISTO
@@ -2544,6 +2558,7 @@ class UsuarioController extends Controller
             ->where('H.Estado', '!=', "APROBADO")
             ->where('H.Estado', '!=', "VALIDADO")
             ->where('H.Estado', '!=', "CORREGIR")
+            ->where('H.Estado', '!=', "ANULADO")
             ->select([
                 'A.ID AS IDPersona',
                 'A.Score',
@@ -4268,6 +4283,68 @@ class UsuarioController extends Controller
         }
 
         return view('modales.autorizacion', compact('data'))->render();
+    }
+
+
+
+    public function updatePassword(Request $request)
+    {
+        // Obtener el usuario logueado desde la sesión
+        $userId = session('id');
+        $user = User::find($userId);
+
+        if (!$user) {
+            return redirect()->back()->withErrors(['error' => 'Usuario no encontrado.']);
+        }
+
+        // Validaciones
+        $validator = Validator::make($request->all(), [
+            'current_password' => ['required'],
+            'new_password' => [
+                'required',
+                'string',
+                'min:8',              // mínimo 8 caracteres
+                'regex:/[a-z]/',      // al menos 1 minúscula
+                'regex:/[A-Z]/',      // al menos 1 mayúscula
+                'regex:/[0-9]/',      // al menos 1 número
+                'regex:/[@$!%*?&]/',  // al menos 1 símbolo
+                'confirmed'           // debe coincidir con new_password_confirmation
+            ],
+        ], [
+            'new_password.regex' => 'La nueva contraseña debe contener al menos una mayúscula, minúscula, número y símbolo.',
+            'new_password.confirmed' => 'La confirmación de la contraseña no coincide.'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Verificar contraseña actual
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'La contraseña actual es incorrecta.']);
+        }
+
+        // Actualizar la contraseña
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->back()->with('success', 'Contraseña actualizada correctamente.');
+
+    }
+
+
+    public function updatePerfil(Request $request)
+    {
+        $userId = session('id'); // tu ID de usuario
+        $user = User::find($userId);
+
+        User::where('id', $user->id)->update([
+            'name' => $request->name,
+            'celular' => $request->celular,
+        ]);
+
+
+        return redirect()->back()->with('success', 'Perfil actualizado correctamente.');
     }
 
 

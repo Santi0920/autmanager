@@ -6,12 +6,10 @@
             <div class="col-11 mx-auto">
                 <!-- Header Sección -->
                 <div class="d-flex justify-content-between align-items-center my-3 flex-wrap">
-                    <span class="d-inline mb-0 text-dark" style="font-size: 36px; font-weight: 700; letter-spacing: 1px;">
-                        ⭐ DIRECCIÓN GENERAL ⭐
-                    </span>
-                                <h1 class="text-gradient-primary fw-bold mb-1" style="font-size: 3rem; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.25);">
-                DIRECCIÓN GENERAL
-            </h1>
+                    <h1 class="text-gradient-primary fw-bold mb-1" style="font-size: 3rem; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.25);">
+                        ⭐DIRECCIÓN GENERAL⭐
+                    </h1>
+
                     <div class="d-flex align-items-center flex-wrap">
                         <a href="estadisticas" id="btnAgencias" class="btn btn-gradient-primary fw-bold me-3 mb-2" title="ESTADÍSTICAS AUTORIZACIONES">
                             <i class="fa-solid fa-chart-bar text-white me-2"></i> ESTADÍSTICAS
@@ -74,28 +72,61 @@
         @else
             <div class="container-fluid row p-4">
                 <!-- REGISTRO DE AUTORIZACIONES POR PARTE DE USUARIOS (Coord,Directores,Jefaturas) -->
-                <form 
-                    id="pagare"
-                    action="{{ route('solicitar.autorizacion') }}"
-                    method="POST"
-                    enctype="multipart/form-data"
-                    class="col m-3"
-                    onsubmit="return enviarFormulario()"
-                >
-                    @csrf
+            <form 
+                id="pagare"
+                action="{{ route('solicitar.autorizacion') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="col m-3 premium-form"
+                onsubmit="return enviarFormulario()"
+            >
+                @csrf
 
-                    <!-- Título principal -->
-                    <h2 class="p-2 text-secondary text-center">
-                        <strong>Solicitar Autorización</strong>
+                <!-- Título principal estilo corporativo -->
+                <div class="title-section mb-4">
+                    <h2 class="form-title">
+                        <i class="fa-solid fa-file-shield me-2"></i> Solicitar Autorización
                     </h2>
+                    <p class="form-description">Por favor completa los datos requeridos para continuar</p>
+                </div>
 
-                    <!-- Opciones incluidas -->
-                    @include('layouts.option')
+                <!-- Select Tipo de Autorización -->
+                <div class="mb-4 w-100" id="id">
+                    <label class="premium-label">
+                        <i class="fa-solid fa-list-check me-1"></i> Tipo de Autorización 
+                        <span class="required">*</span>
+                    </label>
 
-                    <!-- Contenedor dinámico -->
-                    <div id="cuerpo"></div>
+                    <select class="form-select premium-select" name="tautorizacion" id="autorizaciones" required>
+                        <option selected disabled>Selecciona una opción</option>
 
-                </form>
+                        @foreach ($grupos as $no => $items)
+                            @php
+                                $area = isset($items[0]->Areas) ? strtoupper($items[0]->Areas) : 'GLOBAL';
+                            @endphp
+
+                            <option disabled class="group-title">
+                                ━━ {{ $area }} ━━
+                            </option>
+
+                            @foreach ($items as $autorizacion)
+                                <option value="{{ $autorizacion->ID }}">
+                                    {{ $autorizacion->Concepto }}
+                                </option>
+                            @endforeach
+                        @endforeach
+                    </select>
+
+                    <small class="text-muted ms-1 fst-italic">
+                        Selecciona el tipo según la necesidad del proceso
+                    </small>
+                </div>
+
+                <!-- Aquí se cargan dinámicamente los campos según selección -->
+                <div id="cuerpo"></div>
+
+            </form>
+
 
 
 
@@ -135,17 +166,17 @@
                             </script>
                     </div>
                     <div class="table-responsive">
-                        <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
-                            <thead style="background-color: #646464;">
-                                <tr class="text-white">
-                                    <th scope="col" class="text-center">#</th>
-                                    <th scope="col" class="text-center" style="width: 35%">CONCEPTO</th>
-                                    <th scope="col" class="text-center" style="width: 20%">ESTADO</th>
-                                    <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
+                        <table id="personas" class="table table-hover table-bordered shadow-sm align-middle" style="border-radius: 12px; overflow: hidden;">
+                            <thead style="background: linear-gradient(90deg, #343a40, #495057); color: #ffc107; font-weight: 600;">
+                                <tr class="text-center">
+                                    <th>#</th>
+                                    <th class="w-50">CONCEPTO</th>
+                                    <th>ESTADO</th>
+                                    <th>DETALLE</th>
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider">
-
+                                <!-- Contenido dinámico -->
                             </tbody>
                         </table>
                     </div>
@@ -184,15 +215,76 @@
     </body>
     <!-- alertas -->
     @if(session('bienvenida'))
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
         <script>
-            Swal.fire({
-                icon: 'success',
-                title: '{{ session('bienvenida') }}',
-                showConfirmButton: false,
-                timer: 3000
+            // Lanzar confetti sutil al login
+            confetti({
+                particleCount: 80,
+                spread: 60,
+                gravity: 0.6,
+                origin: { y: 0.6 },
+                colors: ['#FFD700', '#ffffff', '#1E3C72', '#2A5298']
             });
+
+            // Modal tipo “login exitoso” sin toast
+            Swal.fire({
+                title: '{{ session('bienvenida') }}',
+                html: '<i class="fa-solid fa-user-check" style="font-size: 3rem; color: #FFD700; display:block; margin-bottom:1rem;" class="animate__animated animate__bounce"></i>',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                background: 'linear-gradient(135deg, #fff6a2ff, #FFFFFF, #a7a7a7ff)', // colores claros y suaves
+                color: '#1E3C72', // texto en azul oscuro para contraste
+                customClass: {
+                    popup: 'swal-premium-modal'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+
         </script>
+
+        <style>
+            .swal-premium-modal {
+                font-family: 'Poppins', sans-serif;
+                font-weight: 700;
+                font-size: 1.2rem;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+                border-radius: 1rem;
+                padding: 2rem 2.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .swal-premium-modal .swal2-title {
+                font-size: 1.5rem;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            }
+
+            .animate__bounce {
+                animation: bounce 1s infinite;
+            }
+
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+        </style>
     @endif
+
+
+
 
     @if (session('correcto'))
         <div>

@@ -263,6 +263,8 @@
                     },
                     {
                         data: 'IDAutorizacion',
+                        orderable: false,
+                        searchable: false,
                         render: function(data, type, row) {
 
                             var id = row.IDAutorizacion; // Obtener el ID de la fila
@@ -353,30 +355,30 @@
                                                         <span class="h3 fw-bold mb-0 text-danger">No.${row.IDAutorizacion}</span>
                                                     </div>
 
-                                                    <div class="row g-0 align-items-center justify-content-center border p-2">
-                                                        ${row.UltimoEstado == "TRÁMITE"?
-                                                            `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
-                                                            row.UltimoEstado == "APROBADO" ?
-                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
-                                                            row.UltimoEstado == "ENTERADO" ?
-                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">E - ENTERADO</button>` :
-                                                            row.UltimoEstado == "CORREGIR" ?
-                                                            `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
-                                                            row.UltimoEstado == "ANULADO" ?
-                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
-                                                            row.UltimoEstado == "STAND BY" ?
-                                                            '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
-                                                            row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
-                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
-                                                            row.UltimoEstado == "DESBLOQUEADO" ?
-                                                            '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">DESBLOQUEADO</button>' :
-                                                            row.UltimoEstado == "ENVIADO" ?
-                                                            '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">ENVIADO</button>' :
-                                                            row.UltimoEstado == "RECIBIDO" ?
-                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RECIBIDO</button>` :
-                                                            '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
-                                                        }
-                                                    </div>
+                                                        <div class="row g-0 align-items-center justify-content-center border p-2">
+                                                            ${row.UltimoEstado == "TRÁMITE"?
+                                                                `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
+                                                                row.UltimoEstado == "APROBADO" ?
+                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
+                                                                row.UltimoEstado == "ENTERADO" ?
+                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">E - ENTERADO</button>` :
+                                                                row.UltimoEstado == "CORREGIR" ?
+                                                                `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
+                                                                row.UltimoEstado == "ANULADO" ?
+                                                                '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
+                                                                row.UltimoEstado == "STAND BY" ?
+                                                                '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
+                                                                row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
+                                                                '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
+                                                                row.UltimoEstado == "DESBLOQUEADO" ?
+                                                                '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">DESBLOQUEADO</button>' :
+                                                                row.UltimoEstado == "ENVIADO" ?
+                                                                '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">ENVIADO</button>' :
+                                                                row.UltimoEstado == "RECIBIDO" ?
+                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RECIBIDO</button>` :
+                                                                '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
+                                                            }
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -845,7 +847,7 @@
                                                                         </label>
                                                                         <label class="label">
                                                                             <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara" required>
-                                                                            <span>ENVIAR AA</span>
+                                                                            <span>ENVIAR A</span>
                                                                         </label>
                                                                     </div>
                                                                 </div>
@@ -1008,11 +1010,11 @@
                                         ? `
                                         <div class="text-center p-3">
                                             <button id="boton${row.IDAutorizacion}" 
-                                                type="button" 
-                                                class="btn btn-outline-success fs-5 fw-bold w-50" 
                                                 name="btnregistrar" 
+                                                type="button"
+                                                class="btn btn-premium-action"
                                                 onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
-                                                GUARDAR
+                                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
                                             </button>
                                         </div>
                                         `
@@ -1021,11 +1023,11 @@
                                             ? `
                                                 <div class="text-center p-3">
                                                     <button id="boton${row.IDAutorizacion}" 
-                                                        type="button" 
-                                                        class="btn btn-outline-success fs-5 fw-bold w-50" 
                                                         name="btnregistrar" 
+                                                        type="button"
+                                                        class="btn btn-premium-action"
                                                         onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
-                                                        GUARDAR
+                                                        <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
                                                     </button>
                                                 </div>
                                             `
@@ -1054,11 +1056,11 @@
 
                                             <div class="text-center p-3">
                                                 <button id="boton${row.IDAutorizacion}" 
-                                                    type="button" 
-                                                    class="btn btn-outline-success fs-5 fw-bold w-50" 
                                                     name="btnregistrar" 
+                                                    type="button"
+                                                    class="btn btn-premium-action"
                                                     onclick="formValidarAutorizacion(${row.IDAutorizacion}, event)">
-                                                    GUARDAR
+                                                    <i class="fa-solid fa-floppy-disk me-2"></i>Validar
                                                 </button>
                                             </div>
     `
@@ -1066,11 +1068,11 @@
                                             ? `
                                             <div class="text-center p-3">
                                                 <button id="boton${row.IDAutorizacion}" 
-                                                    type="button" 
-                                                    class="btn btn-outline-success fs-5 fw-bold w-50" 
                                                     name="btnregistrar" 
+                                                    type="button"
+                                                    class="btn btn-premium-action"
                                                     onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
-                                                    GUARDAR
+                                                    <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
                                                 </button>
                                             </div>
                                             `:''
@@ -1091,8 +1093,8 @@
                     }
                 ],
                 "lengthMenu": [
-                    [5],
-                    [5]
+                    [5,10],
+                    [5,10]
                 ],
                 "drawCallback": function(settings) {
                     var api = this.api();
@@ -1104,16 +1106,105 @@
                     }
                 },
                 "language": {
-                    "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen autorizaciones disponibles!</span>",
-                    "info": "Mostrando la página _PAGE_ de _PAGES_",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(Filtrado de _MAX_ registros totales)",
-                    "search": "<span style='font-size: 20px; font-weight: bold'>🛑BUSCAR AUTORIZACIÓN🛑:</span>",
+                    "lengthMenu": `
+                        <span style="
+                            font-size: 15px;
+                            font-weight: 800;
+                            color: #005e56;
+                            text-transform: uppercase;
+                            margin-right: 10px;
+                            background: rgba(0, 94, 86, 0.08);
+                            padding: 6px 10px;
+                            border-radius: 6px;
+                            border-left: 4px solid #005e56;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                        ">
+                            <i class='fa-solid fa-table'></i> Mostrar:
+                        </span> _MENU_
+                    `,
+                    "zeroRecords": `
+                        <div class='py-4 text-center'>
+                            <i class='fa-solid fa-circle-exclamation' style='font-size: 55px; color: #dc3545;'></i>
+                            <div style='font-size: 24px; font-weight: 600; margin-top: 10px; color: #343a40;'>
+                                No se encontraron autorizaciones
+                            </div>
+                            <p style='font-size: 15px; color: #6c757d; margin-top: 6px;'>
+                                Verifica los filtros o realiza una nueva búsqueda
+                            </p>
+                        </div>
+                    `,
+                    "info": `
+                        <span style="
+                            font-weight: 700;
+                            color: #005e56;
+                            font-size: 14.5px;
+                            letter-spacing: .3px;
+                        ">
+                            Página <b>_PAGE_</b> de <b>_PAGES_</b>
+                        </span>
+                    `,
+                    "infoEmpty": `
+                        <span style="
+                            font-weight: 700;
+                            color: #a30000;
+                            font-size: 14.5px;
+                        ">
+                            No hay registros disponibles
+                        </span>
+                    `,
+                    "infoFiltered": `
+                        <span style="
+                            font-size: 13px;
+                            font-weight: 500;
+                            color: #6c757d;
+                        ">
+                            (Filtrado de <b>_MAX_</b> registros totales)
+                        </span>
+                    `,
+                    "search": `
+                        <span style="
+                            font-size: 18px;
+                            font-weight: 900;
+                            color: #005e56;
+                            text-transform: uppercase;
+                            padding: 8px 12px;
+                            border-radius: 6px;
+                            background: rgba(0, 94, 86, 0.08);
+                            border-left: 4px solid #005e56;
+                            letter-spacing: 1px;
+                            margin-right: 8px;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                        ">
+                            🔍 Buscar Autorización:
+                        </span>
+                    `,
                     "paginate": {
-                        "next": "Siguiente",
-                        "previous": "Anterior"
+                        "next": `
+                            <span style="
+                                font-weight: 600;
+                                color: #005e56;
+                                font-size: 14px;
+                                letter-spacing: .3px;
+                            ">
+                                Siguiente →
+                            </span>
+                        `,
+                        "previous": `
+                            <span style="
+                                font-weight: 600;
+                                color: #005e56;
+                                font-size: 14px;
+                                letter-spacing: .3px;
+                            ">
+                                ← Anterior
+                            </span>
+                        `
                     }
+
                 },
                 "initComplete": function(settings, json) {
                 var buttonsHtml = `
@@ -1600,131 +1691,100 @@
 
             $('#autorizaciones').on('change', function() {
 
-                // Obtener el valor seleccionado
-                var valorSeleccionado = $(this).val();
-                console.log("Valor seleccionado:", valorSeleccionado);
+                const valorSeleccionado = $(this).val();
+                const iconRequired = '<span class="text-danger" style="font-size:20px;">*</span>';
 
+                let contenido = '';
 
                 if (valorSeleccionado == "41") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
+                    contenido = `
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">CÉDULA ${iconRequired}</label>
+                        <input type="number" name="cedula" class="form-control form-control-lg shadow-sm" placeholder="Ingrese su cédula" required>
+                    </div>
 
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">NOMBRE PERSONA/EMPRESA ${iconRequired}</label>
+                        <input type="text" name="nombre" class="form-control form-control-lg shadow-sm" placeholder="Nombre completo o empresa" required>
+                    </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">CUENTA ${iconRequired}</label>
+                        <input type="text" name="cuenta" class="form-control form-control-lg shadow-sm" placeholder="Si no tiene cuenta escriba N/A" required>
+                    </div>
 
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">DETALLES DE LA AUTORIZACIÓN ${iconRequired}</label>
+                        <textarea name="detalle" class="form-control form-control-lg shadow-sm" rows="4" placeholder="Describa los detalles de la autorización" required></textarea>
+                    </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
-                                required>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">CONVENCIONES ${iconRequired}</label>
+                        <input type="text" name="convencion" class="form-control form-control-lg shadow-sm" placeholder="Ingrese las convenciones" required>
+                    </div>
 
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">ADJUNTAR CAPTURA DE AS400 ${iconRequired}</label>
+                        <input type="file" class="form-control shadow-sm" name="SoporteScore" accept="application/pdf" required>
+                    </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50">SOLICITAR</button>
+                    </div>
+                    `;
+                } else if (valorSeleccionado == "22") {
+                    contenido = `
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">DETALLES DE LA AUTORIZACIÓN ${iconRequired}</label>
+                        <textarea name="detalle" class="form-control form-control-lg shadow-sm" rows="4" placeholder="Describa los detalles de la autorización" required></textarea>
+                    </div>
 
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">ADJUNTAR SOPORTE ${iconRequired}</label>
+                        <input type="file" class="form-control shadow-sm" name="SoporteScore" accept="application/pdf" required>
+                    </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50">SOLICITAR</button>
+                    </div>
+                    `;
+                } else {
+                    contenido = `
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">CÉDULA/NIT ${iconRequired}</label>
+                        <p class="text-muted fs-6">Si es NIT, escribir sin el código verificación. Ej: 805.004.034</p>
+                        <input type="text" name="cedula" class="form-control form-control-lg shadow-sm" placeholder="Cédula o NIT" required>
+                    </div>
 
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">NOMBRE PERSONA/EMPRESA ${iconRequired}</label>
+                        <input type="text" name="nombre" class="form-control form-control-lg shadow-sm" placeholder="Nombre completo o empresa" required>
+                    </div>
 
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">CUENTA ${iconRequired}</label>
+                        <input type="text" name="cuenta" class="form-control form-control-lg shadow-sm" placeholder="Si no tiene cuenta escriba N/A" required>
+                    </div>
 
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;" >SOLICITAR</button>
-                        </div>
-                        `);
-                }else if (valorSeleccionado == "22") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">DETALLES DE LA AUTORIZACIÓN ${iconRequired}</label>
+                        <textarea name="detalle" class="form-control form-control-lg shadow-sm" rows="4" placeholder="Describa los detalles de la autorización" required></textarea>
+                    </div>
 
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">ADJUNTAR SOPORTE ${iconRequired}</label>
+                        <input type="file" class="form-control shadow-sm" name="SoporteScore" accept="application/pdf" required>
+                    </div>
 
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;" >SOLICITAR</button>
-                        </div>
-                        `);
-                }else{
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9 (código de verificación).<span class="text-danger"> NOTA</span></p>
-                            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
-
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;" >SOLICITAR</button>
-                        </div>
-                        `);
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50">SOLICITAR</button>
+                    </div>
+                    `;
                 }
+
+                $("#cuerpo").html(contenido);
             });
+
 
             function enviarFormulario() {
                 const boton = document.getElementById("agregar");

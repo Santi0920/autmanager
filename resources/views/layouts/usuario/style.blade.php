@@ -512,6 +512,92 @@
         transform: rotate(90deg);
         transition: transform 0.3s;
     }
+        .btn-premium-action {
+        background: linear-gradient(135deg, #007b5e 0%, #00a67a 100%);
+        border: none !important;
+        color: #fff !important;
+        padding: 0.65rem 2.2rem;
+        font-size: 15px;
+        border-radius: 50px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        box-shadow: 0 4px 12px rgba(0, 167, 122, 0.35);
+        transition: all .25s ease-in-out;
+    }
+
+    .btn-premium-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 167, 122, 0.45);
+    }
+
+    .btn-premium-action:active {
+        transform: scale(.96);
+    }
+
+    .btn-premium-action i {
+        font-size: 17px;
+    }
+
+    /* FORM CONTAINER PREMIUM */
+.premium-form {
+    background: #fff;
+    border-radius: 25px;
+    padding: 2.2rem;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+}
+
+/* TITLE */
+.form-title {
+    color: #005c4b;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.form-description {
+    font-size: .95rem;
+    color: #6a6a6a;
+    margin-top: -4px;
+}
+
+/* LABEL */
+.premium-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #005c4b;
+}
+
+/* REQUIRED */
+.required {
+    color: #c70000;
+    font-size: 20px;
+}
+
+/* SELECT */
+.premium-select {
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: .75rem 1rem;
+    border: 2px solid #e0e0e0;
+    transition: .25s ease;
+}
+
+.premium-select:focus {
+    border-color: #00a67a;
+    box-shadow: 0 0 10px rgba(0,166,122,0.25);
+}
+
+/* TITULOS DE AGRUPADORES */
+.group-title {
+    font-weight: 900 !important;
+    color: #005c4b !important;
+    background-color: #e6f7f2 !important;
+    font-size: .86rem;
+}
+
+
 
         </style>
         

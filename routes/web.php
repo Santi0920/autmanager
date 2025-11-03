@@ -51,6 +51,11 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/modal-autorizacion/{id}', [UsuarioController::class, 'modalAutorizacion']);
 
+    Route::post('/password/update', [UsuarioController::class, 'updatePassword'])->name('password.update');
+
+    Route::post('/perfil/actualizar', [UsuarioController::class, 'updatePerfil'])->name('perfil.update');
+
+
 
 
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos

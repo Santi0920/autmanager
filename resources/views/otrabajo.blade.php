@@ -40,7 +40,9 @@
         <div class="">
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
-                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- ORDEN DE TRABAJO -⭐</b></span>
+                    <h1 class="text-gradient-primary fw-bold mb-1" style="font-size: 3rem; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.25);">
+                        ⭐- ORDEN DE TRABAJO -⭐
+                    </h1>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
 
@@ -76,8 +78,8 @@
 
         </div>
         <div class="table-responsive mb-5" id="tablepersonas">
-            <table id="personas" class="hover table table-striped shadow-lg mt-4 table-hover table-bordered">
-                <thead style="background-color: #646464;">
+            <table id="personas" class="table table-hover table-bordered shadow-sm align-middle" style="border-radius: 12px; overflow: hidden;">
+                <thead style="background: linear-gradient(90deg, #343a40, #495057); color: #ffc107; font-weight: 600;">
                     <tr class="text-white">
                         <th scope="col" class="text-center">#</th>
                         <th scope="col" class="text-center">TIPO</th>
