@@ -597,6 +597,25 @@
     font-size: .86rem;
 }
 
+        .btn-filter.active {
+            background: linear-gradient(135deg, #1E3C72, #2A5298) !important;
+            color: #fff !important;
+            border-color: #1E3C72 !important;
+            font-weight: bold;
+            transform: translateY(-1px) scale(1.03);
+            transition: all 0.20s ease-in-out;
+
+            /* ✅ Glow debajo */
+            box-shadow: 0 6px 14px rgba(30, 60, 114, 0.6);
+        }
+
+        /* Hover para mantener estilo */
+        .btn-filter.active:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.75);
+        }
+
+
 
 
         </style>

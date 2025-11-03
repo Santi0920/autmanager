@@ -997,18 +997,24 @@ class UsuarioController extends Controller
                 $nombre = $usuarioSelect[0]->name;
             } else{
                 $estado = "DONE";
-
-                if ($ultimoEstado) {
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                if($tipovalidacion !== "CORREGIRJEFATURA"){
+                    if ($ultimoEstado) {
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update(['Estado' => $estado, 'Observaciones' => null]);
+                    }
                 }
-                $NumArea = 'C9';
-                $NomArea = 'Coordinacion 9';
+
                 if($tipovalidacion == "CORREGIRJEFATURA"){
+                    $NumArea = 'C9';
+                    $NomArea = 'Coordinacion 9';
                     $tipovalidacion = 'CORREGIR';
+                }else if($tipovalidacion == "VALIDADO"){
+                    $NumArea = 'C9';
+                    $NomArea = 'Coordinacion 9';
                 }else{
                     $tipovalidacion = $tipovalidacion;
+
                 }
             }
 
@@ -1922,6 +1928,7 @@ class UsuarioController extends Controller
                 'ANULADO',
                 'ENTERADO',
                 'RECIBIDO',
+                'ENVIADO',
             ])
             ->select([
                 'A.ID AS IDPersona',
@@ -3491,6 +3498,7 @@ class UsuarioController extends Controller
             ->where('H.Estado', '!=', "APROBADO")
             ->where('H.Estado', '!=', "VALIDADO")
             ->where('H.Estado', '!=', "CORREGIR")
+            ->where('H.Estado', '!=', "ENVIADO")
             ->select([
                 'A.ID AS IDPersona',
                 'A.Score',

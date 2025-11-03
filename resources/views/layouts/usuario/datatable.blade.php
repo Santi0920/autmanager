@@ -1044,7 +1044,8 @@
                                             row.UltimoEstado !== "APROBADO" &&
                                             row.UltimoEstado !== "VALIDADO" &&
                                             row.UltimoEstado !== "DONE" &&
-                                            row.UltimoEstado !== "ANULADO"
+                                            row.UltimoEstado !== "ANULADO" &&
+                                            row.UltimoEstado !== "ENVIADO"
                                         )
                                         ||
                                         (
@@ -1211,7 +1212,7 @@
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
 
                     <!-- BOTÓN ACTUALIZAR -->
-                    <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1"
+                    <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
                             title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span class="d-none d-md-inline">ACTUALIZAR</span>
@@ -1220,12 +1221,12 @@
                     ${
                         ('{{ session('rol') }}' === 'Gerencia') ? `
                         <!-- BOTÓN COORDINACIÓN 9 -->
-                        <button id="btnC9" class="btn btn-secondary shadow-sm fw-bold" title="COORDINACIÓN 9"
+                        <button id="btnC9" class="btn btn-secondary shadow-sm fw-bold btn-filter" title="COORDINACIÓN 9"
                                 style="transition: transform 0.2s;">COORDINACIÓN 9</button>
 
                         <!-- DROPDOWN STAND BY -->
                         <div class="dropdown d-inline">
-                            <button class="btn btn-dark shadow-sm fw-bold dropdown-toggle" type="button" id="dropdownMenuButton"
+                            <button class="btn btn-dark shadow-sm fw-bold dropdown-toggle btn-filter" type="button" id="dropdownMenuButton"
                                     data-bs-toggle="dropdown" aria-expanded="false" title="Solicitudes de jefaturas">
                                 STAND BY
                             </button>
@@ -1236,89 +1237,95 @@
                         </div>
 
                         <!-- BOTONES DE ESTADO -->
-                        <button id="btnA" class="btn btn-success shadow-sm fw-bold" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
-                        <button id="btnR" class="btn btn-danger shadow-sm fw-bold" title="RECHAZADOS" style="transition: transform 0.2s;">RECHAZADOS</button>
-                        <button id="btnTramite" class="btn btn-warning shadow-sm fw-bold" title="EN TRÁMITE" style="transition: transform 0.2s;">EN TRÁMITE</button>
-                        <button id="btnBloqueado" class="btn btn-danger shadow-sm fw-bold" title="BLOQUEADOS" style="transition: transform 0.2s;">BLOQUEADOS</button>
-                        <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
-                        <button id="btnEnviados" class="btn btn-secondary shadow-sm fw-bold" title="ENVIADOS" style="transition: transform 0.2s;">ENVIADOS</button>
+                        <button id="btnA" class="btn btn-success shadow-sm fw-bold btn-filter" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
+                        <button id="btnR" class="btn btn-danger shadow-sm fw-bold btn-filter" title="RECHAZADOS" style="transition: transform 0.2s;">RECHAZADOS</button>
+                        <button id="btnTramite" class="btn btn-warning shadow-sm fw-bold btn-filter" title="EN TRÁMITE" style="transition: transform 0.2s;">EN TRÁMITE</button>
+                        <button id="btnBloqueado" class="btn btn-danger shadow-sm fw-bold btn-filter" title="BLOQUEADOS" style="transition: transform 0.2s;">BLOQUEADOS</button>
+                        <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
+                        <button id="btnEnviados" class="btn btn-secondary shadow-sm fw-bold btn-filter" title="ENVIADOS" style="transition: transform 0.2s;">ENVIADOS</button>
                         ` :
                         `
                         <!-- BOTONES USUARIOS -->
-                        <button id="btnA" class="btn btn-success shadow-sm fw-bold" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
-                        <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
-                        <button id="btnStandBy" class="btn btn-dark shadow-sm fw-bold" title="STAND BY" style="transition: transform 0.2s;">STAND BY</button>
+                        <button id="btnA" class="btn btn-success shadow-sm fw-bold btn-filter" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
+                        <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
+                        <button id="btnStandBy" class="btn btn-dark shadow-sm fw-bold btn-filter" title="STAND BY" style="transition: transform 0.2s;">STAND BY</button>
                         `
                     }
                 </div>`
 
 
-            $('#personas_filter input').on('keyup', function() {
-                table.ajax.reload(null, false); // 🚀 Reconsulta con cada letra
-                console.log('Valor enviado:', $(this).val()); // ✅ Ver en consola
+            var lastAjaxUrl = '{{ route("data.solicitudes") }}';
+
+            function setActiveButton(btnId) {
+                $(".btn-filter").removeClass("active"); // Quita la clase a todos
+                $(btnId).addClass("active"); // Activa solo el seleccionado
+            }
+            $('#personas_filter input').on('keyup').on('keyup', function() {
+                var searchValue = $(this).val().trim();
+
+                if(searchValue === '') {
+                    table.ajax.url(lastAjaxUrl).load();
+                } else {
+                    table.ajax.url('{{ route("data.solicitudes") }}?search=' + encodeURIComponent(searchValue)).load();
+                }
+
+                console.log('Valor enviado al servidor:', searchValue);
             });
 
+            
             $(buttonsHtml).prependTo('.dataTables_filter');
                 $('#btnT').on('click', function() {
-                    var newAjaxSource = '{{ route("data.solicitudes") }}';
-                    var newAjaxSource = '/autmanager/public/solicitudes/datatable';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    lastAjaxUrl = '{{ route("data.solicitudes") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnT');
                 });
 
                 $('#btnC9').on('click', function() {
-                    var newAjaxSource = '{{ route("data.c9") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.c9") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnC9');
                 });
 
                 $('#btnA').on('click', function() {
-                    var newAjaxSource = '{{ route("data.aprobados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    lastAjaxUrl = '{{ route("data.aprobados") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnA');
                 });
 
                 $('#btnR').on('click', function() {
-                    var newAjaxSource = '{{ route("data.rechazados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.rechazados") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnR');
                 });
 
                 $('#btnTramite').on('click', function() {
-                    var newAjaxSource = '{{ route("data.tramite") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.tramite") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnTramite');
                 });
 
                 $('#btnBloqueado').on('click', function() {
-                    var newAjaxSource = '{{ route("data.bloqueados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.bloqueados") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnBloqueado');
                 });
 
                 $('#btnAnulado').on('click', function() {
-                    var newAjaxSource = '{{ route("data.anulados") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.anulados") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnAnulado');
                 });
 
                 $('#btnStandBy').on('click', function() {
-                    var newAjaxSource = '{{ route("data.standby") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.standby") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnStandBy');
                 });
 
                 $('#btnEnviados').on('click', function() {
-                    var newAjaxSource = '{{ route("data.enviado") }}';
-
-                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
+                    lastAjaxUrl = '{{ route("data.enviado") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnEnviados');
                 });
 
 
