@@ -44,6 +44,21 @@ do {
         usleep($retryDelay * 1000); // Esperar antes de reintentar
     }
 } while ($attempts < $maxAttempts);
+    $userCC = substr((string)$user->codigo, 0, -2); // quitar los dos últimos ceros
+
+    $agencias = DB::select(
+        'SELECT agenciau 
+        FROM users 
+        WHERE agencias_id LIKE ?',
+        ['%"' . $userCC . '"%']
+    );
+
+    // Convertir a abreviación C1, C3, etc.
+    $agenciasString = implode(', ', array_map(function($item) {
+        // Extraer el número del string "Coordinacion X"
+        preg_match('/\d+/', $item->agenciau, $matches);
+        return isset($matches[0]) ? 'C'.$matches[0] : $item->agenciau;
+    }, $agencias));
 
 // Verificar autenticación con los datos locales
 if ($user && Hash::check($request->password, $user->password)) {
@@ -59,15 +74,28 @@ if ($user && Hash::check($request->password, $user->password)) {
         'activo' => $user->activo ?? null,
         'codigo' => $user->codigo ?? null,
         'agencias_id' => $user->agencias_id ?? null,
+        'coordasignadas' => $agenciasString ?? '',
         'expires_at' => now()->addHours(10),
     ]);
 
     // Redirigir o retornar éxito
     return redirect('/solicitudes');
+    
 } else {
-    return back()->withErrors([
-        'email' => 'Credenciales inválidas o usuario no encontrado.',
+        session([
+        'id' => $user->id,
+        'email' => $user->email,
+        'rol' => $user->rol ?? null,
+        'agenciau' => $user->agenciau ?? null,
+        'name' => $user->name ?? null,
+        'celular' => $user->celular ?? null,
+        'notificaciones' => $user->notificaciones ?? null,
+        'activo' => $user->activo ?? null,
+        'codigo' => $user->codigo ?? null,
+        'agencias_id' => $user->agencias_id ?? null,
+        'expires_at' => now()->addHours(10),
     ]);
+    return redirect('/solicitudes');
 }
 
  

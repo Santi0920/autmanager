@@ -7,21 +7,20 @@
             var table = $('#personas').DataTable({
                 "ajax": {
                     "url": "{{ route('data.solicitudes') }}",
-                    url: '/autmanager/public/solicitudes/datatable',
-                    "dataType": "json", // Indicar que se espera una respuesta JSON
-                    "error": function(xhr, error, thrown) {
-                        // Verificar si el error es debido a una respuesta JSON inválida
-                        if (xhr.status === 200 && xhr.responseJSON && xhr.responseJSON.error) {
-                            // Redirigir al usuario a la ruta deseada
-                            window.location.href = "{{ route('login.index') }}";
-                        }
-                    }
+                    "data": function(d) {
+                        d.search_term = $('#personas_filter input').val();
+                    },
                 },
+                processing: true,
+
+
+
+
                 "order": [
                     [0, 'desc']
                 ],
                 scrollY: 420,
-                "processing" : true,
+
                 "columns": [{
                         data: 'IDAutorizacion',
                         render: function(data, type, row) {
@@ -38,180 +37,158 @@
                         }
                     },
 
-                    {
+                    {   
                         data: 'Fecha',
                         render: function(data, type, row) {
 
                         if('{{ session('rol') }}' == 'Gerencia'){
 
-                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
-                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+                            function parseFecha(fechaStr) {
+                                if (!fechaStr) return null;
 
-                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
-                                const totalMinutos = Math.floor(totalSegundos / 60);
-                                const totalHoras = Math.floor(totalMinutos / 60);
+                                const months = {
+                                    "enero": "01", "febrero": "02", "marzo": "03", "abril": "04", "mayo": "05",
+                                    "junio": "06", "julio": "07", "agosto": "08", "septiembre": "09",
+                                    "octubre": "10", "noviembre": "11", "diciembre": "12"
+                                };
 
-                                const segundos = String(totalSegundos % 60).padStart(2, '0');
-                                const minutos = String(totalMinutos % 60).padStart(2, '0');
-                                const horas = String(totalHoras).padStart(2, '0');
+                                const parts = fechaStr.split(' ');
+                                if (!parts || parts.length < 3) return null;
 
-                                return { horas, minutos, segundos };
-                            }
-
-
-                            fechaSolicitud = row.UltimaFechaDoneTramite;
-                            fechaValidacion = row.UltimaFechaCoordinacion;
-
-                            const months = {
-                                "enero": "01",
-                                "febrero": "02",
-                                "marzo": "03",
-                                "abril": "04",
-                                "mayo": "05",
-                                "junio": "06",
-                                "julio": "07",
-                                "agosto": "08",
-                                "septiembre": "09",
-                                "octubre": "10",
-                                "noviembre": "11",
-                                "diciembre": "12"
-                            };
-
-                            if (fechaSolicitud) {
-                                const parts = fechaSolicitud.split(' ');
-                                const month = months[parts[0]?.toLowerCase()];
+                                const month = months[parts[0]?.toLowerCase()] ?? "01";
                                 const day = parts[1];
-                                const yearTime = parts[2]?.split('-');
+                                const [year, time] = parts[2]?.split('-') ?? [];
 
-                                const year = yearTime ? yearTime[0] : null;
-                                const time = yearTime ? yearTime[1] : null;
-
-                                const formattedDateString = `${year}-${month}-${day} ${time}`;
-                                const fechaSolicitudDate = new Date(formattedDateString);
-
-                                if (fechaValidacion == null) {
-                                    function calcularDiferencia(fechaSolicitud, fechaValidacion) {
-                                        const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
-
-                                        const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
-                                        const totalMinutos = Math.floor(totalSegundos / 60);
-                                        const totalHoras = Math.floor(totalMinutos / 60);
-
-                                        const segundos = String(totalSegundos % 60).padStart(2, '0');
-                                        const minutos = String(totalMinutos % 60).padStart(2, '0');
-                                        const horas = String(totalHoras).padStart(2, '0');
-
-                                        return { horas, minutos, segundos };
-                                    }
-
-                                    const fechaActualDate = new Date();
-                                    const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
-
-                                    var demoracoord = ``;
-                                    var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">C9: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
-
-
-                                } else {
-                                    if (fechaValidacion) {
-                                        const parts2 = fechaValidacion.split(' ');
-                                        const month2 = months[parts2[0]?.toLowerCase()];
-                                        const day2 = parts2[1];
-                                        const yearTime2 = parts2[2]?.split('-');
-
-                                        const year2 = yearTime2 ? yearTime2[0] : null;
-                                        const time2 = yearTime2 ? yearTime2[1] : null;
-
-                                        const formattedDateString2 = `${year2}-${month2}-${day2} ${time2}`;
-                                        const fechaValidacionDate = new Date(formattedDateString2);
-
-                                        const diferencia = calcularDiferencia(fechaSolicitudDate, fechaValidacionDate);
-                                        const diferencia2 = calcularDiferencia(fechaValidacionDate, new Date());
-
-                                        var demoracoord = `<span title="Fecha Solicitud: ${fechaSolicitud} . Fecha Validacion: ${fechaValidacion}" class="" >${row.UltimaAreaCoordinacion}: <span class="text-dark fw-semibold ">${diferencia.horas};${diferencia.minutos};${diferencia.segundos}.</span>`;
-                                        var demoradireccion = `<span title="Fecha Validacion: ${fechaValidacion}" class="">D. General: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
-                                    }
-                                }
+                                return new Date(`${year}-${month}-${day} ${time}`);
                             }
-                            
-                            var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}</div>
-                                        ${demoracoord}
-                                        ${demoradireccion}`
+
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diff = fechaValidacion - fechaSolicitud;
+                                const totalSeg = Math.floor(diff / 1000);
+                                return {
+                                    horas: String(Math.floor(totalSeg / 3600)).padStart(2, '0'),
+                                    minutos: String(Math.floor((totalSeg / 60) % 60)).padStart(2, '0'),
+                                    segundos: String(totalSeg % 60).padStart(2, '0')
+                                };
+                            }
+
+
+                            // ✅ Selección correcta de fechas según el estado:
+                            let fechaSolicitud = null;
+                            let fechaValidacion = null;
+
+                            if (row.ultimaRemitidoCorregir) {
+                                // Caso de Corrección → Solo se muestra tiempo contra ahora
+                                fechaSolicitud = parseFecha(row.ultimaRemitidoCorregir);
+                            } else if (row.UltimaFechaDoneTramite) {
+                                fechaSolicitud = parseFecha(row.UltimaFechaDoneTramite);
+                            }
+
+                            if (row.UltimaFechaCoordinacion) {
+                                fechaValidacion = parseFecha(row.UltimaFechaCoordinacion);
+                            }
+
+
+                            // ✅ Construcción visual
+                            let demoracoord = "";
+                            let demoradireccion = "";
+
+                            if (fechaSolicitud && !fechaValidacion) {
+                                const dif = calcularDiferencia(fechaSolicitud, new Date());
+                                demoradireccion = `<span class="">C#: <span class="text-dark fw-semibold">${dif.horas};${dif.minutos};${dif.segundos}.</span></span>`;
+                            }
+
+                            if (fechaSolicitud && fechaValidacion) {
+                                const dif1 = calcularDiferencia(fechaSolicitud, fechaValidacion);
+                                const dif2 = calcularDiferencia(fechaValidacion, new Date());
+
+                                demoracoord = `<span title="Fecha Solicitud: ${row.UltimaFechaDoneTramite ?? row.ultimaRemitidoCorregir} . Fecha Validacion: ${row.UltimaFechaCoordinacion}" class="">
+                                                    ${row.UltimaAreaCoordinacion}: 
+                                                    <span class="text-dark fw-semibold">${dif1.horas};${dif1.minutos};${dif1.segundos}.</span>
+                                                </span>`;
+
+                                demoradireccion = `<span title="Fecha Validacion: ${row.UltimaFechaCoordinacion}" class="">
+                                                    D. General:
+                                                    <span class="text-dark fw-semibold">${dif2.horas};${dif2.minutos};${dif2.segundos}.</span>
+                                                </span>`;
+                            }
+
+
+                            var Contenido = `
+                                ${row.Concepto}
+                                <div class="fw-bold text-primary">
+                                    ${row.NumArea} - ${row.NomArea} - ${row.Usuario}
+                                </div>
+                                ${demoracoord}
+                                ${demoradireccion}
+                            `;
+
                         }else if('{{ session('rol') }}' == 'Coordinacion'){
 
-                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
-                                const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
+                            function parseFecha(fechaStr) {
+                                if (!fechaStr) return null;
 
-                                const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
-                                const totalMinutos = Math.floor(totalSegundos / 60);
-                                const totalHoras = Math.floor(totalMinutos / 60);
+                                const months = {
+                                    "enero": "01", "febrero": "02", "marzo": "03", "abril": "04", "mayo": "05",
+                                    "junio": "06", "julio": "07", "agosto": "08", "septiembre": "09",
+                                    "octubre": "10", "noviembre": "11", "diciembre": "12"
+                                };
 
-                                const segundos = String(totalSegundos % 60).padStart(2, '0');
-                                const minutos = String(totalMinutos % 60).padStart(2, '0');
-                                const horas = String(totalHoras).padStart(2, '0');
+                                const parts = fechaStr.split(' ');
+                                if (!parts || parts.length < 3) return null;
 
-                                return { horas, minutos, segundos };
-                            }
-
-
-                            fechaSolicitud = row.UltimaFechaDoneTramite;
-                            fechaValidacion = row.UltimaFechaCoordinacion;
-
-                            const months = {
-                                "enero": "01",
-                                "febrero": "02",
-                                "marzo": "03",
-                                "abril": "04",
-                                "mayo": "05",
-                                "junio": "06",
-                                "julio": "07",
-                                "agosto": "08",
-                                "septiembre": "09",
-                                "octubre": "10",
-                                "noviembre": "11",
-                                "diciembre": "12"
-                            };
-
-                            if (fechaSolicitud) {
-                                const parts = fechaSolicitud.split(' ');
-                                const month = months[parts[0]?.toLowerCase()];
+                                const month = months[parts[0]?.toLowerCase()] ?? "01";
                                 const day = parts[1];
-                                const yearTime = parts[2]?.split('-');
+                                const [year, time] = parts[2]?.split('-') ?? [];
 
-                                const year = yearTime ? yearTime[0] : null;
-                                const time = yearTime ? yearTime[1] : null;
+                                if (!year || !time) return null;
 
-                                const formattedDateString = `${year}-${month}-${day} ${time}`;
-                                const fechaSolicitudDate = new Date(formattedDateString);
-
-                                if (fechaSolicitud) {
-                                    function calcularDiferencia(fechaSolicitud, fechaValidacion) {
-                                        const diferenciaEnMilisegundos = fechaValidacion - fechaSolicitud;
-
-                                        const totalSegundos = Math.floor(diferenciaEnMilisegundos / 1000);
-                                        const totalMinutos = Math.floor(totalSegundos / 60);
-                                        const totalHoras = Math.floor(totalMinutos / 60);
-
-                                        const segundos = String(totalSegundos % 60).padStart(2, '0');
-                                        const minutos = String(totalMinutos % 60).padStart(2, '0');
-                                        const horas = String(totalHoras).padStart(2, '0');
-
-                                        return { horas, minutos, segundos };
-                                    }
-
-                                    const fechaActualDate = new Date();
-                                    const diferencia2 = calcularDiferencia(fechaSolicitudDate, fechaActualDate);
-
-                                    var demoracoord = ``;
-                                    var demoradireccion = `<span title="Fecha Validacion: ${row.FechaValidacion}" class="">${row.UltimaAreaCoordinacion}: <span class="text-dark fw-semibold ">${diferencia2.horas};${diferencia2.minutos};${diferencia2.segundos}.</span></span></span>`;
-
-
-                                }else{
-
-                                }
+                                return new Date(`${year}-${month}-${day} ${time}`);
                             }
-                                var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}</div>
-                                        ${demoracoord}
-                                        ${demoradireccion}`
+
+                            function calcularDiferencia(fechaSolicitud, fechaValidacion) {
+                                const diff = fechaValidacion - fechaSolicitud;
+                                const totalSeg = Math.floor(diff / 1000);
+                                return {
+                                    horas: String(Math.floor(totalSeg / 3600)).padStart(2, '0'),
+                                    minutos: String(Math.floor(totalSeg / 60) % 60).padStart(2, '0'),
+                                    segundos: String(totalSeg % 60).padStart(2, '0')
+                                };
+                            }
+
+                            let fechaSolicitud = null;
+                            let fechaValidacion = null;
+
+                            // ✅ Selección de fechas según situación actual
+                            if (row.ultimaRemitidoCorregir) {
+                                fechaSolicitud = parseFecha(row.ultimaRemitidoCorregir);
+                            } else if (row.UltimaFechaDoneTramite) {
+                                fechaSolicitud = parseFecha(row.UltimaFechaDoneTramite);
+                            }
+
+                            if (row.UltimaFechaCoordinacion) {
+                                fechaValidacion = parseFecha(row.UltimaFechaCoordinacion);
+                            }
+
+                            let textoEstado = '';
+                            if (fechaSolicitud && fechaValidacion) {
+                                const dif = calcularDiferencia(fechaSolicitud, fechaValidacion);
+                                textoEstado = `<span class="text-dark fw-semibold">
+                                                    Coordinación:
+                                                    <span class="fw-normal">${dif.horas};${dif.minutos};${dif.segundos}</span>
+                                                </span>`;
+                            } else {
+                                textoEstado = `<span class="text-danger">${row.UltimoConceptoID == '17' ? `` : `Falta por validar ó N/A` }</span>`;
+                            }
+
+                            var Contenido = `
+                                ${row.Concepto}
+                                <div class="fw-bold text-primary">
+                                    ${row.NumArea} - ${row.NomArea} - ${row.Usuario}
+                                    <div>${textoEstado}</div>
+                                </div>
+                            `;
+
 
 
                         }else{
@@ -224,16 +201,6 @@
                                 </div>
                             `
                         }
-
-
-
-
-
-
-
-
-
-
                             return Contenido
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
@@ -261,13 +228,25 @@
                             }else if (ultimoEstado == "APROBADO") {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
+                            }else if (ultimoEstado == "RECIBIDO") {
+                                var Estado =
+                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECIBIDO</div>'
+                            }else if (ultimoEstado == "ENTERADO") {
+                                var Estado =
+                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ENTERADO</div>'
                             } else if (ultimoEstado == "ANULADO") {
                                 var Estado =
                                     '<div class="btn btn-info blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                             } else if (ultimoEstado == "STAND BY") {
                                 var Estado =
                                     '<div class="btn btn-dark blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
-                            } else {
+                            }else if (ultimoEstado == "DESBLOQUEADO") {
+                                var Estado =
+                                    '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">DESBLOQUEADO</div>'
+                            }else if (ultimoEstado == "ENVIADO") {
+                                var Estado =
+                                    '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ENVIADO</div>'
+                            }   else {
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>'
                             }
@@ -290,25 +269,39 @@
 
                             const cedula = row.Cedula;
 
+                            document.querySelectorAll('.modal').forEach(modal => {
+                                const radios = modal.querySelectorAll('input[name^="Estado"]'); // solo radios dentro del modal
+                                const enviarDiv = modal.querySelector('.enviarselect'); // div relativo al modal
+
+                                radios.forEach(radio => {
+                                    radio.addEventListener('change', () => {
+                                        if (radio.value === 'ENVIAR A' && radio.checked) {
+                                            enviarDiv.classList.remove('d-none'); // Mostrar
+                                        } else if (radio.checked) {
+                                            enviarDiv.classList.add('d-none'); // Ocultar
+                                        }
+                                    });
+                                });
+                            });
+                            document.addEventListener('click', function(e) {
+                                if (e.target && e.target.id === 'btnScroll') {
+                                    const anchor = document.getElementById('anchor-scroll');
+                                    if (anchor) {
+                                        anchor.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'center'
+                                        });
+                                    }
+                                }
+                            });
+
+
+
                             var modalEditar = `
                             <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
                                         data-id="${id}">
                                         <i class="fa-solid fa-eye fs-5"></i>
                             </a>
-
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
-                                        data-id="${id}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" color="black"
-                                        class="bi bi-eye" viewBox="0 0 16 16">
-                                        <path
-                                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
-                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-                                        </svg> Ver detallado
-                                    </a>
-                                </li>
-                            </ul>
 
 
                             {{-- MODAL --}}
@@ -316,8 +309,30 @@
                                 <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header text-center">
-                                        <h6 class="modal-title" id="exampleModalLongTitle"
-                                            style="color: #646464;font-weight: 700;font-size: 22px">DETALLE DE LA AUTORIZACIÓN</h6>
+                                        <h6 class="modal-title text-light" id="exampleModalLongTitle"
+                                            style="font-weight: 700;font-size: 22px">DETALLE DE LA AUTORIZACIÓN 
+                                            </h6>
+                                                ${
+                                                    row.historial
+                                                        .map((item, index) => {
+                                                            let contenido = `
+
+                                                            `;
+
+                                                            // Insertar boton cuando llegue al 5to elemento (índice 4)
+                                                            if (index === 3) {
+                                                                contenido += `
+                                                                <button type="button" id="btnScroll" class="btn btn-dark fw-bold fs-5 ms-3">
+                                                                    Desplazar al Final
+                                                                </button>
+                                                                `;
+                                                            }
+
+                                                            return contenido;
+                                                        })
+                                                        .join('')
+                                                }
+
                                         <button type="button" class="btn-close fs-5" data-bs-dismiss="modal" aria-label="Close"
                                             style="outline: none; border: none; font-size:18px">
                                         </button>
@@ -330,8 +345,8 @@
                                             </div>
                                             <div class="col-md-12 col-lg-10">
                                                 <div class="row g-0 text-center">
-                                                    <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-3">
-                                                        <span class="h2 fw-bold">SOLICITUD</span>
+                                                    <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-2">
+                                                        <span class="h2 fw-bold">${row.UltimoConceptoID == '17' ? `REPORTE` : `SOLICITUD`}</span>
                                                     </div>
                                                     <div class="col-md-5 col-lg-3">
                                                     <div class="row g-0 justify-content-center border p-2">
@@ -343,6 +358,8 @@
                                                             `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
                                                             row.UltimoEstado == "APROBADO" ?
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
+                                                            row.UltimoEstado == "ENTERADO" ?
+                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">E - ENTERADO</button>` :
                                                             row.UltimoEstado == "CORREGIR" ?
                                                             `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
                                                             row.UltimoEstado == "ANULADO" ?
@@ -351,6 +368,12 @@
                                                             '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
                                                             row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
                                                             '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
+                                                            row.UltimoEstado == "DESBLOQUEADO" ?
+                                                            '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">DESBLOQUEADO</button>' :
+                                                            row.UltimoEstado == "ENVIADO" ?
+                                                            '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">ENVIADO</button>' :
+                                                            row.UltimoEstado == "RECIBIDO" ?
+                                                            `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RECIBIDO</button>` :
                                                             '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
                                                         }
                                                     </div>
@@ -486,7 +509,7 @@
                                                 style="cursor:pointer;">
                                                     <div class="row g-0 row-cols-2 justify-content-center">
                                                         <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                            <span class="fs-5">${item.NumArea} - ${item.NomArea} - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
+                                                            <span class="fs-5">${item.NumArea} - ${item.NomArea}(<b>${item.CodigoUsuario}</b>) - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
                                                         </div>
                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                             <span class="mb-0 fs-5">${item.FechaString}</span>
@@ -604,7 +627,7 @@
 
                                     
                                         ${
-                                            // Coordinación para VALIDAR o Gerencia para REMITIDO
+                                            // Coordinación para VALIDAR o Gerencia para VALIDAR JEFATURA
                                             ((item.Estado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion' && item.Observaciones !== 'NADA') || (item.NumArea == 'Jefatura' && '{{ session('rol') }}' == 'Gerencia') && (row.UltimoEstado != "CORREGIR" && row.UltimoEstado != "APROBADO" && row.UltimoEstado != "VALIDADO" && item.Estado != "DONE"))
                                                 ? `
                                                     <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
@@ -616,7 +639,12 @@
                                                                     <span>VALIDAR</span>
                                                                 </label>
                                                                 <label class="label">
-                                                                    <input value="${'{{ session('rol') }}' == 'Gerencia' ? `"CORREGIRJEFATURA"`:`"CORREGIR"`} type="radio" name="Estado" required>
+                                                                    <input 
+                                                                        type="radio" 
+                                                                        name="Estado" 
+                                                                        required
+                                                                        value="{{ session('rol') == 'Gerencia' ? 'CORREGIRJEFATURA' : 'CORREGIR' }}"
+                                                                    >
                                                                     <span>RECHAZAR</span>
                                                                 </label>
                                                             </div>
@@ -656,23 +684,41 @@
                                                             @csrf
                                                             <div class="row g-0">
                                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
-                                                                    <label class="label">
-                                                                        <input value="APROBADO" type="radio" name="Estado" id="estado_aprobar" required>
-                                                                        <span>APROBAR</span>
-                                                                    </label>
-                                                                    <label class="label">
-                                                                        <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" required>
-                                                                        <span>RECHAZAR</span>
-                                                                    </label>
-                                                                    <label class="label">
-                                                                        <input value="BLOQUEADO" type="radio" name="Estado" id="estado_bloquear" required>
-                                                                        <span>BLOQUEAR</span>
-                                                                    </label>
-                                                                    <label class="label">
-                                                                        <input value="STAND BY" type="radio" name="Estado" id="estado_standby" required>
-                                                                        <span>STAND BY</span>
-                                                                    </label>
+
+                                                                    <div class="estado-container">
+
+                                                                        ${row.UltimoConceptoID == '17' ?
+                                                                        `<label class="label">
+                                                                            <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                            <span>ENTERADO</span>
+                                                                        </label>` :
+                                                                        `<label class="label">
+                                                                            <input value="APROBADO" type="radio" name="Estado" required>
+                                                                            <span>APROBAR</span>
+                                                                        </label>`
+                                                                        }
+
+                                                                        <label class="label">
+                                                                            <input value="CORREGIR" type="radio" name="Estado" required>
+                                                                            <span>RECHAZAR</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="BLOQUEADO" type="radio" name="Estado" required>
+                                                                            <span>BLOQUEAR</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="STAND BY" type="radio" name="Estado" required>
+                                                                            <span>STAND BY</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="ENVIAR A" type="radio" name="Estado" required>
+                                                                            <span>ENVIAR A</span>
+                                                                        </label>
+
+                                                                    </div>
+
                                                                 </div>
+
 
                                                                 <div class="col-sm-12 col-md-12 col-lg-10">
                                                                     <div class="row g-0 justify-content-center">
@@ -694,10 +740,18 @@
                                                                             name="Observaciones" 
                                                                             onkeydown="return event.key != 'Enter';" 
                                                                             placeholder="Escribe aquí tu Observación." 
-                                                                            ${item.Observaciones == null ? '' : `value="${item.Observaciones}"`} 
                                                                             required
                                                                         >
                                                                     </div>
+                                                                    <div class="col-md-12 enviarselect d-none">
+                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
+                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ←</option>
+                                                                            @foreach ($usuariosEnviara as $usuario)
+                                                                                <option value="{{$usuario->id}}">{{$usuario->name}} - {{$usuario->agenciau}} - {{$usuario->codigo}}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -721,8 +775,9 @@
                                                 item.Estado === 'VALIDADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'VALIDADOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'REMITIDOCONFIRMADO' ? 'bg-warning-subtle' :
-                                                item.Estado === 'APROBADO' ? 'bg-success-subtle' :
+                                                item.Estado === 'APROBADO' || item.Estado === 'ENTERADO' || item.Estado === 'RECIBIDO' ? 'bg-success-subtle' :
                                                 item.Estado === 'CORREGIR' ? 'bg-primary-subtle' :
+                                                item.Estado === 'ANULADO' ? 'bg-info-subtle' :
                                                 item.Estado === 'REMITIDO' ? 'bg-info-subtle' :
                                                 item.Estado == 'BLOQUEADO' ? 'bg-danger-subtle' :
                                                 item.Estado == 'STAND BY' ? 'bg-dark-subtle' :
@@ -734,15 +789,17 @@
                                                         ${item.Estado == "VALIDADOCONFIRMADO" 
                                                             ? "VALIDADO" 
                                                             : item.Estado == "REMITIDOCONFIRMADO" 
-                                                                ? "REMITIDO" 
-                                                                : item.Estado}
+                                                            ? "REMITIDO" 
+                                                            : item.Estado == "ENVIADO" 
+                                                            ? "ENVIADO(DR)" 
+                                                            : item.Estado}
                                                     </span>
                                                 </span>
                                             </div>
                                             <div class="col-sm-12 col-md-12 col-lg-10">
                                                 <div class="row g-0">
                                                     <div class="text-start col-md-9 d-flex align-items-center border p-2">
-                                                        <span class="fs-5 fw-bold mb-0">${item.NumArea} - ${item.NomArea} - ${item.Nombre ?? 'N/A'}</span>
+                                                        <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
                                                         <span class="mb-0 fs-5">${item.FechaString ?? ''}</span>
@@ -756,28 +813,102 @@
                                             </div>
                                         </div>
                                         
-                                        ${(((item.Estado == 'VALIDADO') && '{{ session('rol') }}' == 'Gerencia')
+                                        ${((('{{ session('rol') }}' === 'Gerencia') && item.ID === row.historial[row.historial.length - 1].ID && (row.UltimoEstado === 'VALIDADO' || row.UltimoEstado === 'DESBLOQUEADO'))
                                                     ? 
                                                     `
                                                         <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                             @csrf
                                                             <div class="row g-0">
                                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                    <div class="estado-container">
+                                                                        ${row.UltimoConceptoID == '17' ?
+                                                                            `<label class="label">
+                                                                                <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                                <span>ENTERADO</span>
+                                                                            </label>` :
+                                                                            `<label class="label">
+                                                                                <input value="APROBADO" type="radio" name="Estado" required>
+                                                                                <span>APROBAR</span>
+                                                                            </label>`
+                                                                        }
+                                                                        <label class="label">
+                                                                            <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" required>
+                                                                            <span>RECHAZAR</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="1" type="radio" name="Estado" id="estado_bloquear" required>
+                                                                            <span>BLOQUEAR</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="STAND BY" type="radio" name="Estado" id="estado_standby" required>
+                                                                            <span>STAND BY</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara" required>
+                                                                            <span>ENVIAR AA</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                    <div class="row g-0 justify-content-center">
+                                                                        <div class="row g-0 row-cols-2 justify-content-center">
+                                                                            <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                <span class="fs-5"><b>{{ session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                            </div>
+                                                                            <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                <span class="mb-0 fs-5">Pendiente...</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <input 
+                                                                            class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                            style="resize: horizontal;" 
+                                                                            id="Observaciones" 
+                                                                            name="Observaciones" 
+                                                                            onkeydown="return event.key != 'Enter';" 
+                                                                            placeholder="Escribe aquí tu Observación." 
+                                                                            required
+                                                                        >
+                                                                    </div>
+                                                                    
+                                                                    <div class="col-md-12 enviarselect d-none">
+                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
+                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ←</option>
+                                                                            @foreach ($usuariosEnviara as $usuario)
+                                                                                <option value="{{$usuario->id}}">{{$usuario->name}} - {{$usuario->agenciau}} - {{$usuario->codigo}}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    
+                                                    
+                                                    `
+                                        :  (
+                                                '{{ session("rol") }}' === 'Gerencia'
+                                                && row.historial && row.historial.length
+                                                && item.ID === row.historial[row.historial.length - 1].ID
+                                                && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR')
+                                            )
+                                        ?
+                                                    `
+                                                        <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                            @csrf
+                                                            <div class="row g-0">
+                                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                    ${row.UltimoEstado == 'BLOQUEADO' ?
+                                                                    `<label class="label">
+                                                                        <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
+                                                                        <span>DESBLOQUEAR</span>
+                                                                    </label>`:``}
                                                                      <label class="label">
-                                                                        <input value="APROBADO" type="radio" name="Estado" id="estado_aprobar" required>
-                                                                        <span>APROBAR</span>
-                                                                    </label>
-                                                                    <label class="label">
-                                                                        <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" required>
-                                                                        <span>RECHAZAR</span>
-                                                                    </label>
-                                                                    <label class="label">
-                                                                        <input value="1" type="radio" name="Estado" id="estado_bloquear" required>
-                                                                        <span>BLOQUEAR</span>
-                                                                    </label>
-                                                                    <label class="label">
-                                                                        <input value="STAND BY" type="radio" name="Estado" id="estado_standby" required>
-                                                                        <span>STAND BY</span>
+                                                                        <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
+                                                                        <span>ANULAR</span>
                                                                     </label>
                                                                 </div>
 
@@ -808,10 +939,60 @@
                                                                 </div>
                                                             </div>
                                                         </form>
+                                                    `
+                                                    
+                                                    : (
+                                                            '{{ session("rol") }}' !== 'Gerencia' && row.UltimoEstado !== 'RECIBIDO'
+                                                            && row.historial && row.historial.length
+                                                            && row.ultimoEnviadoa === '{{ session("name") }}'
+                                                            && item.ID === row.historial[row.historial.length - 1].ID
+                                                            && (row.UltimoEstado === 'ENVIADO')
+                                                        )
+                                                    ? 
+                                                    `
+                                                    
+                                                        <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                            @csrf
+                                                            <div class="row g-0">
+                                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                     <label class="label">
+                                                                        <input value="RECIBIDO" type="radio" name="Estado" id="estado_recibido" required>
+                                                                        <span>RECIBIDO</span>
+                                                                    </label>
+                                                                </div>
+
+                                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                    <div class="row g-0 justify-content-center">
+                                                                        <div class="row g-0 row-cols-2 justify-content-center">
+                                                                            <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                <span class="fs-5"><b>{{ session('agenciau') }}({{ session('codigo') }}) - {{ session('name') }}</b></span>
+                                                                            </div>
+                                                                            <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                <span class="mb-0 fs-5">Pendiente...</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <input 
+                                                                            class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                            style="resize: horizontal;" 
+                                                                            id="Observaciones" 
+                                                                            name="Observaciones" 
+                                                                            onkeydown="return event.key != 'Enter';" 
+                                                                            placeholder="Escribe aquí tu Observación." 
+                                                                            required
+                                                                        >
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
                                                     
                                                     
                                                     `
-                                                    : ``)
+                                                    :
+                                                    
+                                                    ``)
                                         
                                         
                                         }`;
@@ -835,12 +1016,42 @@
                                             </button>
                                         </div>
                                         `
-                                        :   (
-                                                (row.UltimoEstado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion') ||
-                                                (row.NumArea == 'Jefatura' && '{{ session('rol') }}' == 'Gerencia') && (row.UltimoEstado != "CORREGIR" && row.UltimoEstado != "APROBADO" && row.UltimoEstado != "VALIDADO" && row.UltimoEstado != "DONE")
-                                            )
+                                        :   ((row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
 
                                             ? `
+                                                <div class="text-center p-3">
+                                                    <button id="boton${row.IDAutorizacion}" 
+                                                        type="button" 
+                                                        class="btn btn-outline-success fs-5 fw-bold w-50" 
+                                                        name="btnregistrar" 
+                                                        onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
+                                                        GUARDAR
+                                                    </button>
+                                                </div>
+                                            `
+                                        : 
+                                        (
+                                            row.UltimoEstado === 'TRÁMITE' &&
+                                            '{{ session('rol') }}' === 'Coordinacion'
+                                        )
+                                        ||
+                                        (
+                                            row.NumArea === 'Jefatura' &&
+                                            '{{ session('rol') }}' === 'Gerencia' &&
+                                            row.UltimoEstado !== "CORREGIR" &&
+                                            row.UltimoEstado !== "APROBADO" &&
+                                            row.UltimoEstado !== "VALIDADO" &&
+                                            row.UltimoEstado !== "DONE" &&
+                                            row.UltimoEstado !== "ANULADO"
+                                        )
+                                        ||
+                                        (
+                                            row.ultimoEnviadoa === '{{ session("name") }}' &&
+                                            '{{ session("rol") }}' !== 'Gerencia' &&
+                                            row.UltimoEstado !== 'RECIBIDO'
+                                        )
+                                            ? `
+
                                             <div class="text-center p-3">
                                                 <button id="boton${row.IDAutorizacion}" 
                                                     type="button" 
@@ -850,19 +1061,7 @@
                                                     GUARDAR
                                                 </button>
                                             </div>
-                                            `
-                                        : ((row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO') && '{{ session('rol') }}' === 'Gerencia')
-                                            ? `
-
-                                            <div class="text-center p-3">
-                                                <button id="boton${row.IDAutorizacion}" 
-                                                    type="button" 
-                                                    class="btn btn-outline-success fs-5 fw-bold w-50" 
-                                                    name="btnregistrar" 
-                                                    onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
-                                                    GUARDAR
-                                                </button>
-                                            </div>`
+    `
                                         : (row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' && '{{ session('rol') }}' === 'Coordinacion')
                                             ? `
                                             <div class="text-center p-3">
@@ -876,7 +1075,7 @@
                                             </div>
                                             `:''
                                 }
-
+                                            <span id="anchor-scroll"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -910,7 +1109,7 @@
                     "info": "Mostrando la página _PAGE_ de _PAGES_",
                     "infoEmpty": "No hay registros disponibles",
                     "infoFiltered": "(Filtrado de _MAX_ registros totales)",
-                    "search": "<span style='font-size: 20px; font-weight: bold'>Buscar:</span>",
+                    "search": "<span style='font-size: 20px; font-weight: bold'>🛑BUSCAR AUTORIZACIÓN🛑:</span>",
                     "paginate": {
                         "next": "Siguiente",
                         "previous": "Anterior"
@@ -918,177 +1117,162 @@
                 },
                 "initComplete": function(settings, json) {
                 var buttonsHtml = `
-                <div>
-                    <button class="custom-btn2 mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN">
-                        <a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL">
-                            <i class="fas fa-file-excel text-white"></i>
-                        </a>
-                    </button>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
 
-                    <button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN">
+                    <!-- BOTÓN ACTUALIZAR -->
+                    <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1"
+                            title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
                         <i class="fa-solid fa-rotate-right"></i>
+                        <span class="d-none d-md-inline">ACTUALIZAR</span>
                     </button>
-                ${('{{ session('rol') }}' === 'Gerencia')
-                ? `    
-                            <button id="btnC9" class="btn btn-secondary fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="C9">
-                                COORDINACIÓN 9
-                            </button>
 
-                            <div class="dropdown d-inline" title="Solicitudes de jefaturas">
-                                <button class="btn btn-dark fw-bold dropdown-toggle mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1"
-                                        type="button"
-                                        id="dropdownMenuButton"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                    STAND BY
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item fw-bold" href="#" id="btnStandBy">VER</a></li>
-                                    <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}" id="btnAprobarTodos">APROBAR TODOS</a></li>
-                                </ul>
-                            </div>
+                    ${
+                        ('{{ session('rol') }}' === 'Gerencia') ? `
+                        <!-- BOTÓN COORDINACIÓN 9 -->
+                        <button id="btnC9" class="btn btn-secondary shadow-sm fw-bold" title="COORDINACIÓN 9"
+                                style="transition: transform 0.2s;">COORDINACIÓN 9</button>
 
-                            <button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="APROBADOS">
-                                APROBADOS
-                            </button>
-                            <button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2  me-1" title="RECHAZADOS">
-                                RECHAZADOS
-                            </button>
-
-                            <button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="EN TRÁMITE">
-                                EN TRÁMITE
-                            </button>
-
-                            <button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="BLOQUEADOS">
-                                BLOQUEADOS
-                            </button>
-
-                            <button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ANULADOS">
-                                ANULADOS
-                            </button>
-                            `://AQUI ES LO DE LOS USUARIOS
-
-                            `
-                            <button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="APROBADOS">
-                                APROBADOS
-                            </button>
-
-                            <button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ANULADOS">
-                                ANULADOS
-                            </button>
-
-                            <button id="btnStandBy" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2  me-1" title="STAND BY">
+                        <!-- DROPDOWN STAND BY -->
+                        <div class="dropdown d-inline">
+                            <button class="btn btn-dark shadow-sm fw-bold dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-bs-toggle="dropdown" aria-expanded="false" title="Solicitudes de jefaturas">
                                 STAND BY
                             </button>
-                    </div>
-                    `
-                }
-                    
+                            <ul class="dropdown-menu shadow">
+                                <li><a class="dropdown-item fw-bold" href="#" id="btnStandBy">VER</a></li>
+                                <li><a class="dropdown-item fw-bold" href="{{ route('datager.aprobarstandby') }}" id="btnAprobarTodos">APROBAR TODOS</a></li>
+                            </ul>
+                        </div>
 
-                
-                `;
-
-
-
-                    $(buttonsHtml).prependTo('.dataTables_filter');
-                        $('#btnT').on('click', function() {
-                            var newAjaxSource = '{{ route("data.solicitudes") }}';
-                            var newAjaxSource = '/autmanager/public/solicitudes/datatable';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-                        });
-
-                        $('#btnC9').on('click', function() {
-                            var newAjaxSource = '{{ route("data.c9") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                        });
-
-                        $('#btnA').on('click', function() {
-                            var newAjaxSource = '{{ route("data.aprobados") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-                        });
-
-                        $('#btnR').on('click', function() {
-                            var newAjaxSource = '{{ route("data.rechazados") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                        });
-
-                        $('#btnTramite').on('click', function() {
-                            var newAjaxSource = '{{ route("data.tramite") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                        });
-
-                        $('#btnBloqueado').on('click', function() {
-                            var newAjaxSource = '{{ route("data.bloqueados") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                        });
-
-                        $('#btnAnulado').on('click', function() {
-                            var newAjaxSource = '{{ route("data.anulados") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                        });
-
-                        $('#btnStandBy').on('click', function() {
-                            var newAjaxSource = '{{ route("data.standby") }}';
-
-                            $('#personas').DataTable().ajax.url(newAjaxSource).load();
-
-                        });
+                        <!-- BOTONES DE ESTADO -->
+                        <button id="btnA" class="btn btn-success shadow-sm fw-bold" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
+                        <button id="btnR" class="btn btn-danger shadow-sm fw-bold" title="RECHAZADOS" style="transition: transform 0.2s;">RECHAZADOS</button>
+                        <button id="btnTramite" class="btn btn-warning shadow-sm fw-bold" title="EN TRÁMITE" style="transition: transform 0.2s;">EN TRÁMITE</button>
+                        <button id="btnBloqueado" class="btn btn-danger shadow-sm fw-bold" title="BLOQUEADOS" style="transition: transform 0.2s;">BLOQUEADOS</button>
+                        <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
+                        <button id="btnEnviados" class="btn btn-secondary shadow-sm fw-bold" title="ENVIADOS" style="transition: transform 0.2s;">ENVIADOS</button>
+                        ` :
+                        `
+                        <!-- BOTONES USUARIOS -->
+                        <button id="btnA" class="btn btn-success shadow-sm fw-bold" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
+                        <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
+                        <button id="btnStandBy" class="btn btn-dark shadow-sm fw-bold" title="STAND BY" style="transition: transform 0.2s;">STAND BY</button>
+                        `
+                    }
+                </div>`
 
 
+            $('#personas_filter input').on('keyup', function() {
+                table.ajax.reload(null, false); // 🚀 Reconsulta con cada letra
+                console.log('Valor enviado:', $(this).val()); // ✅ Ver en consola
+            });
 
-                        // Evitar que aprueba directamente
-                        document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
-                            e.preventDefault(); // Evita que se vaya directo al enlace
+            $(buttonsHtml).prependTo('.dataTables_filter');
+                $('#btnT').on('click', function() {
+                    var newAjaxSource = '{{ route("data.solicitudes") }}';
+                    var newAjaxSource = '/autmanager/public/solicitudes/datatable';
 
-                            let url = this.getAttribute('href');
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                });
 
-                            Swal.fire({
-                                title: '¿Está seguro?',
-                                html: '<span style="font-size:21px;">¿Desea aprobar todas las solicitudes con estado <b>STAND BY</b>?</span>',
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonColor: '#198754',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Sí, aprobar',
-                                cancelButtonText: 'Cancelar',
-                                customClass: {
-                                    confirmButton: 'swal2-confirm btn-lg custom-btn',
-                                    cancelButton: 'swal2-cancel btn-lg custom-btn'
-                                }
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = url; // Redirige a la ruta
-                                }
-                            });
-                        });
+                $('#btnC9').on('click', function() {
+                    var newAjaxSource = '{{ route("data.c9") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnA').on('click', function() {
+                    var newAjaxSource = '{{ route("data.aprobados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                });
+
+                $('#btnR').on('click', function() {
+                    var newAjaxSource = '{{ route("data.rechazados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnTramite').on('click', function() {
+                    var newAjaxSource = '{{ route("data.tramite") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnBloqueado').on('click', function() {
+                    var newAjaxSource = '{{ route("data.bloqueados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnAnulado').on('click', function() {
+                    var newAjaxSource = '{{ route("data.anulados") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnStandBy').on('click', function() {
+                    var newAjaxSource = '{{ route("data.standby") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
+
+                $('#btnEnviados').on('click', function() {
+                    var newAjaxSource = '{{ route("data.enviado") }}';
+
+                    $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                });
 
 
 
-                        },
-                        // responsive: "true",
-                        //     dom: 'Bfrtilp',
-                        //     buttons:[
-                        //         {
-                        //             extend:    'excelHtml5',
-                        //             text:      '<i class="fas fa-file-excel"></i> ',
-                        //             titleAttr: 'Exportar a Excel',
-                        //             className: 'btn btn-success btn-md'
-                        //         }
-                        // ],
+                // Evitar que aprueba directamente
+                document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
+                    e.preventDefault(); // Evita que se vaya directo al enlace
 
+                    let url = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: '¿Está seguro?',
+                        html: '<span style="font-size:21px;">¿Desea aprobar todas las solicitudes con estado <b>STAND BY</b>?</span>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#198754',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, aprobar',
+                        cancelButtonText: 'Cancelar',
+                        customClass: {
+                            confirmButton: 'swal2-confirm btn-lg custom-btn',
+                            cancelButton: 'swal2-cancel btn-lg custom-btn'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url; // Redirige a la ruta
+                        }
                     });
+                });
+
+
+
+                },
+                // responsive: "true",
+                //     dom: 'Bfrtilp',
+                //     buttons:[
+                //         {
+                //             extend:    'excelHtml5',
+                //             text:      '<i class="fas fa-file-excel"></i> ',
+                //             titleAttr: 'Exportar a Excel',
+                //             className: 'btn btn-success btn-md'
+                //         }
+                // ],
+
+            });
 
             function csesion() {
                 var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
@@ -1271,55 +1455,47 @@
 
                 var form = $("#formValidarGerenciaAutorizacion" + id);
 
-                if (form.data('submitted')) {
-                    // Si el formulario ya ha sido enviado, no hacer nada
-                    return;
-                }
+                if (form.data('submitted')) return;
 
-                // Marcar el formulario como enviado
                 form.data('submitted', true);
 
                 var formDataArray = form.serializeArray();
 
-                // Almacenar los valores en variables
-                var estado, observaciones;
+                var estado, observaciones, destinatario;
 
-
-                // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
                 formDataArray.forEach(function(input) {
+
                     if (input.name === "Estado") {
                         estado = input.value;
-                    } else if (input.name == "Observaciones") {
+                    } 
+                    else if (input.name === "Observaciones") {
                         observaciones = input.value;
-                        event.preventDefault();
                     }
-
+                    else if (input.name === "Destinatario") {
+                        destinatario = input.value;
+                    }
                 });
-                console.log(estado + ' ' + observaciones);
+
+                console.log("Estado:", estado, "Observaciones:", observaciones, "Destinatario:", destinatario);
+
                 if (typeof estado === 'undefined') {
-                    // Mostrar un mensaje de error o resaltar los campos de estado
                     alert('Por favor, seleccione un estado.');
-
-                    // Permitir que el formulario se envíe nuevamente
                     form.data('submitted', false);
-
                     return;
                 }
 
-                // Realizar la solicitud AJAX para actualizar la autorización
                 $.ajax({
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                    url: "/autmanager/public/solicitudes/actualizar-" + id,
                     type: "POST",
                     data: {
                         Observaciones: observaciones,
                         Estado: estado,
+                        Destinatario: destinatario,
                         _token: $('input[name="_token"]').val()
                     },
                     success: function(response) {
                         if (response) {
                             $(`#exampleModal_${id}`).modal('hide');
-                            console.log('¡Éxito!');
                             table.ajax.reload();
                             Swal.fire({
                                 icon: 'success',
@@ -1331,10 +1507,11 @@
                         }
                     },
                     error: function(error) {
-                        console.log('Error');
+                        console.log('Error', error);
                     }
                 });
             }
+
 
 
 
@@ -1547,27 +1724,30 @@
                         </div>
                         `);
                 }
-                });
+            });
 
-                        function enviarFormulario() {
-                                const boton = document.getElementById("agregar");
-                                boton.disabled = true;
-                                return true;
-                            }
+            function enviarFormulario() {
+                const boton = document.getElementById("agregar");
+                boton.disabled = true;
+                return true;
+            }
 
-                        function fileUploaded(id) {
-                            // Obtiene el elemento input de tipo file dinámicamente
-                            var fileInput = document.getElementById(`file_${id}`);
+            function fileUploaded(id) {
+                // Obtiene el elemento input de tipo file dinámicamente
+                var fileInput = document.getElementById(`file_${id}`);
 
-                            // Obtiene el nombre del archivo
-                            var fileName = "";
-                            if (fileInput.files.length > 0) {
-                                fileName = fileInput.files[0].name;
-                            }
+                // Obtiene el nombre del archivo
+                var fileName = "";
+                if (fileInput.files.length > 0) {
+                    fileName = fileInput.files[0].name;
+                }
 
-                            // Muestra el mensaje de confirmación con el nombre del archivo
-                            var uploadMessage = document.getElementById(`uploadMessage_${id}`);
-                            uploadMessage.innerHTML = fileName + " subido.";
-                            uploadMessage.style.display = "block";
-                        }
+                // Muestra el mensaje de confirmación con el nombre del archivo
+                var uploadMessage = document.getElementById(`uploadMessage_${id}`);
+                uploadMessage.innerHTML = fileName + " subido.";
+                uploadMessage.style.display = "block";
+            }
+
+
+                        
         </script>

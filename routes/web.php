@@ -47,6 +47,10 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/solicitudesstandby/datatable', [UsuarioController::class, 'standby'])->name('data.standby');
 
+    Route::get('/solicitudesenviados/datatable', [UsuarioController::class, 'enviado'])->name('data.enviado');
+
+    Route::get('/modal-autorizacion/{id}', [UsuarioController::class, 'modalAutorizacion']);
+
 
 
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
@@ -57,13 +61,13 @@ Route::middleware(['session.expired'])->group(function () {
     Route::get('/filtrar', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
-        return view('Director.filtrar');
+        return view('Usuario.filtrar');
     });
 
     Route::get('/autorizacion', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
-        return view('Director.mostrarautorizacion');
+        return view('Usuario.mostrarautorizacion');
     });
 
     Route::post('/autorizacion', [UsuarioController::class, 'buscarautorizacion'])
@@ -71,34 +75,6 @@ Route::middleware(['session.expired'])->group(function () {
 
 
     //COORDINACION
-
-
-        Route::get('/validar', function () {
-            Cookie::forget('laravel_session');
-            Cache::flush();
-            return view('Coordinacion/validarautorizacion');
-        });
-
-        Route::get('/validar', [CoordinacionController::class, 'data1']);
-
-        Route::get('/validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes');
-
-        Route::get('apropadoscoord/datatable', [CoordinacionController::class, 'aprobados'])->name('datacoor.aprobados');
-
-        Route::get('rechazadoscoord/datatable', [CoordinacionController::class, 'rechazados'])->name('datacoor.rechazados');
-
-        Route::get('anuladoscoord/datatable', [CoordinacionController::class, 'anulados'])->name('datacoor.anulados');
-
-        Route::get('bloqueadoscoord/datatable', [CoordinacionController::class, 'bloqueados'])->name('datacoor.bloqueados');
-
-        Route::get('standbycoord/datatable', [CoordinacionController::class, 'standby'])->name('datacoor.standby');
-
-        Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
-
-        Route::post('/validarautorizacion/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatevalidarcoor.autorizacion');
-
-        Route::post('/validar/actualizar-{id}', [CoordinacionController::class, 'actualizardetalle'])->name('updatecoor.autorizacion');
-
         Route::get('/filtrarconcepto', function () {
             Cookie::forget('laravel_session');
             Cache::flush();
@@ -210,15 +186,15 @@ Route::middleware(['session.expired'])->group(function () {
             return view('Gerencia/estadisticaindividual');
         });
 
-        Route::get('/filtrarconceptoger', function () {
-            Cookie::forget('laravel_session');
-            Cache::flush();
-            return view('Gerencia/filtrarconcepto');
-        });
+        // Route::get('/filtrarconceptoger', function () {
+        //     Cookie::forget('laravel_session');
+        //     Cache::flush();
+        //     return view('Gerencia/filtrarconcepto');
+        // });
 
-        Route::get('filtrarconceptoger/datatable', [GerenciaController::class, 'filtrarconcepto'])->name('datager.filtrarconcepto');
+        // Route::get('filtrarconceptoger/datatable', [GerenciaController::class, 'filtrarconcepto'])->name('datager.filtrarconcepto');
 
-        Route::get('/filtrarconceptoger', [GerenciaController::class, 'concepto']);
+        // Route::get('/filtrarconceptoger', [GerenciaController::class, 'concepto']);
 
 
         Route::get('/admin', function () {
@@ -256,30 +232,6 @@ Route::middleware(['session.expired'])->group(function () {
         Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
 
         Route::get('/admin/obtener-agencias-select/{id}', [GerenciaController::class, 'obtenerAgenciasSelect']);
-
-
-
-    //JEFATURA
-    Route::get('/solicitudesjefatura', function () {
-        // Cookie::forget('laravel_session');
-        // Cache::flush();
-        return view('Jefatura/solicitudesjefatura');
-    });
-
-    Route::get('solicitudesjefatura', [JefaturaController::class, 'data1']);
-
-    Route::get('solicitudesjefatura/datatable', [JefaturaController::class, 'solicitudes'])->name('data.solicitudesjef');
-
-    Route::get('/aprobadasjefatura/datatable', [JefaturaController::class, 'aprobados'])->name('data.aprobadosjef');
-
-    Route::get('/rechazadasjefatura/datatable', [JefaturaController::class, 'rechazados'])->name('data.rechazadosjef');
-
-    Route::get('/anuladosjefatura/datatable', [JefaturaController::class, 'anulados'])->name('data.anuladosjef');
-
-    Route::post('/solicitudesjefatura/crear', [JefaturaController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacionjef');
-
-    Route::post('/solicitudesjefatura/actualizar-{id}', [JefaturaController::class, 'actualizardetalle'])->name('update.autorizacionjef');
-
 
     //TODOS LOS PERFILES
 
