@@ -539,12 +539,6 @@
                         </ul>
                     </li>
 
-                    <!-- Font Awesome para iconos -->
-                    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-
-
-
                     <!-- Botón Cerrar Sesión -->
                     <li class="nav-item">
                         <button id="logoutBtn" class="btn btn-light fw-bold px-4 py-2 shadow rounded-pill">
