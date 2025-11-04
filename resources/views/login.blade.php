@@ -11,6 +11,7 @@
     <script src="ResourcesAll/fontawesome/fontawesome.js"></script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Autorizaciones | Iniciar Sesión</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <style>
         /* ---------------------------
@@ -278,6 +279,11 @@
                             </svg>
                         </button>
                     </div>
+
+                    {{-- Mostrar recaptcha si hubo >=3 intentos --}}
+                    @if(session('show_captcha'))
+                        <div class="g-recaptcha" data-sitekey="6LdBegEsAAAAAI1HKYbqNQnFoSy3wpMGO0Yia3LY"></div>
+                    @endif
 
                     <div class="actions" style="margin-top:8px;">
                         <div style="display:flex;gap:12px">
