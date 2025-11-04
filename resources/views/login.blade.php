@@ -11,6 +11,7 @@
     <script src="ResourcesAll/fontawesome/fontawesome.js"></script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Autorizaciones | Iniciar Sesión</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <style>
         /* ---------------------------
@@ -86,7 +87,7 @@
             gap:18px;
         }
 
-        .logo-wrap{ text-align:center; margin-bottom:6px; }
+        .logo-wrap{ text-align:center; margin-bottom:0px; }
         .logo-wrap img{ height:148px; object-fit:contain; transition: transform .25s ease; }
         .logo-wrap img:hover{ transform: scale(1.03); }
 
@@ -151,6 +152,52 @@
             .login-form{ padding:28px; }
         }
 
+        @media (max-width: 900px){
+            .login-card {
+                grid-template-columns: 1fr;
+                max-width: 420px;
+                width: 100%;
+            }
+
+            /* ✅ La imagen vuelve a mostrarse y se va arriba */
+            .login-image {
+                display: block;
+                width: 100%;
+                height: 200px;
+                min-height: 180px;
+                background-size: cover;
+                background-position: center;
+                border-bottom: 4px solid rgba(0,0,0,0.08);
+            }
+
+            /* ✅ Centrado y buen espacio */
+            .login-form{
+                padding: 22px 20px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .logo-wrap img {
+                height: 100px;
+            }
+
+            h1.title{
+                font-size: 28px;
+            }
+
+            .field {
+                width: 100%;
+            }
+
+            .actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            button#loginBtn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -193,7 +240,7 @@
 
             <!-- RIGHT: form -->
             <section class="login-form" aria-labelledby="loginTitle">
-                <div class="logo-wrap text-center pb-1">
+                <div class="logo-wrap text-center">
                     <img src="img/Logo-Coopserp.png" alt="Logo Coopserp" HEI>
                 </div>
 
@@ -232,6 +279,11 @@
                             </svg>
                         </button>
                     </div>
+
+                    {{-- Mostrar recaptcha si hubo >=3 intentos --}}
+                    @if(session('show_captcha'))
+                        <div class="g-recaptcha" data-sitekey="6LdBegEsAAAAAI1HKYbqNQnFoSy3wpMGO0Yia3LY"></div>
+                    @endif
 
                     <div class="actions" style="margin-top:8px;">
                         <div style="display:flex;gap:12px">

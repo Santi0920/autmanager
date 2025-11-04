@@ -29,6 +29,18 @@ Route::middleware(['session.expired'])->group(function () {
         return view('Usuario/solicitudes');
     });
 
+    Route::get('/tyc', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/tyc');
+    });
+
+    Route::get('/privacidad', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/privacidad');
+    });
+
     Route::get('/solicitudes', [UsuarioController::class, 'data1']);
 
     Route::get('/solicitudes/datatable', [UsuarioController::class, 'solicitudes'])->name('data.solicitudes');
@@ -55,7 +67,7 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::post('/perfil/actualizar', [UsuarioController::class, 'updatePerfil'])->name('perfil.update');
 
-
+    Route::post('/bug-report', [UsuarioController::class, 'store'])->name('bug-report.store');
 
 
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos

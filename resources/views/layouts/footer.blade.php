@@ -34,10 +34,10 @@
                 <h5 class="fw-bold mb-3">Enlaces</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a href="#" class="text-light text-decoration-none fw-medium hover-effect">Términos & Condiciones</a>
+                        <a href="tyc" target="_blank" class="text-light text-decoration-none fw-medium hover-effect">Términos & Condiciones</a>
                     </li>
                     <li class="mb-2">
-                        <a href="#" class="text-light text-decoration-none fw-medium hover-effect">Política de Privacidad</a>
+                        <a href="privacidad" target="_blank" class="text-light text-decoration-none fw-medium hover-effect">Política de Privacidad</a>
                     </li>
                 </ul>
             </div>
@@ -52,7 +52,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="text-light text-decoration-none fw-medium hover-effect">
+                        <a href="https://www.linkedin.com/in/santiago-henao/" class="text-light text-decoration-none fw-medium hover-effect" target="_blank">
                             <i class="fab fa-linkedin me-2"></i> LinkedIn
                         </a>
                     </li>

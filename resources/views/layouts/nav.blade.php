@@ -1,12 +1,450 @@
+    <!-- Estilos Premium -->
+    <style>
+        /* Estilo general de los tabs */
+        .nav-tabs .nav-link {
+            font-weight: 600;
+            color: #e0e0e0;
+            background-color: #2c2c2c;
+            border: none;
+            margin-right: 5px;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hover suave */
+        .nav-tabs .nav-link:hover {
+            color: #ffc107;
+            background-color: #3a3a3a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Tab activo destacado */
+        .nav-tabs .nav-link.active {
+            color: #1f1f1f;
+            background: linear-gradient(90deg, #ffc107, #ffca2c);
+            border-radius: 10px 10px 0 0;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(255,193,7,0.4);
+        }
+
+        /* Foco al hacer click */
+        .nav-tabs .nav-link:focus {
+            box-shadow: 0 0 0 3px rgba(255,193,7,0.5);
+        }
+
+        /* Separación entre tabs */
+        .nav-tabs .nav-item {
+            margin-right: 5px;
+        }
+
+        /* Transición suave para todo */
+        .nav-tabs .nav-link, .nav-tabs .nav-link.active {
+            transition: all 0.3s ease-in-out;
+        }
+        .agencias-scroll {
+            display: flex;
+            gap: 6px; /* espacio entre badges */
+            max-height: 7.5em; /* altura aproximada de dos registros */
+            overflow-y: auto; /* scroll vertical si hay más de dos registros */
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+
+        .badge-agencia {
+            display: inline-block;
+            padding: 10px 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            font-size: 0.9em;
+            white-space: nowrap; /* que no se rompa en varias líneas */
+        }
+
+        /* Hover moderno para opciones */
+        .hover-option {
+            transition: all 0.3s ease-in-out;
+            border-radius: 0.35rem;
+        }
+
+        .hover-option:hover {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107 !important;
+            transform: translateX(5px);
+        }
+
+        /* Separadores más suaves */
+        .dropdown-divider {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        /* Animación dropdown */
+        .dropdown-menu {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .show.dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Iconos */
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ffc107 !important;
+            text-shadow: 0 0 5px rgba(255,193,7,0.7);
+        }
+
+        .btn-warning {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-warning:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255,193,7,0.6);
+        }
+
+        .btn-light:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.6);
+        }
+
+        .toggle-password {
+            font-size: 1.1rem;
+            color: #6c757d;
+            user-select: none;
+        }
+        .toggle-password:hover {
+            color: #495057;
+        }
+        .btn-version-floating {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            background: #0d6efd;
+            color: #fff;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.45);
+            cursor: pointer;
+            transition: all 0.25s ease-in-out;
+            z-index: 2000;
+        }
+
+        .btn-version-floating:hover {
+            background: #084298;
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 10px 26px rgba(13, 110, 253, 0.65);
+        }
+
+        .btn-version-floating:focus {
+            outline: none !important;
+        }
+
+
+        .btn-version-nav {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 14px rgba(138, 43, 226, 0.6);
+        }
+
+        .btn-version-nav:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.9);
+        }
+
+        @media (max-width: 576px) {
+            .btn-version-nav {
+                padding: 6px 12px;
+                font-size: 13px;
+                gap: 4px;
+            }
+
+            .btn-version-nav strong {
+                display: none; /* Oculta "2.0" si quieres simplificar */
+            }
+
+            .badge-new {
+                font-size: 12px;
+                padding: 2px 6px;
+            }
+        }
+
+        /* Responsive: pantallas medianas */
+        @media (max-width: 768px) {
+            .btn-version-nav {
+                padding: 7px 16px;
+                font-size: 14px;
+                gap: 5px;
+            }
+
+            .badge-new {
+                font-size: 13px;
+                padding: 3px 8px;
+            }
+        }
+
+        /* Badge “Nuevo” */
+        .badge-new {
+            background: #ffce00;
+            color: #000;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            animation: glowPulse 1.5s infinite;
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 6px rgba(255, 206, 0, 0.6); }
+            50% { box-shadow: 0 0 12px rgba(255, 206, 0, 1); }
+            100% { box-shadow: 0 0 6px rgba(255, 206, 0, 0.6); }
+        }
+
+        /* Sombra extra para modal */
+        .shadow-xl {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        /* Botón de cierre moderno */
+        .btn-close-white {
+            filter: invert(1);
+        }
+
+        /* Botón de footer */
+        .btn-gradient {
+            background: linear-gradient(135deg, #525252ff, #444444ff);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            transition: all 0.25s ease-in-out;
+            box-shadow: 0 6px 14px rgba(83, 83, 83, 0.6);
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(119, 119, 119, 0.75);
+            color: #fff;
+        }
+
+        /* Lista numerada profesional */
+        .list-group-numbered .list-group-item {
+            background: #fff;
+            border: none;
+            font-size: 1.05rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220,53,69, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(220,53,69, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220,53,69, 0); }
+        }
+        button.btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff1a1a, 0 0 40px #ff0000;
+        }
+
+    </style>
+
 <div class="navbarBgDark" style="background-color: #646464;">
-<!-- Navbar Ultra Premium -->
-<nav class="navbar navbar-expand-lg navbar-dark p-3 shadow-sm" style="background: linear-gradient(90deg, #343a40, #495057);">
-        <div class="container-fluid">
+            <!-- Navbar Ultra Premium -->
+            <nav class="navbar navbar-expand-lg navbar-dark p-3 shadow-sm" style="background: linear-gradient(90deg, #343a40, #495057);">
+                    <div class="container-fluid">
 
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="img/CoopserpPH.png" alt="Coopserp Logo" width="182" height="60" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+            <a class="navbar-brand d-flex align-items-center position-relative" href="#">
+                <img src="img/CoopserpPH.png" alt="Coopserp Logo" width="182" height="60"
+                    style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+
+                <!-- Botón versión -->
+                <button class="btn-version-nav ms-3" data-bs-toggle="modal" data-bs-target="#versionModal">
+                    🚀 Versión <strong>2.0</strong>
+                    <span class="badge-new">🛑 Nuevo</span>
+                </button>
             </a>
+
+            {{-- modal version --}}
+            <div class="modal fade" id="versionModal" tabindex="-1" aria-labelledby="versionModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                    <div class="modal-content shadow-xl rounded-4 border-0 overflow-hidden ">
+
+                        <!-- Header con gradiente y icono -->
+                        <div class="modal-header p-4" style="background: linear-gradient(90deg, #343a40, #495057);">
+                            <h5 class="modal-title text-white fw-bold fs-5 d-flex align-items-center">
+                                <i class="fa-solid fa-rocket me-2" style="font-size:1.4rem;"></i>
+                                    Actualización del Software — Versión 2.0 <span class="badge-new ms-3">🛑 Nuevo</span>
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <!-- Body con fondo suave y lista numerada moderna -->
+                        <div class="modal-body p-4" style="background: #f7f9fc;">
+                            <p class="mb-4 text-dark fw-semibold fs-6">
+                                ✅ Mejoras y Cambios implementados en esta actualización (04 Noviembre 2025 - 8:00 AM):
+                            </p>
+
+                            <ol class="list-group list-group-numbered mb-4" style="border: none;">
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Botón para reportar errores para ser solucionados lo mas pronto posible. Parte inferior derecha. <span class="badge-new">🔥USARLO🔥</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se añadió el estado Stand By, permitiendo que Dirección General pueda aprobar directamente todas las solicitudes que se encuentren en este estado, agilizando la gestión.
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Al cargar las solicitudes, el sistema ahora muestra aquellas en estado Rechazado o Bloqueado, priorizando su revisión y garantizando que se atiendan los casos más sensibles.
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Los campos de selección de conceptos y áreas se actualizan automáticamente cuando se crean nuevos registros, asegurando que siempre aparezcan en los formularios de solicitud sin intervención manual. <span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    En los perfiles de Dirección General, Coordinadores, Jefaturas y Dirección de Agencia se añadió la funcionalidad de collapse, permitiendo ocultar o mostrar información extensa y reduciendo el scroll excesivo. <span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Los estados de Gerencia (Aprobar, Rechazar, Bloquear y Stand By) y los de Coordinadores (Validar y Rechazar) se adaptan automáticamente a móviles, garantizando consistencia, alineación y usabilidad en todos los dispositivos.
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se renovó la interfaz de login con un diseño moderno y amigable, incluyendo un botón de visualización de contraseña (icono de ojo) que permite alternar entre mostrar u ocultar los caracteres. <span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se implementó Google reCAPTCHA, que se activa automáticamente tras 3 intentos fallidos, previniendo ataques automatizados y de fuerza bruta sin afectar la experiencia del usuario.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se mejoró la interfaz de Director de Agencia, Coordinación y Dirección General: tablas, encabezados, botones y modales, agregando páginas de Términos y Condiciones y Política de Privacidad según estándares ISO y buenas prácticas de seguridad.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Todos los perfiles pueden filtrar autorizaciones desde “Buscar autorización” (Tabla), con alcance según rol: Dirección General (nacional), Coordinación (agencias asociadas) y Jefatura/Dirección de Agencia (solicitudes propias).<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Las solicitudes tipo “Reporte de novedades” se destacan visualmente en el modal, facilitando su clasificación y revisión rápida por parte de los usuarios.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Para solicitudes tipo reporte se habilitó el estado Enterado, sustituyendo el anterior Aprobado cuando no corresponde validación formal, mejorando la coherencia del flujo de autorizaciones.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    El nombre del funcionario es clickeable y abre un modal con información relevante: foto, nombre, rol, agencia/área, código del centro de costo, email y teléfono.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Para Directores de Agencia se muestra la Coordinación asignada, y para Coordinadores se listan las agencias vinculadas a su cargo, proporcionando contexto completo.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    El modal de usuario muestra último acceso, última acción registrada, sesiones activas y los últimos 3 inicios de sesión, fortaleciendo seguridad y trazabilidad operativa.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Todos los usuarios pueden cambiar su contraseña cumpliendo políticas de seguridad estrictas, evitando accesos no autorizados o contraseñas vulnerables.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    El usuario puede actualizar su nombre y número de celular, asegurando que los datos de contacto se mantengan correctos para notificaciones internas.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    La base de datos y software fueron rediseñados para almacenar versiones de cada modificación en el ciclo de vida de una autorización, garantizando trazabilidad, control de cambios e integridad de la información.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Ante un rechazo, los documentos corregidos generan una nueva versión, manteniendo el historial completo de archivos asociados a la solicitud<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center shadow-sm rounded-3">
+                                    Dirección General puede derivar una solicitud a otro funcionario, quien podrá marcarla como Recibida, registrando formalmente que tomó conocimiento de la solicitud.<span class="badge-new">🛑 Nuevo</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center shadow-sm rounded-3">
+                                    Sección para filtrar autorizaciones antiguas estará temporalmente ACTIVO.<span class="badge-new">🟢TEMPORAL</span>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <!-- Footer elegante -->
+                        <div class="modal-footer border-0 p-4">
+                            
+                            <div class="alert alert-info border-0 shadow-sm rounded-3 mt-3">
+                                📅 Fecha de publicación: <strong>04 Nov 2025</strong>
+                            </div>
+                            <button type="button" class="btn btn-gradient px-4 py-2" data-bs-dismiss="modal">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón flotante con efecto glow -->
+            <button class="btn btn-danger shadow-lg position-fixed"
+                    style="
+                        bottom: 25px; 
+                        right: 25px; 
+                        z-index: 1050; 
+                        width: 200px; 
+                        height: 70px; 
+                        font-size: 18px; 
+                        font-weight: bold;
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center;
+                        border-radius: 35px;
+                        color: #fff;
+                        text-shadow: 0 0 2px #fff;
+                        box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff1a1a, 0 0 40px #ff0000;
+                        animation: glow 1.5s infinite alternate;
+                    "
+                    data-bs-toggle="modal"
+                    data-bs-target="#bugReportModal">
+                🐞 Reportar Error
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="bugReportModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                    <form action="{{ route('bug-report.store') }}" method="POST" enctype="multipart/form-data" class="modal-content">
+                    @csrf
+                        <div class="modal-header" style="background: linear-gradient(90deg, #343a40, #495057);">
+                            <h5 class="modal-title fw-bold text-light fs-4">Reportar Error</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body fs-5 fw-bold">
+                            <div class="mb-3">
+                            <label>Título del BUG:</label>
+                            <input type="text" name="title" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                            <label>Descripción:</label>
+                            <textarea name="description" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                            <label>Imagen (opcional):</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary fs-5">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <!-- Botón hamburguesa -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
@@ -23,23 +461,14 @@
                         <a class="nav-link d-flex align-items-center text-light fw-bold" href="#" data-bs-toggle="modal" data-bs-target="#userInfoModal">
                             Bienvenido: 
                             <span class="btn btn-warning ms-2 shadow fw-bold px-3 py-2 rounded-pill">
-                                {{ $usuario['name'] }}
-                            </span>
-                        </a>
-                    </li>
-
-                    <!-- Agencia -->
-                    <li class="nav-item me-3">
-                        <span class="nav-link d-flex align-items-center text-light fw-bold">
-                            Agencia:
-                            <div class="btn btn-warning ms-2 shadow fw-bold px-3 py-2 rounded-pill">
+                                {{ $usuario['name'] }} -                           
                                 @if(session('agenciau') == 'Gerencia General')
                                     Cali
                                 @else
                                     {{ session('agenciau') }}
                                 @endif
-                            </div>
-                        </span>
+                            </span>
+                        </a>
                     </li>
 
 
@@ -215,140 +644,6 @@
                                     </button>
                                 </li>
                             </ul>
-
-                            <!-- Estilos Premium -->
-                            <style>
-                                /* Estilo general de los tabs */
-                                .nav-tabs .nav-link {
-                                    font-weight: 600;
-                                    color: #e0e0e0;
-                                    background-color: #2c2c2c;
-                                    border: none;
-                                    margin-right: 5px;
-                                    border-radius: 10px 10px 0 0;
-                                    transition: all 0.3s ease-in-out;
-                                }
-
-                                /* Hover suave */
-                                .nav-tabs .nav-link:hover {
-                                    color: #ffc107;
-                                    background-color: #3a3a3a;
-                                    transform: translateY(-2px);
-                                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                                }
-
-                                /* Tab activo destacado */
-                                .nav-tabs .nav-link.active {
-                                    color: #1f1f1f;
-                                    background: linear-gradient(90deg, #ffc107, #ffca2c);
-                                    border-radius: 10px 10px 0 0;
-                                    font-weight: 700;
-                                    box-shadow: 0 4px 15px rgba(255,193,7,0.4);
-                                }
-
-                                /* Foco al hacer click */
-                                .nav-tabs .nav-link:focus {
-                                    box-shadow: 0 0 0 3px rgba(255,193,7,0.5);
-                                }
-
-                                /* Separación entre tabs */
-                                .nav-tabs .nav-item {
-                                    margin-right: 5px;
-                                }
-
-                                /* Transición suave para todo */
-                                .nav-tabs .nav-link, .nav-tabs .nav-link.active {
-                                    transition: all 0.3s ease-in-out;
-                                }
-                                .agencias-scroll {
-                                    display: flex;
-                                    gap: 6px; /* espacio entre badges */
-                                    max-height: 7.5em; /* altura aproximada de dos registros */
-                                    overflow-y: auto; /* scroll vertical si hay más de dos registros */
-                                    padding: 5px;
-                                    border: 1px solid #ddd;
-                                    border-radius: 6px;
-                                    background-color: #fafafa;
-                                }
-
-                                .badge-agencia {
-                                    display: inline-block;
-                                    padding: 10px 10px;
-                                    background-color: #e0e0e0;
-                                    border-radius: 5px;
-                                    font-size: 0.9em;
-                                    white-space: nowrap; /* que no se rompa en varias líneas */
-                                }
-
-                                /* Hover moderno para opciones */
-                                .hover-option {
-                                    transition: all 0.3s ease-in-out;
-                                    border-radius: 0.35rem;
-                                }
-
-                                .hover-option:hover {
-                                    background: rgba(255, 193, 7, 0.15);
-                                    color: #ffc107 !important;
-                                    transform: translateX(5px);
-                                }
-
-                                /* Separadores más suaves */
-                                .dropdown-divider {
-                                    border-color: rgba(255,255,255,0.1);
-                                }
-
-                                /* Animación dropdown */
-                                .dropdown-menu {
-                                    opacity: 0;
-                                    transform: translateY(-10px);
-                                    transition: all 0.3s ease-in-out;
-                                }
-
-                                .show.dropdown-menu {
-                                    opacity: 1;
-                                    transform: translateY(0);
-                                }
-
-                                /* Iconos */
-                                .dropdown-item i {
-                                    width: 20px;
-                                    text-align: center;
-                                }
-                                
-                                .navbar-nav .nav-link {
-                                    font-size: 1rem;
-                                    transition: all 0.3s ease-in-out;
-                                }
-
-                                .navbar-nav .nav-link:hover {
-                                    color: #ffc107 !important;
-                                    text-shadow: 0 0 5px rgba(255,193,7,0.7);
-                                }
-
-                                .btn-warning {
-                                    transition: all 0.3s ease-in-out;
-                                }
-
-                                .btn-warning:hover {
-                                    transform: scale(1.05);
-                                    box-shadow: 0 4px 15px rgba(255,193,7,0.6);
-                                }
-
-                                .btn-light:hover {
-                                    transform: scale(1.05);
-                                    box-shadow: 0 4px 15px rgba(255,255,255,0.6);
-                                }
-
-                                .toggle-password {
-                                    font-size: 1.1rem;
-                                    color: #6c757d;
-                                    user-select: none;
-                                }
-                                .toggle-password:hover {
-                                    color: #495057;
-                                }
-
-                            </style>
 
 
                                 <div class="tab-content" id="userTabContent">
@@ -612,3 +907,4 @@
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
