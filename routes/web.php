@@ -70,6 +70,57 @@ Route::middleware(['session.expired'])->group(function () {
     Route::post('/bug-report', [UsuarioController::class, 'store'])->name('bug-report.store');
 
 
+    //SOLICITUDES ANTIGUAS
+    Route::get('/gerencia', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/Gerencia/solicitudes_antiguas');
+    });
+
+    Route::get('/gerencia', [UsuarioController::class, 'data2antiguo']);
+
+    Route::get('/gerencia/datatable', [UsuarioController::class, 'solicitudesantiguas'])->name('data.solicitudesantiguas');
+
+    Route::get('/gerenciaaprobadas/datatable', [UsuarioController::class, 'aprobadosantiguas'])->name('data.aprobadosantiguas');
+
+    Route::get('/gerenciarechazadas/datatable', [UsuarioController::class, 'rechazadosantiguas'])->name('data.rechazadosantiguas');
+    
+    Route::get('/gerenciatramite/datatable', [UsuarioController::class, 'tramiteantiguas'])->name('data.tramiteantiguas');
+    
+    Route::get('/gerenciabloqueadas/datatable', [UsuarioController::class, 'bloqueadosantiguas'])->name('data.bloqueadosantiguas');
+
+    Route::get('/gerenciaanuladas/datatable', [UsuarioController::class, 'anuladosantiguas'])->name('data.anuladosantiguas');
+
+    Route::get('/gerenciastandby/datatable', [UsuarioController::class, 'standbyantiguas'])->name('data.standbyantiguas');
+
+    Route::get('/gerenciastandby/datatable', [UsuarioController::class, 'standbyantiguas'])->name('data.standbyantiguas');
+
+    Route::post('gerencia/actualizar-{id}', [UsuarioController::class, 'validarAutorizacionAntiguas'])->name('updateger.autorizacionantiguas');
+
+    Route::get('/gerenciac9', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/Gerencia/coordinacion9');
+    });
+
+    Route::get('/gerenciac9', [UsuarioController::class, 'data3antiguo']);
+
+    Route::get('/gerenciac9/datatable', [UsuarioController::class, 'solicitudescoordinacionantiguas'])->name('data.gerenciac9');
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
     Route::post('/solicitudes/crear', [UsuarioController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
