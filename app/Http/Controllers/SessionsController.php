@@ -20,6 +20,7 @@ class SessionsController extends Controller
 
     public function login_post(Request $request)
     {
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
@@ -27,13 +28,27 @@ class SessionsController extends Controller
 
         $email = strtolower($request->email);
         $password = $request->password;
-
+ 
         // Buscar usuario en la tabla local 'users'
         $user = User::where('email', $email)->first();
 
         if (!$user || !Hash::check($password, $user->password)) {
-            return back()->with('message', 'El usuario o la contraseña es incorrecto!');
+
+            // Incrementar contador
+            session(['login_attempts' => session('login_attempts') + 1]);
+
+            // Mostrar mensaje de error
+            return back()->with('message', 'El usuario o la contraseña es incorrecto!')
+                        ->with('show_captcha', session('login_attempts') >= 3);
         }
+
+        if (session('login_attempts') >= 3) {
+            if (empty($request->input('g-recaptcha-response'))) {
+                return back()->with('message', 'Por favor, completa el Captcha')
+                            ->with('show_captcha', true);
+            }
+        }
+
         $displayAgencias = ''; // Variable que contendrá el resultado final
 
         if ($user->rol === 'Consultante') {
@@ -140,6 +155,7 @@ class SessionsController extends Controller
         ]);
 
         session()->flash('bienvenida', 'Bienvenido/a, ' . $nombreauditoria . ' 👋');
+        session(['login_attempts' => 0]);
 
         return redirect()->to('/solicitudes');
     }

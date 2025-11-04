@@ -29,6 +29,18 @@ Route::middleware(['session.expired'])->group(function () {
         return view('Usuario/solicitudes');
     });
 
+    Route::get('/tyc', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/tyc');
+    });
+
+    Route::get('/privacidad', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/privacidad');
+    });
+
     Route::get('/solicitudes', [UsuarioController::class, 'data1']);
 
     Route::get('/solicitudes/datatable', [UsuarioController::class, 'solicitudes'])->name('data.solicitudes');

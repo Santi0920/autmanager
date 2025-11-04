@@ -655,7 +655,7 @@
                                                                 <div class="row g-0 justify-content-center">
                                                                     <div class="row g-0 row-cols-2 justify-content-center">
                                                                         <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                            <span class="fs-5"><b>{{ session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                            <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
                                                                         </div>
                                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                                             <span class="mb-0 fs-5">Pendiente...</span>
@@ -726,7 +726,7 @@
                                                                     <div class="row g-0 justify-content-center">
                                                                         <div class="row g-0 row-cols-2 justify-content-center">
                                                                             <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                                <span class="fs-5"><b>{{ session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
                                                                             </div>
                                                                             <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                                                 <span class="mb-0 fs-5">Pendiente...</span>
@@ -801,7 +801,7 @@
                                             <div class="col-sm-12 col-md-12 col-lg-10">
                                                 <div class="row g-0">
                                                     <div class="text-start col-md-9 d-flex align-items-center border p-2">
-                                                        <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
+                                                        <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario == null ? '':item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
                                                         <span class="mb-0 fs-5">${item.FechaString ?? ''}</span>
@@ -856,7 +856,7 @@
                                                                     <div class="row g-0 justify-content-center">
                                                                         <div class="row g-0 row-cols-2 justify-content-center">
                                                                             <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                                <span class="fs-5"><b>{{ session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
                                                                             </div>
                                                                             <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                                                 <span class="mb-0 fs-5">Pendiente...</span>
@@ -918,7 +918,7 @@
                                                                     <div class="row g-0 justify-content-center">
                                                                         <div class="row g-0 row-cols-2 justify-content-center">
                                                                             <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                                <span class="fs-5"><b>{{ session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
                                                                             </div>
                                                                             <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                                                 <span class="mb-0 fs-5">Pendiente...</span>
@@ -967,7 +967,7 @@
                                                                     <div class="row g-0 justify-content-center">
                                                                         <div class="row g-0 row-cols-2 justify-content-center">
                                                                             <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                                <span class="fs-5"><b>{{ session('agenciau') }}({{ session('codigo') }}) - {{ session('name') }}</b></span>
+                                                                                <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
                                                                             </div>
                                                                             <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                                                 <span class="mb-0 fs-5">Pendiente...</span>
