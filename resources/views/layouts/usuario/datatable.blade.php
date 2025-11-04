@@ -1414,7 +1414,6 @@
                         // Realizar la solicitud AJAX mientras se muestra el mensaje de carga
                         $.ajax({
                             url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                            url: "/autmanager/public/solicitudes/actualizar-" + id,
                             type: "POST",
                             data: formData,
                             contentType: false,
@@ -1520,7 +1519,6 @@
                 // Realizar la solicitud AJAX para actualizar la autorización
                 $.ajax({
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                    url: "/autmanager/public/solicitudes/actualizar-" + id,
                     type: "POST",
                     data: {
                         Observaciones: observaciones,
