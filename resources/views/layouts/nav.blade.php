@@ -262,7 +262,15 @@
             font-weight: bold;
         }
 
-
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220,53,69, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(220,53,69, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220,53,69, 0); }
+        }
+        button.btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff1a1a, 0 0 40px #ff0000;
+        }
 
     </style>
 
@@ -304,6 +312,9 @@
                             </p>
 
                             <ol class="list-group list-group-numbered mb-4" style="border: none;">
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Botón para reportar errores para ser solucionados lo mas pronto posible. Parte inferior derecha. <span class="badge-new">🔥USARLO🔥</span>
+                                </li>
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
                                     Se añadió el estado Stand By, permitiendo que Dirección General pueda aprobar directamente todas las solicitudes que se encuentren en este estado, agilizando la gestión.
                                 </li>
@@ -361,6 +372,9 @@
                                 <li class="list-group-item d-flex align-items-center shadow-sm rounded-3">
                                     Dirección General puede derivar una solicitud a otro funcionario, quien podrá marcarla como Recibida, registrando formalmente que tomó conocimiento de la solicitud.<span class="badge-new">🛑 Nuevo</span>
                                 </li>
+                                <li class="list-group-item d-flex align-items-center shadow-sm rounded-3">
+                                    Sección para filtrar autorizaciones antiguas estará temporalmente ACTIVO.<span class="badge-new">🟢TEMPORAL</span>
+                                </li>
                             </ol>
                         </div>
 
@@ -378,8 +392,59 @@
                 </div>
             </div>
 
+            <!-- Botón flotante con efecto glow -->
+            <button class="btn btn-danger shadow-lg position-fixed"
+                    style="
+                        bottom: 25px; 
+                        right: 25px; 
+                        z-index: 1050; 
+                        width: 200px; 
+                        height: 70px; 
+                        font-size: 18px; 
+                        font-weight: bold;
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center;
+                        border-radius: 35px;
+                        color: #fff;
+                        text-shadow: 0 0 2px #fff;
+                        box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff1a1a, 0 0 40px #ff0000;
+                        animation: glow 1.5s infinite alternate;
+                    "
+                    data-bs-toggle="modal"
+                    data-bs-target="#bugReportModal">
+                🐞 Reportar Error
+            </button>
 
-
+            <!-- Modal -->
+            <div class="modal fade" id="bugReportModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                    <form action="{{ route('bug-report.store') }}" method="POST" enctype="multipart/form-data" class="modal-content">
+                    @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold text-light fs-4">Reportar Error</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body fs-5 fw-bold">
+                            <div class="mb-3">
+                            <label>Título del BUG:</label>
+                            <input type="text" name="title" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                            <label>Descripción:</label>
+                            <textarea name="description" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                            <label>Imagen (opcional):</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary fs-5">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <!-- Botón hamburguesa -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
