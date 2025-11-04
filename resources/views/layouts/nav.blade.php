@@ -178,6 +178,36 @@
             box-shadow: 0 6px 20px rgba(138, 43, 226, 0.9);
         }
 
+        @media (max-width: 576px) {
+            .btn-version-nav {
+                padding: 6px 12px;
+                font-size: 13px;
+                gap: 4px;
+            }
+
+            .btn-version-nav strong {
+                display: none; /* Oculta "2.0" si quieres simplificar */
+            }
+
+            .badge-new {
+                font-size: 12px;
+                padding: 2px 6px;
+            }
+        }
+
+        /* Responsive: pantallas medianas */
+        @media (max-width: 768px) {
+            .btn-version-nav {
+                padding: 7px 16px;
+                font-size: 14px;
+                gap: 5px;
+            }
+
+            .badge-new {
+                font-size: 13px;
+                padding: 3px 8px;
+            }
+        }
 
         /* Badge “Nuevo” */
         .badge-new {
