@@ -512,6 +512,16 @@
                                         <i class="fas fa-search me-2"></i> Buscar Autorización
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="gerencia">
+                                        <i class="fas fa-search me-2"></i> Gerencia antes de 4 Nov
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="gerenciac9">
+                                        <i class="fas fa-search me-2"></i> Coordinación 9 antes de 4 Nov
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="otrabajo">
