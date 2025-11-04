@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\File;
 use App\Models\User;
+use App\Models\BugReport;
 class UsuarioController extends Controller
 {
     //ENVIAR DATOS A LA VISTA, PARA CARGAR SELECTS DINAMICAMENTE
@@ -4356,4 +4358,47 @@ class UsuarioController extends Controller
     }
 
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'nullable|mimes:jpg,jpeg,png,gif,pdf', // imágenes o PDF hasta 5MB
+        ]);
+
+        // 1️⃣ Crear el registro sin la imagen
+        $bugReport = BugReport::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image' => null, // se actualizará después
+        ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Carpeta donde guardaremos las imágenes
+            $destinationPath = public_path('Storage/files/reporteimgs');
+
+            // Crear la carpeta si no existe
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true);
+            }
+
+            // Nombre del archivo con el ID del registro
+            $filename = 'bug_' . $bugReport->id . '.' . $file->getClientOriginalExtension();
+
+            // Mover el archivo
+            $file->move($destinationPath, $filename);
+
+            // Guardar la ruta relativa
+            $imagePath = 'Storage/files/reporteimgs/' . $filename;
+
+            // Actualizar el registro con la ruta de la imagen
+            $bugReport->update(['image' => $filename]);
+        }
+
+        return back()->with('correcto', 'Reporte enviado correctamente');
+    }
 }

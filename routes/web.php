@@ -67,7 +67,7 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::post('/perfil/actualizar', [UsuarioController::class, 'updatePerfil'])->name('perfil.update');
 
-
+    Route::post('/bug-report', [UsuarioController::class, 'store'])->name('bug-report.store');
 
 
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
