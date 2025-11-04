@@ -421,7 +421,7 @@
                 <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                     <form action="{{ route('bug-report.store') }}" method="POST" enctype="multipart/form-data" class="modal-content">
                     @csrf
-                        <div class="modal-header">
+                        <div class="modal-header" style="background: linear-gradient(90deg, #343a40, #495057);">
                             <h5 class="modal-title fw-bold text-light fs-4">Reportar Error</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
