@@ -259,36 +259,6 @@
             box-shadow: 0 6px 20px rgba(138, 43, 226, 0.9);
         }
 
-        @media (max-width: 576px) {
-            .btn-version-nav {
-                padding: 6px 12px;
-                font-size: 13px;
-                gap: 4px;
-            }
-
-            .btn-version-nav strong {
-                display: none; /* Oculta "2.0" si quieres simplificar */
-            }
-
-            .badge-new {
-                font-size: 12px;
-                padding: 2px 6px;
-            }
-        }
-
-        /* Responsive: pantallas medianas */
-        @media (max-width: 768px) {
-            .btn-version-nav {
-                padding: 7px 16px;
-                font-size: 14px;
-                gap: 5px;
-            }
-
-            .badge-new {
-                font-size: 13px;
-                padding: 3px 8px;
-            }
-        }
 
         @keyframes glow-red {
             0% {
@@ -311,14 +281,6 @@
             filter: brightness(1.15);
         }
 
-        /* ✅ Responsive */
-        @media (max-width: 480px) {
-            .btn-error-nav {
-                width: 160px;
-                height: 60px;
-                font-size: 14px;
-            }
-        }
 
     </style>
 
@@ -328,24 +290,35 @@
                     <div class="container-fluid">
 
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center position-relative" href="#">
+            <div class="navbar-brand d-flex align-items-center position-relative">
                 <img src="img/CoopserpPH.png" alt="Coopserp Logo" width="182" height="60"
                     style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+            </div>
 
-                <!-- Botón versión -->
-                <button class="btn-version-nav ms-3 me-2" data-bs-toggle="modal" data-bs-target="#versionModal">
+            
+            <div class="d-flex align-items-center">
+
+                <!-- Botón versión (PC completo) -->
+                <button class="btn-version-nav d-none d-md-inline ms-3 me-2"
+                        data-bs-toggle="modal" data-bs-target="#versionModal">
                     🚀 Versión <strong>2.0</strong>
                     <span class="badge-new">🛑 Nuevo</span>
                 </button>
 
-
-                <button class="btn-error-nav shadow-lg"
-                        data-bs-toggle="modal"
-                        data-bs-target="#bugReportModal">
-                    🐞 Reportar Error
+                <!-- Botón versión (solo móvil - solo 2.0) -->
+                <button class="btn-version-nav d-md-none ms-2 me-2"
+                        data-bs-toggle="modal" data-bs-target="#versionModal">
+                    <strong>V2.0</strong>
                 </button>
 
-            </a>
+                <!-- Botón reportar Error -->
+                <button class="btn-error-nav shadow-lg"
+                        data-bs-toggle="modal" data-bs-target="#bugReportModal">
+                    🐞 <span class="d-none d-md-inline">Reportar Error</span>
+                    <span class="d-md-none">Reportar</span>
+                </button>
+
+            </div>
 
             {{-- modal version --}}
             <div class="modal fade" id="versionModal" tabindex="-1" aria-labelledby="versionModalLabel" aria-hidden="true">
