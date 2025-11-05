@@ -156,59 +156,6 @@
             outline: none !important;
         }
 
-
-        .btn-version-nav {
-            background: linear-gradient(135deg, #8e2de2, #4a00e0);
-            color: #fff;
-            border: none;
-            padding: 8px 20px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 50px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 4px 14px rgba(138, 43, 226, 0.6);
-        }
-
-        .btn-version-nav:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.9);
-        }
-
-        @media (max-width: 576px) {
-            .btn-version-nav {
-                padding: 6px 12px;
-                font-size: 13px;
-                gap: 4px;
-            }
-
-            .btn-version-nav strong {
-                display: none; /* Oculta "2.0" si quieres simplificar */
-            }
-
-            .badge-new {
-                font-size: 12px;
-                padding: 2px 6px;
-            }
-        }
-
-        /* Responsive: pantallas medianas */
-        @media (max-width: 768px) {
-            .btn-version-nav {
-                padding: 7px 16px;
-                font-size: 14px;
-                gap: 5px;
-            }
-
-            .badge-new {
-                font-size: 13px;
-                padding: 3px 8px;
-            }
-        }
-
         /* Badge “Nuevo” */
         .badge-new {
             background: #ffce00;
@@ -271,6 +218,107 @@
             transform: scale(1.05);
             box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff1a1a, 0 0 40px #ff0000;
         }
+        .btn-error-nav {
+            background: linear-gradient(135deg, #ff4d4d, #b30000);
+            color: #fff;
+            border: none;
+            padding: 9px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow:             box-shadow: 
+                0 0 15px rgba(255, 77, 77, 0.7),
+                0 0 25px rgba(255, 26, 26, 0.5),
+                0 0 35px rgba(255, 0, 0, 0.4);
+        }
+
+        
+        .btn-version-nav {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 14px rgba(138, 43, 226, 0.6);
+        }
+
+        .btn-version-nav:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.9);
+        }
+
+        @media (max-width: 576px) {
+            .btn-version-nav {
+                padding: 6px 12px;
+                font-size: 13px;
+                gap: 4px;
+            }
+
+            .btn-version-nav strong {
+                display: none; /* Oculta "2.0" si quieres simplificar */
+            }
+
+            .badge-new {
+                font-size: 12px;
+                padding: 2px 6px;
+            }
+        }
+
+        /* Responsive: pantallas medianas */
+        @media (max-width: 768px) {
+            .btn-version-nav {
+                padding: 7px 16px;
+                font-size: 14px;
+                gap: 5px;
+            }
+
+            .badge-new {
+                font-size: 13px;
+                padding: 3px 8px;
+            }
+        }
+
+        @keyframes glow-red {
+            0% {
+                box-shadow:
+                    0 0 10px rgba(255, 77, 77, 0.6),
+                    0 0 20px rgba(255, 26, 26, 0.5),
+                    0 0 30px rgba(255, 0, 0, 0.4);
+            }
+            100% {
+                box-shadow:
+                    0 0 20px rgba(255, 77, 77, 1),
+                    0 0 35px rgba(255, 26, 26, 1),
+                    0 0 50px rgba(255, 0, 0, 1);
+            }
+        }
+
+        /* Hover */
+        .btn-error-nav:hover {
+            transform: scale(1.06);
+            filter: brightness(1.15);
+        }
+
+        /* ✅ Responsive */
+        @media (max-width: 480px) {
+            .btn-error-nav {
+                width: 160px;
+                height: 60px;
+                font-size: 14px;
+            }
+        }
 
     </style>
 
@@ -285,10 +333,18 @@
                     style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
 
                 <!-- Botón versión -->
-                <button class="btn-version-nav ms-3" data-bs-toggle="modal" data-bs-target="#versionModal">
+                <button class="btn-version-nav ms-3 me-2" data-bs-toggle="modal" data-bs-target="#versionModal">
                     🚀 Versión <strong>2.0</strong>
                     <span class="badge-new">🛑 Nuevo</span>
                 </button>
+
+
+                <button class="btn-error-nav shadow-lg"
+                        data-bs-toggle="modal"
+                        data-bs-target="#bugReportModal">
+                    🐞 Reportar Error
+                </button>
+
             </a>
 
             {{-- modal version --}}
@@ -392,29 +448,7 @@
                 </div>
             </div>
 
-            <!-- Botón flotante con efecto glow -->
-            <button class="btn btn-danger shadow-lg position-fixed"
-                    style="
-                        bottom: 25px; 
-                        right: 25px; 
-                        z-index: 1050; 
-                        width: 200px; 
-                        height: 70px; 
-                        font-size: 18px; 
-                        font-weight: bold;
-                        display: flex; 
-                        align-items: center; 
-                        justify-content: center;
-                        border-radius: 35px;
-                        color: #fff;
-                        text-shadow: 0 0 2px #fff;
-                        box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff1a1a, 0 0 40px #ff0000;
-                        animation: glow 1.5s infinite alternate;
-                    "
-                    data-bs-toggle="modal"
-                    data-bs-target="#bugReportModal">
-                🐞 Reportar Error
-            </button>
+
 
             <!-- Modal -->
             <div class="modal fade" id="bugReportModal" tabindex="-1" aria-hidden="true">
