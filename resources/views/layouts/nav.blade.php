@@ -491,7 +491,7 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="filtrar">
-                                        <i class="fas fa-search me-2"></i> Buscar Autorización(Antes 4 Nov)
+                                        <i class="fas fa-search me-2"></i> Buscar Autorización
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>

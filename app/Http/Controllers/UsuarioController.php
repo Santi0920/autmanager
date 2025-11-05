@@ -486,23 +486,41 @@ class UsuarioController extends Controller
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
                     ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
                     ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-                    ->whereExists(function ($sub) use ($idsFiltro) {
-                        $sub->select(DB::raw(1))
-                            ->from('historialestado AS H2')
-                            ->whereColumn('H2.ID_Autorizacion', 'B.ID')
-                            ->whereIn('H2.NumArea', $idsFiltro);
-                    })
                     ->whereRaw('H.ID = (SELECT MAX(H3.ID) FROM historialestado AS H3 WHERE H3.ID_Autorizacion = B.ID)')
-                    ->where('H.Estado', '!=', 'APROBADO')
-                    ->where('H.Estado', '!=', 'STAND BY')
-                    ->where('H.Estado', '!=', 'ENTERADO')
-                    ->where('H.Estado', '!=', 'ANULADO')
-                    ->where('H.Estado', '!=', 'RECIBIDO')
+                    ->whereNotIn('H.Estado', ['APROBADO','STAND BY','ENTERADO','ANULADO','RECIBIDO'])
+                    ->where(function($query) use ($idsFiltro) {
+
+                        // ✅ Regla 1: Permitido por filtro de área
+                        $query->where(function($q) use ($idsFiltro) {
+                            $q->whereExists(function ($sub) use ($idsFiltro) {
+                                $sub->select(DB::raw(1))
+                                    ->from('historialestado AS H2')
+                                    ->whereColumn('H2.ID_Autorizacion', 'B.ID')
+                                    ->whereIn('H2.NumArea', $idsFiltro);
+                            })
+                            // ❌ pero NO permitido si es de Jefatura
+                            ->whereNotExists(function ($sub) {
+                                $sub->select(DB::raw(1))
+                                    ->from('historialestado AS H4')
+                                    ->whereColumn('H4.ID_Autorizacion', 'B.ID')
+                                    ->whereRaw("LOWER(TRIM(H4.NumArea)) = 'jefatura'");
+                            });
+                        })
+
+                        // ✅ Regla 2: Excepción → ENVIADO + Nombre usuario
+                        ->orWhere(function($q) {
+                            $q->where('H.Estado', 'ENVIADO')
+                            ->orwhere('H.Estado', 'RECIBIDO')
+                            ->where('H.Nombre', session('name'));
+                        });
+
+                    })
                     ->select([
+                        'H.Nombre AS NombrePersonaActual', // ✅ priorizar nombre real del historial
                         'A.ID AS IDPersona',
                         'A.Score',
                         'A.CuentaAsociada',
-                        'A.Nombre',
+                        'A.Nombre AS NombrePersonaBD',
                         'A.Apellidos',
                         'B.ID AS IDAutorizacion',
                         'H.Convencion',
@@ -1046,7 +1064,7 @@ class UsuarioController extends Controller
             return response()->json(['success' => true]);
 
         }else{      
-            if(($tipovalidacion == null || $request->Cedulamodal != null || $tipovalidacion == "RECIBIDO")){
+            if(($tipovalidacion == null || $request->Cedulamodal != null)){
                 $cedula = $request->Cedulamodal;
                 
                 $documentos = DB::select('SELECT ID, DocumentoSoporte, NumArea FROM historialestado WHERE ID_Autorizacion = ?', [$id]);
@@ -1346,6 +1364,8 @@ class UsuarioController extends Controller
 
                 if($tipovalidacion == null){
                     $tipovalidacion = 'REMITIDO';
+                }elseif($tipovalidacion == 'RECIBIDO'){
+                    $tipovalidacion = 'RECIBIDO';
                 }
 
                 $update = DB::table('historialestado')

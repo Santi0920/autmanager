@@ -93,8 +93,6 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/gerenciastandby/datatable', [UsuarioController::class, 'standbyantiguas'])->name('data.standbyantiguas');
 
-    Route::get('/gerenciastandby/datatable', [UsuarioController::class, 'standbyantiguas'])->name('data.standbyantiguas');
-
     Route::post('gerencia/actualizar-{id}', [UsuarioController::class, 'validarAutorizacionAntiguas'])->name('updateger.autorizacionantiguas');
 
     Route::get('/gerenciac9', function () {
