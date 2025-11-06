@@ -15,7 +15,11 @@ class SessionsController extends Controller
 {
     public function login()
     {
-        return view("login");
+        // Destruir completamente la sesión anterior
+        session()->invalidate();
+        session()->regenerateToken();
+
+        return view('login');
     }
 
     public function login_post(Request $request)
