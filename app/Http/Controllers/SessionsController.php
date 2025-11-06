@@ -15,10 +15,6 @@ class SessionsController extends Controller
 {
     public function login()
     {
-        // Destruir completamente la sesión anterior
-        session()->invalidate();
-        session()->regenerateToken();
-
         return view('login');
     }
 
@@ -173,6 +169,9 @@ class SessionsController extends Controller
 
         Cookie::forget('laravel_session');
         Cache::flush();
+
+        $cookieName = config('session.cookie');
+        Cookie::queue(Cookie::forget($cookieName));
 
 
 
