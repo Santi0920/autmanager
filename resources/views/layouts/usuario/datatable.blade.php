@@ -1215,7 +1215,7 @@
                     <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
                             title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
                         <i class="fa-solid fa-rotate-right"></i>
-                        <span class="d-none d-md-inline">ACTUALIZAR</span>
+                        <span class="d-none d-md-inline">GERENCIA</span>
                     </button>
 
                     ${
