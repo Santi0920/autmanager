@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="text-start">
                     <div class="d-flex justify-content-between align-items-center">
-                        <a href="aprobar" class="shadow-lg buttonpro btn btn-warning">
+                        <a href="solicitudes" class="shadow-lg buttonpro btn btn-warning">
                             <span>
                                 <i class="fa-solid fa-arrow-left me-3"></i>
                                 REGRESAR

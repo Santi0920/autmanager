@@ -1,14 +1,18 @@
-<!DOCTYPE html>
-@include('layouts/head')
-@include('layouts.retornar')
-    <body class="antialiased">
-        @include('layouts/nav')
-                @include('layouts/cards')
+@if(session('rol')== 'Gerencia')
+    <!DOCTYPE html>
+    @include('layouts/head')
+    @include('layouts.retornar')
+        <body class="antialiased">
+            @include('layouts/nav')
+                    @include('layouts/cards')
 
 
 
-        @include('layouts.footer')
+            @include('layouts.footer')
 
-    </body>
+        </body>
 
-</html>
+    </html>
+@else
+    @include('errors.419')
+@endif

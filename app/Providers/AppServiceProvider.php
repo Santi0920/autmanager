@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\User;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -43,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
 
             }
 
+            
+
             $view->with('notificaciones', $notificaciones);
         });
 
@@ -54,6 +56,24 @@ class AppServiceProvider extends ServiceProvider
             $celular = DB::table('users')->where('id', $id)->value('celular');
 
             $view->with('celular', $celular);
+        });
+
+        // Para que layouts/nav siempre reciba $usuario
+        View::composer('layouts.nav', function ($view) {
+            $userId = session('id');
+            $usuario = null;
+
+            if ($userId) {
+                $user = User::find($userId);
+                if ($user) {
+                    $usuario = [
+                        'name' => $user->name,
+                        'celular' => $user->celular
+                    ];
+                }
+            }
+
+            $view->with('usuario', $usuario);
         });
     }
 }

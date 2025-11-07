@@ -96,7 +96,7 @@
     <script src="js/condicionNit.js"></script>
     <script>
         var table = $('#personas').DataTable({
-            "ajax": "{{ route('datagercoordi.solicitudes') }}",
+            "ajax": "{{ route('data.gerenciac9') }}",
             "order": [
                 [0, 'desc']
             ],
@@ -224,7 +224,7 @@
                     render: function(data, type, row) {
 
                         var id = row.IDAutorizacion; // Obtener el ID de la fila
-                        var url = "{{ route('updatecoor.autorizacion', ':id') }}";
+                        var url = "{{ route('data.gerenciac9', ':id') }}";
                         url = url.replace(':id', id);
 
 
