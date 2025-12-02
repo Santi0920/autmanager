@@ -228,9 +228,12 @@
                             }else if (ultimoEstado == "APROBADO") {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
+                            }else if (ultimoEstado == "RESOLVER") {
+                                var Estado =
+                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RESUELTO</div>'
                             }else if (ultimoEstado == "RECIBIDO") {
                                 var Estado =
-                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECIBIDO</div>'
+                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECIBIDO POR FUNCIONARIO</div>'
                             }else if (ultimoEstado == "ENTERADO") {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ENTERADO</div>'
@@ -243,9 +246,9 @@
                             }else if (ultimoEstado == "DESBLOQUEADO") {
                                 var Estado =
                                     '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">DESBLOQUEADO</div>'
-                            }else if (ultimoEstado == "ENVIADO") {
+                            }else if (    ultimoEstado === "ENVIADO" || ultimoEstado === "ACLARAR" || ultimoEstado === "ENCARGARSE" || ultimoEstado === "PROCEDER" || ultimoEstado === "SOLUCIONAR" || ultimoEstado === "QUE PASO") {
                                 var Estado =
-                                    '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ENVIADO</div>'
+                                    '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">'+ ultimoEstado +'</div>'
                             }   else {
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>'
@@ -270,236 +273,181 @@
                             var id = row.IDAutorizacion; // Obtener el ID de la fila
 
                             const cedula = row.Cedula;
+                            
+                            row.historialActual = row.historialEstadosUnicos;
 
-                            document.querySelectorAll('.modal').forEach(modal => {
-                                const radios = modal.querySelectorAll('input[name^="Estado"]'); // solo radios dentro del modal
-                                const enviarDiv = modal.querySelector('.enviarselect'); // div relativo al modal
+                            document.addEventListener("click", function(e) {
 
-                                radios.forEach(radio => {
-                                    radio.addEventListener('change', () => {
-                                        if (radio.value === 'ENVIAR A' && radio.checked) {
-                                            enviarDiv.classList.remove('d-none'); // Mostrar
-                                        } else if (radio.checked) {
-                                            enviarDiv.classList.add('d-none'); // Ocultar
-                                        }
-                                    });
-                                });
-                            });
-                            document.addEventListener('click', function(e) {
-                                if (e.target && e.target.id === 'btnScroll') {
-                                    const anchor = document.getElementById('anchor-scroll');
-                                    if (anchor) {
-                                        anchor.scrollIntoView({
-                                            behavior: 'smooth',
-                                            block: 'center'
-                                        });
+                                // Verificar si se hizo click en un botón de historial o historial original
+                                const btnHistorial = e.target.closest(`[id^="btnToggleHistorial-"]`);
+                                const btnOriginal = e.target.closest(`[id^="btnToggleOriginal-"]`);
+
+                                if (btnHistorial || btnOriginal) {
+
+                                    const btn = btnHistorial || btnOriginal;
+                                    const id = btn.dataset.id;
+                                    const row = table.row(btn.closest("tr")).data();
+                                    const contenedor = document.querySelector(`#historial-dinamico-${id}`);
+
+                                    // Elegir el array según el botón
+                                    const historialArray = btnHistorial ? row.historial : row.historialActual;
+
+                                    // Renderizar
+                                    contenedor.innerHTML = historialArray
+                                        .slice(0)
+                                        .map(item => renderHistorial(item, id))
+                                        .join("");
+
+                                    // Cambiar visibilidad de botones
+                                    if (btnHistorial) {
+                                        document.querySelector(`#btnToggleHistorial-${id}`).classList.add("d-none");
+                                        document.querySelector(`#btnToggleOriginal-${id}`).classList.remove("d-none");
+                                    } else {
+                                        document.querySelector(`#btnToggleOriginal-${id}`).classList.add("d-none");
+                                        document.querySelector(`#btnToggleHistorial-${id}`).classList.remove("d-none");
                                     }
                                 }
+
                             });
+                            
+                            function renderHistorial(item, id) {
 
-
-
-                            var modalEditar = `
-                            <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
-                                        data-id="${id}">
-                                        <i class="fa-solid fa-eye fs-5"></i>
-                            </a>
-
-
-                            {{-- MODAL --}}
-                            <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-                                    <div class="modal-content">
-                                        <div class="modal-header text-center">
-                                        <h6 class="modal-title text-light" id="exampleModalLongTitle"
-                                            style="font-weight: 700;font-size: 22px">DETALLE DE LA AUTORIZACIÓN 
-                                            </h6>
-                                                ${
-                                                    row.historial
-                                                        .map((item, index) => {
-                                                            let contenido = `
-
-                                                            `;
-
-                                                            // Insertar boton cuando llegue al 5to elemento (índice 4)
-                                                            if (index === 3) {
-                                                                contenido += `
-                                                                <button type="button" id="btnScroll" class="btn btn-dark fw-bold fs-5 ms-3">
-                                                                    Desplazar al Final
-                                                                </button>
-                                                                `;
-                                                            }
-
-                                                            return contenido;
-                                                        })
-                                                        .join('')
-                                                }
-
-                                        <button type="button" class="btn-close fs-5" data-bs-dismiss="modal" aria-label="Close"
-                                            style="outline: none; border: none; font-size:18px">
-                                        </button>
+                                    const inputcedula = `
+                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark ms-2 me-2">
+                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${item.Cedula}" required onkeydown="disableEnterKey(event)">
+                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                        <circle cx="12" cy="12" r="10" />
+                                                        <path d="M12 16v-4" />
+                                                        <path d="M12 8h.01" />
+                                                    </svg>
+                                                </span>
                                         </div>
-                                        <div class="modal-body p-1">
-
-                                        <div class="row g-0 text-center">
-                                            <div class="col-sm-none col-md-none col-lg-2 bg-primary-subtle">
-
+                                        `
+                                    const inputcuenta = `
+                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${item.CuentaAsociado}" required onkeydown="disableEnterKey(event)">
+                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                        <circle cx="12" cy="12" r="10" />
+                                                        <path d="M12 16v-4" />
+                                                        <path d="M12 8h.01" />
+                                                    </svg>
+                                                </span>
                                             </div>
-                                            <div class="col-md-12 col-lg-10">
-                                                <div class="row g-0 text-center">
-                                                    <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-2">
-                                                        <span class="h2 fw-bold">${row.UltimoConceptoID == '17' ? `REPORTE` : `SOLICITUD`}</span>
-                                                    </div>
-                                                    <div class="col-md-5 col-lg-3">
-                                                    <div class="row g-0 justify-content-center border p-2">
-                                                        <span class="h3 fw-bold mb-0 text-danger">No.${row.IDAutorizacion}</span>
-                                                    </div>
+                                        `
 
-                                                        <div class="row g-0 align-items-center justify-content-center border p-2">
-                                                            ${row.UltimoEstado == "TRÁMITE"?
-                                                                `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
-                                                                row.UltimoEstado == "APROBADO" ?
-                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
-                                                                row.UltimoEstado == "ENTERADO" ?
-                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">E - ENTERADO</button>` :
-                                                                row.UltimoEstado == "CORREGIR" ?
-                                                                `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
-                                                                row.UltimoEstado == "ANULADO" ?
-                                                                '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
-                                                                row.UltimoEstado == "STAND BY" ?
-                                                                '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
-                                                                row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
-                                                                '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
-                                                                row.UltimoEstado == "DESBLOQUEADO" ?
-                                                                '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">DESBLOQUEADO</button>' :
-                                                                row.UltimoEstado == "ENVIADO" ?
-                                                                '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">ENVIADO</button>' :
-                                                                row.UltimoEstado == "RECIBIDO" ?
-                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RECIBIDO</button>` :
-                                                                '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                    const inputnombre = `
+                                            <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${item.NombrePersona}" required onkeydown="disableEnterKey(event)">
+                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                        <circle cx="12" cy="12" r="10" />
+                                                        <path d="M12 16v-4" />
+                                                        <path d="M12 8h.01" />
+                                                    </svg>
+                                                </span>
                                             </div>
-                                        </div>
+                                        `
 
 
-
-                                        <div class="row g-0 text-center">
-
-
-                                        ${
-                                            row.historial
-                                                .slice(0) // saltar el primer estado
-                                                .map(item => {
-
-                                                    const inputcedula = `
-                                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark ms-2 me-2">
-                                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${item.Cedula}" required onkeydown="disableEnterKey(event)">
-                                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                                        <circle cx="12" cy="12" r="10" />
-                                                                        <path d="M12 16v-4" />
-                                                                        <path d="M12 8h.01" />
-                                                                    </svg>
-                                                                </span>
-                                                        </div>
-                                                        `
-                                                    const inputcuenta = `
-                                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${item.CuentaAsociado}" required onkeydown="disableEnterKey(event)">
-                                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                                        <circle cx="12" cy="12" r="10" />
-                                                                        <path d="M12 16v-4" />
-                                                                        <path d="M12 8h.01" />
-                                                                    </svg>
-                                                                </span>
-                                                            </div>
-                                                        `
-
-                                                    const inputnombre = `
-                                                            <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${item.NombrePersona}" required onkeydown="disableEnterKey(event)">
-                                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                                        <circle cx="12" cy="12" r="10" />
-                                                                        <path d="M12 16v-4" />
-                                                                        <path d="M12 8h.01" />
-                                                                    </svg>
-                                                                </span>
-                                                            </div>
-                                                        `
+                                    const inputconvencion = `
+                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                                <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${item.Convencion}" required onkeydown="disableEnterKey(event)">
+                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                        <circle cx="12" cy="12" r="10" />
+                                                        <path d="M12 16v-4" />
+                                                        <path d="M12 8h.01" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                        `
 
 
-                                                    const inputconvencion = `
-                                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                                                                <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${item.Convencion}" required onkeydown="disableEnterKey(event)">
-                                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                                        <circle cx="12" cy="12" r="10" />
-                                                                        <path d="M12 16v-4" />
-                                                                        <path d="M12 8h.01" />
-                                                                    </svg>
-                                                                </span>
-                                                            </div>
-                                                        `
+                                        document.querySelectorAll('.modal').forEach(modal => {
 
+                                            const id = modal.getAttribute('data-id');
+                                            if (!id) return;
 
+                                            // Obtener el select dentro del modal
+                                            const enviarSelect = modal.querySelector(`#enviarselect_${id} select`);
+                                            if (!enviarSelect) return;
 
+                                            // Buscar el contenedor de radios por ID dinámico
+                                            const estadoContainer = modal.querySelector(`#radios_${id}`);
+                                            if (!estadoContainer) return;
 
+                                            // Buscar solo los radios dentro de ese contenedor
+                                            const radios = estadoContainer.querySelectorAll('input[type="radio"]');
 
-
-                                                    if (item.ID_Concepto == 41) {
-                                                        var inputs = (inputcedula + inputconvencion);
-                                                    } else if (item.ID_Concepto == 22) {
-                                                        var inputs =(`
-                                                            <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
-                                                            <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
-                                                        `);
-                                                    }else {
-                                                        var inputs =(inputcedula + inputnombre + inputcuenta);
+                                            radios.forEach(radio => {
+                                                radio.addEventListener('change', () => {
+                                                    if (radio.checked && radio.value === 'ENVIAR A') {
+                                                        enviarSelect.disabled = false; // habilitar select
+                                                    } else if (radio.checked) {
+                                                        enviarSelect.disabled = true;  // deshabilitar select
                                                     }
+                                                });
+                                            });
 
-                                                    const mesesEnEspanol = [
-                                                        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                                                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-                                                    ];
-
-                                                    const fechainsercion = item.FechaInsercion;
-                                                    // Convertir fechainsercion a un objeto Date
-                                                    const fechaInsercionDate = new Date(fechainsercion);
-
-                                                    // Obtener la fecha actual
-                                                    const fechaActual = new Date();
-
-                                                    // Calcular la diferencia en milisegundos
-                                                    const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
-
-                                                    // Convertir la diferencia de milisegundos a días
-                                                    const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
-
-                                                    // Verificar si la diferencia supera los 180 días
-                                                    const estado = fechainsercion == null || fechainsercion === undefined
-                                                    ? `<span class="fs-2">⚪⚪⚪</span>`
-                                                    : diferenciaDias > 179
-                                                        ? `<span class="fs-2">⚪⚪🔴</span>`
-                                                        : diferenciaDias > 169
-                                                            ? `<span class="fs-2">⚪🟡⚪</span>`
-                                                            : `<span class="fs-2">🟢⚪⚪</span>`;
+                                        });
 
 
-                                                    const dia = fechaInsercionDate.getDate();
-                                                    const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
-                                                    const año = fechaInsercionDate.getFullYear();
-                                                    const fechaFormateada = `${mes} ${dia} del ${año}`;
 
-                                                    
-                                                    
-                                                    // Si el estado es "EN TRÁMITE", renderiza el bloque especial
-                                                    if (item.Estado === 'TRÁMITE' || item.Estado === 'DONE' || item.Estado === 'REMITIDO'  || item.Estado === 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDOCORREGIR' && item.Estado !== 'VALIDADO') {
-                                                        return `
+
+
+
+                                    if (item.ID_Concepto == 41) {
+                                        var inputs = (inputcedula + inputconvencion);
+                                    } else if (item.ID_Concepto == 22) {
+                                        var inputs =(`
+                                            <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
+                                            <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
+                                        `);
+                                    }else {
+                                        var inputs =(inputcedula + inputnombre + inputcuenta);
+                                    }
+
+                                    const mesesEnEspanol = [
+                                        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                                    ];
+
+                                    const fechainsercion = item.FechaInsercion;
+                                    // Convertir fechainsercion a un objeto Date
+                                    const fechaInsercionDate = new Date(fechainsercion);
+
+                                    // Obtener la fecha actual
+                                    const fechaActual = new Date();
+
+                                    // Calcular la diferencia en milisegundos
+                                    const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
+
+                                    // Convertir la diferencia de milisegundos a días
+                                    const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+
+                                    // Verificar si la diferencia supera los 180 días
+                                    const estado = fechainsercion == null || fechainsercion === undefined
+                                    ? `<span class="fs-2">⚪⚪⚪</span>`
+                                    : diferenciaDias > 179
+                                        ? `<span class="fs-2">⚪⚪🔴</span>`
+                                        : diferenciaDias > 169
+                                            ? `<span class="fs-2">⚪🟡⚪</span>`
+                                            : `<span class="fs-2">🟢⚪⚪</span>`;
+
+
+                                    const dia = fechaInsercionDate.getDate();
+                                    const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
+                                    const año = fechaInsercionDate.getFullYear();
+                                    const fechaFormateada = `${mes} ${dia} del ${año}`;
+                            
+                            
+                                   
+                                        
+                                        // Si el estado es "EN TRÁMITE", renderiza el bloque especial
+                                        if (item.Estado === 'TRÁMITE' || item.Estado === 'DONE' || item.Estado === 'REMITIDO'  || item.Estado === 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDOCORREGIR' && item.Estado !== 'VALIDADO') {
+                                            return `
                                         <div class="row g-0 text-center">
                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
                                                 <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">TRÁMITE</span></span>
@@ -687,7 +635,7 @@
                                                             <div class="row g-0">
                                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
 
-                                                                    <div class="estado-container">
+                                                                    <div class="estado-container" id="radios_${id}">
 
                                                                         ${row.UltimoConceptoID == '17' ?
                                                                         `<label class="label">
@@ -713,7 +661,7 @@
                                                                             <span>STAND BY</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="ENVIAR A" type="radio" name="Estado" required>
+                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
                                                                             <span>ENVIAR A</span>
                                                                         </label>
 
@@ -745,8 +693,8 @@
                                                                             required
                                                                         >
                                                                     </div>
-                                                                    <div class="col-md-12 enviarselect d-none">
-                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
+                                                                    <div class="col-md-12" id="enviarselect_${id}">
+                                                                        <select disabled class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
                                                                             <option value="" selected disabled>→ Seleccionar funcionario a enviar... ←</option>
                                                                             @foreach ($usuariosEnviara as $usuario)
                                                                                 <option value="{{$usuario->id}}">{{$usuario->name}} - {{$usuario->agenciau}} - {{$usuario->codigo}}</option>
@@ -775,6 +723,7 @@
                                         <div class="row g-0 text-center">
                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center ${
                                                 item.Estado === 'VALIDADO' ? 'bg-success-subtle' :
+                                                item.Estado === 'RECIBIDOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'VALIDADOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'REMITIDOCONFIRMADO' ? 'bg-warning-subtle' :
                                                 item.Estado === 'APROBADO' || item.Estado === 'ENTERADO' || item.Estado === 'RECIBIDO' ? 'bg-success-subtle' :
@@ -794,7 +743,11 @@
                                                             ? "REMITIDO" 
                                                             : item.Estado == "ENVIADO" 
                                                             ? "ENVIADO(DR)" 
-                                                            : item.Estado}
+                                                            : item.Estado == "RECIBIDOCONFIRMADO" 
+                                                            ? "RECIBIDO" 
+                                                            : item.Estado == "RESOLVER" ||  item.Estado == "ACLARAR" ||  item.Estado == "ENCARGARSE" ||  item.Estado == "PROCEDER" ||  item.Estado == "SOLUCIONAR" ||  item.Estado == "QUE PASO"
+                                                            ? item.Estado + "❗(DR)" :
+                                                            item.Estado}
                                                     </span>
                                                 </span>
                                             </div>
@@ -815,14 +768,14 @@
                                             </div>
                                         </div>
                                         
-                                        ${((('{{ session('rol') }}' === 'Gerencia') && item.ID === row.historial[row.historial.length - 1].ID && (row.UltimoEstado === 'VALIDADO' || row.UltimoEstado === 'DESBLOQUEADO'))
+                                        ${((('{{ session('rol') }}' === 'Gerencia') && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID && (row.UltimoEstado === 'VALIDADO' || row.UltimoEstado === 'DESBLOQUEADO'))
                                                     ? 
                                                     `
                                                         <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                             @csrf
                                                             <div class="row g-0">
                                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
-                                                                    <div class="estado-container">
+                                                                    <div class="estado-container" id="radios_${id}">
                                                                         ${row.UltimoConceptoID == '17' ?
                                                                             `<label class="label">
                                                                                 <input value="ENTERADO" type="radio" name="Estado" required>
@@ -846,7 +799,7 @@
                                                                             <span>STAND BY</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara" required>
+                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
                                                                             <span>ENVIAR A</span>
                                                                         </label>
                                                                     </div>
@@ -876,8 +829,8 @@
                                                                         >
                                                                     </div>
                                                                     
-                                                                    <div class="col-md-12 enviarselect d-none">
-                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
+                                                                    <div class="col-md-12" id="enviarselect_${id}">
+                                                                        <select disabled class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
                                                                             <option value="" selected disabled>→ Seleccionar funcionario a enviar... ←</option>
                                                                             @foreach ($usuariosEnviara as $usuario)
                                                                                 <option value="{{$usuario->id}}">{{$usuario->name}} - {{$usuario->agenciau}} - {{$usuario->codigo}}</option>
@@ -893,8 +846,8 @@
                                                     `
                                         :  (
                                                 '{{ session("rol") }}' === 'Gerencia'
-                                                && row.historial && row.historial.length
-                                                && item.ID === row.historial[row.historial.length - 1].ID
+                                                && row.historialEstadosUnicos && row.historialEstadosUnicos.length
+                                                && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
                                                 && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR')
                                             )
                                         ?
@@ -908,7 +861,7 @@
                                                                         <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
                                                                         <span>DESBLOQUEAR</span>
                                                                     </label>`:``}
-                                                                     <label class="label">
+                                                                    <label class="label">
                                                                         <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
                                                                         <span>ANULAR</span>
                                                                     </label>
@@ -945,10 +898,10 @@
                                                     
                                                     : (
                                                             '{{ session("rol") }}' !== 'Gerencia' && row.UltimoEstado !== 'RECIBIDO'
-                                                            && row.historial && row.historial.length
+                                                            && row.historialEstadosUnicos && row.historialEstadosUnicos.length
                                                             && row.ultimoEnviadoa === '{{ session("name") }}'
-                                                            && item.ID === row.historial[row.historial.length - 1].ID
-                                                            && (row.UltimoEstado === 'ENVIADO')
+                                                            && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
+                                                            && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'RESOLVER' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
                                                         )
                                                     ? 
                                                     `
@@ -957,7 +910,7 @@
                                                             @csrf
                                                             <div class="row g-0">
                                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
-                                                                     <label class="label">
+                                                                    <label class="label">
                                                                         <input value="RECIBIDO" type="radio" name="Estado" id="estado_recibido" required>
                                                                         <span>RECIBIDO</span>
                                                                     </label>
@@ -992,97 +945,1017 @@
                                                     
                                                     
                                                     `
-                                                    :
+                                                    :  (
+                                                            '{{ session("rol") }}' === 'Gerencia'
+                                                            && row.historialEstadosUnicos && row.historialEstadosUnicos.length
+                                                            && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
+                                                            && (row.UltimoEstado === 'RECIBIDO')
+                                                        )
+                                                    ?
                                                     
-                                                    ``)
+                                                    `
+                                                        <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                            @csrf
+                                                            <div class="row g-0">
+                                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                    <div class="estado-container" id="radios_${id}">
+                                                                        <label class="label">
+                                                                            <label style="cursor: pointer;">
+                                                                                <input value="RESOLVER" type="radio" name="Estado" id="estado_resolver" required>
+                                                                                <span>RESOLVER</span>
+                                                                            </label>
+                                                                            
+                                                                            <label style="cursor: pointer;">
+                                                                                <input value="ACLARAR" type="radio" name="Estado" id="estado_aclarar" required>
+                                                                                <span>ACLARAR</span>
+                                                                            </label>
+
+                                                                            <label style="cursor: pointer;">
+                                                                                <input value="ENCARGARSE" type="radio" name="Estado" id="estado_encargarse" required>
+                                                                                <span>ENCARGARSE</span>
+                                                                            </label>
+
+                                                                            <label style="cursor: pointer;">
+                                                                                <input value="PROCEDER" type="radio" name="Estado" id="estado_proceder" required>
+                                                                                <span>PROCEDER</span>
+                                                                            </label>
+
+                                                                            <label style="cursor: pointer;">
+                                                                                <input value="SOLUCIONAR" type="radio" name="Estado" id="estado_solucionar" required>
+                                                                                <span>SOLUCIONAR</span>
+                                                                            </label>
+
+                                                                            <label style="cursor: pointer;">
+                                                                                <input value="QUE PASO" type="radio" name="Estado" id="estado_quepaso" required>
+                                                                                <span>QUE PASÓ⁉️</span>
+                                                                            </label>
+
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                    <div class="row g-0 justify-content-center">
+                                                                        <div class="row g-0 row-cols-2 justify-content-center">
+                                                                            <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                            </div>
+                                                                            <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                <span class="mb-0 fs-5">Pendiente...</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <input 
+                                                                            class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                            style="resize: horizontal;" 
+                                                                            id="Observaciones" 
+                                                                            name="Observaciones" 
+                                                                            onkeydown="return event.key != 'Enter';" 
+                                                                            placeholder="Escribe aquí tu Observación." 
+                                                                            required
+                                                                        >
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    
+                                                    
+                                                    `
+                                                    
+                                                    
+                                                    : ``)
                                         
                                         
                                         }`;
-                                                })
-                                                .join('')
-                                        }
+                            
+                            }
+                            
 
 
+
+                            
+
+                            var modalEditar = `
+                            <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
+                                        data-id="${id}">
+                                        <i class="fa-solid fa-eye fs-5"></i>
+                            </a>
+
+
+                            {{-- MODAL --}}
+                            <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true" data-id="${id}">
+                                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header row w-100 m-0">
+                                            <div class="col-12 col-md-6 d-flex align-items-center mb-2 mb-md-0">
+                                                <h6 class="modal-title text-light"
+                                                    style="font-weight: 700; font-size: 22px;">
+                                                    DETALLE AUTORIZACIÓN 
+                                                    (<span class="text-warning">No. ${row.IDAutorizacion} - ${row.FechaStringEstado}</span>)
+                                                </h6>
+                                            </div>
+
+                                           
+                                            <div class="col-12 col-md-5 d-flex justify-content-md-end justify-content-center align-items-center gap-2 flex-wrap">
+
+                                                <button 
+                                                    type="button"
+                                                    id="btnToggleHistorial-${id}"
+                                                    class="btn btn-warning fw-bold"
+                                                    data-id="${id}">
+                                                    <i class="fa-solid fa-clock-rotate-left"></i> Historial
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    id="btnToggleOriginal-${id}"
+                                                    class="btn btn-warning fw-bold d-none"
+                                                    data-id="${id}">
+                                                    <i class="fa-solid fa-rotate-left"></i> Original
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-dark fw-bold btn-scroll btn-premium-action2"
+                                                    data-scroll-to="anchor-scroll-${id}">
+                                                    <i class="fa-solid fa-arrow-down me-2"></i>Desplazar al Final
+                                                </button>
+                                            </div>
+                                            <div class="col-12 col-md-1">
+                                                <button 
+                                                    type="button" 
+                                                    class="btn-close fs-5 ms-2 mt-2" 
+                                                    data-bs-dismiss="modal" 
+                                                    aria-label="Close"
+                                                    style="outline: none; border: none; font-size:18px;">
+                                                </button>
+                                            </div>
+                                            
 
                                         </div>
-                                ${//BOTONES
-                                    row.UltimoEstado == 'CORREGIR'  && '{{ session('rol') }}' !== 'Coordinacion' && '{{ session('rol') }}' !== 'Gerencia'
-                                        ? `
-                                        <div class="text-center p-3">
-                                            <button id="boton${row.IDAutorizacion}" 
-                                                name="btnregistrar" 
-                                                type="button"
-                                                class="btn btn-premium-action"
-                                                onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
-                                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
-                                            </button>
-                                        </div>
-                                        `
-                                        :   ((row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
 
-                                            ? `
-                                                <div class="text-center p-3">
-                                                    <button id="boton${row.IDAutorizacion}" 
-                                                        name="btnregistrar" 
-                                                        type="button"
-                                                        class="btn btn-premium-action"
-                                                        onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
-                                                        <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
-                                                    </button>
+                                        <div class="modal-body p-1">
+
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-sm-none col-md-none col-lg-2 bg-primary-subtle">
+
+                                                    </div>
+                                                    <div class="col-md-12 col-lg-10">
+                                                              <div class="row g-0 text-center">
+                                                                    <span id="anchor-scrollup-${id}"></span>
+                                                                    <div class="col-md-7 col-lg-9 bg-primary-subtle d-flex align-items-center justify-content-center p-2">
+                                                                        <span class="h2 fw-bold">${row.UltimoConceptoID == '17' ? `REPORTE` : `SOLICITUD`}</span>
+
+                                                                    </div>
+                                                                    <div class="col-md-5 col-lg-3">
+                                                                    <div class="row g-0 justify-content-center border p-2">
+                                                                        <span class="h3 fw-bold mb-0 text-danger">No.${row.IDAutorizacion}</span>
+                                                                    </div>
+
+                                                                        <div class="row g-0 align-items-center justify-content-center border p-2">
+                                                                            ${row.UltimoEstado == "TRÁMITE"?
+                                                                                `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
+                                                                                row.UltimoEstado == "APROBADO" ?
+                                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
+                                                                                row.UltimoEstado == "RESOLVER" ?
+                                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RESUELTO</button>` :
+                                                                                row.UltimoEstado == "ENTERADO" ?
+                                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">E - ENTERADO</button>` :
+                                                                                row.UltimoEstado == "CORREGIR" ?
+                                                                                `<button class="btn btn-primary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">C - CORREGIR</button>` :
+                                                                                row.UltimoEstado == "ANULADO" ?
+                                                                                '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
+                                                                                row.UltimoEstado == "STAND BY" ?
+                                                                                '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
+                                                                                row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
+                                                                                '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
+                                                                                row.UltimoEstado == "DESBLOQUEADO" ?
+                                                                                '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">DESBLOQUEADO</button>' :
+                                                                                row.UltimoEstado == "ENVIADO" || row.UltimoEstado == "ACLARAR" || row.UltimoEstado == "ENCARGARSE" || row.UltimoEstado == "PROCEDER" || row.UltimoEstado == "SOLUCIONAR" || row.UltimoEstado == "QUE PASO" ?
+                                                                                '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">'+ row.UltimoEstado +'</button>' :
+                                                                                row.UltimoEstado == "RECIBIDO" ?
+                                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RECIBIDO POR FUNCIONARIO</button>` :
+                                                                                '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
+                                                <div class="row g-0 text-center" id="historial-dinamico-${id}">
+
+                                                ${
+                                                    row.historialActual
+                                                        .slice(0) // saltar el primer estado
+                                                        .map(item => {
+                                                            return renderHistorial(item, id);
+                                                            const inputcedula = `
+                                                                <div class="input-group mb-0 w-25 border rounded-3 border-dark ms-2 me-2">
+                                                                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${item.Cedula}" required onkeydown="disableEnterKey(event)">
+                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                <path d="M12 16v-4" />
+                                                                                <path d="M12 8h.01" />
+                                                                            </svg>
+                                                                        </span>
+                                                                </div>
+                                                                `
+                                                            const inputcuenta = `
+                                                                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                                                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${item.CuentaAsociado}" required onkeydown="disableEnterKey(event)">
+                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                <path d="M12 16v-4" />
+                                                                                <path d="M12 8h.01" />
+                                                                            </svg>
+                                                                        </span>
+                                                                    </div>
+                                                                `
+
+                                                            const inputnombre = `
+                                                                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                                                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${item.NombrePersona}" required onkeydown="disableEnterKey(event)">
+                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                <path d="M12 16v-4" />
+                                                                                <path d="M12 8h.01" />
+                                                                            </svg>
+                                                                        </span>
+                                                                    </div>
+                                                                `
+
+
+                                                            const inputconvencion = `
+                                                                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                                                                        <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${item.Convencion}" required onkeydown="disableEnterKey(event)">
+                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                <path d="M12 16v-4" />
+                                                                                <path d="M12 8h.01" />
+                                                                            </svg>
+                                                                        </span>
+                                                                    </div>
+                                                                `
+
+
+
+
+
+
+                                                            if (item.ID_Concepto == 41) {
+                                                                var inputs = (inputcedula + inputconvencion);
+                                                            } else if (item.ID_Concepto == 22) {
+                                                                var inputs =(`
+                                                                    <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
+                                                                    <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
+                                                                `);
+                                                            }else {
+                                                                var inputs =(inputcedula + inputnombre + inputcuenta);
+                                                            }
+
+                                                            const mesesEnEspanol = [
+                                                                "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                                                                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                                                            ];
+
+                                                            const fechainsercion = item.FechaInsercion;
+                                                            // Convertir fechainsercion a un objeto Date
+                                                            const fechaInsercionDate = new Date(fechainsercion);
+
+                                                            // Obtener la fecha actual
+                                                            const fechaActual = new Date();
+
+                                                            // Calcular la diferencia en milisegundos
+                                                            const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
+
+                                                            // Convertir la diferencia de milisegundos a días
+                                                            const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+
+                                                            // Verificar si la diferencia supera los 180 días
+                                                            const estado = fechainsercion == null || fechainsercion === undefined
+                                                            ? `<span class="fs-2">⚪⚪⚪</span>`
+                                                            : diferenciaDias > 179
+                                                                ? `<span class="fs-2">⚪⚪🔴</span>`
+                                                                : diferenciaDias > 169
+                                                                    ? `<span class="fs-2">⚪🟡⚪</span>`
+                                                                    : `<span class="fs-2">🟢⚪⚪</span>`;
+
+
+                                                            const dia = fechaInsercionDate.getDate();
+                                                            const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
+                                                            const año = fechaInsercionDate.getFullYear();
+                                                            const fechaFormateada = `${mes} ${dia} del ${año}`;
+
+                                                            
+                                                            
+                                                            // Si el estado es "EN TRÁMITE", renderiza el bloque especial
+                                                            if (item.Estado === 'TRÁMITE' || item.Estado === 'DONE' || item.Estado === 'REMITIDO'  || item.Estado === 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDOCORREGIR' && item.Estado !== 'VALIDADO') {
+                                                                return `
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
+                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">TRÁMITE</span></span>
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-12 col-lg-10">
+                                                        <div class="row g-0 justify-content-center hover-trigger"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#secondaryData_${id}"
+                                                        style="cursor:pointer;">
+                                                            <div class="row g-0 row-cols-2 justify-content-center">
+                                                                <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                    <span class="fs-5">${item.NumArea} - ${item.NomArea}(<b>${item.CodigoUsuario}</b>) - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
+                                                                </div>
+                                                                <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                    <span class="mb-0 fs-5">${item.FechaString}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}">
+                                                            @csrf
+                                                            <div class="collapse" id="secondaryData_${id}">
+                                                                <div class="row g-0 row-cols-2 d-flex justify-content-start">
+                                                                    <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
+                                                                        ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
+                                                                            <div class="mb-3 w-100" id="id">
+                                                                                <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" 
+                                                                                    onChange="autorizacionesModalChange(${row.IDAutorizacion},'${item.Cedula}','${item.CuentaAsociado}', '${item.NombrePersona}', '${item.Convencion}', event)" required>
+                                                                                    <option selected class="fw-bold" value="${item.ID_Concepto}">**Concepto Actual** -> ${item.Concepto}</option>
+                                                                                    @include('layouts.optionmodal')
+                                                                                </select>
+                                                                            </div>
+                                                                        ` : `<span class="fs-5">${item.Concepto} - @include('layouts.optionvercodigo')</span>`}
+                                                                    </div>
+                                                                    <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
+                                                                        ${item.ID_Concepto == 41 ? `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${item.Convencion}</span>` : ``}
+                                                                    </div>
+                                                                </div>
+
+
+                                                            
+                                                                ${
+                                                                    (row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'
+                                                                        ? `
+                                                                                <div class="row g-0">
+                                                                                    <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
+                                                                                        ${inputs}
+                                                                                    </div>
+                                                                                    <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
+                                                                                        <span class="fs-5">${item.Cedula}
+                                                                                            ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
+                                                                                            - ${item.NombrePersona} -
+                                                                                            ${
+                                                                                                item.Score >= 650
+                                                                                                    ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                    : (item.Score === 'S/E'
+                                                                                                        ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                        : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
+                                                                                            }
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            `
+                                                                            
+                                                                        : (item.Estado == 'DONE' || item.Estado == 'TRÁMITE'|| item.Estado == 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDO')
+                                                                            ? `
+                                                                            <div class="row g-0">
+                                                                                <div class="col-md-12 d-flex justify-content-start border p-2">
+                                                                                    <span class="fs-5">${item.Cedula}
+                                                                                        ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
+                                                                                        - ${item.NombrePersona} -
+                                                                                        ${
+                                                                                            item.Score >= 650
+                                                                                                ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                : (item.Score === 'S/E'
+                                                                                                    ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                    : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
+                                                                                        }
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        `: ''
+                                                                        )
+                                                                }
+
+
+                                                                <div class="row g-0">
+                                                                    ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
+                                                                        <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                                            <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" 
+                                                                                id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${item.Detalle}</textarea>
+                                                                        </div>
+                                                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
+                                                                            <label for="file_${row.IDAutorizacion}" class="labelFile" style="cursor:pointer;">
+                                                                                <span>
+                                                                                    <img src="img/pdf.png" style="height:4.5rem">
+                                                                                </span>
+                                                                                <p id="uploadMessage_${row.IDAutorizacion}">Adjunta el archivo aquí!</p>
+                                                                            </label>
+                                                                            
+                                                                            <!-- Input oculto -->
+                                                                            <input 
+                                                                                class="input d-none" 
+                                                                                name="Soporte_${row.IDAutorizacion}" 
+                                                                                id="file_${row.IDAutorizacion}" 
+                                                                                type="file" 
+                                                                                accept="application/pdf" 
+                                                                                onchange="fileUploaded(${row.IDAutorizacion})" 
+                                                                            />
+
+                                                                            <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${item.DocumentoSoporte}" />
+                                                                        </div>
+
+                                                                    ` : `
+                                                                        <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                                            <span class="mb-0">${item.Detalle}</span>
+                                                                        </div>
+                                                                        <a href="Storage/files/soporteautorizaciones/${item.DocumentoSoporte}" 
+                                                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" 
+                                                                            target="__blank">
+                                                                            <img src="img/pdf.png" style="height:4.5rem">
+                                                                        </a>
+                                                                    `}
+                                                                </div>
+                                                            </div>    
+                                                        </form>
+                                                    </div>
+
+                                            
+                                                ${
+                                                    // Coordinación para VALIDAR o Gerencia para VALIDAR JEFATURA
+                                                    ((item.Estado === 'TRÁMITE' && '{{ session('rol') }}' === 'Coordinacion' && item.Observaciones !== 'NADA') || (item.NumArea == 'Jefatura' && '{{ session('rol') }}' == 'Gerencia') && (row.UltimoEstado != "CORREGIR" && row.UltimoEstado != "APROBADO" && row.UltimoEstado != "VALIDADO" && item.Estado != "DONE"))
+                                                        ? `
+                                                            <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                @csrf
+                                                                <div class="row g-0">
+                                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark ${row.UltimoEstado === 'TRÁMITE' ? 'bg-dark-subtle' : ''}">
+                                                                        <label class="label">
+                                                                            <input value="VALIDADO" type="radio" name="Estado" required>
+                                                                            <span>VALIDAR</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input 
+                                                                                type="radio" 
+                                                                                name="Estado" 
+                                                                                required
+                                                                                value="{{ session('rol') == 'Gerencia' ? 'CORREGIRJEFATURA' : 'CORREGIR' }}"
+                                                                            >
+                                                                            <span>RECHAZAR</span>
+                                                                        </label>
+                                                                    </div>
+
+                                                                    <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                        <div class="row g-0 justify-content-center">
+                                                                            <div class="row g-0 row-cols-2 justify-content-center">
+                                                                                <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                    <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                </div>
+                                                                                <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                    <span class="mb-0 fs-5">Pendiente...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-md-12">
+                                                                            <input 
+                                                                                class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                                style="resize: horizontal;" 
+                                                                                id="Observaciones" 
+                                                                                name="Observaciones" 
+                                                                                onkeydown="return event.key != 'Enter';" 
+                                                                                placeholder="Escribe aquí tu Observación." 
+                                                                                ${item.Observaciones == null ? '' : `value="${item.Observaciones}"`} 
+                                                                                required
+                                                                            >
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        `
+                                                        : (((item.Estado == 'REMITIDO') && '{{ session('rol') }}' == 'Gerencia')
+                                                            ? 
+                                                            `
+                                                                <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                    @csrf
+                                                                    <div class="row g-0">
+                                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+
+                                                                            <div class="estado-container" id="radios_${id}">
+
+                                                                                ${row.UltimoConceptoID == '17' ?
+                                                                                `<label class="label">
+                                                                                    <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                                    <span>ENTERADO</span>
+                                                                                </label>` :
+                                                                                `<label class="label">
+                                                                                    <input value="APROBADO" type="radio" name="Estado" required>
+                                                                                    <span>APROBAR</span>
+                                                                                </label>`
+                                                                                }
+
+                                                                                <label class="label">
+                                                                                    <input value="CORREGIR" type="radio" name="Estado" required>
+                                                                                    <span>RECHAZAR</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="BLOQUEADO" type="radio" name="Estado" required>
+                                                                                    <span>BLOQUEAR</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="STAND BY" type="radio" name="Estado" required>
+                                                                                    <span>STAND BY</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
+                                                                                    <span>ENVIAR A</span>
+                                                                                </label>
+
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                        <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                            <div class="row g-0 justify-content-center">
+                                                                                <div class="row g-0 row-cols-2 justify-content-center">
+                                                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                        <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                    </div>
+                                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                        <span class="mb-0 fs-5">Pendiente...</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-md-12">
+                                                                                <input 
+                                                                                    class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                                    style="resize: horizontal;" 
+                                                                                    id="Observaciones" 
+                                                                                    name="Observaciones" 
+                                                                                    onkeydown="return event.key != 'Enter';" 
+                                                                                    placeholder="Escribe aquí tu Observación." 
+                                                                                    required
+                                                                                >
+                                                                            </div>
+    
+
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            
+                                                            
+                                                            `
+                                                            : ``)
+                                                }
+
+
+
+
+
+                                                </div>`;
+                                                            }
+
+                                                            // Si NO es "TRÁMITE", renderiza el bloque normal
+                                                            return `
+                                                <div class="row g-0 text-center">
+                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center ${
+                                                        item.Estado === 'VALIDADO' ? 'bg-success-subtle' :
+                                                        item.Estado === 'RECIBIDOCONFIRMADO' ? 'bg-success-subtle' :
+                                                        item.Estado === 'VALIDADOCONFIRMADO' ? 'bg-success-subtle' :
+                                                        item.Estado === 'REMITIDOCONFIRMADO' ? 'bg-warning-subtle' :
+                                                        item.Estado === 'APROBADO' || item.Estado === 'ENTERADO' || item.Estado === 'RECIBIDO' ? 'bg-success-subtle' :
+                                                        item.Estado === 'CORREGIR' ? 'bg-primary-subtle' :
+                                                        item.Estado === 'ANULADO' ? 'bg-info-subtle' :
+                                                        item.Estado === 'REMITIDO' ? 'bg-info-subtle' :
+                                                        item.Estado == 'BLOQUEADO' ? 'bg-danger-subtle' :
+                                                        item.Estado == 'STAND BY' ? 'bg-dark-subtle' :
+                                                        'bg-secondary-subtle'
+                                                    } border p-2 border border-dark" title="${item.Estado}">
+                                                        <span class="h1 fw-bold mb-0">
+                                                            ${item.Estado[0]}<br>
+                                                            <span class="fs-5 fw-normal">
+                                                                ${item.Estado == "VALIDADOCONFIRMADO" 
+                                                                    ? "VALIDADO" 
+                                                                    : item.Estado == "REMITIDOCONFIRMADO" 
+                                                                    ? "REMITIDO" 
+                                                                    : item.Estado == "ENVIADO" 
+                                                                    ? "ENVIADO(DR)" 
+                                                                    : item.Estado == "RECIBIDOCONFIRMADO" 
+                                                                    ? "RECIBIDO" 
+                                                                    : item.Estado == "RESOLVER" ||  item.Estado == "ACLARAR" ||  item.Estado == "ENCARGARSE" ||  item.Estado == "PROCEDER" ||  item.Estado == "SOLUCIONAR" ||  item.Estado == "QUE PASO"
+                                                                    ? item.Estado + "(DR)" :
+                                                                    item.Estado}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-12 col-lg-10">
+                                                        <div class="row g-0">
+                                                            <div class="text-start col-md-9 d-flex align-items-center border p-2">
+                                                                <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario == null ? '':item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
+                                                            </div>
+                                                            <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
+                                                                <span class="mb-0 fs-5">${item.FechaString ?? ''}</span>
+                                                            </div>
+                                                            <div class="col-md-12 col-lg-10 w-100">
+                                                                <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5">
+                                                                    ${item.Observaciones ? item.Observaciones : 'Ninguna.'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            `
-                                        : 
-                                        (
-                                            row.UltimoEstado === 'TRÁMITE' &&
-                                            '{{ session('rol') }}' === 'Coordinacion'
-                                        )
-                                        ||
-                                        (
-                                            row.NumArea === 'Jefatura' &&
-                                            '{{ session('rol') }}' === 'Gerencia' &&
-                                            row.UltimoEstado !== "CORREGIR" &&
-                                            row.UltimoEstado !== "APROBADO" &&
-                                            row.UltimoEstado !== "VALIDADO" &&
-                                            row.UltimoEstado !== "DONE" &&
-                                            row.UltimoEstado !== "ANULADO" &&
-                                            row.UltimoEstado !== "ENVIADO"
-                                        )
-                                        ||
-                                        (
-                                            row.ultimoEnviadoa === '{{ session("name") }}' &&
-                                            '{{ session("rol") }}' !== 'Gerencia' &&
-                                            row.UltimoEstado !== 'RECIBIDO'
-                                        )
-                                            ? `
+                                                
+                                                ${((('{{ session('rol') }}' === 'Gerencia') && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID && (row.UltimoEstado === 'VALIDADO' || row.UltimoEstado === 'DESBLOQUEADO'))
+                                                            ? 
+                                                            `
+                                                                <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                    @csrf
+                                                                    <div class="row g-0">
+                                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                            <div class="estado-container" id="radios_${id}">
+                                                                                ${row.UltimoConceptoID == '17' ?
+                                                                                    `<label class="label">
+                                                                                        <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                                        <span>ENTERADO</span>
+                                                                                    </label>` :
+                                                                                    `<label class="label">
+                                                                                        <input value="APROBADO" type="radio" name="Estado" required>
+                                                                                        <span>APROBAR</span>
+                                                                                    </label>`
+                                                                                }
+                                                                                <label class="label">
+                                                                                    <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" required>
+                                                                                    <span>RECHAZAR</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="1" type="radio" name="Estado" id="estado_bloquear" required>
+                                                                                    <span>BLOQUEAR</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="STAND BY" type="radio" name="Estado" id="estado_standby" required>
+                                                                                    <span>STAND BY</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
+                                                                                    <span>ENVIAR A</span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
 
-                                            <div class="text-center p-3">
-                                                <button id="boton${row.IDAutorizacion}" 
-                                                    name="btnregistrar" 
-                                                    type="button"
-                                                    class="btn btn-premium-action"
-                                                    onclick="formValidarAutorizacion(${row.IDAutorizacion}, event)">
-                                                    <i class="fa-solid fa-floppy-disk me-2"></i>Validar
-                                                </button>
-                                            </div>
-    `
-                                        : (row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' && '{{ session('rol') }}' === 'Coordinacion')
-                                            ? `
-                                            <div class="text-center p-3">
-                                                <button id="boton${row.IDAutorizacion}" 
-                                                    name="btnregistrar" 
-                                                    type="button"
-                                                    class="btn btn-premium-action"
-                                                    onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
-                                                    <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
-                                                </button>
-                                            </div>
-                                            `:''
-                                }
-                                            <span id="anchor-scroll"></span>
+                                                                        <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                            <div class="row g-0 justify-content-center">
+                                                                                <div class="row g-0 row-cols-2 justify-content-center">
+                                                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                        <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                    </div>
+                                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                        <span class="mb-0 fs-5">Pendiente...</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-md-12">
+                                                                                <input 
+                                                                                    class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                                    style="resize: horizontal;" 
+                                                                                    id="Observaciones" 
+                                                                                    name="Observaciones" 
+                                                                                    onkeydown="return event.key != 'Enter';" 
+                                                                                    placeholder="Escribe aquí tu Observación." 
+                                                                                    required
+                                                                                >
+                                                                            </div>
+                                                                            
+
+                                                                            
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            
+                                                            
+                                                            `
+                                                :  (
+                                                        '{{ session("rol") }}' === 'Gerencia'
+                                                        && row.historialEstadosUnicos && row.historialEstadosUnicos.length
+                                                        && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
+                                                        && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR')
+                                                    )
+                                                ?
+                                                            `
+                                                                <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                    @csrf
+                                                                    <div class="row g-0">
+                                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                            ${row.UltimoEstado == 'BLOQUEADO' ?
+                                                                            `<label class="label">
+                                                                                <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
+                                                                                <span>DESBLOQUEAR</span>
+                                                                            </label>`:``}
+                                                                            <label class="label">
+                                                                                <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
+                                                                                <span>ANULAR</span>
+                                                                            </label>
+                                                                        </div>
+
+                                                                        <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                            <div class="row g-0 justify-content-center">
+                                                                                <div class="row g-0 row-cols-2 justify-content-center">
+                                                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                        <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                    </div>
+                                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                        <span class="mb-0 fs-5">Pendiente...</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-md-12">
+                                                                                <input 
+                                                                                    class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                                    style="resize: horizontal;" 
+                                                                                    id="Observaciones" 
+                                                                                    name="Observaciones" 
+                                                                                    onkeydown="return event.key != 'Enter';" 
+                                                                                    placeholder="Escribe aquí tu Observación." 
+                                                                                    ${item.Observaciones == null ? '' : `value="${item.Observaciones}"`} 
+                                                                                    required
+                                                                                >
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            `
+                                                            
+                                                            : (
+                                                                    '{{ session("rol") }}' !== 'Gerencia' && row.UltimoEstado !== 'RECIBIDO'
+                                                                    && row.historialEstadosUnicos && row.historialEstadosUnicos.length
+                                                                    && row.ultimoEnviadoa === '{{ session("name") }}'
+                                                                    && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
+                                                                    && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'RESOLVER' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
+                                                                )
+                                                            ? 
+                                                            `
+                                                            
+                                                                <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                    @csrf
+                                                                    <div class="row g-0">
+                                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                            <label class="label">
+                                                                                <input value="RECIBIDO" type="radio" name="Estado" id="estado_recibido" required>
+                                                                                <span>RECIBIDO</span>
+                                                                            </label>
+                                                                        </div>
+
+                                                                        <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                            <div class="row g-0 justify-content-center">
+                                                                                <div class="row g-0 row-cols-2 justify-content-center">
+                                                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                        <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                    </div>
+                                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                        <span class="mb-0 fs-5">Pendiente...</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-md-12">
+                                                                                <input 
+                                                                                    class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                                    style="resize: horizontal;" 
+                                                                                    id="Observaciones" 
+                                                                                    name="Observaciones" 
+                                                                                    onkeydown="return event.key != 'Enter';" 
+                                                                                    placeholder="Escribe aquí tu Observación." 
+                                                                                    required
+                                                                                >
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            
+                                                            
+                                                            `
+                                                            :  (
+                                                                    '{{ session("rol") }}' === 'Gerencia'
+                                                                    && row.historialEstadosUnicos && row.historialEstadosUnicos.length
+                                                                    && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
+                                                                    && (row.UltimoEstado === 'RECIBIDO')
+                                                                )
+                                                            ?
+                                                            
+                                                            `
+                                                                <form enctype="multipart/form-data" id="formValidarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                    @csrf
+                                                                    <div class="row g-0">
+                                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                            <div class="estado-container" id="radios_${id}">
+                                                                                <label class="label">
+                                                                                    <label style="cursor: pointer;">
+                                                                                        <input value="RESOLVER" type="radio" name="Estado" id="estado_resolver" required>
+                                                                                        <span>RESOLVER</span>
+                                                                                    </label>
+                                                                                    
+                                                                                    <label style="cursor: pointer;">
+                                                                                        <input value="ACLARAR" type="radio" name="Estado" id="estado_aclarar" required>
+                                                                                        <span>ACLARAR</span>
+                                                                                    </label>
+
+                                                                                    <label style="cursor: pointer;">
+                                                                                        <input value="ENCARGARSE" type="radio" name="Estado" id="estado_encargarse" required>
+                                                                                        <span>ENCARGARSE</span>
+                                                                                    </label>
+
+                                                                                    <label style="cursor: pointer;">
+                                                                                        <input value="PROCEDER" type="radio" name="Estado" id="estado_proceder" required>
+                                                                                        <span>PROCEDER</span>
+                                                                                    </label>
+
+                                                                                    <label style="cursor: pointer;">
+                                                                                        <input value="SOLUCIONAR" type="radio" name="Estado" id="estado_solucionar" required>
+                                                                                        <span>SOLUCIONAR</span>
+                                                                                    </label>
+
+                                                                                    <label style="cursor: pointer;">
+                                                                                        <input value="QUE PASO" type="radio" name="Estado" id="estado_quepaso" required>
+                                                                                        <span>QUE PASÓ⁉️</span>
+                                                                                    </label>
+
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                            <div class="row g-0 justify-content-center">
+                                                                                <div class="row g-0 row-cols-2 justify-content-center">
+                                                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                        <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                                    </div>
+                                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                        <span class="mb-0 fs-5">Pendiente...</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="col-md-12">
+                                                                                <input 
+                                                                                    class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                                    style="resize: horizontal;" 
+                                                                                    id="Observaciones" 
+                                                                                    name="Observaciones" 
+                                                                                    onkeydown="return event.key != 'Enter';" 
+                                                                                    placeholder="Escribe aquí tu Observación." 
+                                                                                    required
+                                                                                >
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            
+                                                            
+                                                            `
+                                                            
+                                                            
+                                                            : ``)
+                                                
+                                                
+                                                }`;
+                                                        })
+                                                        .join('')
+                                                } 
+                                                    
+
+                                                    
+                                                </div>
+                                            ${//BOTONES
+                                                row.UltimoEstado == 'CORREGIR'  && '{{ session('rol') }}' !== 'Coordinacion' && '{{ session('rol') }}' !== 'Gerencia'
+                                                    ? `
+                                                    <div class="text-center p-3">
+                                                        <button id="boton${row.IDAutorizacion}" 
+                                                            name="btnregistrar" 
+                                                            type="button"
+                                                            class="btn btn-premium-action"
+                                                            onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
+                                                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
+                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
+                                                                data-scroll-to="anchor-scrollup-${id}">
+                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
+                                                            </button>   
+                                                            <span id="anchor-scroll-${id}"></span>
+                                                    </div>
+                                                    `
+                                                    :   ((row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
+
+                                                        ? `
+                                                        <div class="text-center p-3">
+                                                            <button id="boton${row.IDAutorizacion}" 
+                                                                name="btnregistrar" 
+                                                                type="button"
+                                                                class="btn btn-premium-action"
+                                                                onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
+                                                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
+                                                                data-scroll-to="anchor-scrollup-${id}">
+                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
+                                                            </button>   
+                                                            <span id="anchor-scroll-${id}"></span>
+                                                        </div>
+                                                        `
+                                                    : 
+                                                    (
+                                                        row.UltimoEstado === 'TRÁMITE' &&
+                                                        '{{ session('rol') }}' === 'Coordinacion'
+                                                    )
+                                                    ||
+                                                    (
+                                                        '{{ session('rol') }}' === 'Gerencia' && row.UltimoEstado == "RECIBIDO" ||
+                                                        row.UltimoEstado !== "CORREGIR" &&
+                                                        row.UltimoEstado !== "APROBADO" &&
+                                                        row.UltimoEstado !== "VALIDADO" &&
+                                                        row.UltimoEstado !== "DONE" &&
+                                                        row.UltimoEstado !== "ANULADO" &&
+                                                        row.UltimoEstado !== "ENVIADO" &&
+                                                        row.UltimoEstado !== "RESOLVER" && row.NumArea === 'Jefatura' && '{{ session('rol') }}' !== 'Jefatura'
+                                                        
+                                                    )
+                                                    ||
+                                                    (
+                                                        row.ultimoEnviadoa === '{{ session("name") }}' &&
+                                                        '{{ session("rol") }}' !== 'Gerencia' &&
+                                                        row.UltimoEstado !== 'RECIBIDO'
+                                                    )
+                                                        ? `
+
+                                                        <div class="text-center p-3">
+                                                            <button id="boton${row.IDAutorizacion}" 
+                                                                name="btnregistrar" 
+                                                                type="button"
+                                                                class="btn btn-premium-action"
+                                                                onclick="formValidarAutorizacion(${row.IDAutorizacion}, event)">
+                                                                <i class="fa-solid fa-floppy-disk me-2"></i>Validar
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
+                                                                data-scroll-to="anchor-scrollup-${id}">
+                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
+                                                            </button>   
+                                                            <span id="anchor-scroll-${id}"></span>
+                                                        </div>
+                                                                 `
+                                                    : (row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' && '{{ session('rol') }}' === 'Coordinacion')
+                                                        ? `
+                                                        <div class="text-center p-3">
+                                                            <button id="boton${row.IDAutorizacion}" 
+                                                                name="btnregistrar" 
+                                                                type="button"
+                                                                class="btn btn-premium-action"
+                                                                onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
+                                                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
+                                                                data-scroll-to="anchor-scrollup-${id}">
+                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
+                                                            </button>   
+                                                            <span id="anchor-scroll-${id}"></span>
+
+                                                        </div>
+                                                        `:` 
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-dark fw-bold mt-3 btn-scroll btn btn-premium-action2"
+                                                                data-scroll-to="anchor-scrollup-${id}">
+                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
+                                                            </button>      
+                                                            <span id="anchor-scroll-${id}"></span>                        
+                                                        `
+                                                        
+                                            }
+                                                        
+                                                    </div>
+                                                    
+                                                </div>
                                         </div>
-                                    </div>
-                                </div>
+                                        
+
+
+
                             </div> `;
+
 
                             return modalEditar;
                         },
@@ -1209,13 +2082,13 @@
                 },
                 "initComplete": function(settings, json) {
                 var buttonsHtml = `
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3 ms-auto">
 
                     <!-- BOTÓN ACTUALIZAR -->
                     <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
                             title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
                         <i class="fa-solid fa-rotate-right"></i>
-                        <span class="d-none d-md-inline">GERENCIA</span>
+                        <span class="d-none d-md-inline">ACTUALIZAR</span>
                     </button>
 
                     ${
@@ -1243,12 +2116,14 @@
                         <button id="btnBloqueado" class="btn btn-danger shadow-sm fw-bold btn-filter" title="BLOQUEADOS" style="transition: transform 0.2s;">BLOQUEADOS</button>
                         <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
                         <button id="btnEnviados" class="btn btn-secondary shadow-sm fw-bold btn-filter" title="ENVIADOS" style="transition: transform 0.2s;">ENVIADOS</button>
+                        <button id="btnReportes" class="btn btn-primary shadow-sm fw-bold btn-filter" title="REPORTES" style="transition: transform 0.2s;">REPORTES</button>
                         ` :
                         `
                         <!-- BOTONES USUARIOS -->
                         <button id="btnA" class="btn btn-success shadow-sm fw-bold btn-filter" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
                         <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
                         <button id="btnStandBy" class="btn btn-dark shadow-sm fw-bold btn-filter" title="STAND BY" style="transition: transform 0.2s;">STAND BY</button>
+                        <button id="btnReportes" class="btn btn-primary shadow-sm fw-bold btn-filter" title="REPORTES" style="transition: transform 0.2s;">REPORTES</button>
                         `
                     }
                 </div>`
@@ -1274,6 +2149,7 @@
 
             
             $(buttonsHtml).prependTo('.dataTables_filter');
+            
                 $('#btnT').on('click', function() {
                     lastAjaxUrl = '{{ route("data.solicitudes") }}';
                     table.ajax.url(lastAjaxUrl).load();
@@ -1328,6 +2204,12 @@
                     setActiveButton('#btnEnviados');
                 });
 
+                $('#btnReportes').on('click', function() {
+                    lastAjaxUrl = '{{ route("data.reporte") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnReportes');
+                });
+
 
 
                 // Evitar que aprueba directamente
@@ -1370,6 +2252,36 @@
                 //         }
                 // ],
 
+            });
+
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.btn-scroll');
+                if (!btn) return;
+
+                const targetId = btn.dataset.scrollTo;
+                const target = document.getElementById(targetId);
+                if (!target) {
+                    console.warn('No existe el anchor:', targetId);
+                    return;
+                }
+
+                // detectar contenedor scrollable más cercano
+                let scroller = target;
+                while (scroller && scroller !== document.body) {
+                    const style = window.getComputedStyle(scroller);
+                    const overflowY = style.overflowY;
+                    if (overflowY === 'auto' || overflowY === 'scroll') break;
+                    scroller = scroller.parentElement;
+                }
+
+                if (!scroller || scroller === document.body) {
+                    // desplaza la ventana
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // desplaza el contenedor que hace scroll
+                    const top = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+                    scroller.scrollTo({ top, behavior: 'smooth' });
+                }
             });
 
             function csesion() {

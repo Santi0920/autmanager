@@ -273,10 +273,10 @@
 
                         <input id="password" name="password" type="password" placeholder="Contraseña" required aria-required="true" autocomplete="current-password" />
                         <button type="button" class="toggle-pass" aria-label="Mostrar contraseña" style="background:none;border:none;padding:8px;margin-left:6px;color:var(--muted)">
-                            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                            {{-- <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
                                 <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8S2 12 2 12z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
+                            </svg> --}}
                         </button>
                     </div>
 

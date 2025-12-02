@@ -492,6 +492,10 @@
                                 if(row.Concepto != null){
                                     var agenciau = `<span class='fw-bold'>${row.Concepto}</span>`
                                 }
+                                //imprimir email para cuentas suspendidas
+                                if(row.activo == 0){
+                                    var agenciau = `<span class='fw-bold'>${row.email}</span>`
+                                }
                                 return agenciau
                             },
                             createdCell: function(td, cellData, rowData, row, col) {
@@ -514,6 +518,10 @@
 
                                 if(row.Areas != null){
                                     var ID = `<span class='fw-bold'>${row.Areas}</span>`
+                                }
+
+                                if(row.activo == 0){
+                                    var ID = `<span class='fw-bold'>${row.name} - ${row.agenciau}</span>`
                                 }
 
                                 return ID
@@ -540,6 +548,7 @@
                                     var name = $(this).data('name');
                                     var concepto = $(this).data('concepto');
                                     var area = $(this).data('area');
+                                    var email = $(this).data('email');
 
 
                                     if(row.NameAgencia != null){
@@ -580,6 +589,27 @@
                                         });
 
 
+                                    }else if(row.activo == 0){
+                                        
+                                            Swal.fire({
+                                            title: `¿Está seguro de habilitar la cuenta suspendida ${email}?`,
+                                            text: "Esta acción no se puede deshacer.",
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#d33',
+                                            cancelButtonColor: '#3085d6',
+                                            confirmButtonText: 'Sí, habilitar',
+                                            cancelButtonText: 'Cancelar',
+                                            customClass: {
+                                                confirmButton: 'btn-confirm',
+                                                cancelButton: 'btn-cancel'
+                                            }
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                window.location.href = url;
+                                            }
+                                        });
+                                        
                                     }else{
 
                                             Swal.fire({
@@ -863,6 +893,16 @@
 
                                 `;
 
+                                if(row.activo == 0){
+                                    var ModalInfo = `                                    
+                                        <a type="button"
+                                            class="btn btn-outline-warning delete-btn"
+                                            data-url="admin/suspendida/${id}" data-email="${row.email}">
+                                            <i class="fa-solid fa-user-slash fs-5"></i>
+                                        </a>
+                                    `
+                                }
+
 
                                 document.addEventListener('change', function (e) {
                                     if (e.target && e.target.id.startsWith("area_")) {
@@ -936,6 +976,7 @@
                         '<button id="btnJefaturas" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Jefaturas">Jefaturas</button>' +
                         '<button id="btnAgencias" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Agencias">Agencias</button>' +
                         '<button id="btnConceptos" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Conceptos">Conceptos</button>' +
+                        '<button id="btnBloqueados" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="Cuentas Suspendidas">Cuentas Suspendidas</button>' +
                     '</div>';
 
                 $(buttonsHtml).prependTo('#personas_filter');
@@ -954,7 +995,7 @@
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 
-                    $('#btnJefaturas').on('click', function() {
+                    $('#btnBloqueados').on('click', function() {
                         var newAjaxSource = '{{ route("datager.jefaturas") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
@@ -973,6 +1014,14 @@
                         $('#thNombre').text('AREA');
 
                         var newAjaxSource = '{{ route("conceptos") }}';
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+                    });
+
+                    $('#btnBloqueados').on('click', function() {
+                        $('#thRolAgencia').text('EMAIL');
+                        $('#thNombre').text('NOMBRE - ROL');
+
+                        var newAjaxSource = '{{ route("suspendidas") }}';
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 

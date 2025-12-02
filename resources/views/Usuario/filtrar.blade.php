@@ -60,7 +60,7 @@
                                         ingresa el número de autorización en el campo 
                                         <strong>“🛑BUSCAR AUTORIZACIÓN🛑”</strong> ubicado en la parte superior de la tabla.
                                         <br>
-                                        <a href="solicitudes" class="fw-bold text-decoration-underline">Click Aquí</a>
+                                        <a href="solicitudes" class="fw-bold text-decoration-underline">Click Aquí</a>. <b>Version 1.0: @include('layouts/version1')</b>
                                     </div>
                                 </div>
                                 <label for="numero" class="form-label me-2 fw-semibold text-secondary" style="font-size: 40px">Ingrese el número de autorización:</label>

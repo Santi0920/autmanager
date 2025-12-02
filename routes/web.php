@@ -61,6 +61,8 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/solicitudesenviados/datatable', [UsuarioController::class, 'enviado'])->name('data.enviado');
 
+    Route::get('/solicitudesreportes/datatable', [UsuarioController::class, 'reportes'])->name('data.reporte');
+
     Route::get('/modal-autorizacion/{id}', [UsuarioController::class, 'modalAutorizacion']);
 
     Route::post('/password/update', [UsuarioController::class, 'updatePassword'])->name('password.update');
@@ -107,6 +109,29 @@ Route::middleware(['session.expired'])->group(function () {
 
 
     
+
+
+
+    //VERSION 1.0 TODOS LOS ROLES MENOS GERENCIA, ESTA ARRIBA
+    //director
+    Route::get('/solicitudes-antiguas', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario.Director.solicitudes_antiguas');
+    });
+    
+    Route::get('/solicitudes-antiguas/datatable', [Todos::class, 'solicitudes'])->name('data.solantiguas');
+
+    Route::get('/solicitudes-antiguasapro/datatable', [Todos::class, 'aprobados'])->name('data.solantiguasapro');
+    
+    Route::get('/solicitudes-antiguasanu/datatable', [Todos::class, 'anulados'])->name('data.solantiguasanu');
+
+    Route::get('/solicitudes-antiguasstand/datatable', [Todos::class, 'standby'])->name('data.solantiguasstand');
+
+
+
+
+
 
 
 
@@ -279,6 +304,8 @@ Route::middleware(['session.expired'])->group(function () {
 
         Route::get('conceptos/datatable', [GerenciaController::class, 'conceptos'])->name('conceptos');
 
+        Route::get('suspendidas/datatable', [GerenciaController::class, 'cuentasSuspendidas'])->name('suspendidas');
+
 
         Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
         ->name('cargarinfo');
@@ -291,6 +318,9 @@ Route::middleware(['session.expired'])->group(function () {
 
         Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
         ->name('eliminarusuario');
+
+        Route::get('/admin/suspendida/{id}', [GerenciaController::class, 'activarCSuspendida'])
+        ->name('activarcsuspendida');
 
                 Route::get('/admin/eliminararea/{id}/{area}', [GerenciaController::class, 'eliminarConcepto'])
         ->name('eliminararea');

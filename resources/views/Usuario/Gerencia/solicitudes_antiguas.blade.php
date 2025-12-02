@@ -1,5 +1,13 @@
 @include('layouts/head')
 
+@if (session('agenciau') !== 'Gerencia General')
+    <script>
+        window.location.href = "{{ url('/') }}";
+    </script>
+@endif
+
+
+
 <body class="antialiased">
     @include('layouts/nav')
     @include('layouts.retornar')
@@ -48,7 +56,7 @@
         <div class="">
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
-                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- DIRECCIÓN GENERAL -⭐</b></span>
+                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- DIRECCIÓN GENERAL -⭐ @include('layouts/version1')</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><a href="estadisticas" id="btnAgencias" class="btn btn-dark fw-bold me-2" title="ESTADÍSTICAS AUTORIZACIONES"><i class="fa-solid fa-chart-bar text-white"></i> &nbspESTADÍSTICAS</a><b><span id="fechaActual"></span></b></h2>
                 </div>
                 <script>
@@ -797,6 +805,7 @@
                         </ul>
                     </div>
                     ` +
+                    '<a href="gerenciac9" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">COORDINACION 9</a>' +
                     '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">APROBADOS</button>' +
                     '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="RECHAZADOS">RECHAZADOS</button>' +
                     '<button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="EN TRÁMITE">EN TRÁMITE</button>' +

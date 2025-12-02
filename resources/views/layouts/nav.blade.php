@@ -298,7 +298,7 @@
             
             <div class="d-flex align-items-center">
 
-                <!-- Botón versión (PC completo) -->
+
                 <button class="btn-version-nav d-none d-md-inline ms-3 me-2"
                         data-bs-toggle="modal" data-bs-target="#versionModal">
                     🚀 Versión <strong>2.0</strong>
@@ -411,7 +411,10 @@
                         <div class="modal-footer border-0 p-4">
                             
                             <div class="alert alert-info border-0 shadow-sm rounded-3 mt-3">
-                                📅 Fecha de publicación: <strong>04 Nov 2025</strong>
+                                <h5 class="modal-title fw-bold fs-5 d-flex align-items-center">
+                                    
+                                        <strong>Versión 2.0  — 📅 </strong>Fecha de publicación: 04 Nov 2025
+                                </h5>
                             </div>
                             <button type="button" class="btn btn-gradient px-4 py-2" data-bs-dismiss="modal">
                                 Cerrar
@@ -497,14 +500,19 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="filtrar">
-                                        <i class="fas fa-search me-2"></i> Buscar Autorización
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="ordentrabajo">
+                                        <i class="fas fa-tasks me-2"></i> Orden de Trabajo
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="ordentrabajo">
-                                        <i class="fas fa-tasks me-2"></i> Orden de Trabajo
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="solicitudes-antiguas">
+                                        <i class="fas fa-search me-2"></i> Solicitudes Version 1.0
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="filtrar">
+                                        <i class="fas fa-search me-2"></i> Buscar Autorización 1.0
                                     </a>
                                 </li>
                             @elseif(session('rol') == 'Gerencia')
@@ -515,18 +523,8 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="filtrar">
-                                        <i class="fas fa-search me-2"></i> Buscar Autorización
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="gerencia">
-                                        <i class="fas fa-search me-2"></i> Gerencia antes de 4 Nov
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="gerenciac9">
-                                        <i class="fas fa-search me-2"></i> Coordinación 9 antes de 4 Nov
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="admin">
+                                        <i class="fas fa-cogs me-2"></i> Panel Administrativo
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -535,10 +533,17 @@
                                         <i class="fas fa-tasks me-2"></i> Orden de Trabajo
                                     </a>
                                 </li>
+
+   
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="admin">
-                                        <i class="fas fa-cogs me-2"></i> Panel Administrativo
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="gerencia">
+                                        <i class="fas fa-search me-2"></i> Solicitudes Version 1.0
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="filtrar">
+                                        <i class="fas fa-search me-2"></i> Buscar Autorización 1.0
                                     </a>
                                 </li>
                             @endif

@@ -985,6 +985,19 @@ class GerenciaController extends Controller
         return datatables()->of($solicitudes)->toJson();
     }
 
+
+    public function cuentasSuspendidas(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+
+        $solicitudes = DB::select("SELECT * FROM users WHERE activo = 0 ORDER BY agenciau ASC");
+
+
+        return datatables()->of($solicitudes)->toJson();
+    }
     public function agenciastabla(Request $request)
     {
         if (session('email') == null) {
@@ -1229,6 +1242,48 @@ class GerenciaController extends Controller
 
             return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
         }
+
+
+
+    }
+
+    public function activarCSuspendida($id){
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = session('agenciau');
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeActivoCuentaSuspendida - $id', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id,
+            null,
+            $ip
+        ]);
+
+        $user = DB::table('users')
+                ->where('id', $id)
+                ->first();
+
+        // Activar la cuenta
+        DB::table('users')
+            ->where('id', $id)
+            ->update([
+                'activo' => 1
+            ]);
+
+        // Responder mostrando el email
+        return back()->with(
+            "correcto",
+            "<span class='fs-4'>Se habilitó satisfactoriamente la cuenta<br>(<span class='badge bg-primary fw-bold'>".$user->email."</span>).</span>"
+        );
+
+
 
 
 

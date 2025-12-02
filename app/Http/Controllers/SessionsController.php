@@ -28,26 +28,50 @@ class SessionsController extends Controller
 
         $email = strtolower($request->email);
         $password = $request->password;
- 
-        // Buscar usuario en la tabla local 'users'
+
+        // Buscar usuario
         $user = User::where('email', $email)->first();
 
+        // Si la cuenta ya está suspendida
+        if ($user && $user->activo == 0) {
+            return back()->with('message', 'Su cuenta ha sido SUSPENDIDA. Por favor contactar con Coordinación (Carolina González).');
+        }
+
+        // Inicializar contador si no existe
+        if (!session()->has('login_attempts')) {
+            session(['login_attempts' => 0]);
+        }
+
+        // Validar contraseña
         if (!$user || !Hash::check($password, $user->password)) {
 
-            // Incrementar contador
-            session(['login_attempts' => session('login_attempts') + 1]);
+            // Incrementar intentos
+            $attempts = session('login_attempts') + 1;
+            session(['login_attempts' => $attempts]);
 
-            // Mostrar mensaje de error
-            return back()->with('message', 'El usuario o la contraseña es incorrecto!')
-                        ->with('show_captcha', session('login_attempts') >= 3);
-        }
-
-        if (session('login_attempts') >= 3) {
-            if (empty($request->input('g-recaptcha-response'))) {
-                return back()->with('message', 'Por favor, completa el Captcha')
+            // Si llega a 3 intentos → aviso de suspensión
+            if ($attempts == 3) {
+                return back()->with('message', 'Tiene 2 intentos más, su cuenta será SUSPENDIDA.')
+                            ->with('show_captcha', true);
+            }else if($attempts == 4){
+                return back()->with('message', 'Tiene 1 intento restante, su cuenta será SUSPENDIDA.')
                             ->with('show_captcha', true);
             }
+            
+
+            if ($attempts >= 5 && $user) {
+                $user->activo = 0;
+                $user->save();
+
+                return back()->with('message', 'Su cuenta ha sido SUSPENDIDA. Por favor contactar con Coordinación (Carolina González).');
+            }
+
+            return back()->with('message', 'El usuario o la contraseña es incorrecto!')
+                        ->with('show_captcha', $attempts >= 3);
         }
+
+        // Si llega aquí, los datos son correctos → reiniciar contador
+        session(['login_attempts' => 0]);
 
         $displayAgencias = ''; // Variable que contendrá el resultado final
 
@@ -134,7 +158,7 @@ class SessionsController extends Controller
             'cerro_sesion' => null,
             'IP' => $ip
         ]);
-
+        
         // Guardar datos en sesión
         session([
             'id' => $user->id,

@@ -244,9 +244,13 @@
                 background-color: #1eb200;
             }
             .estado-container {
-                max-height: calc(2 * 80px); /* Ajusta 40px si tus labels tienen otra altura */
+                max-height: calc(2 * 70px); /* Ajusta 40px si tus labels tienen otra altura */
                 overflow-y: auto;
                 overflow-x: hidden;
+                
+                text-align: justify;
+
+
             }
 
             /* Opcional: para mejorar la apariencia del scroll */
@@ -512,7 +516,7 @@
         transform: rotate(90deg);
         transition: transform 0.3s;
     }
-        .btn-premium-action {
+    .btn-premium-action {
         background: linear-gradient(135deg, #007b5e 0%, #00a67a 100%);
         border: none !important;
         color: #fff !important;
@@ -538,6 +542,34 @@
     .btn-premium-action i {
         font-size: 17px;
     }
+
+    .btn-premium-action2 {
+        background: linear-gradient(135deg, #6c757d 0%, #adb5bd 100%);
+        border: none !important;
+        color: #fff !important;
+        padding: 0.65rem 2.2rem;
+        font-size: 15px;
+        border-radius: 50px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.35);
+        transition: all .25s ease-in-out;
+    }
+
+    .btn-premium-action2:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(108, 117, 125, 0.45);
+    }
+
+    .btn-premium-action2:active {
+        transform: scale(.96);
+    }
+
+    .btn-premium-action2 i {
+        font-size: 17px;
+    }
+
 
     /* FORM CONTAINER PREMIUM */
 .premium-form {
