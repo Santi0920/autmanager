@@ -726,7 +726,8 @@
                                                 item.Estado === 'RECIBIDOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'VALIDADOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'REMITIDOCONFIRMADO' ? 'bg-warning-subtle' :
-                                                item.Estado === 'APROBADO' || item.Estado === 'ENTERADO' || item.Estado === 'RECIBIDO' ? 'bg-success-subtle' :
+                                                item.Estado === 'ENTERADO' || item.Estado === 'RECIBIDO' ? 'bg-success-subtle' :
+                                                item.Estado === 'APROBADO' ? 'bg-info-subtle' :
                                                 item.Estado === 'CORREGIR' ? 'bg-primary-subtle' :
                                                 item.Estado === 'ANULADO' ? 'bg-info-subtle' :
                                                 item.Estado === 'REMITIDO' ? 'bg-info-subtle' :

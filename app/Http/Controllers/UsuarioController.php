@@ -626,7 +626,7 @@ class UsuarioController extends Controller
                         WHERE H3.ID_Autorizacion = B.ID
                         ORDER BY H3.ID DESC
                         LIMIT 1
-                    ))) NOT IN ("aprobado", "stand by", "anulado", "resolver")')
+                    ))) NOT IN ("aprobado", "stand by", "anulado", "resolver", "enterado")')
                     ->whereExists(function ($query) {
                         $query->select(DB::raw(1))
                             ->from('historialestado AS H2')
