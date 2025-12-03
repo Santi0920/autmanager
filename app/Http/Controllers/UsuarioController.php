@@ -83,6 +83,26 @@ class UsuarioController extends Controller
         ]);
     }
 
+    public function bugs(){
+        $bugs = DB::table('bug_reports')
+        ->get();
+
+        return datatables()->of($bugs)->toJson();
+    }
+
+    public function cambiarestado(Request $request, $id)
+    { 
+        $accion = $request->input('accion');
+
+
+        DB::table('bug_reports')
+            ->where('id', $id)
+            ->update(['status' => $accion]);
+
+
+        return back()->with("correcto", "<span class='fs-4'>El bug No. <span class='badge bg-primary fw-bold'>" . $id . "</span> fue actualizado a <strong>" . $accion . "</strong>.</span>");
+    }
+
 
     //LISTO
     public function solicitarAutorizacion(Request $request)
