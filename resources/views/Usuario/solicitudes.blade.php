@@ -141,7 +141,9 @@
 
                 <!-- FECHA -->
                 <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9 col-xxl-9">
+                    
                     <div class="">
+                            
                             <div class="" style="margin-top: 8px; margin-right: -14px;">
                                 <h2 class="p-3 mb-0 text-secondary text-end fw-bold"><b><span id="fechaActual"></span></b></h2>
                             </div>
@@ -189,6 +191,7 @@
                             </tbody>
                         </table>
                     </div>
+                    @include('layouts.usuario.corteyid')
                 </div>
 
 
