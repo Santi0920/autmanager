@@ -516,6 +516,12 @@
                                         <i class="fas fa-search me-2"></i> Buscar Autorización 1.0
                                     </a>
                                 </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="bugs">
+                                        <i class="fas fa-bug me-2"></i> Reportes Bugs Software
+                                    </a>
+                                </li>
                             @elseif(session('rol') == 'Gerencia')
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="solicitudes">
@@ -547,6 +553,13 @@
                                         <i class="fas fa-search me-2"></i> Buscar Autorización 1.0
                                     </a>
                                 </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center fw-semibold hover-option" href="bugs">
+                                        <i class="fas fa-bug me-2"></i> Reportes Bugs Software
+                                    </a>
+                                </li>
+
                             @endif
 
                         </ul>

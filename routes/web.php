@@ -23,6 +23,16 @@ Route::get('logout', [SessionsController::class, 'destroy'])
 
 //USUARIO
 Route::middleware(['session.expired'])->group(function () {
+    Route::get('/bugs', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/bugs');
+    });
+
+    Route::post('bugs/cambiarestado-{id}', [UsuarioController::class, 'cambiarestado']);
+
+    Route::get('/bugs/datatable', [UsuarioController::class, 'bugs'])->name('data.bugs');
+
     Route::get('/solicitudes', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
