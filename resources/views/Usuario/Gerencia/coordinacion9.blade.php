@@ -1,5 +1,12 @@
 @include('layouts/head')
 
+@if (session('agenciau') !== 'Gerencia General')
+    <script>
+        window.location.href = "{{ url('/') }}";
+    </script>
+@endif
+
+
 <body class="antialiased">
     @include('layouts/nav')
     @include('layouts.retornar')
@@ -36,7 +43,7 @@
         <div class="">
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
-                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- COORDINACION 9 -⭐</b></span>
+                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- COORDINACION 9 -⭐ @include('layouts/version1')</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                 </div>
                 <script>
@@ -96,7 +103,7 @@
     <script src="js/condicionNit.js"></script>
     <script>
         var table = $('#personas').DataTable({
-            "ajax": "{{ route('datagercoordi.solicitudes') }}",
+            "ajax": "{{ route('data.gerenciac9') }}",
             "order": [
                 [0, 'desc']
             ],
@@ -224,7 +231,7 @@
                     render: function(data, type, row) {
 
                         var id = row.IDAutorizacion; // Obtener el ID de la fila
-                        var url = "{{ route('updatecoor.autorizacion', ':id') }}";
+                        var url = "{{ route('data.gerenciac9', ':id') }}";
                         url = url.replace(':id', id);
 
 

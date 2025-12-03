@@ -15,93 +15,173 @@ class SessionsController extends Controller
 {
     public function login()
     {
-        return view("login");
+        return view('login');
     }
 
     public function login_post(Request $request)
     {
 
-        $url = "http://190.66.10.150:10100/menu-datacredito/api/";
-        $attempts = 0;
-        $maxAttempts = 3; // Intentos máximos
-        $retryDelay = 1000; // Milisegundos
-
-        do {
-            try {
-                $response = Http::get($url . 'usuarios/' . urlencode($request->email));
-
-                if ($response->failed()) {
-                    throw new \Exception('Error al obtener datos del usuario');
-                }
-
-                $data = $response->json();
-
-
-                break;
-            } catch (\Exception $e) {
-                $attempts++;
-                usleep($retryDelay * 1000);
-
-            }
-        } while ($attempts < $maxAttempts);
-
-        // Verificar la autenticación con los datos obtenidos de la API
-        if (isset($data['usuarios'][0])) {
-            $user = $data['usuarios'][0];
-
-
-            if ($user['email'] == strtolower($request->email) && Hash::check($request->password, $user['password'])) {
-                session([
-                    'id' => $user['id'],
-                    'email' => $user['email'],
-                    'rol' => $user['rol'],
-                    'agenciau' => $user['agenciau'],
-                    'name' => $user['name'],
-                    'celular' => $user['celular'],
-                    'notificaciones' => $user['notificaciones'],
-                    'activo' => $user['activo'],
-                    'codigo' => $user['codigo'],
-                    'agencias_id' => $user['agencias_id'],
-                    'expires_at' => now()->addHours(10)
-                ]);
-
-                session()->flash('bienvenida', 'Bienvenido/a,' . $user['name'] . ' 👋');
-
-                //auditoria
-                $nombre = session('name');
-                $rol = session('rol');
-                $agencia = session('agenciau');
-
-                date_default_timezone_set('America/Bogota');
-
-                $fechaHoraActual = date('Y-m-d H:i:s');
-                $ip = $_SERVER['REMOTE_ADDR'];
-                $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
-                    $fechaHoraActual,
-                    $nombre,
-                    $rol,
-                    $agencia,
-                    'IngresoaAutorizaciones',
-                    $fechaHoraActual,
-                    null,
-                    null,
-                    $ip
-                ]);
-                if($user['rol'] == 'Consultante'){
-                    return redirect()->to('/solicitudes');
-                }else if($user['rol'] == 'Jefatura'){
-                    return redirect()->to('/solicitudesjefatura');
-                }else if($user['rol'] == 'Gerencia'){
-                    return redirect()->to('/aprobar');
-                }else if($user['rol'] == 'Coordinacion'){
-                    return redirect()->to('/validar');
-                }
-            }
-        }
-        return back()->withErrors([
-            'message' => 'El usuario o la contraseña es incorrecto!'
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
         ]);
 
+        $email = strtolower($request->email);
+        $password = $request->password;
+
+        // Buscar usuario
+        $user = User::where('email', $email)->first();
+
+        // Si la cuenta ya está suspendida
+        if ($user && $user->activo == 0) {
+            return back()->with('message', 'Su cuenta ha sido SUSPENDIDA. Por favor contactar con Coordinación (Carolina González).');
+        }
+
+        // Inicializar contador si no existe
+        if (!session()->has('login_attempts')) {
+            session(['login_attempts' => 0]);
+        }
+
+        // Validar contraseña
+        if (!$user || !Hash::check($password, $user->password)) {
+
+            // Incrementar intentos
+            $attempts = session('login_attempts') + 1;
+            session(['login_attempts' => $attempts]);
+
+            // Si llega a 3 intentos → aviso de suspensión
+            if ($attempts == 3) {
+                return back()->with('message', 'Tiene 2 intentos más, su cuenta será SUSPENDIDA.')
+                            ->with('show_captcha', true);
+            }else if($attempts == 4){
+                return back()->with('message', 'Tiene 1 intento restante, su cuenta será SUSPENDIDA.')
+                            ->with('show_captcha', true);
+            }
+            
+
+            if ($attempts >= 5 && $user) {
+                $user->activo = 0;
+                $user->save();
+
+                return back()->with('message', 'Su cuenta ha sido SUSPENDIDA. Por favor contactar con Coordinación (Carolina González).');
+            }
+
+            return back()->with('message', 'El usuario o la contraseña es incorrecto!')
+                        ->with('show_captcha', $attempts >= 3);
+        }
+
+        // Si llega aquí, los datos son correctos → reiniciar contador
+        session(['login_attempts' => 0]);
+
+        $displayAgencias = ''; // Variable que contendrá el resultado final
+
+        if ($user->rol === 'Consultante') {
+            // Quitar los dos últimos ceros
+            $userCC = substr((string)$user->codigo, 0, -2);
+
+            // Traer agencias según el código
+            $agencias = DB::select(
+                'SELECT agenciau 
+                FROM users 
+                WHERE agencias_id LIKE ?',
+                ['%"' . $userCC . '"%']
+            );
+
+            // Convertir a abreviación C1, C3, etc.
+            $agenciasString = implode(', ', array_map(function($item) {
+                preg_match('/\d+/', $item->agenciau, $matches);
+                return isset($matches[0]) ? 'C'.$matches[0] : $item->agenciau;
+            }, $agencias));
+
+            $displayAgencias = $agenciasString;
+
+        } elseif ($user->rol === 'Coordinacion') {
+            // Obtener los IDs de agencias desde el campo JSON agencias_id
+            $agenciasIDs = json_decode($user->agencias_id, true); // Supongo que es JSON
+            
+            if ($agenciasIDs && is_array($agenciasIDs)) {
+                $agencias = DB::table('agencias')
+                    ->whereIn('NumAgencia', $agenciasIDs)
+                    ->get(); // traemos toda la fila
+                    $agenciasFormatted = $agencias->map(function($item) {
+                        return '<span style="display:inline-block; margin:2px 5px; padding:2px 6px; background-color:#f0f0f0; border-radius:5px;">
+                                    ' . htmlspecialchars($item->NameAgencia) . ' <strong>(' . $item->NumAgencia . ')</strong>
+                                </span>';
+                    })->toArray();
+
+                    // Unir en un string separado por comas
+                    $displayAgencias = implode(' ', $agenciasFormatted);
+            }
+        }
+
+        // Información para auditoría
+        $nombreauditoria = $user->name ?? null;
+        $rol = $user->rol ?? null;
+        $agencia = $user->agenciau ?? null;
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = now()->format('Y-m-d H:i:s');
+
+        // Último acceso (antes del actual)
+        $ultimoAcceso = DB::table('auditoria')
+            ->where('Usuario_nombre', $nombreauditoria)
+            ->orderByDesc('Hora_Accion')
+            ->skip(1) // saltar el último registro
+            ->value('Hora_Accion');
+
+        // Última acción
+        $ultimaAccion = DB::table('auditoria')
+            ->where('Usuario_nombre', $nombreauditoria)
+            ->orderByDesc('Hora_Accion')
+            ->value('Acción_realizada');
+
+        // Últimos 3 logins (fecha y hora)
+        $loginsRecientes = DB::table('auditoria')
+            ->where('Usuario_nombre', $nombreauditoria)
+            ->orderByDesc('Hora_Accion')
+            ->limit(3)
+            ->pluck('Hora_Accion')
+            ->toArray();
+
+        $loginsRecientesFormatted = implode(', ', array_map(function($fecha){
+            return date('Y-m-d H:i:s', strtotime($fecha));
+        }, $loginsRecientes));
+
+        // Registrar auditoría del login actual
+        DB::table('auditoria')->insert([
+            'Hora_login' => null,
+            'Usuario_nombre' => $nombreauditoria,
+            'Usuario_Rol' => $rol,
+            'AgenciaU' => $agencia,
+            'Acción_realizada' => 'Login',
+            'Hora_Accion' => $fechaHoraActual,
+            'cerro_sesion' => null,
+            'IP' => $ip
+        ]);
+        
+        // Guardar datos en sesión
+        session([
+            'id' => $user->id,
+            'email' => $user->email,
+            'rol' => $rol,
+            'agenciau' => $agencia,
+            'name' => $nombreauditoria,
+            'celular' => $user->celular ?? null,
+            'notificaciones' => $user->notificaciones ?? null,
+            'activo' => $user->activo ?? null,
+            'codigo' => $user->codigo ?? null,
+            'agencias_id' => $user->agencias_id ?? null,
+            'coordasignadas' => $displayAgencias ?? '',
+            'expires_at' => now()->addHours(10),
+            'ultimo_acceso' => $ultimoAcceso,
+            'ultima_accion' => $ultimaAccion,
+            'logins_recientes' => $loginsRecientesFormatted,
+        ]);
+
+        session()->flash('bienvenida', 'Bienvenido/a, ' . $nombreauditoria . ' 👋');
+        session(['login_attempts' => 0]);
+
+        return redirect()->to('/solicitudes');
     }
 
     public function destroy(Request $request)
@@ -113,6 +193,9 @@ class SessionsController extends Controller
 
         Cookie::forget('laravel_session');
         Cache::flush();
+
+        $cookieName = config('session.cookie');
+        Cookie::queue(Cookie::forget($cookieName));
 
 
 

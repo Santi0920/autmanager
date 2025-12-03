@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\CoordinacionController;
-use App\Http\Controllers\DirectorController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\GerenciaController;
 use App\Http\Controllers\JefaturaController;
 use App\Http\Controllers\Todos;
@@ -10,17 +10,7 @@ use App\Http\Controllers\SessionsController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
+//LOGIN
 Route::get('/', [SessionsController::class, 'login'])
     ->name('login.index');
 
@@ -31,80 +21,153 @@ Route::get('logout', [SessionsController::class, 'destroy'])
     ->name('login.destroy');
 
 
-//DIRECTOR
+//USUARIO
 Route::middleware(['session.expired'])->group(function () {
     Route::get('/solicitudes', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
-        return view('Director/solicitudes');
+        return view('Usuario/solicitudes');
     });
 
-    Route::get('/solicitudes', [DirectorController::class, 'data1']);
+    Route::get('/tyc', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/tyc');
+    });
 
-    Route::get('/solicitudes/datatable', [DirectorController::class, 'solicitudes'])->name('data.solicitudes');
+    Route::get('/privacidad', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/privacidad');
+    });
 
-    Route::get('/solicitudesaprobadas/datatable', [DirectorController::class, 'aprobados'])->name('data.aprobados');
+    Route::get('/solicitudes', [UsuarioController::class, 'data1']);
 
-    Route::get('/solicitudesrechazadas/datatable', [DirectorController::class, 'rechazados'])->name('data.rechazados');
+    Route::get('/solicitudes/datatable', [UsuarioController::class, 'solicitudes'])->name('data.solicitudes');
 
-    Route::get('/solicitudesbloqueadas/datatable', [DirectorController::class, 'bloqueados'])->name('data.bloqueados');
+    Route::get('/solicitudesc9/datatable', [UsuarioController::class, 'c9'])->name('data.c9');
 
-    Route::get('/solicitudesanuladas/datatable', [DirectorController::class, 'anulados'])->name('data.anulados');
+    Route::get('/solicitudesaprobadas/datatable', [UsuarioController::class, 'aprobados'])->name('data.aprobados');
 
-    Route::get('/solicitudesstandby/datatable', [DirectorController::class, 'standby'])->name('data.standby');
+    Route::get('/solicitudesrechazadas/datatable', [UsuarioController::class, 'rechazados'])->name('data.rechazados');
+    
+    Route::get('/solicitudestramite/datatable', [UsuarioController::class, 'tramite'])->name('data.tramite');
+    
+    Route::get('/solicitudesbloqueadas/datatable', [UsuarioController::class, 'bloqueados'])->name('data.bloqueados');
+
+    Route::get('/solicitudesanuladas/datatable', [UsuarioController::class, 'anulados'])->name('data.anulados');
+
+    Route::get('/solicitudesstandby/datatable', [UsuarioController::class, 'standby'])->name('data.standby');
+
+    Route::get('/solicitudesenviados/datatable', [UsuarioController::class, 'enviado'])->name('data.enviado');
+
+    Route::get('/solicitudesreportes/datatable', [UsuarioController::class, 'reportes'])->name('data.reporte');
+
+    Route::get('/solicitudesvencido/datatable', [UsuarioController::class, 'vencido'])->name('data.vencido');
+
+    Route::get('/modal-autorizacion/{id}', [UsuarioController::class, 'modalAutorizacion']);
+
+    Route::post('/password/update', [UsuarioController::class, 'updatePassword'])->name('password.update');
+
+    Route::post('/perfil/actualizar', [UsuarioController::class, 'updatePerfil'])->name('perfil.update');
+
+    Route::post('/bug-report', [UsuarioController::class, 'store'])->name('bug-report.store');
+
+
+    //SOLICITUDES ANTIGUAS
+    Route::get('/gerencia', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/Gerencia/solicitudes_antiguas');
+    });
+
+    Route::get('/gerencia', [UsuarioController::class, 'data2antiguo']);
+
+    Route::get('/gerencia/datatable', [UsuarioController::class, 'solicitudesantiguas'])->name('data.solicitudesantiguas');
+
+    Route::get('/gerenciaaprobadas/datatable', [UsuarioController::class, 'aprobadosantiguas'])->name('data.aprobadosantiguas');
+
+    Route::get('/gerenciarechazadas/datatable', [UsuarioController::class, 'rechazadosantiguas'])->name('data.rechazadosantiguas');
+    
+    Route::get('/gerenciatramite/datatable', [UsuarioController::class, 'tramiteantiguas'])->name('data.tramiteantiguas');
+    
+    Route::get('/gerenciabloqueadas/datatable', [UsuarioController::class, 'bloqueadosantiguas'])->name('data.bloqueadosantiguas');
+
+    Route::get('/gerenciaanuladas/datatable', [UsuarioController::class, 'anuladosantiguas'])->name('data.anuladosantiguas');
+
+    Route::get('/gerenciastandby/datatable', [UsuarioController::class, 'standbyantiguas'])->name('data.standbyantiguas');
+
+    Route::post('gerencia/actualizar-{id}', [UsuarioController::class, 'validarAutorizacionAntiguas'])->name('updateger.autorizacionantiguas');
+
+    Route::get('/gerenciac9', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario/Gerencia/coordinacion9');
+    });
+
+    Route::get('/gerenciac9', [UsuarioController::class, 'data3antiguo']);
+
+    Route::get('/gerenciac9/datatable', [UsuarioController::class, 'solicitudescoordinacionantiguas'])->name('data.gerenciac9');
+
+
+    
+
+
+
+    //VERSION 1.0 TODOS LOS ROLES MENOS GERENCIA, ESTA ARRIBA
+    //director
+    Route::get('/solicitudes-antiguas', function () {
+        // Cookie::forget('laravel_session');
+        // Cache::flush();
+        return view('Usuario.Director.solicitudes_antiguas');
+    });
+    
+    Route::get('/solicitudes-antiguas/datatable', [Todos::class, 'solicitudes'])->name('data.solantiguas');
+
+    Route::get('/solicitudes-antiguasapro/datatable', [Todos::class, 'aprobados'])->name('data.solantiguasapro');
+    
+    Route::get('/solicitudes-antiguasanu/datatable', [Todos::class, 'anulados'])->name('data.solantiguasanu');
+
+    Route::get('/solicitudes-antiguasstand/datatable', [Todos::class, 'standby'])->name('data.solantiguasstand');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     //Esta ruta es para crear autorizaciones en todos los usuarios, los demas quedaron obsoletos
-    Route::post('/solicitudes/crear', [DirectorController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
+    Route::post('/solicitudes/crear', [UsuarioController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
-    Route::post('/solicitudes/actualizar-{id}', [DirectorController::class, 'actualizardetalle'])->name('update.autorizacion');
+    Route::post('/solicitudes/actualizar-{id}', [UsuarioController::class, 'actualizardetalle'])->name('update.autorizacion');
 
     Route::get('/filtrar', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
-        return view('Director.filtrar');
+        return view('Usuario.filtrar');
     });
 
     Route::get('/autorizacion', function () {
         // Cookie::forget('laravel_session');
         // Cache::flush();
-        return view('Director.mostrarautorizacion');
+        return view('Usuario.mostrarautorizacion');
     });
 
-    Route::post('/autorizacion', [DirectorController::class, 'buscarautorizacion'])
+    Route::post('/autorizacion', [UsuarioController::class, 'buscarautorizacion'])
     ->name('buscarautorizacion');
 
 
     //COORDINACION
-
-
-        Route::get('/validar', function () {
-            Cookie::forget('laravel_session');
-            Cache::flush();
-            return view('Coordinacion/validarautorizacion');
-        });
-
-        Route::get('/validar', [CoordinacionController::class, 'data1']);
-
-        Route::get('/validar/datatable', [CoordinacionController::class, 'solicitudes'])->name('datacoor.solicitudes');
-
-        Route::get('apropadoscoord/datatable', [CoordinacionController::class, 'aprobados'])->name('datacoor.aprobados');
-
-        Route::get('rechazadoscoord/datatable', [CoordinacionController::class, 'rechazados'])->name('datacoor.rechazados');
-
-        Route::get('anuladoscoord/datatable', [CoordinacionController::class, 'anulados'])->name('datacoor.anulados');
-
-        Route::get('bloqueadoscoord/datatable', [CoordinacionController::class, 'bloqueados'])->name('datacoor.bloqueados');
-
-        Route::get('standbycoord/datatable', [CoordinacionController::class, 'standby'])->name('datacoor.standby');
-
-        Route::post('/validar/crear', [CoordinacionController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacioncoor');
-
-        Route::post('/validarautorizacion/actualizar-{id}', [CoordinacionController::class, 'validarAutorizacion'])->name('updatevalidarcoor.autorizacion');
-
-        Route::post('/validar/actualizar-{id}', [CoordinacionController::class, 'actualizardetalle'])->name('updatecoor.autorizacion');
-
         Route::get('/filtrarconcepto', function () {
             Cookie::forget('laravel_session');
             Cache::flush();
@@ -216,15 +279,15 @@ Route::middleware(['session.expired'])->group(function () {
             return view('Gerencia/estadisticaindividual');
         });
 
-        Route::get('/filtrarconceptoger', function () {
-            Cookie::forget('laravel_session');
-            Cache::flush();
-            return view('Gerencia/filtrarconcepto');
-        });
+        // Route::get('/filtrarconceptoger', function () {
+        //     Cookie::forget('laravel_session');
+        //     Cache::flush();
+        //     return view('Gerencia/filtrarconcepto');
+        // });
 
-        Route::get('filtrarconceptoger/datatable', [GerenciaController::class, 'filtrarconcepto'])->name('datager.filtrarconcepto');
+        // Route::get('filtrarconceptoger/datatable', [GerenciaController::class, 'filtrarconcepto'])->name('datager.filtrarconcepto');
 
-        Route::get('/filtrarconceptoger', [GerenciaController::class, 'concepto']);
+        // Route::get('/filtrarconceptoger', [GerenciaController::class, 'concepto']);
 
 
         Route::get('/admin', function () {
@@ -243,6 +306,8 @@ Route::middleware(['session.expired'])->group(function () {
 
         Route::get('conceptos/datatable', [GerenciaController::class, 'conceptos'])->name('conceptos');
 
+        Route::get('suspendidas/datatable', [GerenciaController::class, 'cuentasSuspendidas'])->name('suspendidas');
+
 
         Route::get('/admin', [GerenciaController::class, 'cargaragencias'])
         ->name('cargarinfo');
@@ -256,36 +321,15 @@ Route::middleware(['session.expired'])->group(function () {
         Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
         ->name('eliminarusuario');
 
+        Route::get('/admin/suspendida/{id}', [GerenciaController::class, 'activarCSuspendida'])
+        ->name('activarcsuspendida');
+
                 Route::get('/admin/eliminararea/{id}/{area}', [GerenciaController::class, 'eliminarConcepto'])
         ->name('eliminararea');
 
         Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
 
         Route::get('/admin/obtener-agencias-select/{id}', [GerenciaController::class, 'obtenerAgenciasSelect']);
-
-
-
-    //JEFATURA
-    Route::get('/solicitudesjefatura', function () {
-        // Cookie::forget('laravel_session');
-        // Cache::flush();
-        return view('Jefatura/solicitudesjefatura');
-    });
-
-    Route::get('solicitudesjefatura', [JefaturaController::class, 'data1']);
-
-    Route::get('solicitudesjefatura/datatable', [JefaturaController::class, 'solicitudes'])->name('data.solicitudesjef');
-
-    Route::get('/aprobadasjefatura/datatable', [JefaturaController::class, 'aprobados'])->name('data.aprobadosjef');
-
-    Route::get('/rechazadasjefatura/datatable', [JefaturaController::class, 'rechazados'])->name('data.rechazadosjef');
-
-    Route::get('/anuladosjefatura/datatable', [JefaturaController::class, 'anulados'])->name('data.anuladosjef');
-
-    Route::post('/solicitudesjefatura/crear', [JefaturaController::class, 'solicitarAutorizacion'])->name('solicitar.autorizacionjef');
-
-    Route::post('/solicitudesjefatura/actualizar-{id}', [JefaturaController::class, 'actualizardetalle'])->name('update.autorizacionjef');
-
 
     //TODOS LOS PERFILES
 

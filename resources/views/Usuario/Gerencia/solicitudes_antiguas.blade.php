@@ -1,5 +1,13 @@
 @include('layouts/head')
 
+@if (session('agenciau') !== 'Gerencia General')
+    <script>
+        window.location.href = "{{ url('/') }}";
+    </script>
+@endif
+
+
+
 <body class="antialiased">
     @include('layouts/nav')
     @include('layouts.retornar')
@@ -48,7 +56,7 @@
         <div class="">
             <form action="" method="post">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: 8px; margin-right: -14px;">
-                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- DIRECCIÓN GENERAL -⭐</b></span>
+                    <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>⭐- DIRECCIÓN GENERAL -⭐ @include('layouts/version1')</b></span>
                     <h2 class="p-3 mb-0 text-secondary text-end"><a href="estadisticas" id="btnAgencias" class="btn btn-dark fw-bold me-2" title="ESTADÍSTICAS AUTORIZACIONES"><i class="fa-solid fa-chart-bar text-white"></i> &nbspESTADÍSTICAS</a><b><span id="fechaActual"></span></b></h2>
                 </div>
                 <script>
@@ -108,7 +116,7 @@
     <script src="js/condicionNit.js"></script>
     <script>
         var table = $('#personas').DataTable({
-            "ajax": "{{ route('datager.solicitudes') }}",
+            "ajax": "{{ route('data.solicitudesantiguas') }}",
             "processing" : true,
             "order": [
                 [0, 'desc']
@@ -291,7 +299,7 @@
                     render: function(data, type, row) {
 
                         var id = row.IDAutorizacion; // Obtener el ID de la fila
-                        var url = "{{ route('updatecoor.autorizacion', ':id') }}";
+                        var url = "{{ route('data.solicitudesantiguas', ':id') }}";
                         url = url.replace(':id', id);
 
 
@@ -781,7 +789,6 @@
 
             "initComplete": function(settings, json) {
                 var buttonsHtml = '<div class="d-flex flex-wrap align-items-center gap-2">' +
-                    '<button class="custom-btn2 mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><a href="filtrarconceptoger" id="exportExcel" title="EXPORTAR EXCEL"><i class="fas fa-file-excel text-white"></i></a></button>' +
                     '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                     `
                     <div class="dropdown d-inline" title="Solicitudes de jefaturas">
@@ -798,6 +805,7 @@
                         </ul>
                     </div>
                     ` +
+                    '<a href="gerenciac9" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">COORDINACION 9</a>' +
                     '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="APROBADOS">APROBADOS</button>' +
                     '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1" title="RECHAZADOS">RECHAZADOS</button>' +
                     '<button id="btnTramite" class="btn btn-warning fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2  me-1" title="EN TRÁMITE">EN TRÁMITE</button>' +
@@ -807,47 +815,47 @@
 
             $(buttonsHtml).prependTo('.dataTables_filter');
                 $('#btnT').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.solicitudes") }}';
+                    var newAjaxSource = '{{ route("data.solicitudesantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
                 });
 
                 $('#btnA').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.aprobados") }}';
+                    var newAjaxSource = '{{ route("data.aprobadosantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
                 });
 
                 $('#btnR').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.rechazados") }}';
+                    var newAjaxSource = '{{ route("data.rechazadosantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
 
                 $('#btnTramite').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.tramite") }}';
+                    var newAjaxSource = '{{ route("data.tramiteantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
 
                 $('#btnBloqueado').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.bloqueados") }}';
+                    var newAjaxSource = '{{ route("data.bloqueadosantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
 
                 $('#btnAnulado').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.anulados") }}';
+                    var newAjaxSource = '{{ route("data.anuladosantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                 });
 
                 $('#btnStandBy').on('click', function() {
-                    var newAjaxSource = '{{ route("datager.standby") }}';
+                    var newAjaxSource = '{{ route("data.standbyantiguas") }}';
 
                     $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
@@ -950,7 +958,7 @@
 
 
         $.ajax({
-            url: "{{ route('updateger.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+            url: "{{ route('updateger.autorizacionantiguas', ['id' => ':id']) }}".replace(':id', id),
             type: "POST",
             data: {
                 Observaciones: observaciones,

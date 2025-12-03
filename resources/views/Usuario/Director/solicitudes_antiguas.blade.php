@@ -2,92 +2,18 @@
 
 <body class="antialiased">
     @include('layouts/nav')
-    @include('layouts.retornar')
-    @if(session('bienvenida'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: '{{ session('bienvenida') }}',
-            showConfirmButton: false,
-            timer: 3000
-        });
-    </script>
-    @endif
 
-    @if (session('correcto'))
-        <div>
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: "¡Correcto!",
-                    html: "{!! session('correcto') !!}",
-                    confirmButtonColor: '#646464',
 
-                });
-            </script>
-        </div>
-    @endif
-
-    @if (session('incorrecto'))
-        <div>
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: "¡Advertencia!",
-                    html: "{!! session('incorrecto') !!}",
-                    confirmButtonColor: '#646464',
-
-                });
-            </script>
-        </div>
-    @endif
-
-    @if (session('incorrecto2'))
-        <div>
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: "¡Usted ha sido BLOQUEADO!",
-                    html: "{!! session('incorrecto') !!}",
-                    confirmButtonColor: '#646464',
-
-                });
-            </script>
-        </div>
-    @endif
-
-    @error('message')
-        <div>
-        <script>
-        Swal.fire
-            ({
-                icon: 'error',
-                title: "Error al registrar!\n{{$message}}",
-                text: '',
-                confirmButtonColor: '#005E56'
-
-            });
-        </script>
-        </div>
-    @enderror
     <div class="container-fluid row p-4">
-        <form action="{{ route('solicitar.autorizacion') }}" class="col m-3" method="POST"
-            enctype= "multipart/form-data" id="pagare" onsubmit="return enviarFormulario()">
-            @csrf
-            <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
-            @include('layouts.option')
 
-            <div id="cuerpo"></div>
-
-        </form>
 
 
         {{-- FECHA --}}
-        <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9 col-xxl-9">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
             <div class="">
                 <form action="" method="post">
                     <div class="" style="margin-top: 8px; margin-right: -14px;">
-
+                        <span class="d-inline mb-0 text-dark text-end" style="font-size: 35px"><b>VERSION 1.0 - @include('layouts/version1')</b></span>
                         <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
                     </div>
                     <script>
@@ -98,7 +24,8 @@
                             const dia = fecha.getDate();
                             const anio = fecha.getFullYear();
                             let horas = fecha.getHours();
-                            let amPm = horas >= 12 ? 'PM' : 'AM'; // Se establece 'AM' si horas es menor a 12, de lo contrario, se establece 'PM'
+                            let amPm = horas >= 12 ? 'PM' :
+                                'AM'; // Se establece 'AM' si horas es menor a 12, de lo contrario, se establece 'PM'
 
                             // Convertir 0 a 12 AM
                             horas = horas % 12 || 12;
@@ -115,7 +42,7 @@
                         }
 
                         setInterval(actualizarFechaActual, 1000);
-                </script>
+                    </script>
 
 
                 </form>
@@ -146,8 +73,22 @@
         <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
         <script src="js/condicionNit.js"></script>
         <script>
+            $(function() {
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            });
+
             var table = $('#personas').DataTable({
-                "ajax": "{{ route('data.solicitudesjef') }}",
+                "ajax": {
+                    "url": "{{ route('data.solantiguas') }}",
+                    "dataType": "json", // Indicar que se espera una respuesta JSON
+                    "error": function(xhr, error, thrown) {
+                        // Verificar si el error es debido a una respuesta JSON inválida
+                        if (xhr.status === 200 && xhr.responseJSON && xhr.responseJSON.error) {
+                            // Redirigir al usuario a la ruta deseada
+                            window.location.href = "{{ route('login.index') }}";
+                        }
+                    }
+                },
                 "order": [
                     [0, 'desc']
                 ],
@@ -175,7 +116,7 @@
                             var Contenido = `${row.Concepto}<div class="fw-bold text-primary">${row.NumAgencia} - ${row.NomAgencia} - ${row.SolicitadoPor}
                                     <div>
                                         <span class="text-dark" title="Fecha Solicitud">
-                                            ${row.Fecha.charAt(0).toUpperCase() + row.Fecha.slice(1)}
+                                        ${row.Fecha.charAt(0).toUpperCase() + row.Fecha.slice(1)}
                                         </span>
                                     </div>
                                 </div>
@@ -192,16 +133,20 @@
                         }
                     },
 
-
                     {
                         data: 'Estado',
                         render: function(data, type, row) {
-                            if(row.Bloqueado == 1){
+
+                            if (row.Bloqueado == 2) {
+                                var Estado =
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>ANULADO</div>';
+                            }
+                            else if(row.Bloqueado == 1){
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>';
                             }else if (row.Estado == 0) {
                                 var Estado =
-                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>';
+                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>CORREGIR</div>';
                             } else if (row.Estado == 1 || row.Estado == 2) {
                                 var Estado =
                                     `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
@@ -211,19 +156,15 @@
                             } else if (row.Estado == 4) {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
-                            } else if (row.Estado == 5) {
+                            } else if (row.Estado == 7) {
                                 var Estado =
-                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR(GERENCIA)</div>'
-                            }
-                            else if (row.Estado == 7) {
-                                var Estado =
-                                    '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
+                                    '<div class="btn btn-info blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">ANULADO</div>'
                             } else if (row.Estado == 8) {
                                 var Estado =
-                                    '<div class="btn btn-dark shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
+                                    '<div class="btn btn-dark blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">STAND BY</div>'
                             } else {
                                 var Estado =
-                                    '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
+                                    '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR(GERENCIA)</div>'
                             }
 
                             return Estado;
@@ -241,45 +182,45 @@
                         render: function(data, type, row) {
 
                             var id = row.IDAutorizacion; // Obtener el ID de la fila
-                            var url = "{{ route('update.autorizacion', ':id') }}";
-                            url = url.replace(':id', id);
 
                             const cedula = row.Cedula;
 
+
                             const mesesEnEspanol = [
-                        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-                        ];
+                                "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                            ];
 
-                        const fechainsercion = row.FechaInsercion;
-                        // Convertir fechainsercion a un objeto Date
-                        const fechaInsercionDate = new Date(fechainsercion);
+                            const fechainsercion = row.FechaInsercion;
+                            // Convertir fechainsercion a un objeto Date
+                            const fechaInsercionDate = new Date(fechainsercion);
 
-                        // Obtener la fecha actual
-                        const fechaActual = new Date();
+                            // Obtener la fecha actual
+                            const fechaActual = new Date();
 
-                        // Calcular la diferencia en milisegundos
-                        const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
+                            // Calcular la diferencia en milisegundos
+                            const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
 
-                        // Convertir la diferencia de milisegundos a días
-                        const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+                            // Convertir la diferencia de milisegundos a días
+                            const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
 
-                        // Verificar si la diferencia supera los 180 días
-                        const estado = fechainsercion == null || fechainsercion === undefined
-                        ? `<span class="fs-2">⚪⚪⚪</span>`
-                        : diferenciaDias > 179
-                            ? `<span class="fs-2">⚪⚪🔴</span>`
-                            : diferenciaDias > 169
-                                ? `<span class="fs-2">⚪🟡⚪</span>`
-                                : `<span class="fs-2">🟢⚪⚪</span>`;
+                            // Verificar si la diferencia supera los 180 días
+                            const estado = fechainsercion == null || fechainsercion === undefined
+                            ? `<span class="fs-2">⚪⚪⚪</span>`
+                            : diferenciaDias > 179
+                                ? `<span class="fs-2">⚪⚪🔴</span>`
+                                : diferenciaDias > 169
+                                    ? `<span class="fs-2">⚪🟡⚪</span>`
+                                    : `<span class="fs-2">🟢⚪⚪</span>`;
 
 
-                        const dia = fechaInsercionDate.getDate();
-                        const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
-                        const año = fechaInsercionDate.getFullYear();
-                        const fechaFormateada = `${mes} ${dia} del ${año}`;
+                            const dia = fechaInsercionDate.getDate();
+                            const mes = mesesEnEspanol[fechaInsercionDate.getMonth()];
+                            const año = fechaInsercionDate.getFullYear();
+                            const fechaFormateada = `${mes} ${dia} del ${año}`;
 
-                        const inputcedula = `
+
+                            const inputcedula = `
                                 <div class="input-group mb-0 w-25 border rounded-3 border-dark ms-2 me-2">
                                         <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
                                         <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
@@ -332,6 +273,10 @@
                                 `
 
 
+
+
+
+
                             if (row.ID_Concepto == 41) {
                                 var inputs = (inputcedula + inputconvencion);
                             } else if (row.ID_Concepto == 22) {
@@ -343,7 +288,7 @@
                                 var inputs =(inputcedula + inputnombre + inputcuenta);
                             }
 
-                        var modalEditar = `
+                            var modalEditar = `
                             <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}"
                                         data-id="${id}">
                                         <i class="fa-solid fa-eye fs-5"></i>
@@ -402,9 +347,11 @@
                                                             `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
                                                             row.Estado == 5 ?
                                                             `<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">R - RECHAZADO POR GERENCIA</button>` :
+                                                            row.Estado == 7 ?
+                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
                                                             row.Estado == 8 ?
                                                             '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
-                                                            '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>'
+                                                            '<h1>nada</h1>'
                                                         }
                                                     </div>
                                                     </div>
@@ -437,59 +384,59 @@
                                                         <div
                                                         class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
                                                         ${row.Estado == 0 || row.Estado == 5 ? `
-                                                                        <div class="mb-3 w-100 " title="" id="id">
-                                                                            <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" onChange="autorizacionesModalChange(${row.IDAutorizacion},'${row.Cedula}','${row.CuentaAsociado}', '${row.NombrePersona}', '${row.Convencion}', event)" required>
-                                                                                <option selected  class="fw-bold" value="${row.ID_Concepto}">**Concepto Actual** -> ${row.Concepto}</option>
+                                                            <div class="mb-3 w-100 " title="" id="id">
+                                                                <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" onChange="autorizacionesModalChange(${row.IDAutorizacion},'${row.Cedula}','${row.CuentaAsociado}', '${row.NombrePersona}', '${row.Convencion}', event)" required>
+                                                                    <option selected  class="fw-bold" value="${row.ID_Concepto}">**Concepto Actual** -> ${row.Concepto}</option>
 
-                                                                                @include('layouts.optionmodal')
-                                                                            </select>
-                                                                        </div>
+                                                             
+                                                                </select>
 
+                                                            </div>
+                                                            `:`<span class="fs-5">${row.Concepto} -
+                                                              
 
-
-
-                                                                        `:`<span class="fs-5">${row.Concepto} -
-                                                                                @include('layouts.optionvercodigo')`}
+                                                                </span>`}
                                                         </div>
                                                         <div
                                                         class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                        ${row.ID_Concepto == "41" ?
-                                                        `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${row.Convencion}</span>`:``
+                                                        ${row.ID_Concepto == 41 ?
+                                                        `<span class="fs-5 fw-bold mb-0">${row.Convencion}</span>`:``
                                                         }
                                                         </div>
                                                     </div>
-                                                    ${row.Estado != 0 && row.Estado != 5 ?
+                                                ${row.Estado != 0 && row.Estado != 5 ?
                                                     `
-                                                            <div class="row g-0">
-                                                                <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                                    <span class="fs-5">${cedula}
-                                                                        ${row.CuentaAsociado == null ? '- N/A' : `- ${row.CuentaAsociado}`}
-                                                                        - ${row.NombrePersona} -
-                                                                        ${row.Score >= 650 ?
-                                                                            `<span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                            (row.Score === 'S/E' ? `<span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `<span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                        }
-                                                                        </span>
-                                                                </div>
-                                                            </div>
-                                                            `:
-                                                    `
-                                                            <div class="row g-0">
-                                                                <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
-                                                                    ${inputs}
-                                                                </div>
-                                                                <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
-                                                                    <span class="fs-5">${cedula}
-                                                                        ${row.CuentaAsociado == null ? '- N/A' : `- ${row.CuentaAsociado}`}
-                                                                        - ${row.NombrePersona} -
-                                                                        ${row.Score >= 650 ?
-                                                                            `<span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
-                                                                            (row.Score === 'S/E' ? `<span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `<span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
-                                                                        }
+                                                        <div class="row g-0">
+                                                            <div class="col-md-12 d-flex justify-content-start border p-2">
+                                                                <span class="fs-5">${cedula}
+                                                                    ${row.CuentaAsociado == null ? '- N/A' : `- ${row.CuentaAsociado}`}
+                                                                    - ${row.NombrePersona} -
+                                                                    ${row.Score >= 650 ?
+                                                                        `<span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `<span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `<span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
+                                                                    }
                                                                     </span>
-                                                                </div>
                                                             </div>
-                                                            `
+                                                        </div>
+                                                        `:
+                                                    `
+                                                        <div class="row g-0">
+                                                            <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
+                                                                ${inputs}
+                                                            </div>
+                                                            <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
+                                                                <span class="fs-5">${cedula}
+                                                                    ${row.CuentaAsociado == null ? '- N/A' : `- ${row.CuentaAsociado}`}
+                                                                    - ${row.NombrePersona} -
+                                                                    ${row.Score >= 650 ?
+                                                                        `<span class="badge badge-pill badge-danger bg-success text-light fw-bold">${row.Score}</span> - ${estado}` :
+                                                                        (row.Score === 'S/E' ? `<span class="badge badge-pill badge-danger bg-warning text-dark fw-bold">${row.Score}</span> - ${estado}` : `<span class="badge badge-pill badge-danger bg-danger text-light fw-bold">${row.Score}</span> - ${estado}`)
+                                                                    }
+
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                                                                                            `
                                                     }
                                                     <div class="row g-0">
                                                         ${row.Estado == 0 || row.Estado == 5 ?
@@ -542,7 +489,7 @@
                                                                 <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${row.DocumentoSoporte}" />
                                                             </div>
                                                 </form>
-                                                            ` :
+                                                                                                                            ` :
                                                             `<div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                                 <span class="mb-0">${row.Detalle}</span>
                                                             </div>
@@ -556,8 +503,7 @@
                                             </div>
                                         </div>
 
-
-                                        ${row.Validacion == 0 && row.Estado == 3 ?
+                                        ${row.Validacion == 0 && row.Estado == 0 ?
                                             //esta validacion es si la validacion esta 0 y estado en corregir
                                             `<div class="row g-0 text-center">
                                                 <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="EN TRÁMITE">
@@ -582,30 +528,6 @@
 
                                         }
 
-                                        ${row.Validacion == 0 && row.Estado == 0 ?
-                                            //esta validacion es si la validacion esta 0 y estado esta en rechazado
-                                            `<div class="row g-0 text-center">
-                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
-                                                </div>
-
-                                                <div class="col-sm-12 col-md-12 col-lg-10">
-                                                    <div class="row g-0">
-                                                        <div class="text-start col-md-9 d-flex align-items-center border p-2">
-                                                            <span class="fs-5 fw-bold mb-0">${row.ValidadoPor}</span>
-                                                        </div>
-                                                        <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
-                                                            <span class="mb-0 fs-5">${row.FechaValidacion}</span>
-                                                        </div>
-                                                        <div class="col-md-12 col-lg-10 w-100">
-                                                            <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones == null ? `Ninguna.`:`${row.Observaciones}`}
-                                                        </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>`:``
-
-                                        }
 
 
                                         ${row.Validacion == 1 ?
@@ -617,35 +539,21 @@
                                             </div>`:``
                                             }
 
-                                            ${row.Aprobacion != 1 ?
-                                                (row.Estado == 3 && row.Validacion == 1 ?
-                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
-                                                        <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
-                                                    </div>` :
-                                                    `<div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
-                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
-                                                    </div>`
-                                                ) :
-                                                ``
-                                            }
 
 
 
-                                            ${row.Estado == 4 || row.Estado == 5 ?
+
+                                            ${row.Estado == 4 || row.Estado == 5 || row.Validacion == 1 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="EN TRÁMITE">
                                                 <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO<span></span>
                                             </div>`:
-                                            row.Estado == 1 &&  row.Aprobacion == 1 ?
+                                            row.Estado == 1 ||  row.Aprobacion == 1 ?
                                             `<div
                                                 class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
                                                 <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE<span></span>
                                             </div>`:
-                                            row.Validacion == 1 && row.Estado == 3 ?
-                                            `<div
-                                                class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-${row.Validacion == 1 ?`success`:`danger`}-subtle border p-2 border border-dark" title="EN TRÁMITE">
-                                                <span class="h1 fw-bold mb-0">${row.Validacion == 1 ?`V`:`R`}<br><span class="fs-5 fw-normal">VALIDADO<span></span>
-                                            </div>`:
+
                                             ``
                                             }
 
@@ -662,16 +570,11 @@
                                                         <div class="col-md-12 col-lg-10 w-100">
                                                             <span class="row g-0 border text-start p-2 mb-0 fw-semibold fs-5 ">${row.Observaciones == null ? `Ninguna.`:`${row.Observaciones}`}
                                                         </span>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>` : ``}
 
-
-
-
-
-                                        ${row.Aprobacion == 1 ?
+                                        ${row.Aprobacion == 1 || row.Estado == 5 ?
                                             `<div class="row g-0 text-center">
                                                 ${row.Estado == 4 ?
                                                 `<div
@@ -680,15 +583,18 @@
                                                 </div>`:
                                                 row.Estado == 5 ?
                                                 `<div
-                                                    class="col-sm-6 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-danger-subtle border p-3 border border-dark">
-                                                    <span class="h1 fw-bold mb-0">R<br><span class="fs-5 fw-normal">RECHAZADO<span></span>
+                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
+                                                    <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
                                                 </div>`:
                                                 row.Estado == 3 ?
                                                 `<div
                                                     class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
                                                     <span class="h1 fw-bold mb-0">C<br><span class="fs-5 fw-normal">CORREGIR<span></span>
                                                 </div>`:
-                                                ``
+                                                `<div
+                                                    class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-info-subtle border p-2 border border-dark" title="CORREGIR">
+                                                    <span class="h1 fw-bold mb-0">AN<br><span class="fs-5 fw-normal">ANULADO<span></span>
+                                                </div>`
                                                 }
                                                 <div class="col-md-12 col-lg-10">
                                                     <div class="row g-0">
@@ -700,11 +606,9 @@
                                                         </div>
                                                     </div>
                                                     <div class="row g-0 border text-start p-2">
-                                                            <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ? 'Ninguna.' : row.ObservacionesGer}</p>
+                                                        <p class="mb-0 fw-semibold fs-5">${row.ObservacionesGer == null ?`Ninguna.`:`${row.ObservacionesGer}`}</p>
                                                     </div>
-
-                                                </div>
-                                            </div>`:``
+                                                </div>`:``
                                         }
 
                                         ${row.Bloqueado == 1 ?
@@ -732,7 +636,7 @@
                                             ``
                                         }
 
-                                                                                ${row.Estado == 7 ?
+                                        ${row.Estado == 7 ?
                                         `
                                         <div class="row g-0 text-center">
                                                 <div
@@ -762,17 +666,14 @@
 
                                         </div>
                                         ${row.Estado == 0 || row.Estado == 5 ?
-                                        `<div class=" text-center p-3">
-                                            <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-outline-success fs-5 fw-bold w-50" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)"
-                                            >GUARDAR</button>`:``
+                                        ``:``
                                         }
                                         </div>
                                     </div>
                                 </div>
-                            </div>`;
+                            </div> `;
 
                             return modalEditar;
-
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
@@ -811,39 +712,45 @@
                         '<button id="btnT" class="custom-btn mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
                         '<button id="btnA" class="btn btn-success fw-bold mt-0 mt-lg-1 mt-md-2 mt-sm-2 me-1 mb-2 mb-lg-1" title="APROBADOS">APROBADOS</button>' +
                         '<button id="btnStandBy" class="btn btn-dark fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">STAND BY</button>' +
-                        // '<button id="btnR" class="btn btn-danger fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="RECHAZADOS">RECHAZADOS</button>' +
+                        // '<button id="btnBloqueado" class="btn btn-primary fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="BLOQUEADOS">BLOQUEADOS</button>' +
                         '<button id="btnAnulado" class="btn btn-info fw-bold mt-0 mt-lg-1 mt-md-2  mt-sm-2 me-1 mb-2 mb-lg-1" title="ANULADOS">ANULADOS</button>' +
                     '</div>';
                     $(buttonsHtml).prependTo('.dataTables_filter');
                     $('#btnT').on('click', function() {
-                        var newAjaxSource = '{{ route("data.solicitudesjef") }}';
+                        var newAjaxSource = '{{ route("data.solantiguas") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 
                     $('#btnA').on('click', function() {
-                        var newAjaxSource = '{{ route("data.aprobadosjef") }}';
+                        var newAjaxSource = '{{ route("data.solantiguasapro") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 
                     $('#btnR').on('click', function() {
-                        var newAjaxSource = '{{ route("data.rechazadosjef") }}';
+                        var newAjaxSource = '{{ route("data.rechazados") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                     });
 
                     $('#btnAnulado').on('click', function() {
-                        var newAjaxSource = '{{ route("data.anuladosjef") }}';
+                        var newAjaxSource = '{{ route("data.solantiguasanu") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
                     });
 
+                    $('#btnBloqueado').on('click', function() {
+                        var newAjaxSource = '{{ route("data.bloqueados") }}';
 
-                                        $('#btnStandBy').on('click', function() {
-                        var newAjaxSource = '{{ route("data.standby") }}';
+                        $('#personas').DataTable().ajax.url(newAjaxSource).load();
+
+                    });
+
+                    $('#btnStandBy').on('click', function() {
+                        var newAjaxSource = '{{ route("data.solantiguasstand") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
 
@@ -856,102 +763,104 @@
                 var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
                 return respuesta
             }
-        </script>
 
-        <script>
-        function formEditarAutorizacion(id, event) {
-            var _token = $('input[name="_token"]').val();
-            var CodigoAutorizacion = $(`#autorizacionesmodal${id}`).val();
-            var Cedulamodal = $(`#Cedulamodal${id}`).val();
-            var Cuentamodal = $(`#Cuentamodal${id}`).val();
-            var Nombremodal = $(`#Nombremodal${id}`).val();
-            var Convencionmodal = $(`#Convencionmodal${id}`).val();
-            var Detalle = $(`textarea[name="Detalle_${id}"]`).val();
-            var Soporte = document.querySelector(`input[name="Soporte_${id}"]`).files[0];
-            var DocumentoSoporte = $(`#DocumentoSoporte_${id}`).val();
+            //ajax
+            function formEditarAutorizacion(id, event) {
+                var _token = $('input[name="_token"]').val();
+                var CodigoAutorizacion = $(`#autorizacionesmodal${id}`).val();
+                var Cedulamodal = $(`#Cedulamodal${id}`).val();
+                var Cuentamodal = $(`#Cuentamodal${id}`).val();
+                var Nombremodal = $(`#Nombremodal${id}`).val();
+                var Convencionmodal = $(`#Convencionmodal${id}`).val();
+                var Detalle = $(`textarea[name="Detalle_${id}"]`).val();
+                var Soporte = document.querySelector(`input[name="Soporte_${id}"]`).files[0];
+                var DocumentoSoporte = $(`#DocumentoSoporte_${id}`).val();
 
 
-            var formData = new FormData();
-            formData.append('_token', _token);
-            formData.append('Detalle', Detalle);
-            formData.append('CodigoAutorizacion', CodigoAutorizacion);
-            formData.append('Cedulamodal', Cedulamodal);
-            formData.append('Cuentamodal', Cuentamodal);
-            formData.append('Nombremodal', Nombremodal);
-            formData.append('Convencionmodal', Convencionmodal);
+                var formData = new FormData();
+                formData.append('_token', _token);
+                formData.append('Detalle', Detalle);
+                formData.append('CodigoAutorizacion', CodigoAutorizacion);
+                formData.append('Cedulamodal', Cedulamodal);
+                formData.append('Cuentamodal', Cuentamodal);
+                formData.append('Nombremodal', Nombremodal);
+                formData.append('Convencionmodal', Convencionmodal);
 
-            // Verificar si hay un archivo adjunto
-            if (Soporte) {
-                formData.append('Soporte_' + id, Soporte);
-            } else {
-                formData.append('DocumentoSoporte', DocumentoSoporte);
-            }
-
-            Swal.fire({
-                title: 'Cargando...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                    // Realizar la solicitud AJAX mientras se muestra el mensaje de carga
-                    $.ajax({
-                        url: "{{ route('update.autorizacionjef', ['id' => ':id']) }}".replace(':id', id),
-                        type: "POST",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function(response) {
-                            console.log(response);
-                            if (response.message === "Datos recibidos correctamente") {
-                                $(`#exampleModal_${id}`).modal('hide');
-                                console.log('¡Éxito!');
-                                $('#personas').DataTable().ajax.reload();
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: "¡ACTUALIZADO!",
-                                    html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                        id + "</span></span>",
-                                    confirmButtonColor: '#646464'
-                                });
-                            } else if (response.message === "¡PERSONA NO EXISTE EN AS400!") {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: "¡PERSONA NO EXISTE EN AS400!",
-                                    text: '',
-                                    confirmButtonColor: '#646464',
-                                    timer: 10000
-                                });
-                            } else if (response.message === "¡PERSONA NO EXISTE EN DATACRÉDITO!") {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: "¡PERSONA NO EXISTE EN DATACRÉDITO!",
-                                    text: '',
-                                    confirmButtonColor: '#646464',
-                                    timer: 10000
-                                });
-                            } else if (response.message ===
-                                "No aplica porque aun está vinculado a COOPSERP.") {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: "No aplica porque aun está vinculado a COOPSERP.",
-                                    text: '',
-                                    confirmButtonColor: '#646464',
-                                    timer: 10000
-                                });
-                            } else if (response.message === "No necesita autorización") {
-                                Swal.fire({
-                                    icon: 'info',
-                                    title: "No necesita autorización",
-                                    html: "No necesita autorización, tiene " + response
-                                        .dias_restantes + " días asociados a COOPSERP.",
-                                    confirmButtonColor: '#646464',
-                                    timer: 10000
-                                });
-                            }
-                        }
-                    });
+                // Verificar si hay un archivo adjunto
+                if (Soporte) {
+                    formData.append('Soporte_' + id, Soporte);
+                } else {
+                    formData.append('DocumentoSoporte', DocumentoSoporte);
                 }
-            });
-        }
+
+                Swal.fire({
+                    title: 'Cargando...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        // Realizar la solicitud AJAX mientras se muestra el mensaje de carga
+                        $.ajax({
+                            url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                            type: "POST",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+
+                                if (response.message === "Datos recibidos correctamente") {
+                                    $(`#exampleModal_${id}`).modal('hide');
+                                    console.log('¡Éxito!');
+                                    event.preventDefault();
+                                    $('#personas').DataTable().ajax.reload();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: "¡ACTUALIZADO!",
+                                        html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                                            id + "</span></span>",
+                                        confirmButtonColor: '#646464'
+                                    });
+                                } else if (response.message === "¡PERSONA NO EXISTE EN AS400!") {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: "¡PERSONA NO EXISTE EN AS400!",
+                                        text: '',
+                                        confirmButtonColor: '#646464',
+                                        timer: 10000
+                                    });
+                                } else if (response.message === "¡PERSONA NO EXISTE EN DATACRÉDITO!") {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: "¡PERSONA NO EXISTE EN DATACRÉDITO!",
+                                        text: '',
+                                        confirmButtonColor: '#646464',
+                                        timer: 10000
+                                    });
+                                } else if (response.message ===
+                                    "No aplica porque aun está vinculado a COOPSERP.") {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: "No aplica porque aun está vinculado a COOPSERP.",
+                                        text: '',
+                                        confirmButtonColor: '#646464',
+                                        timer: 10000
+                                    });
+                                } else if (response.message === "No necesita autorización") {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: "No necesita autorización",
+                                        html: "No necesita autorización, tiene " + response
+                                            .dias_restantes + " días asociados a COOPSERP.",
+                                        confirmButtonColor: '#646464',
+                                        timer: 10000
+                                    });
+                                }else{
+                                    console.log(response.message);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
 
             function disableEnterKey(event) {
                 if (event.key === "Enter") {
@@ -959,63 +868,64 @@
                 }
             }
 
+
             function autorizacionesModalChange(id, cedula, cuenta, nombrepersona, convencion, event) {
                 // Obtener el valor seleccionado del elemento select
                 const valorSeleccionado = $(`#autorizacionesmodal${id}`).val();
                 $('#desactivar').addClass('d-none');
 
                 const inputcedula = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                    </div>
+                    `
 
                 const inputcuenta = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${cuenta}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                    </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${cuenta}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                        </div>
+                    `
 
                 const inputnombre = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${nombrepersona}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                    </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${nombrepersona}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                        </div>
+                    `
 
 
                 const inputconvencion = `
-                <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                        <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${convencion}" required onkeydown="disableEnterKey(event)">
-                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 16v-4" />
-                                <path d="M12 8h.01" />
-                            </svg>
-                        </span>
-                    </div>
-                `
+                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
+                            <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${convencion}" required onkeydown="disableEnterKey(event)">
+                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 16v-4" />
+                                    <path d="M12 8h.01" />
+                                </svg>
+                            </span>
+                        </div>
+                    `
 
                 if (valorSeleccionado == 41) {
                     $("#inputs" + id).html(inputcedula + inputconvencion);
@@ -1032,167 +942,160 @@
             }
 
 
-
             $('#autorizaciones').on('change', function() {
 
-            // Obtener el valor seleccionado
-            var valorSeleccionado = $(this).val();
-            console.log("Valor seleccionado:", valorSeleccionado);
+// Obtener el valor seleccionado
+var valorSeleccionado = $(this).val();
+console.log("Valor seleccionado:", valorSeleccionado);
 
 
-                if (valorSeleccionado == "41") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
+if (valorSeleccionado == "41") {
+    $("#cuerpo").html(`
+        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                    style="font-size:20px;">*</span></label>
+            <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                required>
 
-                        </div>
+        </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
+        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
+                    style="font-size:20px;">*</span></label>
+            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                required>
 
-                        </div>
+        </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
-                                required>
+        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
+                    style="font-size:20px;">*</span></label>
+            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
+                required>
 
-                        </div>
+        </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+        <div class="mb-3 w-100" title="Este campo es obligatorio">
+            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                    class="text-danger" style="font-size:20px;">*</span></label>
+            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
 
-                        </div>
+        </div>
 
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
+        <div class="mb-3 w-100" title="Este campo es obligatorio">
+            <label for="input2" class="form-label col-form-label-lg fw-semibold">CONVENCIONES <span
+                    class="text-danger" style="font-size:20px;">*</span></label>
+            <input type="text" name="convencion" class="form-control form-control-lg" autocomplete="off" required></input>
 
-                        </div>
-
-
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;" >SOLICITAR</button>
-                        </div>
-                        `);
-                }else if (valorSeleccionado == "22") {
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
+        </div>
 
 
+        <div class="mb-4 w-100" style="">
+            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR CAPTURA DE AS400<span
+                class="text-danger" style="font-size:20px;"> *</span></label>
+            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
+        </div>
+        <div class="text-center">
+            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                style="background-color: #646464;" >SOLICITAR</button>
+        </div>
+        `);
+}else if (valorSeleccionado == "22") {
+    $("#cuerpo").html(`
+        <div class="mb-3 w-100" title="Este campo es obligatorio">
+            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                    class="text-danger" style="font-size:20px;">*</span></label>
+            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
 
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;" >SOLICITAR</button>
-                        </div>
-                        `);
-                }else{
-                    $("#cuerpo").html(`
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9 (código de verificación).<span class="text-danger"> NOTA</span></p>
-                            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
-                                    style="font-size:20px;">*</span></label>
-                            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
-                                required>
-
-                        </div>
-
-                        <div class="mb-3 w-100" title="Este campo es obligatorio">
-                            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                                    class="text-danger" style="font-size:20px;">*</span></label>
-                            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-                        </div>
+        </div>
 
 
 
-                        <div class="mb-4 w-100" style="">
-                            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
-                                class="text-danger" style="font-size:20px;"> *</span></label>
-                            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
-                        </div>
-                        <div class="text-center">
-                            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                                style="background-color: #646464;" >SOLICITAR</button>
-                        </div>
-                        `);
-                }
+        <div class="mb-4 w-100" style="">
+            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                class="text-danger" style="font-size:20px;"> *</span></label>
+            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
+        </div>
+        <div class="text-center">
+            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                style="background-color: #646464;" >SOLICITAR</button>
+        </div>
+        `);
+}else{
+    $("#cuerpo").html(`
+        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+            <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA/NIT <span class="text-danger"
+                    style="font-size:20px;">*</span></label>
+            <p class="fw-bold fs-5">En caso tal de que sea un NIT escribirlo: 805.004.034 sin -9 (código de verificación).<span class="text-danger"> NOTA</span></p>
+            <input type="text" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                required>
 
-            });
+        </div>
+
+        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+            <label for="input1" class="form-label col-form-label-lg fw-semibold">NOMBRE PERSONA/EMPRESA <span class="text-danger"
+                    style="font-size:20px;">*</span></label>
+            <input type="text" name="nombre" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                required>
+
+        </div>
+
+        <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+            <label for="input1" class="form-label col-form-label-lg fw-semibold">CUENTA <span class="text-danger"
+                    style="font-size:20px;">*</span></label>
+            <input type="text" name="cuenta" class="form-control form-control-lg" id="input1" placeholder="Si no tiene cuenta escribir N/A" autocomplete="off" autofocus
+                required>
+
+        </div>
+
+        <div class="mb-3 w-100" title="Este campo es obligatorio">
+            <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                    class="text-danger" style="font-size:20px;">*</span></label>
+            <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+        </div>
 
 
-            function enviarFormulario() {
+
+        <div class="mb-4 w-100" style="">
+            <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                class="text-danger" style="font-size:20px;"> *</span></label>
+            <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" accept="application/pdf" required>
+        </div>
+        <div class="text-center">
+            <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
+                style="background-color: #646464;" >SOLICITAR</button>
+        </div>
+        `);
+}
+});
+
+        function enviarFormulario() {
                 const boton = document.getElementById("agregar");
                 boton.disabled = true;
                 return true;
             }
 
-            function fileUploaded(id) {
-                // Obtiene el elemento input de tipo file dinámicamente
-                var fileInput = document.getElementById(`file_${id}`);
+        function fileUploaded(id) {
+            // Obtiene el elemento input de tipo file dinámicamente
+            var fileInput = document.getElementById(`file_${id}`);
 
-                // Obtiene el nombre del archivo
-                var fileName = "";
-                if (fileInput.files.length > 0) {
-                    fileName = fileInput.files[0].name;
-                }
-
-                // Muestra el mensaje de confirmación con el nombre del archivo
-                var uploadMessage = document.getElementById(`uploadMessage_${id}`);
-                uploadMessage.innerHTML = fileName + " subido.";
-                uploadMessage.style.display = "block";
+            // Obtiene el nombre del archivo
+            var fileName = "";
+            if (fileInput.files.length > 0) {
+                fileName = fileInput.files[0].name;
             }
-        </script>
 
+            // Muestra el mensaje de confirmación con el nombre del archivo
+            var uploadMessage = document.getElementById(`uploadMessage_${id}`);
+            uploadMessage.innerHTML = fileName + " subido.";
+            uploadMessage.style.display = "block";
+        }
+        </script>
     </div>
 
     </div>
     <style>
-
-
-
 
             .input-group-text {
                 position: relative; /* Añade posicionamiento relativo */
@@ -1249,30 +1152,32 @@
                 border-radius: 5px;
                 font-size: 14px;
             }
-            .input {
-        max-width: 190px;
-        display: none;
+
+
+        .input {
+            max-width: 190px;
+            display: none;
         }
 
         .labelFile {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 250px;
-        height: 100px;
-        border: 2px dashed #ccc;
-        align-items: center;
-        text-align: center;
-        padding: 5px;
-        color: #404040;
-        cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 250px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            color: #404040;
+            cursor: pointer;
         }
 
         #uploadMessage {
-                display: none;
-                color: green;
-                font-weight: bold;
-            }
+            display: none;
+            color: green;
+            font-weight: bold;
+        }
 
 
 
@@ -1341,33 +1246,62 @@
             /* Cambia el cursor al pasar el mouse */
         }
 
-            .col::-webkit-scrollbar {
-            width: 10px;  /*Ancho de la barra de desplazamiento */
-            }
-
-            .col::-webkit-scrollbar-track {
-            background: #f1eeed; /*Color de fondo de la barra de desplazamiento */
-            }
-
-            .col::-webkit-scrollbar-thumb {
-            background: #bea232;  /*Color del botón de desplazamiento */
-            }
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin: 0px;
+        }
 
 
+        .col::-webkit-scrollbar {
+            width: 10px;
+            /*Ancho de la barra de desplazamiento */
+        }
+
+        .col::-webkit-scrollbar-track {
+            background: #f1eeed;
+            /*Color de fondo de la barra de desplazamiento */
+        }
+
+        .col::-webkit-scrollbar-thumb {
+            background: #bea232;
+            /*Color del botón de desplazamiento */
+        }
 
 
-            .text {
+
+
+        .text {
             color: #333;
             font-size: 18px;
             cursor: pointer;
-            }
+        }
+
+
     </style>
     @include('layouts.tooltipstyle')
     </div>
     @include('layouts.notification')
     @include('layouts.celular')
     @include('layouts.footer')
+    @include('layouts.retornar')
 
 </body>
+
+{{-- ${row.Aprobacion != 1 ? (
+    row.Estado == 3 && row.Validacion == 1 || row.Validacion == 1 ? `
+        <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+            <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
+        </div>` :
+    row.Estado == 1 && row.Validacion == 1 ? `
+        <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-warning border p-2 border border-dark" title="EN TRÁMITE">
+            <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">EN TRÁMITE</span></span>
+        </div>` : ''
+) : `
+    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center bg-success-subtle border p-2 border border-dark" title="CORREGIR">
+            <span class="h1 fw-bold mb-0">V<br><span class="fs-5 fw-normal">VALIDADO</span></span>
+    </div>
+
+`} --}}
 
 </html>

@@ -14,165 +14,7 @@ use App\Jobs\SendCorreoJob;
 
 class GerenciaController extends Controller
 {
-    public function solicitudes(Request $request)
-    {
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
 
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE  B.Bloqueado = 0 AND ((B.Estado = 1 AND B.Validacion = 1) OR (B.Estado = 6 AND B.Validacion = 1 ))");
-
-
-        return datatables()->of($solicitudes)->toJson();
-    }
-
-
-    public function aprobados(){
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
-
-        $ultimoId = DB::table('autorizaciones')->max('ID');
-
-
-        $limiteId = $ultimoId - 2000;
-
-
-        $solicitudes = DB::select("
-            SELECT DISTINCT
-                A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion,
-                B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta,
-                B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor,
-                B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion,
-                B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, B.Bloqueado, B.ID_Concepto,
-                C.Letra, C.No, C.Concepto, C.Areas,
-                D.FechaInsercion
-            FROM persona A
-            JOIN autorizaciones B ON B.ID_Persona = A.ID
-            JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-            JOIN documentosintesis D ON A.ID = D.ID_Persona
-            WHERE
-                B.Aprobacion = 1
-                AND B.Estado = 4
-                AND B.ID > $limiteId
-            ORDER BY A.ID ASC
-        ");
-
-        return datatables()->of($solicitudes)->toJson();
-    }
-
-
-
-    public function rechazados(){
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
-
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 5 OR ((B.Estado = 0) AND B.Coordinacion = 'C9')
-        ORDER BY A.ID ASC");
-
-
-        return datatables()->of($solicitudes)->toJson();
-    }
-
-    public function tramite(){
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
-
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 2 && B.Coordinacion = 'C#'
-        ORDER BY A.ID ASC");
-
-
-        return datatables()->of($solicitudes)->toJson();
-    }
-
-    public function anulados(){
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
-
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 7
-        ORDER BY A.ID ASC");
-
-
-        return datatables()->of($solicitudes)->toJson();
-    }
-
-    public function bloqueados(){
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
-
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Bloqueado = 1
-        ORDER BY A.ID ASC");
-
-
-        return datatables()->of($solicitudes)->toJson();
-    }
-
-
-    public function standby(){
-        if (session('email') == null) {
-            return redirect()->route('login');
-        }
-        $agenciaU = session('agenciau');
-
-        $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Convencion, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.CuentaAsociado, B.EstadoCuenta, B.NombrePersona, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.FechaValidacion, B.Coordinacion, B.Aprobacion, B.AprobadoPor, B.FechaAprobacion, B.ObservacionesGer, C.Letra, C.No, C.Concepto, C.Areas, D.FechaInsercion
-        FROM persona A
-        JOIN autorizaciones B ON B.ID_Persona = A.ID
-        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-        JOIN documentosintesis D ON A.ID = D.ID_Persona
-        WHERE B.Estado = 8
-        ORDER BY A.ID ASC");
-
-
-        return datatables()->of($solicitudes)->toJson();
-    }
 
 
     public function aprobarStandBy(){
@@ -181,103 +23,46 @@ class GerenciaController extends Controller
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
-        $standbyCount = DB::table('autorizaciones')->where('Estado', 8)->count();
+        $standbyCount = DB::table('historialestado as h1') ->where('h1.Estado', 'STAND BY') ->whereRaw('h1.ID = ( SELECT MAX(h2.ID) FROM historialestado h2 WHERE h2.ID_Autorizacion = h1.ID_Autorizacion )') ->count();
+        // IDs de los registros que cumplen la condición
+        $standbyAutorizaciones = DB::table('historialestado as h1')
+            ->where('h1.Estado', 'STAND BY')
+            ->whereRaw('h1.ID = (
+                SELECT MAX(h2.ID) 
+                FROM historialestado h2 
+                WHERE h2.ID_Autorizacion = h1.ID_Autorizacion
+            )')
+            ->pluck('h1.ID_Autorizacion') // <-- Aquí tomamos ID_Autorizacion
+            ->toArray();
 
-        $aprobartodos = DB::table('autorizaciones')
-            ->where('Estado', 8)
-            ->update([
-                'Estado' => 4,
-                'AprobadoPor' => $nombre,
-                'FechaAprobacion' => $fechaStringfechadeSolicitud,
-                'Aprobacion' => 1,
-            ]);
+        // Filtramos los que realmente existen en autorizaciones_2
+        $validIds = DB::table('autorizaciones_2')
+            ->whereIn('ID', $standbyAutorizaciones)
+            ->pluck('ID')
+            ->toArray();
+
+        $insertData = [];
+
+        foreach ($validIds as $idAutorizacion) {
+            $insertData[] = [
+                'NumArea' => "DR",
+                'NomArea' => "DIRECCIÓN GENERAL",
+                'Estado' => 'APROBADO',
+                'Nombre' => $nombre,
+                'Fecha' => $fechadeSolicitud,
+                'FechaString' => $fechaStringfechadeSolicitud,
+                'ID_Autorizacion' => $idAutorizacion
+            ];
+        }
+
+        // Insertamos todos los registros a la vez
+        DB::table('historialestado')->insert($insertData);
+
+   
+
 
         return back()->with("correcto", "<span class='fs-4'>Se han aprobado todas las solicitudes con estado <span class='fw-bold'>STAND BY</span>(".$standbyCount.")</span>");
     }
-
-    public function validarAutorizacion(Request $request, $id)
-    {
-
-        $nombre = session('name');
-        $rol = session('agenciau');
-        $estadoautorizacion = $request->Estado;
-
-        $fechadeSolicitud = Carbon::now('America/Bogota');
-
-        Carbon::setLocale('es');
-        $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
-        if($estadoautorizacion == '7'){
-            $update = DB::table('autorizaciones')
-            ->where('ID', $id)
-            ->update([
-                'Bloqueado' => 0,
-                'ObservacionesGer' => $request->input('Observaciones'),
-                'FechaAprobacion' => $fechaStringfechadeSolicitud,
-                'Aprobacion' => 0,
-                'Estado' => $estadoautorizacion,
-            ]);
-        } else if($estadoautorizacion == '1'){
-            $update = DB::table('autorizaciones')
-            ->where('ID', $id)
-            ->update([
-                'Bloqueado' => $request->input('Estado'),
-                'ObservacionesGer' => $request->input('Observaciones'),
-                'FechaAprobacion' => $fechaStringfechadeSolicitud,
-                'Aprobacion' => 0,
-            ]);
-        }else if($estadoautorizacion == '0'){
-            $update = DB::table('autorizaciones')
-            ->where('ID', $id)
-            ->update([
-                'Bloqueado' => $request->input('Estado'),
-                'ObservacionesGer' => $request->input('Observaciones'),
-                'FechaAprobacion' => $fechaStringfechadeSolicitud,
-                'Aprobacion' => 0
-            ]);
-        }else if ($estadoautorizacion == '4' || $estadoautorizacion == '5' || $estadoautorizacion == '3') {
-            $update = DB::table('autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'ObservacionesGer' => $request->input('Observaciones'),
-                    'Estado' => $request->input('Estado'),
-                    'AprobadoPor' => $nombre,
-                    'FechaAprobacion' => $fechaStringfechadeSolicitud,
-                    'Aprobacion' => 1
-                ]);
-        }else if ($estadoautorizacion == '8') {
-            $update = DB::table('autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'ObservacionesGer' => $request->Observaciones,
-                    'Estado' => $request->input('Estado'),
-                    'AprobadoPor' => $nombre,
-                    'FechaAprobacion' => $fechaStringfechadeSolicitud,
-                ]);
-        }
-
-        //AUDITORIA
-
-        $nombreauditoria = session('name');
-        $rol = session('rol');
-        date_default_timezone_set('America/Bogota');
-        $fechaHoraActual = date('Y-m-d H:i:s');
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = session('agenciau');
-        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ValidoAutorizacionGerencia', ?, ?, ?, ?)", [
-            null,
-            $nombreauditoria,
-            $rol,
-            $agencia,
-            $fechaHoraActual,
-            $id . ' - '. $estadoautorizacion,
-            null,
-            $ip
-        ]);
-
-
-
-            return response()->json(['success' => true]);
-        }
 
     //TOOLTIP
     public function data1()
@@ -389,100 +174,100 @@ class GerenciaController extends Controller
 
 
     public function contarsolicitudes(Request $request)
-        {
-            $directorestramite = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 2)
-            ->get()
-            ->count();
+    {
+        $directorestramite = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 2)
+        ->get()
+        ->count();
 
-            $coordinadorestramite = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 6)
-            ->get()
-            ->count();
+        $coordinadorestramite = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 6)
+        ->get()
+        ->count();
 
-            //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
-            $coordinadorestramitecorregir = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 3)
-            ->get()
-            ->count();
+        //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
+        $coordinadorestramitecorregir = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 3)
+        ->get()
+        ->count();
 
-            //sumatoria de todos los que estan en tramite
-            $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
-
-
-
-            $validadocoordinadores = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 1)
-            ->get()
-            ->count();
-
-
-            $rechazadogerencia = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 5)
-            ->get()
-            ->count();
-
-            $rechazadocoordinacion = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 0)
-            ->get()
-            ->count();
-
-            $rechazados = $rechazadocoordinacion + $rechazadogerencia;
-
-            $aprobadogerencia = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 4)
-            ->get()
-            ->count();
-
-            $anuladosgerencia = DB::table('autorizaciones')
-            ->select('autorizaciones.Estado as EstadoAutorizacion')
-            ->where('autorizaciones.Estado', 7)
-            ->get()
-            ->count();
-
-            $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia + $anuladosgerencia;
-
-            $nombresAgencia = DB::table('autorizaciones')
-            ->select('NomAgencia')
-            ->distinct()
-            ->orderBy('NomAgencia', 'asc')
-            ->get();
-
-            $year = DB::table('autorizaciones')
-            ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
-            ->distinct()
-            ->orderBy('year', 'asc')
-            ->get();
+        //sumatoria de todos los que estan en tramite
+        $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
 
 
 
-            //esto se hace con el fin de que se rellene los circulo de forma dinamica
-            $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
-            $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
-
-            $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
-            $decimalvalidados = round($porcentajevalidos, 2);
-
-            $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
-            $decimalrechazados = round($porcentajerechazados, 2);
-
-            $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
-            $decimalaprobados = round($porcentajeaprobados, 2);
-
-            $porcentajeanulados = ($anuladosgerencia != 0) ? ($anuladosgerencia / $total * 100) : 0;
-            $decimalanulados = round($porcentajeanulados, 2);
+        $validadocoordinadores = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 1)
+        ->get()
+        ->count();
 
 
-            return view('Gerencia/estadisticas', ['porcentajeanulados' => $porcentajeanulados,'anuladosgerencia' => $anuladosgerencia,'decimalanulados' => $decimalanulados,'decimalaprobados' => $decimalaprobados, 'decimalrechazados' => $decimalrechazados, 'decimalvalidados' => $decimalvalidados, 'porcentajetramite' => $porcentaje_tramite_con_decimales, 'tramite' => $tramite, 'validadocoordinadores' => $validadocoordinadores, 'rechazados' => $rechazados, 'aprobadogerencia' => $aprobadogerencia, 'total' => $total, 'nombresAgencia' => $nombresAgencia, 'year' => $year]);
+        $rechazadogerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 5)
+        ->get()
+        ->count();
 
-        }
+        $rechazadocoordinacion = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 0)
+        ->get()
+        ->count();
+
+        $rechazados = $rechazadocoordinacion + $rechazadogerencia;
+
+        $aprobadogerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 4)
+        ->get()
+        ->count();
+
+        $anuladosgerencia = DB::table('autorizaciones')
+        ->select('autorizaciones.Estado as EstadoAutorizacion')
+        ->where('autorizaciones.Estado', 7)
+        ->get()
+        ->count();
+
+        $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia + $anuladosgerencia;
+
+        $nombresAgencia = DB::table('autorizaciones')
+        ->select('NomAgencia')
+        ->distinct()
+        ->orderBy('NomAgencia', 'asc')
+        ->get();
+
+        $year = DB::table('autorizaciones')
+        ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
+        ->distinct()
+        ->orderBy('year', 'asc')
+        ->get();
+
+
+
+        //esto se hace con el fin de que se rellene los circulo de forma dinamica
+        $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
+        $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
+
+        $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
+        $decimalvalidados = round($porcentajevalidos, 2);
+
+        $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
+        $decimalrechazados = round($porcentajerechazados, 2);
+
+        $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
+        $decimalaprobados = round($porcentajeaprobados, 2);
+
+        $porcentajeanulados = ($anuladosgerencia != 0) ? ($anuladosgerencia / $total * 100) : 0;
+        $decimalanulados = round($porcentajeanulados, 2);
+
+
+        return view('Gerencia/estadisticas', ['porcentajeanulados' => $porcentajeanulados,'anuladosgerencia' => $anuladosgerencia,'decimalanulados' => $decimalanulados,'decimalaprobados' => $decimalaprobados, 'decimalrechazados' => $decimalrechazados, 'decimalvalidados' => $decimalvalidados, 'porcentajetramite' => $porcentaje_tramite_con_decimales, 'tramite' => $tramite, 'validadocoordinadores' => $validadocoordinadores, 'rechazados' => $rechazados, 'aprobadogerencia' => $aprobadogerencia, 'total' => $total, 'nombresAgencia' => $nombresAgencia, 'year' => $year]);
+
+    }
 
 
     public function actualizardatos(Request $request)
@@ -656,7 +441,7 @@ class GerenciaController extends Controller
 
 
 
-        public function filtrarconcepto(Request $request)
+    public function filtrarconcepto(Request $request)
     {
         if (session('email') == null) {
             return redirect()->route('login');
@@ -1120,31 +905,31 @@ class GerenciaController extends Controller
         ]);
     }
 
-public function dagencia(Request $request)
-{
-    if (session('email') == null) {
-        return redirect()->route('login');
-    }
+    public function dagencia(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
 
-    $agenciaU = session('agenciau');
+        $agenciaU = session('agenciau');
 
-    $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
+        $solicitudes = DB::select("SELECT * FROM users WHERE rol = 'Consultante' AND activo = 1 ORDER BY agenciau ASC");
 
-    $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
+        $agenciasActivas = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
-    $conceptos = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Areas ASC");
+        $conceptos = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY Areas ASC");
 
-    return datatables()->of($solicitudes)
-        ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
-            foreach ($agenciasActivas as $agencia) {
-                if ($row->agenciau == $agencia->NameAgencia) {
-                    return $agencia->NumAgencia;
+        return datatables()->of($solicitudes)
+            ->addColumn('agencia_comparada', function($row) use ($agenciasActivas) {
+                foreach ($agenciasActivas as $agencia) {
+                    if ($row->agenciau == $agencia->NameAgencia) {
+                        return $agencia->NumAgencia;
+                    }
                 }
-            }
-            return ''; // por si no encuentra coincidencia
-        })
-        ->toJson();
-}
+                return ''; // por si no encuentra coincidencia
+            })
+            ->toJson();
+    }
 
 
 
@@ -1200,6 +985,19 @@ public function dagencia(Request $request)
         return datatables()->of($solicitudes)->toJson();
     }
 
+
+    public function cuentasSuspendidas(Request $request)
+    {
+        if (session('email') == null) {
+            return redirect()->route('login');
+        }
+        $agenciaU = session('agenciau');
+
+        $solicitudes = DB::select("SELECT * FROM users WHERE activo = 0 ORDER BY agenciau ASC");
+
+
+        return datatables()->of($solicitudes)->toJson();
+    }
     public function agenciastabla(Request $request)
     {
         if (session('email') == null) {
@@ -1246,12 +1044,15 @@ public function dagencia(Request $request)
 
 
         if($tipocreacion == "crearDAgencia"){
+            $consultaCC = DB::table('agencias')->where('NameAgencia', '=', $request->agenciaDAgencia)->get();
+            $codigoDAgencia = $consultaCC[0]->NumAgencia . '00';
 
 
             $id_insertado = DB::table('users')->insertGetId([
                 'name' => $nombre,
                 'rol' => 'Consultante',
                 'agenciau' => $request->agenciaDAgencia,
+                'codigo' => $codigoDAgencia,
                 'email' => $correo,
                 'password' => bcrypt($password),
                 'activo' => 1
@@ -1266,6 +1067,7 @@ public function dagencia(Request $request)
                 'name' => $nombre,
                 'rol' => 'Coordinacion',
                 'agenciau' => 'Coordinacion '.$request->selectcoordinacion,
+                'codigo' => '11'.$request->selectcoordinacion.'0',
                 'agencias_id' => json_encode($selectedPeople),
                 'email' => $correo,
                 'password' => bcrypt($password),
@@ -1440,6 +1242,48 @@ public function dagencia(Request $request)
 
             return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
         }
+
+
+
+    }
+
+    public function activarCSuspendida($id){
+
+        $nombreauditoria = session('name');
+        $rol = session('rol');
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $agencia = session('agenciau');
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeActivoCuentaSuspendida - $id', ?, ?, ?, ?)", [
+            null,
+            $nombreauditoria,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $id,
+            null,
+            $ip
+        ]);
+
+        $user = DB::table('users')
+                ->where('id', $id)
+                ->first();
+
+        // Activar la cuenta
+        DB::table('users')
+            ->where('id', $id)
+            ->update([
+                'activo' => 1
+            ]);
+
+        // Responder mostrando el email
+        return back()->with(
+            "correcto",
+            "<span class='fs-4'>Se habilitó satisfactoriamente la cuenta<br>(<span class='badge bg-primary fw-bold'>".$user->email."</span>).</span>"
+        );
+
+
 
 
 

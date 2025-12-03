@@ -32,17 +32,9 @@
     @endif
 
     @php
-        if (session('rol') == 'Consultante'){
+
             $href = "solicitudes";
-        }else if(session('rol') == 'Coordinacion'){
-            $href = "validar";
-        }else if(session('rol') == 'Gerencia'){
-            $href = "aprobar";
-        }else if(session('rol') == 'Jefatura'){
-            $href = "solicitudesjefatura";
-        }else{
-            $href = "solicitudes";
-        }
+      
 
     @endphp
 
@@ -59,8 +51,18 @@
                                     <a type="submit" class="btn btn-warning mt-3 border border-1 border-dark" style="font-size: 40px;" href="{{$href}}"><i class="fa-solid fa-arrow-left"></i> ATRAS</a>
                                     <button type="" class="btn btn-dark boton-buscar mt-3" style="font-size: 40px;">BUSCAR</button>
                                     <button type="submit" class="btn btn-dark boton-asd d-none mt-3" style="font-size: 40px;" onclick="buscar()">BUSCAR</button>
+                                    
                                 </div>
-
+                                <div class="alert alert-info d-flex align-items-start gap-2 p-3 mt-2">
+                                    <i class="bi bi-info-circle fs-4"></i>
+                                    <div>
+                                        <strong>Nota:</strong> Para consultar autorizaciones generadas en la nueva versión, 
+                                        ingresa el número de autorización en el campo 
+                                        <strong>“🛑BUSCAR AUTORIZACIÓN🛑”</strong> ubicado en la parte superior de la tabla.
+                                        <br>
+                                        <a href="solicitudes" class="fw-bold text-decoration-underline">Click Aquí</a>. <b>Version 1.0: @include('layouts/version1')</b>
+                                    </div>
+                                </div>
                                 <label for="numero" class="form-label me-2 fw-semibold text-secondary" style="font-size: 40px">Ingrese el número de autorización:</label>
 
                                 <div class="mb-3 d-flex align-items-center justify-content-center">
