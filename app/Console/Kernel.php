@@ -4,8 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Http\Controllers\CRUDCoordinacion;
-use App\Http\Controllers\CRUDCredito;
+use Carbon\Carbon;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -13,15 +12,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-        // $schedule->call([CRUDCoordinacion::class, 'datosPagare'])->everyMinute();
-        // $schedule->call(function () {
-        //     (new CRUDCoordinacion)->datosPagare();
-        // })->everyMinute();
 
-        $schedule->call(function () {
-            (new CRUDCoordinacion)->datosPagare();
-        })->everyMinute();
+        $schedule->command('estados:expirar-fin-mes')
+        ->timezone('America/Bogota')
+        ->when(function () {
+            return Carbon::now('America/Bogota')->isLastOfMonth();
+        })
+        ->dailyAt('17:00');
     
     }
 

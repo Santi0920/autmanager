@@ -302,7 +302,7 @@
                 <button class="btn-version-nav d-none d-md-inline ms-3 me-2"
                         data-bs-toggle="modal" data-bs-target="#versionModal">
                     🚀 Versión <strong>2.0</strong>
-                    <span class="badge-new">🛑 Nuevo</span>
+                    
                 </button>
 
                 <!-- Botón versión (solo móvil - solo 2.0) -->
@@ -317,6 +317,7 @@
                     🐞 <span class="d-none d-md-inline">Reportar Error</span>
                     <span class="d-md-none">Reportar</span>
                 </button>
+                
 
             </div>
 
@@ -329,7 +330,7 @@
                         <div class="modal-header p-4" style="background: linear-gradient(90deg, #343a40, #495057);">
                             <h5 class="modal-title text-white fw-bold fs-5 d-flex align-items-center">
                                 <i class="fa-solid fa-rocket me-2" style="font-size:1.4rem;"></i>
-                                    Actualización del Software — Versión 2.0 <span class="badge-new ms-3">🛑 Nuevo</span>
+                                    Actualización del Software — Versión 2.0
                             </h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
@@ -413,7 +414,7 @@
                             <div class="alert alert-info border-0 shadow-sm rounded-3 mt-3">
                                 <h5 class="modal-title fw-bold fs-5 d-flex align-items-center">
                                     
-                                        <strong>Versión 2.0  — 📅 </strong>Fecha de publicación: 04 Nov 2025
+                                        <strong>Versión 2.0  — 📅 </strong>Fecha de publicación: 03 DIC 2025
                                 </h5>
                             </div>
                             <button type="button" class="btn btn-gradient px-4 py-2" data-bs-dismiss="modal">

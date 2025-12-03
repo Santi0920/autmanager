@@ -5,17 +5,25 @@
         @if(session('rol') == 'Gerencia')
             <div class="col-11 mx-auto">
                 <!-- Header Sección -->
-                <div class="d-flex justify-content-between align-items-center my-3 flex-wrap">
-                    <h1 class="text-gradient-primary fw-bold mb-1" style="font-size: 3rem; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.25);">
-                        ⭐DIRECCIÓN GENERAL⭐
-                    </h1>
+                <div class="row align-items-center my-3">
+                    <div class="col-12 col-lg-6">
+                        <h1 class="text-gradient-primary fw-bold mb-1"
+                            style="font-size: 2rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.25);">
+                            ⭐DIRECCIÓN GENERAL⭐@include('layouts.usuario.corteyid')
+                        </h1>
+                    </div>
+                    <div class="col-12 col-lg-6 d-flex justify-content-lg-end align-items-center flex-wrap mt-2 mt-lg-0">
 
-                    <div class="d-flex align-items-center flex-wrap">
-                        <a href="estadisticas" id="btnAgencias" class="btn btn-gradient-primary fw-bold me-3 mb-2" title="ESTADÍSTICAS AUTORIZACIONES">
+                        <a href="estadisticas" id="btnAgencias"
+                        class="btn btn-gradient-primary fw-bold me-3 mb-2"
+                        title="ESTADÍSTICAS AUTORIZACIONES">
                             <i class="fa-solid fa-chart-bar text-white me-2"></i> ESTADÍSTICAS
                         </a>
+
                         <span class="text-secondary fw-semibold fs-2" id="fechaActual"></span>
+
                     </div>
+
                 </div>
 
                 <!-- Script Fecha y Hora -->
@@ -72,6 +80,7 @@
         @else
             <div class="container-fluid row p-4">
                 <!-- REGISTRO DE AUTORIZACIONES POR PARTE DE USUARIOS (Coord,Directores,Jefaturas) -->
+                
             <form 
                 id="pagare"
                 action="{{ route('solicitar.autorizacion') }}"

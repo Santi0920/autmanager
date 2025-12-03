@@ -77,10 +77,7 @@
                             let fechaSolicitud = null;
                             let fechaValidacion = null;
 
-                            if (row.ultimaRemitidoCorregir) {
-                                // Caso de Corrección → Solo se muestra tiempo contra ahora
-                                fechaSolicitud = parseFecha(row.ultimaRemitidoCorregir);
-                            } else if (row.UltimaFechaDoneTramite) {
+                            if(row.UltimaFechaDoneTramite) {
                                 fechaSolicitud = parseFecha(row.UltimaFechaDoneTramite);
                             }
 
@@ -102,6 +99,9 @@
                                 const dif1 = calcularDiferencia(fechaSolicitud, fechaValidacion);
                                 const dif2 = calcularDiferencia(fechaValidacion, new Date());
 
+                                console.log(fechaSolicitud, fechaValidacion);
+                                
+
                                 demoracoord = `<span title="Fecha Solicitud: ${row.UltimaFechaDoneTramite ?? row.ultimaRemitidoCorregir} . Fecha Validacion: ${row.UltimaFechaCoordinacion}" class="">
                                                     ${row.UltimaAreaCoordinacion}: 
                                                     <span class="text-dark fw-semibold">${dif1.horas};${dif1.minutos};${dif1.segundos}.</span>
@@ -117,7 +117,7 @@
                             var Contenido = `
                                 ${row.Concepto}
                                 <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea} - ${row.Usuario}
+                                    ${row.NumArea} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}
                                 </div>
                                 ${demoracoord}
                                 ${demoradireccion}
@@ -184,7 +184,7 @@
                             var Contenido = `
                                 ${row.Concepto}
                                 <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea} - ${row.Usuario}
+                                    ${row.NumArea} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}
                                     <div>${textoEstado}</div>
                                 </div>
                             `;
@@ -192,7 +192,7 @@
 
 
                         }else{
-                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea} - ${row.Usuario}
+                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}
                                     <div>
                                         <span class="text-dark" title="Fecha Solicitud">
                                         ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
@@ -228,9 +228,9 @@
                             }else if (ultimoEstado == "APROBADO") {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">APROBADO POR GERENCIA</div>'
-                            }else if (ultimoEstado == "RESOLVER") {
+                            }else if (ultimoEstado == "TERMINADO") {
                                 var Estado =
-                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RESUELTO</div>'
+                                    '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">TERMINADO</div>'
                             }else if (ultimoEstado == "RECIBIDO") {
                                 var Estado =
                                     '<div class="btn btn-success blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">RECIBIDO POR FUNCIONARIO</div>'
@@ -246,10 +246,13 @@
                             }else if (ultimoEstado == "DESBLOQUEADO") {
                                 var Estado =
                                     '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">DESBLOQUEADO</div>'
-                            }else if (    ultimoEstado === "ENVIADO" || ultimoEstado === "ACLARAR" || ultimoEstado === "ENCARGARSE" || ultimoEstado === "PROCEDER" || ultimoEstado === "SOLUCIONAR" || ultimoEstado === "QUE PASO") {
+                            }else if (ultimoEstado === "ENVIADO" || ultimoEstado === "ACLARAR" || ultimoEstado === "ENCARGARSE" || ultimoEstado === "PROCEDER" || ultimoEstado === "SOLUCIONAR" || ultimoEstado === "QUE PASO") {
                                 var Estado =
                                     '<div class="btn btn-secondary blink shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">'+ ultimoEstado +'</div>'
-                            }   else {
+                            } else if(ultimoEstado == "VENCIDO") {
+                                var Estado =
+                                    '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>VENCIDO</div>'
+                            } else {
                                 var Estado =
                                     '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>BLOQUEADO</div>'
                             }
@@ -694,10 +697,10 @@
                                                                         >
                                                                     </div>
                                                                     <div class="col-md-12" id="enviarselect_${id}">
-                                                                        <select disabled class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
-                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ←</option>
+                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
+                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ← SOLO USAR CUANDO EN EL ESTADO ENVIAR A</option>
                                                                             @foreach ($usuariosEnviara as $usuario)
-                                                                                <option value="{{$usuario->id}}">{{$usuario->name}} - {{$usuario->agenciau}} - {{$usuario->codigo}}</option>
+                                                                                <option value="{{$usuario->id}}">{{$usuario->codigo}} - {{$usuario->name}} - {{$usuario->agenciau}}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
@@ -731,7 +734,7 @@
                                                 item.Estado === 'CORREGIR' ? 'bg-primary-subtle' :
                                                 item.Estado === 'ANULADO' ? 'bg-info-subtle' :
                                                 item.Estado === 'REMITIDO' ? 'bg-info-subtle' :
-                                                item.Estado == 'BLOQUEADO' ? 'bg-danger-subtle' :
+                                                item.Estado == 'BLOQUEADO' || item.Estado == 'VENCIDO' ? 'bg-danger-subtle' :
                                                 item.Estado == 'STAND BY' ? 'bg-dark-subtle' :
                                                 'bg-secondary-subtle'
                                             } border p-2 border border-dark" title="${item.Estado}">
@@ -746,8 +749,8 @@
                                                             ? "ENVIADO(DR)" 
                                                             : item.Estado == "RECIBIDOCONFIRMADO" 
                                                             ? "RECIBIDO" 
-                                                            : item.Estado == "RESOLVER" ||  item.Estado == "ACLARAR" ||  item.Estado == "ENCARGARSE" ||  item.Estado == "PROCEDER" ||  item.Estado == "SOLUCIONAR" ||  item.Estado == "QUE PASO"
-                                                            ? item.Estado + "❗(DR)" :
+                                                            : item.Estado == "TERMINADO" ||  item.Estado == "ACLARAR" ||  item.Estado == "ENCARGARSE" ||  item.Estado == "PROCEDER" ||  item.Estado == "SOLUCIONAR" ||  item.Estado == "QUE PASO"
+                                                            ? item.Estado + "(DR)" :
                                                             item.Estado}
                                                     </span>
                                                 </span>
@@ -755,7 +758,7 @@
                                             <div class="col-sm-12 col-md-12 col-lg-10">
                                                 <div class="row g-0">
                                                     <div class="text-start col-md-9 d-flex align-items-center border p-2">
-                                                        <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario == null ? '':item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
+                                                        <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario == null ? 'N/A':item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
                                                     </div>
                                                     <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
                                                         <span class="mb-0 fs-5">${item.FechaString ?? ''}</span>
@@ -831,10 +834,10 @@
                                                                     </div>
                                                                     
                                                                     <div class="col-md-12" id="enviarselect_${id}">
-                                                                        <select disabled class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
-                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ←</option>
+                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
+                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ← SOLO USAR CUANDO EN EL ESTADO ENVIAR A</option>
                                                                             @foreach ($usuariosEnviara as $usuario)
-                                                                                <option value="{{$usuario->id}}">{{$usuario->name}} - {{$usuario->agenciau}} - {{$usuario->codigo}}</option>
+                                                                                <option value="{{$usuario->id}}">{{$usuario->codigo}} - {{$usuario->name}} - {{$usuario->agenciau}}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
@@ -862,6 +865,10 @@
                                                                         <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
                                                                         <span>DESBLOQUEAR</span>
                                                                     </label>`:``}
+                                                                    <label class="label">
+                                                                                <input value="APROBADO" type="radio" name="Estado" id="estado_aprobado" required>
+                                                                                <span>APROBADO</span>
+                                                                            </label>
                                                                     <label class="label">
                                                                         <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
                                                                         <span>ANULAR</span>
@@ -902,7 +909,7 @@
                                                             && row.historialEstadosUnicos && row.historialEstadosUnicos.length
                                                             && row.ultimoEnviadoa === '{{ session("name") }}'
                                                             && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
-                                                            && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'RESOLVER' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
+                                                            && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'TERMINADO' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
                                                         )
                                                     ? 
                                                     `
@@ -962,8 +969,8 @@
                                                                     <div class="estado-container" id="radios_${id}">
                                                                         <label class="label">
                                                                             <label style="cursor: pointer;">
-                                                                                <input value="RESOLVER" type="radio" name="Estado" id="estado_resolver" required>
-                                                                                <span>RESOLVER</span>
+                                                                                <input value="TERMINADO" type="radio" name="Estado" id="estado_terminado" required>
+                                                                                <span>TERMINADO</span>
                                                                             </label>
                                                                             
                                                                             <label style="cursor: pointer;">
@@ -1052,9 +1059,9 @@
                                         <div class="modal-header row w-100 m-0">
                                             <div class="col-12 col-md-6 d-flex align-items-center mb-2 mb-md-0">
                                                 <h6 class="modal-title text-light"
-                                                    style="font-weight: 700; font-size: 22px;">
-                                                    DETALLE AUTORIZACIÓN 
-                                                    (<span class="text-warning">No. ${row.IDAutorizacion} - ${row.FechaStringEstado}</span>)
+                                                    >
+                                                    DETALLE AUTORIZACIÓN <br>
+                                                    (<span class="text-info" style="font-weight: 700; font-size: 40px;">No. ${row.IDAutorizacion}</span> <span class="text-warning" style="font-weight: 700; font-size: 25px;">- ${row.FechaStringEstado} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}</span>)
                                                 </h6>
                                             </div>
 
@@ -1119,8 +1126,8 @@
                                                                                 `<button class="btn btn-warning shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">T - EN TRAMITE</button>` :
                                                                                 row.UltimoEstado == "APROBADO" ?
                                                                                 `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AP - APROBADO</button>` :
-                                                                                row.UltimoEstado == "RESOLVER" ?
-                                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RESUELTO</button>` :
+                                                                                row.UltimoEstado == "TERMINADO" ?
+                                                                                `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">TERMINADO</button>` :
                                                                                 row.UltimoEstado == "ENTERADO" ?
                                                                                 `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">E - ENTERADO</button>` :
                                                                                 row.UltimoEstado == "CORREGIR" ?
@@ -1137,6 +1144,8 @@
                                                                                 '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">'+ row.UltimoEstado +'</button>' :
                                                                                 row.UltimoEstado == "RECIBIDO" ?
                                                                                 `<button class="btn btn-success  shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">RECIBIDO POR FUNCIONARIO</button>` :
+                                                                                row.UltimoEstado == "VENCIDO" ?
+                                                                                `<button class="btn btn-danger shadow blink" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">VENCIDO</button>` :
                                                                                 '<button class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">BLOQUEADO</button>'
                                                                             }
                                                                         </div>
@@ -1550,7 +1559,7 @@
                                                                     ? "ENVIADO(DR)" 
                                                                     : item.Estado == "RECIBIDOCONFIRMADO" 
                                                                     ? "RECIBIDO" 
-                                                                    : item.Estado == "RESOLVER" ||  item.Estado == "ACLARAR" ||  item.Estado == "ENCARGARSE" ||  item.Estado == "PROCEDER" ||  item.Estado == "SOLUCIONAR" ||  item.Estado == "QUE PASO"
+                                                                    : item.Estado == "TERMINADO" ||  item.Estado == "ACLARAR" ||  item.Estado == "ENCARGARSE" ||  item.Estado == "PROCEDER" ||  item.Estado == "SOLUCIONAR" ||  item.Estado == "QUE PASO"
                                                                     ? item.Estado + "(DR)" :
                                                                     item.Estado}
                                                             </span>
@@ -1559,7 +1568,7 @@
                                                     <div class="col-sm-12 col-md-12 col-lg-10">
                                                         <div class="row g-0">
                                                             <div class="text-start col-md-9 d-flex align-items-center border p-2">
-                                                                <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario == null ? '':item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
+                                                                <span class="fs-5 mb-0">${item.NomArea}(<b>${item.CodigoUsuario == null ? 'N/A':item.CodigoUsuario}</b>) - <b>${item.Nombre ?? 'N/A'}</b></span>
                                                             </div>
                                                             <div class="col-md-3 d-flex align-items-center justify-content-center border p-3">
                                                                 <span class="mb-0 fs-5">${item.FechaString ?? ''}</span>
@@ -1659,6 +1668,7 @@
                                                                                 <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
                                                                                 <span>DESBLOQUEAR</span>
                                                                             </label>`:``}
+                
                                                                             <label class="label">
                                                                                 <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
                                                                                 <span>ANULAR</span>
@@ -1699,7 +1709,7 @@
                                                                     && row.historialEstadosUnicos && row.historialEstadosUnicos.length
                                                                     && row.ultimoEnviadoa === '{{ session("name") }}'
                                                                     && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
-                                                                    && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'RESOLVER' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
+                                                                    && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'TERMINADO' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
                                                                 )
                                                             ? 
                                                             `
@@ -1759,8 +1769,8 @@
                                                                             <div class="estado-container" id="radios_${id}">
                                                                                 <label class="label">
                                                                                     <label style="cursor: pointer;">
-                                                                                        <input value="RESOLVER" type="radio" name="Estado" id="estado_resolver" required>
-                                                                                        <span>RESOLVER</span>
+                                                                                        <input value="TERMINADO" type="radio" name="Estado" id="estado_terminado" required>
+                                                                                        <span>TERMINADO</span>
                                                                                     </label>
                                                                                     
                                                                                     <label style="cursor: pointer;">
@@ -1888,7 +1898,7 @@
                                                         row.UltimoEstado !== "DONE" &&
                                                         row.UltimoEstado !== "ANULADO" &&
                                                         row.UltimoEstado !== "ENVIADO" &&
-                                                        row.UltimoEstado !== "RESOLVER" && row.NumArea === 'Jefatura' && '{{ session('rol') }}' !== 'Jefatura'
+                                                        row.UltimoEstado !== "TERMINADO" && row.NumArea === 'Jefatura' && '{{ session('rol') }}' !== 'Jefatura' && '{{ session('rol') }}' !== 'Coordinacion'
                                                         
                                                     )
                                                     ||
@@ -2118,6 +2128,7 @@
                         <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
                         <button id="btnEnviados" class="btn btn-secondary shadow-sm fw-bold btn-filter" title="ENVIADOS" style="transition: transform 0.2s;">ENVIADOS</button>
                         <button id="btnReportes" class="btn btn-primary shadow-sm fw-bold btn-filter" title="REPORTES" style="transition: transform 0.2s;">REPORTES</button>
+                        <button id="btnVencidos" class="btn btn-danger shadow-sm fw-bold btn-filter" title="VENCIDOS" style="transition: transform 0.2s;">VENCIDOS</button>
                         ` :
                         `
                         <!-- BOTONES USUARIOS -->
@@ -2125,6 +2136,7 @@
                         <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
                         <button id="btnStandBy" class="btn btn-dark shadow-sm fw-bold btn-filter" title="STAND BY" style="transition: transform 0.2s;">STAND BY</button>
                         <button id="btnReportes" class="btn btn-primary shadow-sm fw-bold btn-filter" title="REPORTES" style="transition: transform 0.2s;">REPORTES</button>
+                        <button id="btnVencidos" class="btn btn-danger shadow-sm fw-bold btn-filter" title="VENCIDOS" style="transition: transform 0.2s;">VENCIDOS</button>
                         `
                     }
                 </div>`
@@ -2209,6 +2221,12 @@
                     lastAjaxUrl = '{{ route("data.reporte") }}';
                     table.ajax.url(lastAjaxUrl).load();
                     setActiveButton('#btnReportes');
+                });
+
+                $('#btnVencidos').on('click', function() {
+                    lastAjaxUrl = '{{ route("data.vencido") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnVencidos');
                 });
 
 

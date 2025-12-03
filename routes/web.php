@@ -63,6 +63,8 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/solicitudesreportes/datatable', [UsuarioController::class, 'reportes'])->name('data.reporte');
 
+    Route::get('/solicitudesvencido/datatable', [UsuarioController::class, 'vencido'])->name('data.vencido');
+
     Route::get('/modal-autorizacion/{id}', [UsuarioController::class, 'modalAutorizacion']);
 
     Route::post('/password/update', [UsuarioController::class, 'updatePassword'])->name('password.update');
