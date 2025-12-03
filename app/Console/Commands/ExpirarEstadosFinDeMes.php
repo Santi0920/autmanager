@@ -81,7 +81,7 @@ class ExpirarEstadosFinDeMes extends Command
                 'ID_Autorizacion' => $aut->ID_Autorizacion
             ]);
         }
-
+        Log::info('CRON ejecutado: estados:expirar-fin-mes - ' . now());
 
         $this->info("Proceso de expiración completado.");
     }
