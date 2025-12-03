@@ -47,6 +47,7 @@
                         <thead style="background: linear-gradient(90deg, #343a40, #495057); color: #ffc107; font-weight: 600;">
                             <tr class="text-center">
                                 <th>#</th>
+                                <th class="">SOLICITADO POR</th>
                                 <th class="">TITULO BUG</th>
                                 <th class="W-50">DESCRIPCION</th>
                                 <th>IMAGEN</th>
@@ -95,6 +96,20 @@
                                 });
                             },
                             "searchable": true, "orderable": true
+                        },
+                        {
+                            data: 'solicitadopor',
+                            render: function(data, type, row) {
+
+                                let texto = data ? data.toUpperCase() : "";
+
+                                if (texto.includes("GERENCIA GENERAL")) {
+                                    texto = texto.replace("GERENCIA GENERAL", "DIRECCIÓN GENERAL");
+                                }
+
+                                return `<span class='fw-semibold'>${texto}</span>`;
+                            },
+                            searchable: false,
                         },
                         {
                             data: 'title',

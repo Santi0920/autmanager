@@ -9,5 +9,5 @@ class BugReport extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'image', 'status'];
+    protected $fillable = ['solicitadopor','title', 'description', 'image', 'status'];
 }

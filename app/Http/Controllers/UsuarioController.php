@@ -5862,6 +5862,7 @@ class UsuarioController extends Controller
         $bugReport = BugReport::create([
             'title' => $request->title,
             'description' => $request->description,
+            'solicitadopor' => session('name') . ' - '.session('agenciau'),
             'image' => null, // se actualizará después
         ]);
 
