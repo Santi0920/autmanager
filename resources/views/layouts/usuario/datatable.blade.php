@@ -865,10 +865,7 @@
                                                                         <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
                                                                         <span>DESBLOQUEAR</span>
                                                                     </label>`:``}
-                                                                    <label class="label">
-                                                                                <input value="APROBADO" type="radio" name="Estado" id="estado_aprobado" required>
-                                                                                <span>APROBADO</span>
-                                                                            </label>
+ 
                                                                     <label class="label">
                                                                         <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
                                                                         <span>ANULAR</span>
