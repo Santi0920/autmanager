@@ -41,7 +41,6 @@
         justify-content: flex-start; 
 
         gap: 28px;
-        flex-wrap: wrap;
         max-width: 540px;
 
         margin: 5px 0;               

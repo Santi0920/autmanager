@@ -1056,52 +1056,62 @@
                             <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true" data-id="${id}">
                                 <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div class="modal-header row w-100 m-0">
-                                            <div class="col-12 col-md-6 d-flex align-items-center mb-2 mb-md-0">
-                                                <h6 class="modal-title text-light"
-                                                    >
-                                                    DETALLE AUTORIZACIÓN <br>
-                                                    (<span class="text-info" style="font-weight: 700; font-size: 40px;">No. ${row.IDAutorizacion}</span> <span class="text-warning" style="font-weight: 700; font-size: 25px;">- ${row.FechaStringEstado} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}</span>)
-                                                </h6>
+                                        <div class="modal-header row w-100 m-0 align-items-center p-3" style="border-bottom: 2px solid #00bfff; border-radius: 8px 8px 0 0;">
+
+                                            <!-- Detalle de Autorización -->
+                                            <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <!-- Número de Autorización destacado -->
+                                                    <div style="font-size: 38px; font-weight: 800; color: #00bfff; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
+                                                        ${row.UltimoConceptoID == '17' ? `REPORTE` : `AUTORIZACIÓN`} No. ${row.IDAutorizacion}
+                                                    </div>
+
+                                                    <!-- Información secundaria -->
+                                                    <div style="font-size: 18px; font-weight: 600; color: #ffd700;">
+                                                        Fecha: ${row.FechaStringEstado} | Área: ${row.NomArea}(${row.CodigoUsuario}) | Solicitado Por: ${row.Usuario}
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                           
+                                            <!-- Botones de acción -->
                                             <div class="col-12 col-md-5 d-flex justify-content-md-end justify-content-center align-items-center gap-2 flex-wrap">
-
                                                 <button 
                                                     type="button"
                                                     id="btnToggleHistorial-${id}"
-                                                    class="btn btn-warning fw-bold"
+                                                    class="btn btn-warning fw-bold shadow-sm"
                                                     data-id="${id}">
-                                                    <i class="fa-solid fa-clock-rotate-left"></i> Historial
+                                                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Historial
                                                 </button>
+
                                                 <button 
                                                     type="button"
                                                     id="btnToggleOriginal-${id}"
-                                                    class="btn btn-warning fw-bold d-none"
+                                                    class="btn btn-warning fw-bold d-none shadow-sm"
                                                     data-id="${id}">
-                                                    <i class="fa-solid fa-rotate-left"></i> Original
+                                                    <i class="fa-solid fa-rotate-left me-1"></i> Original
                                                 </button>
 
                                                 <button
                                                     type="button"
-                                                    class="btn btn-dark fw-bold btn-scroll btn-premium-action2"
+                                                    class="btn btn-dark fw-bold btn-scroll btn-premium-action2 shadow-sm"
                                                     data-scroll-to="anchor-scroll-${id}">
-                                                    <i class="fa-solid fa-arrow-down me-2"></i>Desplazar al Final
+                                                    <i class="fa-solid fa-arrow-down me-2"></i> Desplazar al Final
                                                 </button>
                                             </div>
-                                            <div class="col-12 col-md-1">
+
+                                            <!-- Botón Cerrar -->
+                                            <div class="col-12 col-md-1 d-flex justify-content-end">
                                                 <button 
                                                     type="button" 
-                                                    class="btn-close fs-5 ms-2 mt-2" 
+                                                    class="btn-close fs-5" 
                                                     data-bs-dismiss="modal" 
                                                     aria-label="Close"
-                                                    style="outline: none; border: none; font-size:18px;">
+                                                    style="outline: none; border: none; font-size: 20px;">
                                                 </button>
                                             </div>
-                                            
-
                                         </div>
+
+
 
                                         <div class="modal-body p-1">
 
