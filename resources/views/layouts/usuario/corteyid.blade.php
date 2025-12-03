@@ -41,7 +41,7 @@
 
         gap: 28px;
         max-width: 540px;
-        flex-wrap: wrap;
+        flex:wrap;
         margin: 5px 0;               
         border: 1px solid #eef2f3;
     }
@@ -138,8 +138,12 @@
         height: 1px;
         margin: 4px 0;
     }
-   
+    }
 
+
+    /* ---------------------------
+        🎯 TOOLTIP PROFESIONAL
+    ----------------------------*/
     .tooltip-custom {
         position: relative;
         cursor: help;
@@ -150,7 +154,7 @@
         position: absolute;
         bottom: 110%;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) translateY(5px);
         width: max-content;
         max-width: 260px;
         padding: 10px 14px;
@@ -162,8 +166,6 @@
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.25s ease, transform 0.25s ease;
-        transform-origin: bottom;
-        transform: translateX(-50%) translateY(5px);
         z-index: 999;
     }
 
@@ -171,7 +173,7 @@
         opacity: 1;
         transform: translateX(-50%) translateY(0);
     }
-
+    
 
 
 </style>
