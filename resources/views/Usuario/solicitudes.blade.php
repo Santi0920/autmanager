@@ -20,7 +20,7 @@
                             <i class="fa-solid fa-chart-bar text-white me-2"></i> ESTADÍSTICAS
                         </a>
 
-                        <span class="text-secondary fw-semibold fs-2" id="fechaActual"></span>
+                        <span class="text-secondary fw-semibold fs-2 fw-bold" id="fechaActual"></span>
 
                     </div>
 
@@ -143,7 +143,7 @@
                 <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9 col-xxl-9">
                     <div class="">
                             <div class="" style="margin-top: 8px; margin-right: -14px;">
-                                <h2 class="p-3 mb-0 text-secondary text-end"><b><span id="fechaActual"></span></b></h2>
+                                <h2 class="p-3 mb-0 text-secondary text-end fw-bold"><b><span id="fechaActual"></span></b></h2>
                             </div>
                             <!-- script para que la fecha se actualice cada segundo -->
                             <script>
