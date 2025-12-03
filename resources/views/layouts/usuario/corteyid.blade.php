@@ -1,4 +1,4 @@
-<div class="caja-cortes">
+<div class="caja-cortes" title="LAS PETICIONES QUE SE ENCUENTREN DESPUES DEL CORTE SERAN ASIGNADAS COMO EXPIRADAS!">
 
     <!-- Corte Anterior -->
     <div class="item-corte">
@@ -9,7 +9,7 @@
                 Corte Anterior:
             </div>
             <div class="valor">{{ $corteMesAnterior }}</div>
-            <div class="sub">Último ID: {{ $ultimoConsecutivoMesAnterior }}</div>
+            <div class="sub fw-bold">Último ID: {{ $ultimoConsecutivoMesAnterior }}</div>
         </div>
     </div>
 
@@ -22,7 +22,7 @@
         <div class="info">
             <div class="titulo">Corte Actual:</div>
             <div class="valor">{{ $fechaCorteActualTexto }}</div>
-            <div class="sub">Último ID: {{ $ultimoConsecutivoMesActual }}</div>
+            <div class="sub fw-bold">Último ID: {{ $ultimoConsecutivoMesActual }}</div>
         </div>
     </div>
 

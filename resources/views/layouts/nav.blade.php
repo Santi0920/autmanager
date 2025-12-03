@@ -338,74 +338,154 @@
                         <!-- Body con fondo suave y lista numerada moderna -->
                         <div class="modal-body p-4" style="background: #f7f9fc;">
                             <p class="mb-4 text-dark fw-semibold fs-6">
-                                ✅ Mejoras y Cambios implementados en esta actualización (04 Noviembre 2025 - 8:00 AM):
+                                ✅ Mejoras y Cambios implementados en esta actualización (03 Diciembre 2025 - 8:00 AM):
                             </p>
 
                             <ol class="list-group list-group-numbered mb-4" style="border: none;">
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Botón para reportar errores para ser solucionados lo mas pronto posible. Parte inferior derecha. <span class="badge-new">🔥USARLO🔥</span>
+                                    Botón para reportar errores para ser solucionados lo más pronto posible, ubicado en la parte inferior derecha. 
+                                    <span class="badge-new">🔥USARLO</span>
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Se añadió el estado Stand By, permitiendo que Dirección General pueda aprobar directamente todas las solicitudes que se encuentren en este estado, agilizando la gestión.
+                                    En el perfil de Coordinador ahora se visualizan todas las solicitudes con información completa del solicitante: cédula, agencia, nombre y tiempos de gestión.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Al cargar las solicitudes, el sistema ahora muestra aquellas en estado Rechazado o Bloqueado, priorizando su revisión y garantizando que se atiendan los casos más sensibles.
+                                    Se añadió el estado Stand By, permitiendo que Dirección General apruebe directamente solicitudes en este estado.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Los campos de selección de conceptos y áreas se actualizan automáticamente cuando se crean nuevos registros, asegurando que siempre aparezcan en los formularios de solicitud sin intervención manual. <span class="badge-new">🛑 Nuevo</span>
+                                    Al cargar las solicitudes, el sistema muestra ahora las que están en estado Rechazado o Bloqueado, priorizando su revisión.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    En los perfiles de Dirección General, Coordinadores, Jefaturas y Dirección de Agencia se añadió la funcionalidad de collapse, permitiendo ocultar o mostrar información extensa y reduciendo el scroll excesivo. <span class="badge-new">🛑 Nuevo</span>
+                                    Se agregó un botón que lista inmediatamente todas las solicitudes en Stand By, con opción de anularlas desde Gerencia.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Los estados de Gerencia (Aprobar, Rechazar, Bloquear y Stand By) y los de Coordinadores (Validar y Rechazar) se adaptan automáticamente a móviles, garantizando consistencia, alineación y usabilidad en todos los dispositivos.
+                                    Los campos de selección de conceptos y áreas se actualizan automáticamente cuando se crean nuevos registros.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Se renovó la interfaz de login con un diseño moderno y amigable, incluyendo un botón de visualización de contraseña (icono de ojo) que permite alternar entre mostrar u ocultar los caracteres. <span class="badge-new">🛑 Nuevo</span>
+                                    En los perfiles de Dirección General, Coordinadores, Jefaturas y Dirección de Agencia se añadió funcionalidad de collapse para ocultar o mostrar información extensa.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Se implementó Google reCAPTCHA, que se activa automáticamente tras 3 intentos fallidos, previniendo ataques automatizados y de fuerza bruta sin afectar la experiencia del usuario.<span class="badge-new">🛑 Nuevo</span>
+                                    Los estados de Gerencia (Aprobar, Rechazar, Bloquear y Stand By) y los de Coordinadores (Validar y Rechazar) se adaptan automáticamente a dispositivos móviles.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Se mejoró la interfaz de Director de Agencia, Coordinación y Dirección General: tablas, encabezados, botones y modales, agregando páginas de Términos y Condiciones y Política de Privacidad según estándares ISO y buenas prácticas de seguridad.<span class="badge-new">🛑 Nuevo</span>
+                                    Se renovó la interfaz de login con diseño moderno e icono para mostrar/ocultar contraseña. 
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Todos los perfiles pueden filtrar autorizaciones desde “Buscar autorización” (Tabla), con alcance según rol: Dirección General (nacional), Coordinación (agencias asociadas) y Jefatura/Dirección de Agencia (solicitudes propias).<span class="badge-new">🛑 Nuevo</span>
+                                    Se implementó Google reCAPTCHA, que se activa automáticamente después de 2 intentos fallidos.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Las solicitudes tipo “Reporte de novedades” se destacan visualmente en el modal, facilitando su clasificación y revisión rápida por parte de los usuarios.<span class="badge-new">🛑 Nuevo</span>
+                                    Se optimizó la interfaz de Director de Agencia, Coordinación y Dirección General: tablas, encabezados, botones y modales. 
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Para solicitudes tipo reporte se habilitó el estado Enterado, sustituyendo el anterior Aprobado cuando no corresponde validación formal, mejorando la coherencia del flujo de autorizaciones.<span class="badge-new">🛑 Nuevo</span>
+                                    Todos los perfiles pueden filtrar autorizaciones desde “Buscar autorización”, con alcance según el rol: nacional, agencias asociadas o solicitudes propias.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    El nombre del funcionario es clickeable y abre un modal con información relevante: foto, nombre, rol, agencia/área, código del centro de costo, email y teléfono.<span class="badge-new">🛑 Nuevo</span>
+                                    Las solicitudes tipo “Reporte de novedades” se destacan visualmente en el modal para facilitar su clasificación.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Para Directores de Agencia se muestra la Coordinación asignada, y para Coordinadores se listan las agencias vinculadas a su cargo, proporcionando contexto completo.<span class="badge-new">🛑 Nuevo</span>
+                                    Para solicitudes tipo reporte se habilitó el estado Enterado, sustituyendo Aprobado cuando no aplica validación formal.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    El modal de usuario muestra último acceso, última acción registrada, sesiones activas y los últimos 3 inicios de sesión, fortaleciendo seguridad y trazabilidad operativa.<span class="badge-new">🛑 Nuevo</span>
+                                    El nombre del funcionario es clickeable y abre un modal con foto, rol, agencia/área, centro de costo, email y teléfono.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Todos los usuarios pueden cambiar su contraseña cumpliendo políticas de seguridad estrictas, evitando accesos no autorizados o contraseñas vulnerables.<span class="badge-new">🛑 Nuevo</span>
+                                    Para Directores de Agencia se muestra la Coordinación asignada; para Coordinadores, las agencias vinculadas a su cargo.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    El usuario puede actualizar su nombre y número de celular, asegurando que los datos de contacto se mantengan correctos para notificaciones internas.<span class="badge-new">🛑 Nuevo</span>
+                                    El modal de usuario muestra último acceso, última acción registrada, sesiones activas y últimos 3 inicios de sesión.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    La base de datos y software fueron rediseñados para almacenar versiones de cada modificación en el ciclo de vida de una autorización, garantizando trazabilidad, control de cambios e integridad de la información.<span class="badge-new">🛑 Nuevo</span>
+                                    Todos los usuarios pueden cambiar su contraseña cumpliendo estrictas políticas de seguridad.
                                 </li>
+
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Ante un rechazo, los documentos corregidos generan una nueva versión, manteniendo el historial completo de archivos asociados a la solicitud<span class="badge-new">🛑 Nuevo</span>
+                                    El usuario puede actualizar su nombre y celular, manteniendo información correcta para notificaciones.
                                 </li>
-                                <li class="list-group-item d-flex align-items-center shadow-sm rounded-3">
-                                    Dirección General puede derivar una solicitud a otro funcionario, quien podrá marcarla como Recibida, registrando formalmente que tomó conocimiento de la solicitud.<span class="badge-new">🛑 Nuevo</span>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Ante un rechazo, los documentos corregidos generan una nueva versión, manteniendo el historial completo de archivos.
                                 </li>
-                                <li class="list-group-item d-flex align-items-center shadow-sm rounded-3">
-                                    Sección para filtrar autorizaciones antiguas estará temporalmente ACTIVO.<span class="badge-new">🟢TEMPORAL</span>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Dirección General puede derivar una solicitud a otro funcionario, quien puede marcarla como Recibida.
                                 </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Los Directores de Agencia pueden ver una nueva sección con todas sus solicitudes en Versión 1.0, incluyendo último consecutivo y fecha de último registro. 
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Sistema de seguridad: tras 4 intentos fallidos de inicio de sesión, la cuenta queda suspendida automáticamente por correo electrónico.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se añadió un botón exclusivo para Reportes donde solo se muestran los reportes marcados como Enterados por Dirección General.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Al abrir una autorización, se muestra el número grande y la fecha de registro para mayor claridad.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se añadió el botón “Desplazar al final”, que realiza scroll automático al último estado registrado.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Se añadió el botón “Desplazar al inicio”, que regresa automáticamente a la parte superior del detalle.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Nuevos estados disponibles cuando la petición llega al funcionario: TERMINADO, ACLARAR, ENCARGARSE, PROCEDER, SOLUCIONAR, QUE PASO.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Si un funcionario o Dirección General asigna el estado TERMINADO, la solicitud finaliza automáticamente y pasa a “Enviados”.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Sistema de chat interno entre funcionario y Dirección General, con historial exclusivo del chat.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Botón “HISTORIAL” que despliega todo el ciclo de vida de la autorización; cambia a “ORIGINAL” para volver a la vista simplificada.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    El último día de cada mes, a las 5:00 PM, el sistema pasa automáticamente a VENCIDO solicitudes en TRÁMITE, RECHAZADAS y STAND BY.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Nueva sección que muestra corte anterior y corte actual, con sus respectivos últimos IDs generados.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Botón para visualizar todas las solicitudes marcadas como vencidas automáticamente por el sistema.
+                                </li>
+
+                                <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
+                                    Ahora es posible aprobar solicitudes individualmente dentro de la sección Stand By.
+                                </li>
+
                             </ol>
+
                         </div>
 
                         <!-- Footer elegante -->
@@ -414,7 +494,7 @@
                             <div class="alert alert-info border-0 shadow-sm rounded-3 mt-3">
                                 <h5 class="modal-title fw-bold fs-5 d-flex align-items-center">
                                     
-                                        <strong>Versión 2.0  — 📅 </strong>Fecha de publicación: 03 DIC 2025
+                                        <strong>Versión 2.0  — 📅 </strong>Fecha de publicación: 03 DIC 2025 - 8:00AM
                                 </h5>
                             </div>
                             <button type="button" class="btn btn-gradient px-4 py-2" data-bs-dismiss="modal">
