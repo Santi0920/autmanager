@@ -344,7 +344,7 @@
                             <ol class="list-group list-group-numbered mb-4" style="border: none;">
 
                                 <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                    Botón para reportar errores para ser solucionados lo más pronto posible, ubicado en la parte inferior derecha. 
+                                    Botón para reportar errores para ser solucionados lo más pronto posible, ubicado en la parte superior izquierda. 
                                     <span class="badge-new">🔥USARLO</span>
                                 </li>
 

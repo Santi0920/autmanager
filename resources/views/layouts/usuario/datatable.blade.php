@@ -2672,7 +2672,7 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50">SOLICITAR</button>
+                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50" id="solicitar">SOLICITAR</button>
                     </div>
                     `;
                 } else if (valorSeleccionado == "22") {
@@ -2688,7 +2688,7 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50">SOLICITAR</button>
+                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50" id="solicitar">SOLICITAR</button>
                     </div>
                     `;
                 } else {
@@ -2720,18 +2720,22 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50">SOLICITAR</button>
+                        <button type="submit" class="btn btn-gradient-primary btn-lg fw-bold w-50" id="solicitar">SOLICITAR</button>
                     </div>
                     `;
                 }
 
                 $("#cuerpo").html(contenido);
             });
+            
 
 
             function enviarFormulario() {
-                const boton = document.getElementById("agregar");
-                boton.disabled = true;
+                const btn = document.querySelector("#pagare #solicitar");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerText = "Enviando...";
+                }
                 return true;
             }
 
