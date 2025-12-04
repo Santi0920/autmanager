@@ -5837,14 +5837,25 @@ class UsuarioController extends Controller
 
     public function updatePerfil(Request $request)
     {
-        $userId = session('id'); // tu ID de usuario
+        $userId = session('id');
         $user = User::find($userId);
 
-        User::where('id', $user->id)->update([
+        // Verificar si el nombre ya existe en otro usuario
+        $existe = User::where('name', $request->name)
+                    ->where('id', '!=', $user->id)
+                    ->exists();
+
+        if ($existe) {
+            return redirect()->back()->withErrors([
+                'error' => 'El nombre ya está en uso. Por favor, elige uno diferente.'
+            ])->withInput();
+        }
+
+        // Actualizar datos
+        $user->update([
             'name' => $request->name,
             'celular' => $request->celular,
         ]);
-
 
         return redirect()->back()->with('success', 'Perfil actualizado correctamente.');
     }
