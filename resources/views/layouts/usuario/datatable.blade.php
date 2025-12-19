@@ -76,6 +76,7 @@
                             // ✅ Selección correcta de fechas según el estado:
                             let fechaSolicitud = null;
                             let fechaValidacion = null;
+                            let fechaCoordinacion = null;
 
                             if(row.UltimaFechaDoneTramite) {
                                 fechaSolicitud = parseFecha(row.UltimaFechaDoneTramite);
@@ -83,6 +84,10 @@
 
                             if (row.UltimaFechaCoordinacion) {
                                 fechaValidacion = parseFecha(row.UltimaFechaCoordinacion);
+         
+                            }
+                            if (row.UltimaFechaCoordinacion && row.UltimoEstado == "REMITIDO") {
+                                fechaCoordinacion = parseFecha(row.UltimaFechaCoordinacion);
                             }
 
 
@@ -112,6 +117,18 @@
                                                     <span class="text-dark fw-semibold">${dif2.horas};${dif2.minutos};${dif2.segundos}.</span>
                                                 </span>`;
                             }
+
+                            if (fechaCoordinacion) {
+
+                                const dif2 = calcularDiferencia(fechaCoordinacion, new Date());
+
+                                demoradireccion = `<span title="Fecha Validacion: ${row.UltimaFechaCoordinacion}" class="">
+                                                    D. General:
+                                                    <span class="text-dark fw-semibold">${dif2.horas};${dif2.minutos};${dif2.segundos}.</span>
+                                                </span>`;
+                            }
+
+
 
 
                             var Contenido = `
@@ -445,7 +462,15 @@
                                     const año = fechaInsercionDate.getFullYear();
                                     const fechaFormateada = `${mes} ${dia} del ${año}`;
                             
-                            
+                                    function escapeHTML(text) {
+                                        if (!text) return '';
+                                        return text
+                                            .replace(/&/g, "&amp;")
+                                            .replace(/</g, "&lt;")
+                                            .replace(/>/g, "&gt;")
+                                            .replace(/"/g, "&quot;")
+                                            .replace(/'/g, "&#039;");
+                                    }
                                    
                                         
                                         // Si el estado es "EN TRÁMITE", renderiza el bloque especial
@@ -565,7 +590,7 @@
 
                                                             ` : `
                                                                 <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                    <span class="mb-0">${item.Detalle}</span>
+                                                                    <span class="mb-0">${escapeHTML(item.Detalle)}</span>
                                                                 </div>
                                                                 <a href="Storage/files/soporteautorizaciones/${item.DocumentoSoporte}" 
                                                                     class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" 
@@ -1059,12 +1084,12 @@
                                             <div class="col-12 col-md-6 mb-2 mb-md-0">
                                                 <div style="display: flex; flex-direction: column; gap: 4px;">
                                                     <!-- Número de Autorización destacado -->
-                                                    <div style="font-size: 38px; font-weight: 800; color: #00bfff; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
-                                                        ${row.UltimoConceptoID == '17' ? `REPORTE` : `AUTORIZACIÓN`} No. ${row.IDAutorizacion}
+                                                    <div style="font-size: ${row.UltimoConceptoID == '17' ? `28px` : `31px`}; font-weight: 800; color: #D5DBDB; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
+                                                        ${row.UltimoConceptoID == '17' ? `REPORTE DE INFORMACIÓN ADITIVA` : `SOLICITUD DE AUTORIZACIONES`} <br><span style="font-size: 40px; color: #00bfff;">No. ${row.IDAutorizacion}</span>
                                                     </div>
 
                                                     <!-- Información secundaria -->
-                                                    <div style="font-size: 18px; font-weight: 600; color: #ffd700;">
+                                                    <div style="font-size: 20px; font-weight: 600; color: #ffd700;">
                                                         Fecha: ${row.FechaStringEstado} | Área: ${row.NomArea}(${row.CodigoUsuario}) | Solicitado Por: ${row.Usuario}
                                                     </div>
                                                 </div>
