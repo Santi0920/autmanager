@@ -991,7 +991,7 @@ class UsuarioController extends Controller
                 $estado = "VALIDADOCONFIRMADO";
 
                 if($ultimoEstado->Estado != "REMITIDO"){
-                    if($ultimoEstado->Estado == "DESBLOQUEADO"){
+                    if($ultimoEstado->Estado == "DESBLOQUEADO" || $ultimoEstado->Estado == "VALIDADO"){
 
                     }else if($ultimoEstado->Estado == "STAND BY"){
                         $estado = "STAND BY";
