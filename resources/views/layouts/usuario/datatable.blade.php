@@ -95,12 +95,12 @@
                             let demoracoord = "";
                             let demoradireccion = "";
 
-                            if (fechaSolicitud && !fechaValidacion) {
+                            if (fechaSolicitud && !fechaValidacion || row.UltimaAreaCoordinacion == 'C9' && row.UltimoEstado != 'VALIDADO') {
                                 const dif = calcularDiferencia(fechaSolicitud, new Date());
                                 demoradireccion = `<span class="">C#: <span class="text-dark fw-semibold">${dif.horas};${dif.minutos};${dif.segundos}.</span></span>`;
                             }
 
-                            if (fechaSolicitud && fechaValidacion) {
+                            if ((fechaSolicitud && fechaValidacion && row.UltimaAreaCoordinacion != 'C9') || row.UltimoEstado == 'VALIDADO') {
                                 const dif1 = calcularDiferencia(fechaSolicitud, fechaValidacion);
                                 const dif2 = calcularDiferencia(fechaValidacion, new Date());
 
@@ -565,7 +565,7 @@
                                                             ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
                                                                 <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                                     <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" 
-                                                                        id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${item.Detalle}</textarea>
+                                                                        id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${escapeHTML(item.Detalle)}</textarea>
                                                                 </div>
                                                                 <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
                                                                     <label for="file_${row.IDAutorizacion}" class="labelFile" style="cursor:pointer;">
@@ -1390,7 +1390,7 @@
                                                                     ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
                                                                         <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
                                                                             <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" 
-                                                                                id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${item.Detalle}</textarea>
+                                                                                id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${escapeHTML(item.Detalle)}</textarea>
                                                                         </div>
                                                                         <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
                                                                             <label for="file_${row.IDAutorizacion}" class="labelFile" style="cursor:pointer;">
@@ -1415,7 +1415,7 @@
 
                                                                     ` : `
                                                                         <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                            <span class="mb-0">${item.Detalle}</span>
+                                                                            <span class="mb-0">${escapeHTML(item.Detalle)}</span>
                                                                         </div>
                                                                         <a href="Storage/files/soporteautorizaciones/${item.DocumentoSoporte}" 
                                                                             class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" 
