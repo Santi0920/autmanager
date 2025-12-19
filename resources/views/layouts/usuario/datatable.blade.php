@@ -83,6 +83,10 @@
 
                             if (row.UltimaFechaCoordinacion) {
                                 fechaValidacion = parseFecha(row.UltimaFechaCoordinacion);
+         
+                            }
+                            if (row.UltimaFechaCoordinacion && row.UltimoEstado == "REMITIDO") {
+                                fechaCoordinacion = parseFecha(row.UltimaFechaCoordinacion);
                             }
 
 
@@ -112,6 +116,18 @@
                                                     <span class="text-dark fw-semibold">${dif2.horas};${dif2.minutos};${dif2.segundos}.</span>
                                                 </span>`;
                             }
+
+                            if (fechaCoordinacion) {
+
+                                const dif2 = calcularDiferencia(fechaCoordinacion, new Date());
+
+                                demoradireccion = `<span title="Fecha Validacion: ${row.UltimaFechaCoordinacion}" class="">
+                                                    D. General:
+                                                    <span class="text-dark fw-semibold">${dif2.horas};${dif2.minutos};${dif2.segundos}.</span>
+                                                </span>`;
+                            }
+
+
 
 
                             var Contenido = `

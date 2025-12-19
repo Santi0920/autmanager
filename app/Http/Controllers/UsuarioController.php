@@ -970,7 +970,7 @@ class UsuarioController extends Controller
                 if ($ultimoRemitido) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoRemitido->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                 }
 
                 $ultimoValidado = DB::table('historialestado')
@@ -984,7 +984,7 @@ class UsuarioController extends Controller
                 if ($ultimoValidado) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoValidado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                 }
 
             } else if ($tipovalidacion == 'APROBADO') {
@@ -998,14 +998,14 @@ class UsuarioController extends Controller
                     }else if ($ultimoEstado) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }else{
                     if ($ultimoEstado) {
                     $estado = "REMITIDOCONFIRMADO";
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }
             } /*bloqueado */else if ($tipovalidacion == "1") {
@@ -1017,14 +1017,14 @@ class UsuarioController extends Controller
                     }else if ($ultimoEstado) {
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado, 'Observaciones' => null]);
+                            ->update(['Estado' => $estado]);
                     }
                 }else if($ultimoEstado->Estado == "REMITIDO"){
                     if ($ultimoEstado) {
                         $estado = "REMITIDOCONFIRMADO";
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado, 'Observaciones' => null]);
+                            ->update(['Estado' => $estado]);
                     }
                 }
                 
@@ -1061,14 +1061,14 @@ class UsuarioController extends Controller
                     if ($ultimoEstado) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }else if($ultimoEstado->Estado == "REMITIDO"){
                     if ($ultimoEstado) {
                         $estado = "REMITIDOCONFIRMADO";
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado, 'Observaciones' => null]);
+                            ->update(['Estado' => $estado]);
                     }
                 }
             }else if ($tipovalidacion == 'DESBLOQUEADO') {
@@ -1094,14 +1094,14 @@ class UsuarioController extends Controller
                     if ($ultimoEstado) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }else{
                     if ($ultimoEstado) {
                     $estado = "REMITIDOCONFIRMADO";
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }
                 
@@ -1120,14 +1120,14 @@ class UsuarioController extends Controller
                     if ($ultimoEstado) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }else{
                     if ($ultimoEstado) {
                     $estado = "REMITIDOCONFIRMADO";
                     DB::table('historialestado')
                         ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => null]);
+                        ->update(['Estado' => $estado]);
                     }
                 }
                 
@@ -1153,7 +1153,7 @@ class UsuarioController extends Controller
                     if ($ultimoEstado) {
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado, 'Observaciones' => null]);
+                            ->update(['Estado' => $estado]);
                     }
                 }
 
@@ -1489,7 +1489,7 @@ class UsuarioController extends Controller
                     if ($ultimoTramite) {
                         DB::table('historialestado')
                             ->where('ID', $ultimoTramite->ID)
-                            ->update(['Estado' => $estado, 'Observaciones' => null]);
+                            ->update(['Estado' => $estado]);
                     }
 
                 }
