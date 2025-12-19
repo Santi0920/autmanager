@@ -76,6 +76,7 @@
                             // ✅ Selección correcta de fechas según el estado:
                             let fechaSolicitud = null;
                             let fechaValidacion = null;
+                            let fechaCoordinacion = null;
 
                             if(row.UltimaFechaDoneTramite) {
                                 fechaSolicitud = parseFecha(row.UltimaFechaDoneTramite);
@@ -461,7 +462,15 @@
                                     const año = fechaInsercionDate.getFullYear();
                                     const fechaFormateada = `${mes} ${dia} del ${año}`;
                             
-                            
+                                    function escapeHTML(text) {
+                                        if (!text) return '';
+                                        return text
+                                            .replace(/&/g, "&amp;")
+                                            .replace(/</g, "&lt;")
+                                            .replace(/>/g, "&gt;")
+                                            .replace(/"/g, "&quot;")
+                                            .replace(/'/g, "&#039;");
+                                    }
                                    
                                         
                                         // Si el estado es "EN TRÁMITE", renderiza el bloque especial
@@ -581,7 +590,7 @@
 
                                                             ` : `
                                                                 <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                    <span class="mb-0">${item.Detalle}</span>
+                                                                    <span class="mb-0">${escapeHTML(item.Detalle)}</span>
                                                                 </div>
                                                                 <a href="Storage/files/soporteautorizaciones/${item.DocumentoSoporte}" 
                                                                     class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" 
