@@ -58,17 +58,16 @@ class UsuarioController extends Controller
         // Buscar el último ID (consecutivo) del mes anterior en historialestado
         $ultimoConsecutivoMesAnterior = DB::table('historialestado')
             ->whereMonth('Fecha', $mesAnterior->month)
-            ->whereYear('Fecha',  $mesAnterior->year)
-            ->where('Estado', 'DONE') // ← FILTRAR SOLO LOS DONE
-            ->orderBy('ID', 'DESC')
-            ->value('ID_Autorizacion'); 
+            ->whereYear('Fecha', $mesAnterior->year)
+            ->where('Estado', 'APROBADO')
+            ->max('ID_Autorizacion');
 
         $ultimoConsecutivoMesActual = DB::table('historialestado')
             ->whereMonth('Fecha', $mesActual->month)
-            ->whereYear('Fecha',  $mesActual->year)
-            ->where('Estado', 'DONE') // ← FILTRAR SOLO LOS DONE
-            ->orderBy('ID', 'DESC')
-            ->value('ID_Autorizacion'); 
+            ->whereYear('Fecha', $mesActual->year)
+            ->where('Estado', 'APROBADO')
+            ->max('ID_Autorizacion');
+
 
 
         return view('Usuario/solicitudes', [
@@ -1728,6 +1727,8 @@ class UsuarioController extends Controller
                     ->whereRaw('LOWER(TRIM(H.Estado)) IN ("aprobado", "TERMINADO")')
                     // 🚫 Excluir otros estados no deseados (por seguridad)
                     ->whereNotIn('H.Estado', ['STAND BY', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO', 'RECIBIDO'])
+                    ->limit(200)
+                    ->orderByDesc('B.ID')
                     ->select([
                         'A.ID AS IDPersona',
                         'A.Score',
@@ -1777,6 +1778,8 @@ class UsuarioController extends Controller
                         ->whereRaw('H2.ID_Autorizacion = B.ID')
                         ->whereIn('H2.Estado', ['APROBADO']);
                 })
+                ->limit(200)
+                ->orderByDesc('B.ID')
                 ->where('H.Bloqueado', '!=', '1')
                 ->select([
                     'A.ID AS IDPersona',
@@ -1828,6 +1831,8 @@ class UsuarioController extends Controller
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
+                ->limit(200)
+                ->orderByDesc('B.ID')
                 ->select([
                     'A.ID AS IDPersona',
                     'A.Score',
@@ -3811,6 +3816,8 @@ class UsuarioController extends Controller
                     ->whereRaw('LOWER(TRIM(H.Estado)) = "anulado"')
                     // 🚫 Excluir otros estados no deseados (por seguridad)
                     ->whereNotIn('H.Estado', ['APROBADO', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO'])
+                    ->limit(200)
+                    ->orderByDesc('B.ID')
                     ->select([
                         'A.ID AS IDPersona',
                         'A.Score',
@@ -3864,6 +3871,8 @@ class UsuarioController extends Controller
             ->where('H.Estado', '!=', "VALIDADO")
             ->where('H.Estado', '!=', "CORREGIR")
             ->where('H.Estado', '!=', "ENVIADO")
+            ->limit(200)
+            ->orderByDesc('B.ID')
             ->select([
                 'A.ID AS IDPersona',
                 'A.Score',
@@ -3915,6 +3924,8 @@ class UsuarioController extends Controller
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
+                ->limit(200)
+                ->orderByDesc('B.ID')
                 ->select([
                     'A.ID AS IDPersona',
                     'A.Score',
