@@ -2439,11 +2439,26 @@ class UsuarioController extends Controller
                     ->whereRaw('H2.ID_Autorizacion = B.ID')
                     ->whereIn('H2.Estado', ['BLOQUEADO']);
             })
-            ->where('H.Estado', '!=', "APROBADO")
-            ->where('H.Estado', '!=', "VALIDADO")
-            ->where('H.Estado', '!=', "ANULADO")
-            ->where('H.Estado', '!=', "DESBLOQUEADO")
-            ->where('H.Estado', '!=', "RECIBIDO")
+            ->whereNotIn('H.Estado', [
+                'APROBADO',
+                'CORREGIR',
+                'REMITIDOCORREGIR',
+                'TRÁMITE',
+                'ANULADO',
+                'ENTERADO',
+                'RECIBIDO',
+                'ENVIADO',
+                'TERMINADO',
+                'ACLARAR',
+                'ENCARGARSE',
+                'PROCEDER',
+                'SOLUCIONAR',
+                'QUE PASO',
+                'RECIBIDOCONFIRMADO',
+                'RECIBIDO',
+                'VENCIDO',
+                'DESBLOQUEADO',
+            ])
             ->select([
                 'A.ID AS IDPersona',
                 'A.Score',
