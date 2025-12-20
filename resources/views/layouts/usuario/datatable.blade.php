@@ -1085,7 +1085,7 @@
                                                 <div style="display: flex; flex-direction: column; gap: 4px;">
                                                     <!-- Número de Autorización destacado -->
                                                     <div style="font-size: ${row.UltimoConceptoID == '17' ? `28px` : `31px`}; font-weight: 800; color: #D5DBDB; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
-                                                        ${row.UltimoConceptoID == '17' ? `REPORTE DE INFORMACIÓN ADITIVA` : `SOLICITUD DE AUTORIZACIONES`} <br><span style="font-size: 40px; color: #00bfff;">No. ${row.IDAutorizacion}</span>
+                                                        ${row.UltimoConceptoID == '17' ? `REPORTE DE INFORMACIÓN ADITIVA` : `SOLICITUD DE AUTORIZACIONES`} <br><span style="font-size: 40px; color: #00bfff;">No. ${row.IDAutorizacion}</span> | <span style="font-size: 25px; color: #00bfff;">SEC: SS-${row.IDAutorizacion}</span>
                                                     </div>
 
                                                     <!-- Información secundaria -->
@@ -1958,7 +1958,7 @@
                                                             <span id="anchor-scroll-${id}"></span>
                                                         </div>
                                                                  `
-                                                    : (row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' && '{{ session('rol') }}' === 'Coordinacion')
+                                                    : ((row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' || row.UltimoEstado == 'CORREGIR') && row.NomArea.includes('Coordinacion') && '{{ session('rol') }}' === 'Coordinacion')
                                                         ? `
                                                         <div class="text-center p-3">
                                                             <button id="boton${row.IDAutorizacion}" 
