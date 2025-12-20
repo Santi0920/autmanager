@@ -1082,7 +1082,7 @@
                                             <div class="col-12 col-md-6 mb-2 mb-md-0">
                                                 <div style="display: flex; flex-direction: column; gap: 4px;">
                                                     <!-- Número de Autorización destacado -->
-                                                    <div style="font-size: ${row.UltimoConceptoID == '17' ? `28px` : `31px`}; font-weight: 800; color: #D5DBDB; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
+                                                    <div style="font-size: ${row.UltimoConceptoID == '17' ? `26px` : `31px`}; font-weight: 800; color: #D5DBDB; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
                                                         ${row.UltimoConceptoID == '17' ? `REPORTE DE INFORMACIÓN ADMITIVA` : `SOLICITUD DE AUTORIZACIONES`} <br><span style="font-size: 40px; color: #00bfff;">No. ${row.IDAutorizacion}</span> | <span style="font-size: 25px; color: #00bfff;">SEC: SS-${row.IDAutorizacion}</span>
                                                     </div>
 
