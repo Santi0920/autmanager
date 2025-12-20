@@ -995,7 +995,7 @@
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 
-                    $('#btnBloqueados').on('click', function() {
+                    $('#btnJefaturas').on('click', function() {
                         var newAjaxSource = '{{ route("datager.jefaturas") }}';
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
