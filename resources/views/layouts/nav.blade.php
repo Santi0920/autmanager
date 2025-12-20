@@ -519,11 +519,11 @@
                         <div class="modal-body fs-5 fw-bold">
                             <div class="mb-3">
                             <label>Título del BUG:</label>
-                            <input type="text" name="title" class="form-control" required>
+                            <input type="text" name="title" class="form-control" placeholder="Ej: NO APARECE BOTON EN LA PARTE INFERIOR" required>
                             </div>
                             <div class="mb-3">
                             <label>Descripción:</label>
-                            <textarea name="description" class="form-control" rows="4" required></textarea>
+                            <textarea name="description" class="form-control" rows="4" placeholder="¿Qué estabas haciendo cuando ocurrió?" required></textarea>
                             </div>
                             <div class="mb-3">
                             <label>Imagen (opcional):</label>
