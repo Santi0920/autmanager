@@ -19,3 +19,4 @@ yarn-error.log
 .env
 /config
 config/session.php
+/bootstrap/cache/*.php
