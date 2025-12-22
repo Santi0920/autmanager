@@ -135,7 +135,7 @@
                             var Contenido = `
                                 ${row.Concepto}
                                 <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}
+                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
                                 </div>
                                 ${demoracoord}
                                 ${demoradireccion}
@@ -202,7 +202,7 @@
                             var Contenido = `
                                 ${row.Concepto}
                                 <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}
+                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
                                     <div>${textoEstado}</div>
                                 </div>
                             `;
@@ -210,8 +210,8 @@
 
 
                         }else{
-                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}(${row.CodigoUsuario}) - ${row.Usuario}
-                                    <div>
+                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
+                                    <div>a
                                         <span class="text-dark" title="Fecha Solicitud">
                                         ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
                                         </span>
@@ -1088,7 +1088,7 @@
 
                                                     <!-- Información secundaria -->
                                                     <div style="font-size: 20px; font-weight: 600; color: #ffd700;">
-                                                        Fecha: ${row.FechaStringEstado} | Área: ${row.NomArea}(${row.CodigoUsuario}) | Solicitado Por: ${row.Usuario}
+                                                        Fecha: ${row.FechaStringEstado} | Área: ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} | Solicitado Por: ${row.Usuario}
                                                     </div>
                                                 </div>
                                             </div>
