@@ -2478,6 +2478,7 @@ class UsuarioController extends Controller
                 'RECIBIDO',
                 'VENCIDO',
                 'DESBLOQUEADO',
+                'DONE',
             ])
             ->select([
                 'A.ID AS IDPersona',
