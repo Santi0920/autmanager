@@ -141,36 +141,6 @@ class UsuarioController extends Controller
         $rol = session('rol');
 
 
-        // PROCESO PARA SUBIR ARCHIVO SOPORTE********
-        // Verificar si se subió un archivo
-        if (!$request->hasFile('SoporteScore')) {
-            return back()->withErrors(['message' => 'No se subió ningún archivo.']);
-        }
-
-        $file = $request->file('SoporteScore');
-        $filename = $file->getClientOriginalName();
-
-        // Verificar si el archivo es PDF
-        if ($file->getClientOriginalExtension() != 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
-            return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
-        }
-
-        $newFilename = 'Soporte-' . $id_insertado.'.pdf';
-
-
-        DB::table('historialestado')
-        ->where('ID', $id_insertadohistorial)
-        ->update([
-            'DocumentoSoporte' => $newFilename,
-        ]);
-
-
-
-        // Subir el archivo
-        $dir = 'Storage/files/soporteautorizaciones/';
-        if (!$file->move($dir, $newFilename)) {
-            return back()->withErrors(['message' => 'Error al subir el archivo.']);
-        }
 
         //concepto traer el id
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
@@ -325,6 +295,37 @@ class UsuarioController extends Controller
             'FechaString' => $fechaStringfechadeSolicitud,
             'ID_Autorizacion' => $id_insertado,
         ]);
+
+        // PROCESO PARA SUBIR ARCHIVO SOPORTE********
+        // Verificar si se subió un archivo
+        if (!$request->hasFile('SoporteScore')) {
+            return back()->withErrors(['message' => 'No se subió ningún archivo.']);
+        }
+
+        $file = $request->file('SoporteScore');
+        $filename = $file->getClientOriginalName();
+
+        // Verificar si el archivo es PDF
+        if ($file->getClientOriginalExtension() != 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
+            return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
+        }
+
+        $newFilename = 'Soporte-' . $id_insertado.'.pdf';
+
+
+        DB::table('historialestado')
+        ->where('ID', $id_insertadohistorial)
+        ->update([
+            'DocumentoSoporte' => $newFilename,
+        ]);
+
+
+
+        // Subir el archivo
+        $dir = 'Storage/files/soporteautorizaciones/';
+        if (!$file->move($dir, $newFilename)) {
+            return back()->withErrors(['message' => 'Error al subir el archivo.']);
+        }
 
 
 
