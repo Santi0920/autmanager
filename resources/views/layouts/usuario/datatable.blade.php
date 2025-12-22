@@ -211,7 +211,7 @@
 
                         }else{
                             var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
-                                    <div>a
+                                    <div>
                                         <span class="text-dark" title="Fecha Solicitud">
                                         ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
                                         </span>
