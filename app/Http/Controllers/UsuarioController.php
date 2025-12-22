@@ -55,19 +55,33 @@ class UsuarioController extends Controller
         $temp2 = $fechaCorteMesActual->translatedFormat('M d Y');
         $fechaCorteActualTexto = ucfirst(str_replace('.', '', $temp2));
 
-        // Buscar el último ID (consecutivo) del mes anterior en historialestado
-        $ultimoConsecutivoMesAnterior = DB::table('historialestado')
-            ->whereMonth('Fecha', $mesAnterior->month)
-            ->whereYear('Fecha', $mesAnterior->year)
-            ->where('Estado', 'APROBADO')
-            ->max('ID_Autorizacion');
+        // // Buscar el último ID (consecutivo) del mes anterior en historialestado
+        // $ultimoConsecutivoMesAnterior = DB::table('historialestado')
+        //     ->whereMonth('Fecha', $mesAnterior->month)
+        //     ->whereYear('Fecha', $mesAnterior->year)
+        //     ->where('Estado', 'APROBADO')
+        //     ->max('ID_Autorizacion');
 
-        $ultimoConsecutivoMesActual = DB::table('historialestado')
-            ->whereMonth('Fecha', $mesActual->month)
-            ->whereYear('Fecha', $mesActual->year)
-            ->where('Estado', 'APROBADO')
-            ->max('ID_Autorizacion');
-
+        // $ultimoConsecutivoMesActual = DB::table('historialestado')
+        //     ->whereMonth('Fecha', $mesActual->month)
+        //     ->whereYear('Fecha', $mesActual->year)
+        //     ->where('Estado', 'APROBADO')
+        //     ->max('ID_Autorizacion');
+        // $phone = '17789192282';
+        // if (!empty($phone)) {
+        //     try {
+        //         Http::timeout(2)->post('http://localhost:3001/send', [
+        //             'phone' => $phone,
+        //             'name' => 'Santiago Henao',
+        //             'consecutivo' => '15620-Prueba',
+        //             'fecha' => 'noviembre 30 2023',
+        //             'estado' => 'APROBADO',
+        //             'aprobado_por' => 'Jesus Hermes Bolaños',
+        //         ]);
+        //     } catch (\Throwable $e) {
+        //         // 🔕 Silencioso: no hacemos nada
+        //     }
+        // }
 
 
         return view('Usuario/solicitudes', [
