@@ -734,7 +734,47 @@
                                                     
                                                     
                                                     `
-                                                    : ``)
+                                                    : ((item.Estado == 'TRÁMITE') && '{{ session('rol') }}' == 'Gerencia')? `
+                                                    
+                                                        <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                            @csrf
+                                                            <div class="row g-0">
+                                                                <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark bg-dark-subtle">
+                                                                    <label class="label">
+                                                                        <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
+                                                                        <span>ANULAR</span>
+                                                                    </label>
+                                                                </div>
+
+                                                                <div class="col-sm-12 col-md-12 col-lg-10">
+                                                                    <div class="row g-0 justify-content-center">
+                                                                        <div class="row g-0 row-cols-2 justify-content-center">
+                                                                            <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                                <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                            </div>
+                                                                            <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                                <span class="mb-0 fs-5">Pendiente...</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <input 
+                                                                            class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
+                                                                            style="resize: horizontal;" 
+                                                                            id="Observaciones" 
+                                                                            name="Observaciones" 
+                                                                            onkeydown="return event.key != 'Enter';" 
+                                                                            placeholder="Escribe aquí tu Observación." 
+                                                                            ${item.Observaciones == null ? '' : `value="${item.Observaciones}"`} 
+                                                                            required
+                                                                        >
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    
+                                                    ` : ``)
                                         }
 
 
@@ -875,7 +915,7 @@
                                                 '{{ session("rol") }}' === 'Gerencia'
                                                 && row.historialEstadosUnicos && row.historialEstadosUnicos.length
                                                 && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
-                                                && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR')
+                                                && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR' || row.UltimoEstado === 'APROBADO')
                                             )
                                         ?
                                                     `
@@ -1685,7 +1725,7 @@
                                                         '{{ session("rol") }}' === 'Gerencia'
                                                         && row.historialEstadosUnicos && row.historialEstadosUnicos.length
                                                         && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
-                                                        && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR')
+                                                        && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR'  || row.UltimoEstado === 'APROBADO')
                                                     )
                                                 ?
                                                             `
@@ -1894,7 +1934,7 @@
                                                             <span id="anchor-scroll-${id}"></span>
                                                     </div>
                                                     `
-                                                    :   ((row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
+                                                    :   ((row.UltimoEstado === 'TRÁMITE' || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
 
                                                         ? `
                                                         <div class="text-center p-3">
