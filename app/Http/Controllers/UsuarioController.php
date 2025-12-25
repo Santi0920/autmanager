@@ -59,14 +59,13 @@ class UsuarioController extends Controller
         $ultimoConsecutivoMesAnterior = DB::table('historialestado')
             ->whereMonth('Fecha', $mesAnterior->month)
             ->whereYear('Fecha', $mesAnterior->year)
-            ->where('Estado', 'APROBADO')
             ->max('ID_Autorizacion');
 
         $ultimoConsecutivoMesActual = DB::table('historialestado')
             ->whereMonth('Fecha', $mesActual->month)
             ->whereYear('Fecha', $mesActual->year)
-            ->where('Estado', 'APROBADO')
             ->max('ID_Autorizacion');
+
         // $phone = '17789192282';
         // if (!empty($phone)) {
         //     try {
@@ -549,39 +548,31 @@ class UsuarioController extends Controller
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
                     ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
                     ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-                    ->whereRaw('H.ID = (SELECT MAX(H3.ID) FROM historialestado AS H3 WHERE H3.ID_Autorizacion = B.ID)')
-                    ->whereNotIn('H.Estado', ['APROBADO','STAND BY','ENTERADO','ANULADO', 'TERMINADO'])
-                    ->where(function($query) use ($idsFiltro) {
+                    // 🔹 SOLO el último estado
+                    ->whereRaw('H.ID = (
+                        SELECT MAX(H3.ID)
+                        FROM historialestado AS H3
+                        WHERE H3.ID_Autorizacion = B.ID
+                    )')
+                    ->whereNotIn('H.Estado', [
+                        'APROBADO',
+                        'STAND BY',
+                        'ENTERADO',
+                        'ANULADO',
+                        'TERMINADO',
+                    ])
 
-                        // ✅ Regla 1: Permitido por filtro de área
-                        $query->where(function($q) use ($idsFiltro) {
-                            $q->whereExists(function ($sub) use ($idsFiltro) {
-                                $sub->select(DB::raw(1))
-                                    ->from('historialestado AS H2')
-                                    ->whereColumn('H2.ID_Autorizacion', 'B.ID')
-                                    ->whereIn('H2.NumArea', $idsFiltro);
-                            })
-                            // ❌ pero NO permitido si es de Jefatura
-                            ->whereNotExists(function ($sub) {
-                                $sub->select(DB::raw(1))
-                                    ->from('historialestado AS H4')
-                                    ->whereColumn('H4.ID_Autorizacion', 'B.ID')
-                                    ->whereRaw("LOWER(TRIM(H4.NumArea)) = 'jefatura'");
-                            });
-                        })
+                    // EL ÚLTIMO ESTADO DEBE SER DE LA COORDINACIÓN
+                    ->whereIn('H.NumArea', $idsFiltro)
 
-                        // ✅ Regla 2: Excepción → ENVIADO + Nombre usuario
-                        ->orWhere(function($q) {
-                            $q->where('H.Estado', 'ENVIADO')
-                            ->orWhere('H.Estado', 'ACLARAR')
-                            ->orWhere('H.Estado', 'ENCARGARSE')
-                            ->orWhere('H.Estado', 'PROCEDER')
-                            ->orWhere('H.Estado', 'SOLUCIONAR')
-                            ->orWhere('H.Estado', 'QUE PASO')
-                            ->orWhere('H.Estado', 'RECIBIDO');
-                        });
-
+                    // EXCLUIR JEFATURA COMPLETAMENTE
+                    ->whereNotExists(function ($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('historialestado AS H4')
+                            ->whereColumn('H4.ID_Autorizacion', 'B.ID')
+                            ->whereRaw("LOWER(TRIM(H4.NumArea)) = 'jefatura'");
                     })
+
                     ->select([
                         'H.Nombre AS NombrePersonaActual',
                         'A.ID AS IDPersona',
@@ -605,6 +596,7 @@ class UsuarioController extends Controller
                     ])
                     ->distinct()
                     ->get();
+
 
 
 
@@ -951,7 +943,7 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'STAND BY')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
-                ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
+                ->orderByDesc('ID') 
                 ->first();
 
             $NumArea = 'DR';
@@ -1060,6 +1052,12 @@ class UsuarioController extends Controller
                     ->where('ID_Autorizacion', $id)
                     ->orderBy('ID', 'asc')
                     ->first();
+                //LINEA PARA QUE SI EL ULTIMO ESTADO ES TRAMITE LE QUITE EL BOTON REPETIDO DE ANULAR.
+                if($ultimoEstado->Estado == "TRÁMITE"){
+                    DB::table('historialestado')
+                        ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
+                        ->update(['Observaciones' => 'NADA']);
+                }
 
                 if ($primerHistorial) {
                     DB::table('historialestado')
@@ -1534,9 +1532,6 @@ class UsuarioController extends Controller
         }
 
     }
-
-
-
 
     public function aprobados(Request $request)
     {

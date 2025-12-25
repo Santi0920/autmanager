@@ -20,7 +20,7 @@
                 "order": [
                     [0, 'desc']
                 ],
-                scrollY: 420,
+                scrollY: 440,
 
                 "columns": [{
                         data: 'IDAutorizacion',
@@ -734,7 +734,7 @@
                                                     
                                                     
                                                     `
-                                                    : ((item.Estado == 'TRÁMITE') && '{{ session('rol') }}' == 'Gerencia')? `
+                                                    : ((item.Estado == 'TRÁMITE' && item.Observaciones != 'NADA') && '{{ session('rol') }}' == 'Gerencia')? `
                                                     
                                                         <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
                                                             @csrf
@@ -1934,7 +1934,7 @@
                                                             <span id="anchor-scroll-${id}"></span>
                                                     </div>
                                                     `
-                                                    :   ((row.UltimoEstado === 'TRÁMITE' || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
+                                                    :   (((row.UltimoEstado === 'TRÁMITE' && row.NumArea != 'Jefatura') || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
 
                                                         ? `
                                                         <div class="text-center p-3">
@@ -2048,9 +2048,10 @@
                     }
                 ],
                 "lengthMenu": [
-                    [5,10],
-                    [5,10]
+                    [4, 10, 25, 50, 100, -1],
+                    [4, 10, 25, 50, 100, "Todos"]
                 ],
+
                 "drawCallback": function(settings) {
                     var api = this.api();
                     var noRecordsMessage = api.table().container().querySelector('.dataTables_empty');
