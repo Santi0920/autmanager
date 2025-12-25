@@ -943,7 +943,7 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'STAND BY')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
-                ->orderByDesc('ID') 
+                ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
                 ->first();
 
             $NumArea = 'DR';
@@ -1052,8 +1052,8 @@ class UsuarioController extends Controller
                     ->where('ID_Autorizacion', $id)
                     ->orderBy('ID', 'asc')
                     ->first();
-                //LINEA PARA QUE SI EL ULTIMO ESTADO ES TRAMITE LE QUITE EL BOTON REPETIDO DE ANULAR.
-                if($ultimoEstado->Estado == "TRÁMITE"){
+                //LINEA PARA QUE SI EL ULTIMO ESTADO ES TRAMITE LE QUITE EL BOTON
+                if($ultimoEstado->Estado == "TRÁMITE" && $primerHistorial->Observaciones != "NADA"){
                     DB::table('historialestado')
                         ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
                         ->update(['Observaciones' => 'NADA']);
@@ -1062,7 +1062,7 @@ class UsuarioController extends Controller
                 if ($primerHistorial) {
                     DB::table('historialestado')
                         ->where('ID', $primerHistorial->ID)
-                        ->update(['Bloqueado' => 0]);
+                        ->update(['Bloqueado' => 0, 'Estado' => 'DONE']);
                 }
 
             }else if ($tipovalidacion == 'STAND BY') {
@@ -1167,6 +1167,13 @@ class UsuarioController extends Controller
                             ->where('ID', $ultimoEstado->ID)
                             ->update(['Estado' => $estado]);
                     }
+                }
+
+                
+                if($ultimoEstado->Estado == "TRÁMITE"){
+                    DB::table('historialestado')
+                        ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
+                        ->update(['Observaciones' => 'NADA']);
                 }
 
                 if($tipovalidacion == "CORREGIRJEFATURA"){
