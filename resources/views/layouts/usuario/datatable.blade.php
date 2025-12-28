@@ -1122,45 +1122,85 @@
                                             <div class="col-12 col-md-6 mb-2 mb-md-0">
                                                 <div style="display: flex; flex-direction: column; gap: 4px;">
                                                     <!-- Número de Autorización destacado -->
-                                                    <div style="font-size: ${row.UltimoConceptoID == '17' ? `26px` : `31px`}; font-weight: 800; color: #D5DBDB; text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
-                                                        ${row.UltimoConceptoID == '17' ? `REPORTE DE INFORMACIÓN ADMITIVA` : `SOLICITUD DE AUTORIZACIONES`} <br><span style="font-size: 40px; color: #00bfff;">No. ${row.IDAutorizacion}</span> | <span style="font-size: 25px; color: #00bfff;">SEC: SS-${row.IDAutorizacion}</span>
+                                                    <div class="d-none d-md-block"
+                                                        style="font-size: ${row.UltimoConceptoID == '17' ? '26px' : '31px'};
+                                                                font-weight: 800;
+                                                                color: #D5DBDB;
+                                                                text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
+                                                        
+                                                        ${row.UltimoConceptoID == '17'
+                                                            ? 'REPORTE DE INFORMACIÓN ADMITIVA'
+                                                            : 'SOLICITUD DE AUTORIZACIONES'}
+                                                        <br>
+                                                        <span style="font-size: 40px; color: #00bfff;">
+                                                            No. ${row.IDAutorizacion}
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- MÓVIL -->
+                                                    <div class="d-block d-md-none"
+                                                        style="font-size: 18px;
+                                                                font-weight: 800;
+                                                                color: #D5DBDB;
+                                                                text-shadow: 1px 1px 4px rgba(0,0,0,0.4);">
+                                                        
+                                                        ${row.UltimoConceptoID == '17' ? 'REPORTE' : 'AUTORIZACIONES'}
+                                                        <br>
+                                                        <span style="font-size: 22px; color: #00bfff;">
+                                                            No. ${row.IDAutorizacion}
+                                                        </span>
                                                     </div>
 
                                                     <!-- Información secundaria -->
-                                                    <div style="font-size: 20px; font-weight: 600; color: #ffd700;">
+                                                    <!-- Desktop / Tablet -->
+                                                    <div class="d-none d-md-block" style="font-size: 20px; font-weight: 600; color: #ffd700;">
                                                         Fecha: ${row.FechaStringEstado} | Área: ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} | Solicitado Por: ${row.Usuario}
+                                                    </div>
+
+                                                    <!-- Móvil -->
+                                                    <div class="d-block d-md-none" style="font-size: 14px; font-weight: 600; color: #ffd700;">
+                                                        Solicitado por: ${row.Usuario}
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <!-- Botones de acción -->
                                             <div class="col-12 col-md-5 d-flex justify-content-md-end justify-content-center align-items-center gap-2 flex-wrap">
+
+
+                                                <!-- HISTORIAL -->
                                                 <button 
                                                     type="button"
                                                     id="btnToggleHistorial-${id}"
-                                                    class="btn btn-warning fw-bold shadow-sm"
+                                                    class="btn btn-warning fw-bold shadow-sm
+                                                        btn-sm d-inline-flex align-items-center"
                                                     data-id="${id}">
-                                                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Historial
+                                                    <i class="fa-solid fa-clock-rotate-left me-1"></i>
+                                                    <span class="d-none d-md-inline">Historial</span>
                                                 </button>
 
+                                                <!-- ORIGINAL -->
                                                 <button 
                                                     type="button"
                                                     id="btnToggleOriginal-${id}"
-                                                    class="btn btn-warning fw-bold d-none shadow-sm"
+                                                    class="btn btn-warning fw-bold d-none shadow-sm
+                                                        btn-sm d-inline-flex align-items-center"
                                                     data-id="${id}">
-                                                    <i class="fa-solid fa-rotate-left me-1"></i> Original
+                                                    <i class="fa-solid fa-rotate-left me-1"></i>
+                                                    <span class="d-none d-md-inline">Original</span>
                                                 </button>
 
+                                                <!-- DESPLAZAR -->
                                                 <button
                                                     type="button"
-                                                    class="btn btn-dark fw-bold btn-scroll btn-premium-action2 shadow-sm"
+                                                    class="btn btn-dark fw-bold shadow-sm
+                                                        btn-sm d-inline-flex align-items-center btn-scroll btn-premium-action2"
                                                     data-scroll-to="anchor-scroll-${id}">
-                                                    <i class="fa-solid fa-arrow-down me-2"></i> Desplazar al Final
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                    <span class="d-none d-md-inline ms-1">Desplazar al Final</span>
                                                 </button>
-                                            </div>
 
-                                            <!-- Botón Cerrar -->
-                                            <div class="col-12 col-md-1 d-flex justify-content-end">
+
                                                 <button 
                                                     type="button" 
                                                     class="btn-close fs-5" 
@@ -1168,7 +1208,11 @@
                                                     aria-label="Close"
                                                     style="outline: none; border: none; font-size: 20px;">
                                                 </button>
+                                 
+
                                             </div>
+
+
                                         </div>
 
 
@@ -1918,41 +1962,75 @@
                                                 row.UltimoEstado == 'CORREGIR'  && '{{ session('rol') }}' !== 'Coordinacion' && '{{ session('rol') }}' !== 'Gerencia'
                                                     ? `
                                                     <div class="text-center p-3">
-                                                        <button id="boton${row.IDAutorizacion}" 
-                                                            name="btnregistrar" 
-                                                            type="button"
-                                                            class="btn btn-premium-action"
-                                                            onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
-                                                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
-                                                        </button>
+
+                                                        <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap">
+
+                                                            <!-- GUARDAR -->
+                                                            <button id="boton${row.IDAutorizacion}" 
+                                                                name="btnregistrar" 
+                                                                type="button"
+                                                                class="btn btn-premium-action fw-bold btn-sm
+                                                                    d-inline-flex align-items-center"
+                                                                onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
+                                                                
+                                                                <i class="fa-solid fa-floppy-disk"></i>
+                                                                <span class="d-none d-md-inline ms-2">Guardar Cambios</span>
+                                                                <span class="d-inline d-md-none ms-1">Guardar</span>
+                                                            </button>
+
+                                                            <!-- DESPLAZAR ARRIBA -->
                                                             <button
                                                                 type="button"
-                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
+                                                                class="btn btn-dark fw-bold btn-premium-action2 btn-sm
+                                                                    d-inline-flex align-items-center btn-scroll"
                                                                 data-scroll-to="anchor-scrollup-${id}">
-                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
-                                                            </button>   
-                                                            <span id="anchor-scroll-${id}"></span>
+                                                                
+                                                                <i class="fa-solid fa-arrow-up"></i>
+                                                                <span class="d-none d-md-inline ms-2">Desplazar al Inicio</span>
+                                                            </button>
+
+                                                        </div>
+
+                                                        <span id="anchor-scroll-${id}"></span>
                                                     </div>
+
                                                     `
                                                     :   (((row.UltimoEstado === 'TRÁMITE' && row.NumArea != 'Jefatura') || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
 
                                                         ? `
                                                         <div class="text-center p-3">
-                                                            <button id="boton${row.IDAutorizacion}" 
-                                                                name="btnregistrar" 
-                                                                type="button"
-                                                                class="btn btn-premium-action"
-                                                                onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
-                                                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
-                                                                data-scroll-to="anchor-scrollup-${id}">
-                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
-                                                            </button>   
+
+                                                            <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap">
+
+                                                                <!-- GUARDAR -->
+                                                                <button id="boton${row.IDAutorizacion}" 
+                                                                    name="btnregistrar" 
+                                                                    type="button"
+                                                                    class="btn btn-premium-action fw-bold
+                                                                        btn-sm d-inline-flex align-items-center"
+                                                                    onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
+                                                                    
+                                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                                    <span class="d-none d-md-inline ms-2">Guardar Cambios</span>
+                                                                    <span class="d-inline d-md-none ms-1">Guardar</span>
+                                                                </button>
+
+                                                                <!-- DESPLAZAR ARRIBA -->
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-dark fw-bold btn-premium-action2 btn-sm
+                                                                        d-inline-flex align-items-center btn-scroll"
+                                                                    data-scroll-to="anchor-scrollup-${id}">
+                                                                    
+                                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                                    <span class="d-none d-md-inline ms-2">Desplazar al Inicio</span>
+                                                                </button>
+
+                                                            </div>
+
                                                             <span id="anchor-scroll-${id}"></span>
                                                         </div>
+
                                                         `
                                                     : 
                                                     (
@@ -1980,49 +2058,90 @@
                                                         ? `
 
                                                         <div class="text-center p-3">
-                                                            <button id="boton${row.IDAutorizacion}" 
-                                                                name="btnregistrar" 
-                                                                type="button"
-                                                                class="btn btn-premium-action"
-                                                                onclick="formValidarAutorizacion(${row.IDAutorizacion}, event)">
-                                                                <i class="fa-solid fa-floppy-disk me-2"></i>Validar
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
-                                                                data-scroll-to="anchor-scrollup-${id}">
-                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
-                                                            </button>   
+
+                                                            <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap">
+
+                                                                <!-- VALIDAR -->
+                                                                <button id="boton${row.IDAutorizacion}" 
+                                                                    name="btnregistrar" 
+                                                                    type="button"
+                                                                    class="btn btn-premium-action fw-bold btn-sm
+                                                                        d-inline-flex align-items-center"
+                                                                    onclick="formValidarAutorizacion(${row.IDAutorizacion}, event)">
+                                                                    
+                                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                                    <span class="d-none d-md-inline ms-2">Validar</span>
+                                                                    <span class="d-inline d-md-none ms-1">Validar</span>
+                                                                </button>
+
+                                                                <!-- DESPLAZAR ARRIBA -->
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-dark fw-bold btn-premium-action2 btn-sm
+                                                                        d-inline-flex align-items-center btn-scroll"
+                                                                    data-scroll-to="anchor-scrollup-${id}">
+                                                                    
+                                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                                    <span class="d-none d-md-inline ms-2">Desplazar al Inicio</span>
+                                                                </button>
+
+                                                            </div>
+
                                                             <span id="anchor-scroll-${id}"></span>
                                                         </div>
+
                                                                  `
                                                     : ((row.EstadoRemitidoBoton === 'REMITIDOCORREGIR' || row.UltimoEstado == 'CORREGIR') && row.NomArea.includes('Coordinacion') && '{{ session('rol') }}' === 'Coordinacion')
                                                         ? `
-                                                        <div class="text-center p-3">
-                                                            <button id="boton${row.IDAutorizacion}" 
-                                                                name="btnregistrar" 
-                                                                type="button"
-                                                                class="btn btn-premium-action"
-                                                                onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
-                                                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                class="btn btn-dark fw-bold ms-3 btn-scroll btn btn-premium-action2"
-                                                                data-scroll-to="anchor-scrollup-${id}">
-                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
-                                                            </button>   
-                                                            <span id="anchor-scroll-${id}"></span>
+                                                            <div class="text-center p-3">
 
-                                                        </div>
+                                                                <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap">
+
+                                                                    <!-- GUARDAR -->
+                                                                    <button id="boton${row.IDAutorizacion}" 
+                                                                        name="btnregistrar" 
+                                                                        type="button"
+                                                                        class="btn btn-premium-action fw-bold btn-sm
+                                                                            d-inline-flex align-items-center"
+                                                                        onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
+                                                                        
+                                                                        <i class="fa-solid fa-floppy-disk"></i>
+                                                                        <span class="d-none d-md-inline ms-2">Guardar Cambios</span>
+                                                                        <span class="d-inline d-md-none ms-1">Guardar</span>
+                                                                    </button>
+
+                                                                    <!-- DESPLAZAR ARRIBA -->
+                                                                    <button
+                                                                        type="button"
+                                                                        class="btn btn-dark fw-bold btn-premium-action2 btn-sm
+                                                                            d-inline-flex align-items-center btn-scroll"
+                                                                        data-scroll-to="anchor-scrollup-${id}">
+                                                                        
+                                                                        <i class="fa-solid fa-arrow-up"></i>
+                                                                        <span class="d-none d-md-inline ms-2">Desplazar al Inicio</span>
+                                                                    </button>
+
+                                                                </div>
+
+                                                                <span id="anchor-scroll-${id}"></span>
+                                                            </div>
+
                                                         `:` 
-                                                            <button
-                                                                type="button"
-                                                                class="btn btn-dark fw-bold mt-3 btn-scroll btn btn-premium-action2"
-                                                                data-scroll-to="anchor-scrollup-${id}">
-                                                                <i class="fa-solid fa-arrow-up me-2"></i>Desplazar al Inicio
-                                                            </button>      
-                                                            <span id="anchor-scroll-${id}"></span>                        
+                                                            <div class="text-center p-3">
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-dark fw-bold btn-premium-action2 btn-sm
+                                                                        d-inline-flex align-items-center btn-scroll"
+                                                                    data-scroll-to="anchor-scrollup-${id}">
+                                                                    
+                                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                                    <span class="d-none d-md-inline ms-2">Desplazar al Inicio</span>
+                                                                </button>
+
+                                                                <span id="anchor-scroll-${id}"></span>
+                                                            </div>
+                     
                                                         `
                                                         
                                             }
