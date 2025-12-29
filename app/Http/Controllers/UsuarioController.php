@@ -270,19 +270,59 @@ class UsuarioController extends Controller
             }
         }
 
+        $autorizacionesCorregir = DB::select("
+            SELECT DISTINCT ult.ID_Autorizacion
+            FROM
+                (
+                    -- ÚLTIMO ESTADO DE LA AUTORIZACIÓN
+                    SELECT h1.ID_Autorizacion
+                    FROM historialestado h1
+                    INNER JOIN (
+                        SELECT ID_Autorizacion, MAX(ID) AS ultimo_id
+                        FROM historialestado
+                        GROUP BY ID_Autorizacion
+                    ) x ON h1.ID = x.ultimo_id
+                    WHERE h1.Estado = ?
+                ) ult
+            INNER JOIN
+                (
+                    -- PRIMER REGISTRO (AGENCIA ORIGINAL)
+                    SELECT h2.ID_Autorizacion
+                    FROM historialestado h2
+                    INNER JOIN (
+                        SELECT ID_Autorizacion, MIN(ID) AS primer_id
+                        FROM historialestado
+                        GROUP BY ID_Autorizacion
+                    ) y ON h2.ID = y.primer_id
+                    WHERE h2.NomArea = ?
+                ) pri
+            ON ult.ID_Autorizacion = pri.ID_Autorizacion
+        ", ['CORREGIR', $agenciaU]);
+        $ids = collect($autorizacionesCorregir)
+            ->pluck('ID_Autorizacion')
+            ->unique()
+            ->values()
+            ->implode('</span> <span class="badge bg-primary fw-bold">');
 
-        // $autorizacionesCorregir = DB::select(
-        //     'SELECT DISTINCT ID_Autorizacion
-        //     FROM historialestado
-        //     WHERE Estado = ?',
-        //     ['CORREGIR']
-        // );
 
-        // return response()->json([
-        //     'dd' => true,
-        //     'data' => $autorizacionesCorregir
-        // ]);
-
+        return response()->json([
+            'success' => false,
+            'message' => "
+                <span class='fs-5'>
+                    Las autorizaciones 
+                    <span class='badge bg-primary fw-bold'>
+                        {$ids}
+                    </span>
+                    se encuentran actualmente en estado 
+                    <span class='text-primary fw-bold'>CORREGIR</span>.
+                    <br><br>
+                    Para continuar con la creación de una nueva solicitud, 
+                    por favor <span class='fw-bold'>reutilice</span> una autorización existente 
+                    o <span class='fw-bold'>realice las correcciones necesarias</span> sobre las solicitudes pendientes.
+                </span>
+            "
+        ], 409);
+        
         if($rol == "Coordinacion"){
             $estado = "REMITIDO";
         }else{
@@ -592,6 +632,9 @@ class UsuarioController extends Controller
 
                     // EL ÚLTIMO ESTADO DEBE SER DE LA COORDINACIÓN
                     ->whereIn('H.NumArea', $idsFiltro)
+                    ->orWhere('H.Estado', 'REMITIDOCORREGIR')
+                    ->orWhere('H.Estado', 'REMITIDO')
+
 
                     // EXCLUIR JEFATURA COMPLETAMENTE
                     ->whereNotExists(function ($sub) {
