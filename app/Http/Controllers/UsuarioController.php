@@ -1078,23 +1078,7 @@ class UsuarioController extends Controller
                         ->update(['Estado' => $estado]);
                     }
                 }
-                $phone = '17789192282';
-                Log::info($ultimoEstado);
-                dd('asd');
-                // if (!empty($phone)) {
-                //     try {
-                //         Http::timeout(2)->post('http://localhost:3001/send', [
-                //             'phone' => $phone,
-                //             'name' => 'Santiago Henao',
-                //             'consecutivo' => '15620-Prueba',
-                //             'fecha' => 'noviembre 30 2023',
-                //             'estado' => 'APROBADO',
-                //             'aprobado_por' => 'Jesus Hermes Bolaños',
-                //         ]);
-                //     } catch (\Throwable $e) {
-                //         // 🔕 Silencioso: no hacemos nada
-                //     }
-                // }
+ 
 
             } /*bloqueado */else if ($tipovalidacion == "1") {
                 $estado = "VALIDADOCONFIRMADO";
@@ -1295,6 +1279,35 @@ class UsuarioController extends Controller
                 'ID_User' => $destinatario,
                 'ID_Autorizacion' => $id
             ]);
+
+            // $consultatelefono = DB::table('historialestado AS H')
+            //     ->join('users AS U', 'U.id', '=', 'H.ID_User')
+            //     ->where('H.ID_Autorizacion', $id)
+            //     ->select(
+            //         'U.*',
+            //         'H.*'
+            //     )
+            //     ->first();
+
+            // $phone = '57'.$consultatelefono->celular;
+            // if (!empty($phone)) {
+            //     try {
+            //         Http::timeout(1)          // tiempo TOTAL máximo
+            //             ->connectTimeout(1)  // tiempo máximo para conectar
+            //             ->post('http://localhost:3001/send', [
+            //                 'phone' => $phone,
+            //                 'name' => $consultatelefono->name,
+            //                 'consecutivo' => $id,
+            //                 'fecha' => $fechaStringfechadeSolicitud,
+            //                 'estado' => $estado,
+            //                 'aprobado_por' => $nombre,
+            //                 'observaciones' => $request->Observaciones,
+            //             ]);
+
+            //     } catch (\Throwable $e) {
+                    
+            //     }
+            // }
 
             return response()->json(['success' => true]);
 
