@@ -1413,6 +1413,9 @@ class UsuarioController extends Controller
                 }else{
                     $estado = "TRÁMITE";
                 }
+                $agenciaU = session('agenciau');
+                $existeAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agenciaU]);
+
                 if (isset($filename)) {
                     // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
                     // $cedula = $existingCedula[0]->Cedula;
@@ -1427,7 +1430,7 @@ class UsuarioController extends Controller
                         'ID_Persona' => $idpersona,
                         'ID_Concepto' => $idconcepto,
                         'ID_User' => session('id'),
-                        'NumArea' => $ultimoNumArea == 'C9' ? session('rol') : $ultimoNumArea,
+                        'NumArea' => !empty($existeAgencia) ? $existeAgencia[0]->NumAgencia : session('rol'),
                         'NomArea' => session('agenciau'),
                         'Estado' => $estado,
                         'Observaciones' => $observaciones,
@@ -1451,7 +1454,7 @@ class UsuarioController extends Controller
                         'ID_Persona' => $idpersona,
                         'ID_Concepto' => $idconcepto,
                         'ID_User' => session('id'),
-                        'NumArea' => $ultimoNumArea == 'C9' ? session('rol') : $ultimoNumArea,
+                        'NumArea' => !empty($existeAgencia) ? $existeAgencia[0]->NumAgencia : session('rol'),
                         'NomArea' => session('agenciau'),
                         'Estado' => $estado,
                         'Nombre' => session('name'),
