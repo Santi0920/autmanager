@@ -2545,7 +2545,17 @@
                                     $(`#exampleModal_${id}`).modal('hide');
                                     console.log('¡Éxito!');
                                     event.preventDefault();
-                                    $('#personas').DataTable().ajax.reload();
+                                    const currentPage = table.page();
+
+                                    table.ajax.reload(function () {
+                                        const pageInfo = table.page.info();
+
+                                        if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
+                                            table.page(pageInfo.pages - 1).draw(false);
+                                        }
+                                    }, false);
+
+
                                     Swal.fire({
                                         icon: 'success',
                                         title: "¡ACTUALIZADO!",
@@ -2650,7 +2660,16 @@
                         if (response) {
                             $(`#exampleModal_${id}`).modal('hide');
                             console.log('¡Éxito!');
-                            table.ajax.reload();
+                            const currentPage = table.page();
+
+                            table.ajax.reload(function () {
+                                const pageInfo = table.page.info();
+
+                                if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
+                                    table.page(pageInfo.pages - 1).draw(false);
+                                }
+                            }, false);
+
                             Swal.fire({
                                 icon: 'success',
                                 title: "¡ACTUALIZADO!",
@@ -2713,7 +2732,16 @@
                     success: function(response) {
                         if (response) {
                             $(`#exampleModal_${id}`).modal('hide');
-                            table.ajax.reload();
+                            const currentPage = table.page();
+
+                            table.ajax.reload(function () {
+                                const pageInfo = table.page.info();
+
+                                if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
+                                    table.page(pageInfo.pages - 1).draw(false);
+                                }
+                            }, false);
+
                             Swal.fire({
                                 icon: 'success',
                                 title: "¡ACTUALIZADO!",
