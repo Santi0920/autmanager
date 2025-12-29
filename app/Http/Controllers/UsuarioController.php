@@ -305,7 +305,7 @@ class UsuarioController extends Controller
             ->implode('</span> <span class="badge bg-primary fw-bold">');
 
 
-        if (count($autorizacionesCorregir) > 1) {
+        if (!empty($autorizacionesCorregir)) {
 
             $ids = collect($autorizacionesCorregir)
                 ->pluck('ID_Autorizacion')
