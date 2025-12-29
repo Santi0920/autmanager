@@ -629,7 +629,7 @@
                                                                 <div class="row g-0 justify-content-center">
                                                                     <div class="row g-0 row-cols-2 justify-content-center">
                                                                         <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                            <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Dirección General' : session('agenciau') }} - {{ session('name') }}</b></span>
+                                                                            <span class="fs-5"><b>{{ session('agenciau') === 'Gerencia General' ? 'Coordinación 9' : session('agenciau') }} - {{ session('name') }}</b></span>
                                                                         </div>
                                                                         <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
                                                                             <span class="mb-0 fs-5">Pendiente...</span>
