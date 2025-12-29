@@ -582,7 +582,7 @@ class UsuarioController extends Controller
             $id = session('id');
 
 
-            $coordinaciones = DB::select("SELECT DISTINCT agenciau, agencias_id FROM users WHERE agenciau = ? AND id = ?", [$agenciaU, $id]);
+            $coordinaciones = DB::select("SELECT DISTINCT agenciau, agencias_id, id FROM users WHERE agenciau = ? AND id = ?", [$agenciaU, $id]);
 
             $agenciasIdArray = json_decode($coordinaciones[0]->agencias_id, true);
             if ($agenciasIdArray === null) {
@@ -594,74 +594,73 @@ class UsuarioController extends Controller
             if (session('agenciau') == "Coordinacion $numero") {
                 $coordinacionVariable = "C" . $numero;
             }
-            
+
             if (count($agenciasIdArray) > 0) {
                 $idsFiltro = array_merge($agenciasIdArray, [$coordinacionVariable]);
+                $userId = $coordinaciones[0]->id;
                 $autorizaciones = DB::table('autorizaciones_2 AS B')
                     ->join('historialestado AS H', 'H.ID_Autorizacion', '=', 'B.ID')
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                    ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-                    ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
 
-                    // 🔹 SOLO el último estado
+                    // 🔹 SOLO ÚLTIMO ESTADO
                     ->whereRaw('H.ID = (
                         SELECT MAX(H3.ID)
-                        FROM historialestado AS H3
+                        FROM historialestado H3
                         WHERE H3.ID_Autorizacion = B.ID
                     )')
 
-                    // 🔹 FILTRO DE ESTADOS (AGRUPADO)
-                    ->where(function ($q) {
-                        $q->whereNotIn('H.Estado', [
-                            'APROBADO',
-                            'STAND BY',
-                            'ENTERADO',
-                            'ANULADO',
-                            'TERMINADO',
-                        ])
-                        ->orWhereIn('H.Estado', [
-                            'REMITIDOCORREGIR',
-                            'REMITIDO'
-                        ]);
+                    // 🔹 EXCLUIR ESTADOS FINALES
+                    ->whereNotIn('H.Estado', [
+                        'APROBADO',
+                        'STAND BY',
+                        'ENTERADO',
+                        'ANULADO',
+                        'TERMINADO'
+                    ])
+
+                    // 🔹 LÓGICA REAL
+                    ->where(function ($q) use ($idsFiltro, $userId) {
+
+                        // ✅ CASO 1: ENVIADO (asignado al usuario)
+                        $q->where(function ($a) use ($userId) {
+                            $a->where('H.Estado', 'ENVIADO')
+                            ->where('H.ID_User', $userId);
+                        });
+
+                        // ✅ CASO 2: PASÓ POR MI COORDINACIÓN
+                        $q->orWhere(function ($b) use ($idsFiltro) {
+                            $b->whereIn('H.Estado', [
+                                'CORREGIR',
+                                'REMITIDO',
+                                'REMITIDOCORREGIR',
+                                'RECIBIDO',
+                                'ACLARAR',
+                                'ENCARGARSE',
+                                'PROCEDER',
+                                'SOLUCIONAR',
+                                'QUE PASO',
+                            ])
+                            ->whereExists(function ($sub) use ($idsFiltro) {
+                                $sub->select(DB::raw(1))
+                                    ->from('historialestado AS HX')
+                                    ->whereColumn('HX.ID_Autorizacion', 'B.ID')
+                                    ->whereIn('HX.NumArea', $idsFiltro);
+                            });
+                        });
                     })
 
-                    // 🔹 EL ÚLTIMO ESTADO DEBE SER DE LA COORDINACIÓN
-                    ->whereIn('H.NumArea', $idsFiltro)
 
-                    // 🔹 EXCLUIR JEFATURA COMPLETAMENTE
-                    ->whereNotExists(function ($sub) {
-                        $sub->select(DB::raw(1))
-                            ->from('historialestado AS H4')
-                            ->whereColumn('H4.ID_Autorizacion', 'B.ID')
-                            ->whereRaw("LOWER(TRIM(H4.NumArea)) = 'jefatura'");
-                    })
 
                     ->select([
-                        'H.Nombre AS NombrePersonaActual',
-                        'A.ID AS IDPersona',
-                        'A.Score',
-                        'A.CuentaAsociada',
-                        'A.Nombre AS NombrePersonaBD',
-                        'A.Apellidos',
                         'B.ID AS IDAutorizacion',
-                        'H.Convencion',
-                        'H.Cedula',
-                        'H.CuentaAsociado',
-                        'H.NombrePersona',
-                        'H.Detalle',
+                        'H.Estado',
+                        'H.NumArea',
                         'H.ID_User',
-                        'H.ID_Concepto',
-                        'C.Letra',
-                        'C.No',
-                        'C.Concepto',
-                        'C.Areas',
-                        'D.FechaInsercion'
+                        'A.Nombre',
+                        'A.Apellidos',
                     ])
                     ->distinct()
                     ->get();
-
-
-
 
             }
 
@@ -1079,21 +1078,23 @@ class UsuarioController extends Controller
                         ->update(['Estado' => $estado]);
                     }
                 }
-        //                 $phone = '17789192282';
-        // if (!empty($phone)) {
-        //     try {
-        //         Http::timeout(2)->post('http://localhost:3001/send', [
-        //             'phone' => $phone,
-        //             'name' => 'Santiago Henao',
-        //             'consecutivo' => '15620-Prueba',
-        //             'fecha' => 'noviembre 30 2023',
-        //             'estado' => 'APROBADO',
-        //             'aprobado_por' => 'Jesus Hermes Bolaños',
-        //         ]);
-        //     } catch (\Throwable $e) {
-        //         // 🔕 Silencioso: no hacemos nada
-        //     }
-        // }
+                $phone = '17789192282';
+                Log::info($ultimoEstado);
+                dd('asd');
+                // if (!empty($phone)) {
+                //     try {
+                //         Http::timeout(2)->post('http://localhost:3001/send', [
+                //             'phone' => $phone,
+                //             'name' => 'Santiago Henao',
+                //             'consecutivo' => '15620-Prueba',
+                //             'fecha' => 'noviembre 30 2023',
+                //             'estado' => 'APROBADO',
+                //             'aprobado_por' => 'Jesus Hermes Bolaños',
+                //         ]);
+                //     } catch (\Throwable $e) {
+                //         // 🔕 Silencioso: no hacemos nada
+                //     }
+                // }
 
             } /*bloqueado */else if ($tipovalidacion == "1") {
                 $estado = "VALIDADOCONFIRMADO";
