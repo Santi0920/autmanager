@@ -955,7 +955,7 @@
                                                                             name="Observaciones" 
                                                                             onkeydown="return event.key != 'Enter';" 
                                                                             placeholder="Escribe aquí tu Observación." 
-                                                                            ${item.Observaciones == null ? '' : `value="${item.Observaciones}"`} 
+                                                                            ${item.Observaciones == null ? '' : ``} 
                                                                             required
                                                                         >
                                                                     </div>
@@ -2913,14 +2913,69 @@
             
 
 
-            function enviarFormulario() {
-                const btn = document.querySelector("#pagare #solicitar");
-                if (btn) {
-                    btn.disabled = true;
-                    btn.innerText = "Enviando...";
-                }
-                return true;
-            }
+            document.getElementById('pagare').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const form = this;
+                const btn = document.querySelector("#solicitar");
+                const formData = new FormData(form);
+
+                btn.disabled = true;
+                btn.innerText = "Enviando...";
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerText = "Solicitar";
+
+                    if (data.dd) {
+                        console.log('DD AJAX:', data.data);
+
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'DEBUG',
+                            html: `<pre style="text-align:left">${JSON.stringify(data.data, null, 2)}</pre>`
+                        });
+
+                        return; // corta ejecución
+                    } else if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            html: data.message
+                        });
+
+                        form.reset();
+                        document.getElementById('cuerpo').innerHTML = '';
+                        $('#personas').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: data.message
+                        });
+                    }
+                })
+                .catch(error => {
+                    btn.disabled = false;
+                    btn.innerText = "Solicitar";
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error inesperado',
+                        text: 'Ocurrió un error al enviar la solicitud'
+                    });
+
+                    console.error(error);
+                });
+            });
 
             function fileUploaded(id) {
                 // Obtiene el elemento input de tipo file dinámicamente
