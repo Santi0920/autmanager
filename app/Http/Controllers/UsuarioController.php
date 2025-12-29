@@ -263,9 +263,25 @@ class UsuarioController extends Controller
 
         if(!empty($consultabloqueado)){
             if($consultabloqueado[0]->total > 0){
-                return back()->with("incorrecto2", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID_Autorizacion."</span> se encuentra <span class='text-danger fw-bold'>BLOQUEADA</span>. Por favor contactar con <span class='fw-bold'>Dirección General</span>.</span>");
+                return response()->json([
+                    'success' => false,
+                    'message' => "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID_Autorizacion."</span> se encuentra <span class='text-danger fw-bold'>BLOQUEADA</span>. Por favor contactar con <span class='fw-bold'>Dirección General</span>.</span>"
+                ]);
             }
         }
+
+
+        // $autorizacionesCorregir = DB::select(
+        //     'SELECT DISTINCT ID_Autorizacion
+        //     FROM historialestado
+        //     WHERE Estado = ?',
+        //     ['CORREGIR']
+        // );
+
+        // return response()->json([
+        //     'dd' => true,
+        //     'data' => $autorizacionesCorregir
+        // ]);
 
         if($rol == "Coordinacion"){
             $estado = "REMITIDO";
@@ -298,7 +314,10 @@ class UsuarioController extends Controller
         // PROCESO PARA SUBIR ARCHIVO SOPORTE********
         // Verificar si se subió un archivo
         if (!$request->hasFile('SoporteScore')) {
-            return back()->withErrors(['message' => 'No se subió ningún archivo.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'No se subió ningún archivo.'
+            ]);
         }
 
         $file = $request->file('SoporteScore');
@@ -306,7 +325,10 @@ class UsuarioController extends Controller
 
         // Verificar si el archivo es PDF
         if ($file->getClientOriginalExtension() != 'pdf' && $file->getClientOriginalExtension() != 'PDF') {
-            return back()->withErrors(['message' => 'Solo se pueden subir archivos PDF.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo se pueden subir archivos PDF.'
+            ]);
         }
 
         $newFilename = 'Soporte-' . $id_insertado.'.pdf';
@@ -323,7 +345,10 @@ class UsuarioController extends Controller
         // Subir el archivo
         $dir = 'Storage/files/soporteautorizaciones/';
         if (!$file->move($dir, $newFilename)) {
-            return back()->withErrors(['message' => 'Error al subir el archivo.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al subir el archivo.'
+            ]);
         }
 
 
@@ -348,8 +373,11 @@ class UsuarioController extends Controller
             $ip
         ]);
 
-
-        return back()->with("correcto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>" . $id_insertado . "</span> está en trámite.</span>");
+        return response()->json([
+            'success' => true,
+            'message' => "<span class='fs-4'>La autorización No. 
+            <span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>" . $id_insertado . "</span> está en trámite.</span>"
+        ]);
 
 
 
@@ -941,6 +969,8 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'QUE PASO')
                         ->orWhere('Estado', 'RECIBIDO')
                         ->orWhere('Estado', 'STAND BY')
+                        ->orWhere('Estado', 'ANULADO')
+                        ->orWhere('Estado', 'CORREGIR')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
                 ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico

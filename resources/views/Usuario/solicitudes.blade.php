@@ -87,7 +87,6 @@
                 method="POST"
                 enctype="multipart/form-data"
                 class="col m-3 premium-form"
-                onsubmit="return enviarFormulario()"
             >
                 @csrf
 
