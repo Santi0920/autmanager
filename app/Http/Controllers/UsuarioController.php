@@ -305,24 +305,33 @@ class UsuarioController extends Controller
             ->implode('</span> <span class="badge bg-primary fw-bold">');
 
 
-        return response()->json([
-            'success' => false,
-            'message' => "
-                <span class='fs-5'>
-                    Las autorizaciones 
-                    <span class='badge bg-primary fw-bold'>
-                        {$ids}
+        if (count($autorizacionesCorregir) > 1) {
+
+            $ids = collect($autorizacionesCorregir)
+                ->pluck('ID_Autorizacion')
+                ->unique()
+                ->values()
+                ->implode('</span> <span class="badge bg-primary fw-bold">');
+
+            return response()->json([
+                'success' => false,
+                'message' => "
+                    <span class='fs-5'>
+                        La(s) autorizacion(es) 
+                        <span class='badge bg-primary fw-bold'>
+                            {$ids}
+                        </span>
+                        se encuentran actualmente en estado 
+                        <span class='text-primary fw-bold'>CORREGIR</span>.
+                        <br><br>
+                        Para continuar con la creación de una nueva solicitud, 
+                        por favor <span class='fw-bold'>reutilice</span> una autorización existente 
+                        o <span class='fw-bold'>realice las correcciones necesarias</span> sobre las solicitudes pendientes.
                     </span>
-                    se encuentran actualmente en estado 
-                    <span class='text-primary fw-bold'>CORREGIR</span>.
-                    <br><br>
-                    Para continuar con la creación de una nueva solicitud, 
-                    por favor <span class='fw-bold'>reutilice</span> una autorización existente 
-                    o <span class='fw-bold'>realice las correcciones necesarias</span> sobre las solicitudes pendientes.
-                </span>
-            "
-        ], 409);
-        
+                "
+            ], 409);
+        }
+
         if($rol == "Coordinacion"){
             $estado = "REMITIDO";
         }else{
