@@ -1160,6 +1160,7 @@ class UsuarioController extends Controller
 
 
             } else{
+                
                 $estado = "DONE";
                 if($tipovalidacion !== "CORREGIRJEFATURA"){
                     if ($ultimoEstado) {
@@ -1187,6 +1188,7 @@ class UsuarioController extends Controller
                     $tipovalidacion = $tipovalidacion;
 
                 }
+
             }
 
 
@@ -1216,6 +1218,7 @@ class UsuarioController extends Controller
 
         }else{
             if(($tipovalidacion == null || $request->Cedulamodal != null)){
+ 
                 $cedula = $request->Cedulamodal;
 
                 $documentos = DB::select('SELECT ID, DocumentoSoporte, NumArea FROM historialestado WHERE ID_Autorizacion = ?', [$id]);
@@ -1424,7 +1427,7 @@ class UsuarioController extends Controller
                         'ID_Persona' => $idpersona,
                         'ID_Concepto' => $idconcepto,
                         'ID_User' => session('id'),
-                        'NumArea' => $ultimoNumArea,
+                        'NumArea' => $ultimoNumArea == 'C9' ? session('rol') : $ultimoNumArea,
                         'NomArea' => session('agenciau'),
                         'Estado' => $estado,
                         'Observaciones' => $observaciones,
@@ -1448,7 +1451,7 @@ class UsuarioController extends Controller
                         'ID_Persona' => $idpersona,
                         'ID_Concepto' => $idconcepto,
                         'ID_User' => session('id'),
-                        'NumArea' => $ultimoNumArea,
+                        'NumArea' => $ultimoNumArea == 'C9' ? session('rol') : $ultimoNumArea,
                         'NomArea' => session('agenciau'),
                         'Estado' => $estado,
                         'Nombre' => session('name'),
