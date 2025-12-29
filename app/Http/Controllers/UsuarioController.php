@@ -596,39 +596,39 @@ class UsuarioController extends Controller
             }
             
             if (count($agenciasIdArray) > 0) {
+                //APARECEN RECHAZADOS AQUI Y FALTARIA BLOQUEADO
+
                 $idsFiltro = array_merge($agenciasIdArray, [$coordinacionVariable]);
+                
+
                 $autorizaciones = DB::table('autorizaciones_2 AS B')
-                    ->join('historialestado AS H', 'H.ID_Autorizacion', '=', 'B.ID')
+                    ->join('historialestado AS H', function ($join) {
+                        $join->on('H.ID_Autorizacion', '=', 'B.ID');
+                    })
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
                     ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
                     ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-
                     // 🔹 SOLO el último estado
                     ->whereRaw('H.ID = (
                         SELECT MAX(H3.ID)
                         FROM historialestado AS H3
                         WHERE H3.ID_Autorizacion = B.ID
                     )')
+                    ->whereNotIn('H.Estado', [
+                        'APROBADO',
+                        'STAND BY',
+                        'ENTERADO',
+                        'ANULADO',
+                        'TERMINADO',
+                    ])
 
-                    // 🔹 FILTRO DE ESTADOS (AGRUPADO)
-                    ->where(function ($q) {
-                        $q->whereNotIn('H.Estado', [
-                            'APROBADO',
-                            'STAND BY',
-                            'ENTERADO',
-                            'ANULADO',
-                            'TERMINADO',
-                        ])
-                        ->orWhereIn('H.Estado', [
-                            'REMITIDOCORREGIR',
-                            'REMITIDO'
-                        ]);
-                    })
-
-                    // 🔹 EL ÚLTIMO ESTADO DEBE SER DE LA COORDINACIÓN
+                    // EL ÚLTIMO ESTADO DEBE SER DE LA COORDINACIÓN
                     ->whereIn('H.NumArea', $idsFiltro)
+                    ->orWhere('H.Estado', 'REMITIDOCORREGIR')
+                    ->orWhere('H.Estado', 'REMITIDO')
 
-                    // 🔹 EXCLUIR JEFATURA COMPLETAMENTE
+
+                    // EXCLUIR JEFATURA COMPLETAMENTE
                     ->whereNotExists(function ($sub) {
                         $sub->select(DB::raw(1))
                             ->from('historialestado AS H4')
@@ -1079,21 +1079,21 @@ class UsuarioController extends Controller
                         ->update(['Estado' => $estado]);
                     }
                 }
-        //                 $phone = '17789192282';
-        // if (!empty($phone)) {
-        //     try {
-        //         Http::timeout(2)->post('http://localhost:3001/send', [
-        //             'phone' => $phone,
-        //             'name' => 'Santiago Henao',
-        //             'consecutivo' => '15620-Prueba',
-        //             'fecha' => 'noviembre 30 2023',
-        //             'estado' => 'APROBADO',
-        //             'aprobado_por' => 'Jesus Hermes Bolaños',
-        //         ]);
-        //     } catch (\Throwable $e) {
-        //         // 🔕 Silencioso: no hacemos nada
-        //     }
-        // }
+                        $phone = '17789192282';
+        if (!empty($phone)) {
+            try {
+                Http::timeout(2)->post('http://localhost:3001/send', [
+                    'phone' => $phone,
+                    'name' => 'Santiago Henao',
+                    'consecutivo' => '15620-Prueba',
+                    'fecha' => 'noviembre 30 2023',
+                    'estado' => 'APROBADO',
+                    'aprobado_por' => 'Jesus Hermes Bolaños',
+                ]);
+            } catch (\Throwable $e) {
+                // 🔕 Silencioso: no hacemos nada
+            }
+        }
 
             } /*bloqueado */else if ($tipovalidacion == "1") {
                 $estado = "VALIDADOCONFIRMADO";
