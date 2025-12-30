@@ -598,6 +598,7 @@ class UsuarioController extends Controller
             if (count($agenciasIdArray) > 0) {
                 $idsFiltro = array_merge($agenciasIdArray, [$coordinacionVariable]);
                 $userId = $coordinaciones[0]->id;
+        
                 $autorizaciones = DB::table('autorizaciones_2 AS B')
                     ->join('historialestado AS H', 'H.ID_Autorizacion', '=', 'B.ID')
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
@@ -639,6 +640,7 @@ class UsuarioController extends Controller
                                 'PROCEDER',
                                 'SOLUCIONAR',
                                 'QUE PASO',
+                                'TRÁMITE'
                             ])
                             ->whereExists(function ($sub) use ($idsFiltro) {
                                 $sub->select(DB::raw(1))
