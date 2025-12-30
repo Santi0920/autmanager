@@ -2998,7 +2998,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Error inesperado',
-                        text: 'Ocurrió un error al enviar la solicitud'
+                        text: data.message
                     });
 
                     console.error(error);
