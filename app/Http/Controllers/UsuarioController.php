@@ -640,7 +640,8 @@ class UsuarioController extends Controller
                                 'PROCEDER',
                                 'SOLUCIONAR',
                                 'QUE PASO',
-                                'TRÁMITE'
+                                'TRÁMITE',
+                                'VALIDADO'
                             ])
                             ->whereExists(function ($sub) use ($idsFiltro) {
                                 $sub->select(DB::raw(1))
