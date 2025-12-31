@@ -71,6 +71,8 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::get('/solicitudesenviados/datatable', [UsuarioController::class, 'enviado'])->name('data.enviado');
 
+    Route::get('/solicitudesterminado/datatable', [UsuarioController::class, 'terminado'])->name('data.terminado');
+
     Route::get('/solicitudesreportes/datatable', [UsuarioController::class, 'reportes'])->name('data.reporte');
 
     Route::get('/solicitudesvencido/datatable', [UsuarioController::class, 'vencido'])->name('data.vencido');

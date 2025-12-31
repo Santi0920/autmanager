@@ -969,7 +969,7 @@
                                                             && row.historialEstadosUnicos && row.historialEstadosUnicos.length
                                                             && row.ultimoEnviadoa === '{{ session("name") }}'
                                                             && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
-                                                            && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'TERMINADO' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
+                                                            && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
                                                         )
                                                     ? 
                                                     `
@@ -2053,7 +2053,7 @@
                                                     (
                                                         row.ultimoEnviadoa === '{{ session("name") }}' &&
                                                         '{{ session("rol") }}' !== 'Gerencia' &&
-                                                        row.UltimoEstado !== 'RECIBIDO'
+                                                        row.UltimoEstado !== 'RECIBIDO' && row.UltimoEstado !== 'TERMINADO'
                                                     )
                                                         ? `
 
@@ -2317,6 +2317,7 @@
                         <button id="btnBloqueado" class="btn btn-danger shadow-sm fw-bold btn-filter" title="BLOQUEADOS" style="transition: transform 0.2s;">BLOQUEADOS</button>
                         <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
                         <button id="btnEnviados" class="btn btn-secondary shadow-sm fw-bold btn-filter" title="ENVIADOS" style="transition: transform 0.2s;">ENVIADOS</button>
+                        <button id="btnTerminados" class="btn btn-success shadow-sm fw-bold btn-filter" title="TERMINADOS" style="transition: transform 0.2s;">TERMINADOS</button>
                         <button id="btnReportes" class="btn btn-primary shadow-sm fw-bold btn-filter" title="REPORTES" style="transition: transform 0.2s;">REPORTES</button>
                         <button id="btnVencidos" class="btn btn-danger shadow-sm fw-bold btn-filter" title="VENCIDOS" style="transition: transform 0.2s;">VENCIDOS</button>
                         ` :
@@ -2325,6 +2326,7 @@
                         <button id="btnA" class="btn btn-success shadow-sm fw-bold btn-filter" title="APROBADOS" style="transition: transform 0.2s;">APROBADOS</button>
                         <button id="btnAnulado" class="btn btn-info shadow-sm fw-bold btn-filter" title="ANULADOS" style="transition: transform 0.2s;">ANULADOS</button>
                         <button id="btnStandBy" class="btn btn-dark shadow-sm fw-bold btn-filter" title="STAND BY" style="transition: transform 0.2s;">STAND BY</button>
+                        <button id="btnTerminados" class="btn btn-success shadow-sm fw-bold btn-filter" title="TERMINADOS" style="transition: transform 0.2s;">TERMINADOS</button>
                         <button id="btnReportes" class="btn btn-primary shadow-sm fw-bold btn-filter" title="REPORTES" style="transition: transform 0.2s;">REPORTES</button>
                         <button id="btnVencidos" class="btn btn-danger shadow-sm fw-bold btn-filter" title="VENCIDOS" style="transition: transform 0.2s;">VENCIDOS</button>
                         `
@@ -2405,6 +2407,12 @@
                     lastAjaxUrl = '{{ route("data.enviado") }}';
                     table.ajax.url(lastAjaxUrl).load();
                     setActiveButton('#btnEnviados');
+                });
+
+                $('#btnTerminados').on('click', function() {
+                    lastAjaxUrl = '{{ route("data.terminado") }}';
+                    table.ajax.url(lastAjaxUrl).load();
+                    setActiveButton('#btnTerminados');
                 });
 
                 $('#btnReportes').on('click', function() {
