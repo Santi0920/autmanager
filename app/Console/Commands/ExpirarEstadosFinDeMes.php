@@ -20,7 +20,7 @@ class ExpirarEstadosFinDeMes extends Command
         $estadosValidos = [
             'TRÁMITE', 'REMITIDO', 'VALIDADO', 'ACLARAR',
             'ENCARGARSE', 'PROCEDER', 'SOLUCIONAR', 'QUE PASO',
-            'RECIBIDO', 'STAND BY', 'DESBLOQUEADO', 'REMITIDO', 'STAND BY'
+            'RECIBIDO', 'STAND BY', 'DESBLOQUEADO', 'REMITIDO', 'STAND BY', 'CORREGIR', 'ENVIADO'
         ];
 
         // Consultar todas las autorizaciones a evaluar
