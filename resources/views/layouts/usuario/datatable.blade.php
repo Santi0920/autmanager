@@ -190,7 +190,7 @@
 
                             let textoEstado = '';
                             if (fechaSolicitud && fechaValidacion) {
-                                const dif = calcularDiferencia(fechaSolicitud, fechaValidacion);
+                                const dif = calcularDiferencia(fechaValidacion, fechaSolicitud);
                                 textoEstado = `<span class="text-dark fw-semibold">
                                                     Coordinación:
                                                     <span class="fw-normal">${dif.horas};${dif.minutos};${dif.segundos}</span>
@@ -1133,7 +1133,7 @@
                                                             : 'SOLICITUD DE AUTORIZACIONES'}
                                                         <br>
                                                         <span style="font-size: 40px; color: #00bfff;">
-                                                            No. ${row.IDAutorizacion}
+                                                            No. ${row.IDAutorizacion} ${row.UltimaSECautorizacion ? ' | SEC: ' + row.UltimaSECautorizacion : ''}
                                                         </span>
                                                     </div>
 
