@@ -21,7 +21,7 @@
                         </a>
 
                         <span class="text-secondary fw-semibold fs-2 fw-bold" id="fechaActual"></span>
-
+                        @include('layouts.usuario.modalautorizacion.modalenviara')
                     </div>
 
                 </div>

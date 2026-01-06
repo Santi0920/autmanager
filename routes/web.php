@@ -85,6 +85,9 @@ Route::middleware(['session.expired'])->group(function () {
 
     Route::post('/bug-report', [UsuarioController::class, 'store'])->name('bug-report.store');
 
+    Route::post('/solicitudes/enviar', [UsuarioController::class, 'enviar'])
+    ->name('autorizaciones.enviar');
+
 
     //SOLICITUDES ANTIGUAS
     Route::get('/gerencia', function () {

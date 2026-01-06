@@ -244,7 +244,7 @@
                 background-color: #1eb200;
             }
             .estado-container {
-                max-height: calc(2 * 70px); /* Ajusta 40px si tus labels tienen otra altura */
+                max-height: calc(2 * 40px); /* Ajusta 40px si tus labels tienen otra altura */
                 overflow-y: auto;
                 overflow-x: hidden;
                 

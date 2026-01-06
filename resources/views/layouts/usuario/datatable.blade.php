@@ -190,7 +190,7 @@
 
                             let textoEstado = '';
                             if (fechaSolicitud && fechaValidacion) {
-                                const dif = calcularDiferencia(fechaValidacion, fechaSolicitud);
+                                const dif = calcularDiferencia(fechaSolicitud, fechaValidacion);
                                 textoEstado = `<span class="text-dark fw-semibold">
                                                     Coordinación:
                                                     <span class="fw-normal">${dif.horas};${dif.minutos};${dif.segundos}</span>
@@ -687,7 +687,7 @@
                                                                             <span>STAND BY</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
+                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" onclick="abrirModalEnviar(${id})" required>
                                                                             <span>ENVIAR A</span>
                                                                         </label>
 
@@ -719,15 +719,6 @@
                                                                             required
                                                                         >
                                                                     </div>
-                                                                    <div class="col-md-12" id="enviarselect_${id}">
-                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
-                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ← SOLO USAR CUANDO EN EL ESTADO ENVIAR A</option>
-                                                                            @foreach ($usuariosEnviara as $usuario)
-                                                                                <option value="{{$usuario->id}}">{{$usuario->codigo}} - {{$usuario->name}} - {{$usuario->agenciau}}</option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </div>
-
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -866,7 +857,7 @@
                                                                             <span>STAND BY</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
+                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" onclick="abrirModalEnviar(${id})" required>
                                                                             <span>ENVIAR A</span>
                                                                         </label>
                                                                     </div>
@@ -894,17 +885,7 @@
                                                                             placeholder="Escribe aquí tu Observación." 
                                                                             required
                                                                         >
-                                                                    </div>
-                                                                    
-                                                                    <div class="col-md-12" id="enviarselect_${id}">
-                                                                        <select class="form-select form-select-lg border border-danger-subtle bg-secondary-subtle fw-bold text-dark w-100 w-sm-100 p-3" name="Destinatario">
-                                                                            <option value="" selected disabled>→ Seleccionar funcionario a enviar... ← SOLO USAR CUANDO EN EL ESTADO ENVIAR A</option>
-                                                                            @foreach ($usuariosEnviara as $usuario)
-                                                                                <option value="{{$usuario->id}}">{{$usuario->codigo}} - {{$usuario->name}} - {{$usuario->agenciau}}</option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </div>
-                                                                    
+                                                                    </div>  
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -967,7 +948,7 @@
                                                     : (
                                                             '{{ session("rol") }}' !== 'Gerencia' && row.UltimoEstado !== 'RECIBIDO'
                                                             && row.historialEstadosUnicos && row.historialEstadosUnicos.length
-                                                            && row.ultimoEnviadoa === '{{ session("name") }}'
+                                                            // && row.ultimoEnviadoa === '{{ session("name") }}'
                                                             && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
                                                             && (row.UltimoEstado === 'ENVIADO' || row.UltimoEstado === 'ACLARAR' || row.UltimoEstado === 'ENCARGARSE' || row.UltimoEstado === 'PROCEDER' || row.UltimoEstado === 'SOLUCIONAR' || row.UltimoEstado === 'QUE PASO')
                                                         )
@@ -1596,7 +1577,7 @@
                                                                                     <span>STAND BY</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
+                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}"  onclick="abrirModalEnviar(${id})" required>
                                                                                     <span>ENVIAR A</span>
                                                                                 </label>
 
@@ -1727,7 +1708,7 @@
                                                                                     <span>STAND BY</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" required>
+                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" onclick="abrirModalEnviar(${id})" required>
                                                                                     <span>ENVIAR A</span>
                                                                                 </label>
                                                                             </div>
@@ -2051,7 +2032,7 @@
                                                     )
                                                     ||
                                                     (
-                                                        row.ultimoEnviadoa === '{{ session("name") }}' &&
+                                                        // row.ultimoEnviadoa === '{{ session("name") }}' &&
                                                         '{{ session("rol") }}' !== 'Gerencia' &&
                                                         row.UltimoEstado !== 'RECIBIDO' && row.UltimoEstado !== 'TERMINADO'
                                                     )

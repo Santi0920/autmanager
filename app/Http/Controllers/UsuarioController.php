@@ -606,6 +606,8 @@ class UsuarioController extends Controller
             $aut->historialEstadosUnicos = $desdeClave;
     }
 
+
+
     public function solicitudes(Request $request)
     {
         if (!session('email')) {
@@ -789,43 +791,59 @@ class UsuarioController extends Controller
             if (count($agenciasIdArray) > 0) {
                 $idsFiltro = array_merge($agenciasIdArray, [$coordinacionVariable === 'C9' ? '' : $coordinacionVariable]);
                 $userId = $coordinaciones[0]->id;
-        
+              
                 $autorizaciones = DB::table('autorizaciones_2 AS B')
                     ->join('historialestado AS H', 'H.ID_Autorizacion', '=', 'B.ID')
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
 
-                    // 🔹 SOLO ÚLTIMO ESTADO
+                    // 🔹 ÚLTIMO ESTADO CORRECTO
                     ->whereRaw('H.ID = (
                         SELECT MAX(H3.ID)
                         FROM historialestado H3
                         WHERE H3.ID_Autorizacion = B.ID
+                        AND (
+                            -- CASO 1: EXISTE ESTADO NO ENVIADO → TOMAR ESE
+                            (
+                                H3.Estado <> "ENVIADO"
+                                AND NOT EXISTS (
+                                    SELECT 1
+                                    FROM historialestado HX
+                                    WHERE HX.ID_Autorizacion = B.ID
+                                    AND HX.Estado = "ENVIADO"
+                                )
+                            )
+
+                            -- CASO 2: SOLO ENVIADOS → TOMAR EL DEL USUARIO
+                            OR (
+                                H3.Estado = "ENVIADO"
+                                AND H3.ID_User = H.ID_User
+                            )
+                        )
                     )')
 
                     // 🔹 EXCLUIR ESTADOS FINALES
-                    ->whereNotIn('H.Estado', [
-                        'APROBADO',
-                        'STAND BY',
-                        'ENTERADO',
-                        'ANULADO',
-                        'TERMINADO'
-                    ])
-
-                    // 🔹 LÓGICA REAL
+                    ->whereNotExists(function ($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('historialestado AS HT')
+                            ->whereColumn('HT.ID_Autorizacion', 'B.ID')
+                            ->where('HT.Estado', 'TERMINADO');
+                    })
+                    // 🔹 LÓGICA DE VISIBILIDAD
                     ->where(function ($q) use ($idsFiltro, $userId) {
 
-                        // ✅ CASO 1: ENVIADO (asignado al usuario)
+                        // ✅ ENVIADO SOLO AL USUARIO
                         $q->where(function ($a) use ($userId) {
                             $a->where('H.Estado', 'ENVIADO')
                             ->where('H.ID_User', $userId);
                         });
 
-                        // ✅ CASO 2: PASÓ POR MI COORDINACIÓN
+                        // ✅ YA PASÓ POR MI ÁREA
                         $q->orWhere(function ($b) use ($idsFiltro) {
                             $b->whereIn('H.Estado', [
+                                'RECIBIDO',
                                 'CORREGIR',
                                 'REMITIDO',
                                 'REMITIDOCORREGIR',
-                                'RECIBIDO',
                                 'ACLARAR',
                                 'ENCARGARSE',
                                 'PROCEDER',
@@ -843,8 +861,6 @@ class UsuarioController extends Controller
                         });
                     })
 
-
-
                     ->select([
                         'B.ID AS IDAutorizacion',
                         'H.Estado',
@@ -855,6 +871,7 @@ class UsuarioController extends Controller
                     ])
                     ->distinct()
                     ->get();
+
 
             }
 
@@ -894,6 +911,12 @@ class UsuarioController extends Controller
                     'TRÁMITE',
                     'ENVIADO',
                     'BLOQUEADO',
+                    'PROCEDER',
+                    'SOLUCIONAR',
+                    'QUE PASO',
+                    'TERMINADO',
+                    'ACLARAR',
+                    'ENCARGARSE'
 
                 ])
                 ->select([
@@ -1222,30 +1245,6 @@ class UsuarioController extends Controller
 
 
 
-            }else if ($tipovalidacion == 'ENVIAR A') {
-                $estado = "VALIDADOCONFIRMADO";
-                $destinatario = $request->Destinatario;
-                $usuarioSelect = DB::select("SELECT * FROM users WHERE id = $destinatario");
-                $NumArea = $usuarioSelect[0]->codigo;
-                $NomArea = $usuarioSelect[0]->agenciau;
-
-
-                if($ultimoEstado->Estado != "REMITIDO"){
-                    if ($ultimoEstado) {
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
-                    }
-                }else{
-                    if ($ultimoEstado) {
-                    $estado = "REMITIDOCONFIRMADO";
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
-                    }
-                }
-
-                $nombre = $usuarioSelect[0]->name;
             }else if ($tipovalidacion == 'TERMINADO' || $tipovalidacion == 'ACLARAR' || $tipovalidacion == 'ENCARGARSE' || $tipovalidacion == 'PROCEDER' || $tipovalidacion == 'SOLUCIONAR' || $tipovalidacion == 'QUE PASO') {
 
                 $estado = "RECIBIDOCONFIRMADO";
@@ -1676,6 +1675,152 @@ class UsuarioController extends Controller
         }
 
     }
+
+
+
+
+
+
+    public function enviar(Request $request)
+    {
+        try {
+            $estado = "VALIDADOCONFIRMADO";
+
+            $fechadeSolicitud = Carbon::now('America/Bogota');
+            Carbon::setLocale('es');
+            $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
+            $id = $request->autorizacion_id;
+                        $ultimoEstado = DB::table('historialestado')
+                    ->where('ID_Autorizacion', $id)
+                    ->where(function ($query) {
+                        $query->where('Estado', 'TRÁMITE')
+                            ->orWhere('Estado', 'REMITIDO')
+                            ->orWhere('Estado', 'VALIDADO')
+                            ->orWhere('Estado', 'TERMINADO')
+                            ->orWhere('Estado', 'ACLARAR')
+                            ->orWhere('Estado', 'ENCARGARSE')
+                            ->orWhere('Estado', 'PROCEDER')
+                            ->orWhere('Estado', 'SOLUCIONAR')
+                            ->orWhere('Estado', 'QUE PASO')
+                            ->orWhere('Estado', 'RECIBIDO')
+                            ->orWhere('Estado', 'STAND BY')
+                            ->orWhere('Estado', 'ANULADO')
+                            ->orWhere('Estado', 'CORREGIR')
+                            ->orWhere('Estado', 'DESBLOQUEADO');
+                    })
+                    ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
+                    ->first();
+            if($ultimoEstado->Estado != "REMITIDO"){
+                if ($ultimoEstado) {
+                DB::table('historialestado')
+                    ->where('ID', $ultimoEstado->ID)
+                    ->update(['Estado' => $estado]);
+                }
+            }else{
+                if ($ultimoEstado) {
+                $estado = "REMITIDOCONFIRMADO";
+                DB::table('historialestado')
+                    ->where('ID', $ultimoEstado->ID)
+                    ->update(['Estado' => $estado]);
+                }
+            }
+
+
+
+            foreach ($request->destinatarios as $destinatarioId) {
+
+                $usuario = DB::table('users')
+                    ->where('id', $destinatarioId)
+                    ->first();
+
+                if (!$usuario) {
+                    continue;
+                }
+
+
+                $numArea = $usuario->codigo; // valor por defecto
+
+                if ($usuario->rol === 'Coordinacion') {
+
+                    // Ej: "Coordinacion 1", "Coordinacion 3"
+                    if (preg_match('/Coordinacion\s+(\d+)/i', $usuario->agenciau, $match)) {
+                        $numArea = 'C' . $match[1]; // C1, C3, etc
+                    }
+
+                } elseif ($usuario->rol === 'Consultante') {
+
+                    $agencia = DB::table('agencias')
+                        ->where('NomArea', $usuario->agenciau)
+                        ->first();
+
+                    if ($agencia && !empty($agencia->NumAgencia)) {
+                        $numArea = $agencia->NumAgencia;
+                    }
+
+                } elseif ($usuario->rol === 'Jefatura') {
+
+                    $numArea = 'Jefatura';
+                }
+
+                $funcionariosEnviados[] = sprintf(
+                    '%s (%s - %s)',
+                    $usuario->name,
+                    $usuario->agenciau,
+                    $numArea
+                );
+
+                DB::table('historialestado')->insert([
+                    'NumArea'         => $numArea,
+                    'NomArea'         => $usuario->agenciau,
+                    'Observaciones'   => $request->Observaciones ?? null,
+                    'Estado'          => 'ENVIADO',
+                    'Nombre'          => $usuario->name,
+                    'Fecha'           => $fechadeSolicitud,
+                    'FechaString'     => $fechaStringfechadeSolicitud,
+                    'ID_User'         => $usuario->id,
+                    'ID_Autorizacion' => $request->autorizacion_id
+                ]);
+            }
+
+            $badges = collect($funcionariosEnviados)->map(function ($nombre) {
+                return "<span class='badge bg-secondary fw-semibold me-1 mb-1'>{$nombre}</span>";
+            })->implode(' ');
+
+    
+
+            return response()->json([
+                'success' => true,
+                'message' => "
+                    <div class='text-start'>
+                        <div class='fw-bold mb-2'>
+                            ✅ Se envió correctamente la solicitud No.
+                            <span class='badge bg-primary fw-bold'>{$request->autorizacion_id}</span>
+                            a los siguientes funcionarios:
+                        </div>
+                        <div class='d-flex flex-wrap gap-1'>
+                            {$badges}
+                        </div>
+                    </div>
+                ",
+                'debug' => [
+                    'autorizacion'  => $request->autorizacion_id,
+                    'destinatarios' => $request->destinatarios
+                ]
+            ]);
+
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar el envío',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function aprobados(Request $request)
     {
