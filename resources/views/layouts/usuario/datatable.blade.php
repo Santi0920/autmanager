@@ -2035,7 +2035,7 @@
                                                         // row.ultimoEnviadoa === '{{ session("name") }}' &&
                                                         ('{{ session("rol") }}' !== 'Gerencia' &&
                                                         row.UltimoEstado !== 'RECIBIDO' && row.UltimoEstado !== 'TERMINADO') &&
-                                                        ('{{ session("rol") }}' !== 'Gerencia' && row.UltimoEstado !== 'CORREGIR' && row.UltimoEstado !== 'REMITIDO')
+                                                        (('{{ session("rol") }}' !== 'Gerencia' && '{{ session("rol") }}' !== 'Consultante') && row.UltimoEstado !== 'CORREGIR' && row.UltimoEstado !== 'REMITIDO' && row.UltimoEstado !== 'VALIDADO')
                                                     )
                                                         ? `
 
