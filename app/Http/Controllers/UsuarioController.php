@@ -1740,19 +1740,17 @@ class UsuarioController extends Controller
                 }
 
 
-                $numArea = $usuario->codigo; // valor por defecto
-
-                if ($usuario->rol === 'Coordinacion') {
-
-                    // Ej: "Coordinacion 1", "Coordinacion 3"
-                    if (preg_match('/Coordinacion\s+(\d+)/i', $usuario->agenciau, $match)) {
-                        $numArea = 'C' . $match[1]; // C1, C3, etc
-                    }
-
-                } elseif ($usuario->rol === 'Consultante') {
+                $numArea = $usuario->codigo ?? 'SIN_CODIGO'; // valor por defecto
+                $funcionariosEnviados = [];
+                    if ($usuario->rol === 'Coordinacion') {
+                        if (!empty($usuario->agenciau) &&
+                            preg_match('/Coordinacion\s+(\d+)/i', $usuario->agenciau, $match)) {
+                            $numArea = 'C' . $match[1];
+                        }
+                    } elseif ($usuario->rol === 'Consultante') {
 
                     $agencia = DB::table('agencias')
-                        ->where('NomArea', $usuario->agenciau)
+                        ->where('NameAgencia', $usuario->agenciau)
                         ->first();
 
                     if ($agencia && !empty($agencia->NumAgencia)) {
