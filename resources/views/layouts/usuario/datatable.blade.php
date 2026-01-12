@@ -105,7 +105,7 @@
                                 const dif1 = calcularDiferencia(fechaSolicitud, fechaValidacion);
                                 const dif2 = calcularDiferencia(fechaValidacion, new Date());
 
-                                console.log(fechaSolicitud, fechaValidacion);
+                          
                                 
 
                                 demoracoord = `<span title="Fecha Solicitud: ${row.UltimaFechaDoneTramite ?? row.ultimaRemitidoCorregir} . Fecha Validacion: ${row.UltimaFechaCoordinacion}" class="">
@@ -333,58 +333,6 @@
                             
                             function renderHistorial(item, id) {
 
-                                    const inputcedula = `
-                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark ms-2 me-2">
-                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${item.Cedula}" required onkeydown="disableEnterKey(event)">
-                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <path d="M12 16v-4" />
-                                                        <path d="M12 8h.01" />
-                                                    </svg>
-                                                </span>
-                                        </div>
-                                        `
-                                    const inputcuenta = `
-                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${item.CuentaAsociado}" required onkeydown="disableEnterKey(event)">
-                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <path d="M12 16v-4" />
-                                                        <path d="M12 8h.01" />
-                                                    </svg>
-                                                </span>
-                                            </div>
-                                        `
-
-                                    const inputnombre = `
-                                            <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                                                <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${item.NombrePersona}" required onkeydown="disableEnterKey(event)">
-                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <path d="M12 16v-4" />
-                                                        <path d="M12 8h.01" />
-                                                    </svg>
-                                                </span>
-                                            </div>
-                                        `
-
-
-                                    const inputconvencion = `
-                                        <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                                                <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${item.Convencion}" required onkeydown="disableEnterKey(event)">
-                                                <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                                        <circle cx="12" cy="12" r="10" />
-                                                        <path d="M12 16v-4" />
-                                                        <path d="M12 8h.01" />
-                                                    </svg>
-                                                </span>
-                                            </div>
-                                        `
-
 
                                         document.querySelectorAll('.modal').forEach(modal => {
 
@@ -419,16 +367,7 @@
 
 
 
-                                    if (item.ID_Concepto == 41) {
-                                        var inputs = (inputcedula + inputconvencion);
-                                    } else if (item.ID_Concepto == 22) {
-                                        var inputs =(`
-                                            <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
-                                            <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
-                                        `);
-                                    }else {
-                                        var inputs =(inputcedula + inputnombre + inputcuenta);
-                                    }
+
 
                                     const mesesEnEspanol = [
                                         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -499,12 +438,16 @@
                                                             <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
                                                                 ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
                                                                     <div class="mb-3 w-100" id="id">
-                                                                        <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" 
-                                                                            onChange="autorizacionesModalChange(${row.IDAutorizacion},'${item.Cedula}','${item.CuentaAsociado}', '${item.NombrePersona}', '${item.Convencion}', event)" required>
+                                                                        <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" required>
                                                                             <option selected class="fw-bold" value="${item.ID_Concepto}">**Concepto Actual** -> ${item.Concepto}</option>
                                                                             @include('layouts.optionmodal')
                                                                         </select>
+
+
+         
+
                                                                     </div>
+
                                                                 ` : `<span class="fs-5">${item.Concepto} - @include('layouts.optionvercodigo')</span>`}
                                                             </div>
                                                             <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
@@ -519,7 +462,44 @@
                                                                 ? `
                                                                         <div class="row g-0">
                                                                             <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
-                                                                                ${inputs}
+                                                                                <div class="input-group mb-0 rounded-3 me-2">
+                                                                                        <input class="form-control fs-5 border border-dark ms-1" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${item.Cedula}" required onkeydown="disableEnterKey(event)">
+                                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                                <path d="M12 16v-4" />
+                                                                                                <path d="M12 8h.01" />
+                                                                                            </svg>
+                                                                                        </span>
+
+                                                                                        <input class="form-control fs-5 border-end border-dark ms-1" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${item.CuentaAsociado}" required onkeydown="disableEnterKey(event)">
+                                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                                <path d="M12 16v-4" />
+                                                                                                <path d="M12 8h.01" />
+                                                                                            </svg>
+                                                                                        </span>
+
+                                                                                        <input class="form-control fs-5 border-end border-dark ms-1" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${item.NombrePersona}" required onkeydown="disableEnterKey(event)">
+                                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                                <path d="M12 16v-4" />
+                                                                                                <path d="M12 8h.01" />
+                                                                                            </svg>
+                                                                                        </span>
+
+                                                                                        <input class="form-control fs-5 border-end border-dark tooltip4 ms-1" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${item.Convencion ?? ''}" placeholder="${item.Convencion ?? 'Disposición-N/A'}" required onkeydown="disableEnterKey(event)">
+                                                                                        <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
+                                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                                <path d="M12 16v-4" />
+                                                                                                <path d="M12 8h.01" />
+                                                                                            </svg>
+                                                                                        </span>
+
+                                                                                </div>
                                                                             </div>
                                                                             <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
                                                                                 <span class="fs-5">${item.Cedula}
@@ -1364,54 +1344,73 @@
                                                             // Si el estado es "EN TRÁMITE", renderiza el bloque especial
                                                             if (item.Estado === 'TRÁMITE' || item.Estado === 'DONE' || item.Estado === 'REMITIDO'  || item.Estado === 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDOCORREGIR' && item.Estado !== 'VALIDADO') {
                                                                 return `
-                                                <div class="row g-0 text-center">
-                                                    <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
-                                                        <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">TRÁMITE</span></span>
-                                                    </div>
-                                                    <div class="col-sm-12 col-md-12 col-lg-10">
-                                                        <div class="row g-0 justify-content-center hover-trigger"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#secondaryData_${id}"
-                                                        style="cursor:pointer;">
-                                                            <div class="row g-0 row-cols-2 justify-content-center">
-                                                                <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
-                                                                    <span class="fs-5">${item.NumArea} - ${item.NomArea}(<b>${item.CodigoUsuario}</b>) - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
-                                                                </div>
-                                                                <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
-                                                                    <span class="mb-0 fs-5">${item.FechaString}</span>
+                                                    <div class="row g-0 text-center">
+                                                        <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center rounded-0 bg-warning-subtle border p-3 border border-dark">
+                                                            <span class="h1 fw-bold mb-0">T<br><span class="fs-5 fw-normal">TRÁMITE</span></span>
+                                                        </div>
+                                                        <div class="col-sm-12 col-md-12 col-lg-10">
+                                                            <div class="row g-0 justify-content-center hover-trigger"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#secondaryData_${id}"
+                                                            style="cursor:pointer;">
+                                                                <div class="row g-0 row-cols-2 justify-content-center">
+                                                                    <div class="col-md-9 d-flex align-items-center justify-content-start border p-2">
+                                                                        <span class="fs-5">${item.NumArea} - ${item.NomArea}(<b>${item.CodigoUsuario}</b>) - <b>${item.Nombre}</b><br>👉(Click para mostrar)👈</span>
+                                                                    </div>
+                                                                    <div class="col-md-3 d-flex align-items-center justify-content-center border p-2">
+                                                                        <span class="mb-0 fs-5">${item.FechaString}</span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}">
-                                                            @csrf
-                                                            <div class="collapse" id="secondaryData_${id}">
-                                                                <div class="row g-0 row-cols-2 d-flex justify-content-start">
-                                                                    <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
-                                                                        ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
-                                                                            <div class="mb-3 w-100" id="id">
-                                                                                <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" 
-                                                                                    onChange="autorizacionesModalChange(${row.IDAutorizacion},'${item.Cedula}','${item.CuentaAsociado}', '${item.NombrePersona}', '${item.Convencion}', event)" required>
-                                                                                    <option selected class="fw-bold" value="${item.ID_Concepto}">**Concepto Actual** -> ${item.Concepto}</option>
-                                                                                    @include('layouts.optionmodal')
-                                                                                </select>
-                                                                            </div>
-                                                                        ` : `<span class="fs-5">${item.Concepto} - @include('layouts.optionvercodigo')</span>`}
+                                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}">
+                                                                @csrf
+                                                                <div class="collapse" id="secondaryData_${id}">
+                                                                    <div class="row g-0 row-cols-2 d-flex justify-content-start">
+                                                                        <div class="col-sm-6 col-md-9 col-lg-9 d-flex align-items-center justify-content-start border p-2">
+                                                                            ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
+                                                                                <div class="mb-3 w-100" id="id">
+                                                                                    <select class="form-select form-select-lg" name="tautorizacionmodal" id="autorizacionesmodal${row.IDAutorizacion}" 
+                                                                                        onChange="autorizacionesModalChange(${row.IDAutorizacion},'${item.Cedula}','${item.CuentaAsociado}', '${item.NombrePersona}', '${item.Convencion}', event)" required>
+                                                                                        <option selected class="fw-bold" value="${item.ID_Concepto}">**Concepto Actual** -> ${item.Concepto}</option>
+                                                                                        @include('layouts.optionmodal')
+                                                                                    </select>
+                                                                                </div>
+                                                                            ` : `<span class="fs-5">${item.Concepto} - @include('layouts.optionvercodigo')</span>`}
+                                                                        </div>
+                                                                        <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
+                                                                            ${item.ID_Concepto == 41 ? `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${item.Convencion}</span>` : ``}
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
-                                                                        ${item.ID_Concepto == 41 ? `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${item.Convencion}</span>` : ``}
-                                                                    </div>
-                                                                </div>
 
 
-                                                            
-                                                                ${
-                                                                    (row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'
-                                                                        ? `
-                                                                                <div class="row g-0">
-                                                                                    <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
-                                                                                        ${inputs}
+                                                                
+                                                                    ${
+                                                                        (row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'
+                                                                            ? `
+                                                                                    <div class="row g-0">
+                                                                                        <div class="d-inline-flex" style="white-space: nowrap; flex-wrap: nowrap;" id="desactivar">
+                                                                                            ${inputs}
+                                                                                        </div>
+                                                                                        <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
+                                                                                            <span class="fs-5">${item.Cedula}
+                                                                                                ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
+                                                                                                - ${item.NombrePersona} -
+                                                                                                ${
+                                                                                                    item.Score >= 650
+                                                                                                        ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                        : (item.Score === 'S/E'
+                                                                                                            ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                            : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
+                                                                                                }
+                                                                                            </span>
+                                                                                        </div>
                                                                                     </div>
-                                                                                    <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
+                                                                                `
+                                                                                
+                                                                            : (item.Estado == 'DONE' || item.Estado == 'TRÁMITE'|| item.Estado == 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDO')
+                                                                                ? `
+                                                                                <div class="row g-0">
+                                                                                    <div class="col-md-12 d-flex justify-content-start border p-2">
                                                                                         <span class="fs-5">${item.Cedula}
                                                                                             ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
                                                                                             - ${item.NombrePersona} -
@@ -1425,71 +1424,52 @@
                                                                                         </span>
                                                                                     </div>
                                                                                 </div>
-                                                                            `
-                                                                            
-                                                                        : (item.Estado == 'DONE' || item.Estado == 'TRÁMITE'|| item.Estado == 'REMITIDOCONFIRMADO' || item.Estado == 'REMITIDO')
-                                                                            ? `
-                                                                            <div class="row g-0">
-                                                                                <div class="col-md-12 d-flex justify-content-start border p-2">
-                                                                                    <span class="fs-5">${item.Cedula}
-                                                                                        ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
-                                                                                        - ${item.NombrePersona} -
-                                                                                        ${
-                                                                                            item.Score >= 650
-                                                                                                ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                : (item.Score === 'S/E'
-                                                                                                    ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                    : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
-                                                                                        }
-                                                                                    </span>
-                                                                                </div>
+                                                                            `: ''
+                                                                            )
+                                                                    }
+
+
+                                                                    <div class="row g-0">
+                                                                        ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
+                                                                            <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                                                <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" 
+                                                                                    id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${escapeHTML(item.Detalle)}</textarea>
                                                                             </div>
-                                                                        `: ''
-                                                                        )
-                                                                }
+                                                                            <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
+                                                                                <label for="file_${row.IDAutorizacion}" class="labelFile" style="cursor:pointer;">
+                                                                                    <span>
+                                                                                        <img src="img/pdf.png" style="height:4.5rem">
+                                                                                    </span>
+                                                                                    <p id="uploadMessage_${row.IDAutorizacion}">Adjunta el archivo aquí!</p>
+                                                                                </label>
+                                                                                
+                                                                                <!-- Input oculto -->
+                                                                                <input 
+                                                                                    class="input d-none" 
+                                                                                    name="Soporte_${row.IDAutorizacion}" 
+                                                                                    id="file_${row.IDAutorizacion}" 
+                                                                                    type="file" 
+                                                                                    accept="application/pdf" 
+                                                                                    onchange="fileUploaded(${row.IDAutorizacion})" 
+                                                                                />
 
+                                                                                <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${item.DocumentoSoporte}" />
+                                                                            </div>
 
-                                                                <div class="row g-0">
-                                                                    ${row.UltimoEstado == 'CORREGIR' && (item.Estado != 'REMITIDOCONFIRMADO') && item.Estado !== 'DONE'  ? `
-                                                                        <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                            <textarea class="mb-0 w-100" style="resize: vertical; height: 100px; border-radius: 10px" 
-                                                                                id="Detalle" name="Detalle_${row.IDAutorizacion}" required>${escapeHTML(item.Detalle)}</textarea>
-                                                                        </div>
-                                                                        <div class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center p-3">
-                                                                            <label for="file_${row.IDAutorizacion}" class="labelFile" style="cursor:pointer;">
-                                                                                <span>
-                                                                                    <img src="img/pdf.png" style="height:4.5rem">
-                                                                                </span>
-                                                                                <p id="uploadMessage_${row.IDAutorizacion}">Adjunta el archivo aquí!</p>
-                                                                            </label>
-                                                                            
-                                                                            <!-- Input oculto -->
-                                                                            <input 
-                                                                                class="input d-none" 
-                                                                                name="Soporte_${row.IDAutorizacion}" 
-                                                                                id="file_${row.IDAutorizacion}" 
-                                                                                type="file" 
-                                                                                accept="application/pdf" 
-                                                                                onchange="fileUploaded(${row.IDAutorizacion})" 
-                                                                            />
-
-                                                                            <input type="hidden" id="DocumentoSoporte_${row.IDAutorizacion}" value="${item.DocumentoSoporte}" />
-                                                                        </div>
-
-                                                                    ` : `
-                                                                        <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
-                                                                            <span class="mb-0">${escapeHTML(item.Detalle)}</span>
-                                                                        </div>
-                                                                        <a href="Storage/files/soporteautorizaciones/${item.DocumentoSoporte}" 
-                                                                            class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" 
-                                                                            target="__blank">
-                                                                            <img src="img/pdf.png" style="height:4.5rem">
-                                                                        </a>
-                                                                    `}
-                                                                </div>
-                                                            </div>    
-                                                        </form>
-                                                    </div>
+                                                                        ` : `
+                                                                            <div class="col-sm-12 col-md-9 text-start border p-2 fs-5">
+                                                                                <span class="mb-0">${escapeHTML(item.Detalle)}</span>
+                                                                            </div>
+                                                                            <a href="Storage/files/soporteautorizaciones/${item.DocumentoSoporte}" 
+                                                                                class="col-sm-12 col-md-3 d-flex align-items-center justify-content-center btn btn-outline-info rounded-0 p-3" 
+                                                                                target="__blank">
+                                                                                <img src="img/pdf.png" style="height:4.5rem">
+                                                                            </a>
+                                                                        `}
+                                                                    </div>
+                                                                </div>    
+                                                            </form>
+                                                        </div>
 
                                             
                                                 ${
@@ -2760,78 +2740,7 @@
             }
 
 
-            function autorizacionesModalChange(id, cedula, cuenta, nombrepersona, convencion, event) {
-                // Obtener el valor seleccionado del elemento select
-                const valorSeleccionado = $(`#autorizacionesmodal${id}`).val();
-                $('#desactivar').addClass('d-none');
-
-                const inputcedula = `
-                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cedulamodal${id}" name="Cedulamodal" value="${cedula}" required onkeydown="disableEnterKey(event)">
-                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip1" data-bs-toggle="tooltip" data-bs-placement="right" title="Cédula / NIT">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="M12 16v-4" />
-                                    <path d="M12 8h.01" />
-                                </svg>
-                            </span>
-                    </div>
-                    `
-
-                const inputcuenta = `
-                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Cuentamodal${id}" name="Cuentamodal" value="${cuenta}" required onkeydown="disableEnterKey(event)">
-                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip2" data-bs-toggle="tooltip" data-bs-placement="right" title="Cuenta">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="M12 16v-4" />
-                                    <path d="M12 8h.01" />
-                                </svg>
-                            </span>
-                        </div>
-                    `
-
-                const inputnombre = `
-                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                            <input class="form-control fs-5 border-end border-dark" style="border-radius: 7px 0 0 7px;" id="Nombremodal${id}" name="Nombremodal" value="${nombrepersona}" required onkeydown="disableEnterKey(event)">
-                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip3" data-bs-toggle="tooltip" data-bs-placement="right" title="Nombre / Nombre Empresa">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="M12 16v-4" />
-                                    <path d="M12 8h.01" />
-                                </svg>
-                            </span>
-                        </div>
-                    `
-
-
-                const inputconvencion = `
-                    <div class="input-group mb-0 w-25 border rounded-3 border-dark me-2">
-                            <input class="form-control fs-5 border-end border-dark tooltip4" style="border-radius: 7px 0 0 7px;" id="Convencionmodal${id}" name="Convencionmodal" value="${convencion}" required onkeydown="disableEnterKey(event)">
-                            <span class="input-group-text bg-success-subtle border-dark text-primary tooltip4" data-bs-toggle="tooltip" data-bs-placement="right" title="Convenciones">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="M12 16v-4" />
-                                    <path d="M12 8h.01" />
-                                </svg>
-                            </span>
-                        </div>
-                    `
-
-                if (valorSeleccionado == 41) {
-                    $("#inputs" + id).html(inputcedula + inputconvencion);
-                } else if (valorSeleccionado == 22) {
-                    $("#inputs" + id).html(`
-                        <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Cedulamodal${id}" name="Cedulamodal" value="805.004.034-9" disabled onkeydown="disableEnterKey(event)"></input>
-                        <input class="mb-0 w-25 fs-5 me-3" style="resize: vertical; border-radius: 10px; width:30px" id="Nombremodal${id}" name="Nombremodal" value="COOPSERP" disabled onkeydown="disableEnterKey(event)"></input>
-                    `);
-                }else {
-                    $("#inputs"+id).html(inputcedula + inputnombre + inputcuenta);
-                }
-
-                $('[data-bs-toggle="tooltip"]').tooltip();
-            }
-
+ 
 
             $('#autorizaciones').on('change', function() {
 

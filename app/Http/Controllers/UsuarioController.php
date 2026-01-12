@@ -1350,7 +1350,7 @@ class UsuarioController extends Controller
 
         }else{
             if(($tipovalidacion == null || $request->Cedulamodal != null)){
- 
+                               
                 $cedula = $request->Cedulamodal;
 
                 $documentos = DB::select('SELECT ID, DocumentoSoporte, NumArea FROM historialestado WHERE ID_Autorizacion = ?', [$id]);
@@ -1551,7 +1551,7 @@ class UsuarioController extends Controller
                 if (isset($filename)) {
                     // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
                     // $cedula = $existingCedula[0]->Cedula;
-
+                    Log::info('Cedula: ' . $cedula);
                     $id_insertadohistorial = DB::table('historialestado')
                     ->insertGetId([
                         'Cedula' => $cedula,

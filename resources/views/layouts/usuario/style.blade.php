@@ -47,7 +47,7 @@
                     content: "Convención";
                     position: absolute;
                     bottom: calc(100% + 5px); /* Cambia la posición a la parte superior */
-                    left: 50%;
+                    left: 35%;
                     transform: translateX(-50%);
                     padding: 5px;
                     background-color: rgba(0, 0, 0, 0.8);
