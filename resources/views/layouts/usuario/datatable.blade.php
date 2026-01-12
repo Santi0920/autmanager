@@ -806,7 +806,20 @@
                                             </div>
                                         </div>
                                         
-                                        ${((('{{ session('rol') }}' === 'Gerencia') && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID && (row.UltimoEstado === 'VALIDADO' || row.UltimoEstado === 'DESBLOQUEADO'))
+                                        ${((
+                                                '{{ session('rol') }}' === 'Gerencia' &&
+                                                row.UltimoEstado !== 'APROBADO' &&
+                                                row.UltimoEstado !== 'ANULADO' &&
+                                                row.UltimoEstado !== 'TERMINADO' &&
+                                                row.UltimoEstado !== 'ENTERADO' &&
+                                                row.UltimoEstado !== 'VENCIDO' &&
+                                                (
+                                                    item.ID === row.historialEstadosUnicos.at(-1)?.ID ||
+                                                    item.Estado === 'VALIDADO' ||
+                                                    item.Estado === 'DESBLOQUEADO'
+                                                )
+                                            )
+
                                                     ? 
                                                     `
                                                         <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
@@ -873,11 +886,24 @@
                                                     
                                                     `
                                         :  (
-                                                '{{ session("rol") }}' === 'Gerencia'
-                                                && row.historialEstadosUnicos && row.historialEstadosUnicos.length
-                                                && item.ID === row.historialEstadosUnicos[row.historialEstadosUnicos.length - 1].ID
-                                                && (row.UltimoEstado === 'BLOQUEADO' || row.UltimoEstado === 'STAND BY' || row.UltimoEstado === 'CORREGIR' || row.UltimoEstado === 'APROBADO')
+                                            '{{ session("rol") }}' === 'Gerencia'
+                                            && row.historialEstadosUnicos?.length
+
+                                            && (
+                                                row.UltimoEstado === 'BLOQUEADO'
+                                                || row.UltimoEstado === 'STAND BY'
+                                                || row.UltimoEstado === 'CORREGIR'
+                                                || row.UltimoEstado === 'APROBADO'
                                             )
+                                            && item.Estado !== 'CORREGIR'
+                                            && item.Estado !== 'VALIDADOCONFIRMADO'
+                                            && item.Estado !== 'BLOQUEADO'
+                                            && item.Estado !== 'DESBLOQUEADO'
+                                            && item.Estado !== 'REMITIDOCONFIRMADO'
+                                            && item.Estado !== 'STAND BY'
+                                            && item.Estado !== 'VALIDADO'
+                                        )
+
                                         ?
                                                     `
                                                         <form enctype="multipart/form-data" id="formValidarGerenciaAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
@@ -2659,32 +2685,21 @@
             //AJAX PARA GERENCIA
             function formValidarGerenciaAutorizacion(id, event) {
 
+                event.preventDefault();
+
                 var form = $("#formValidarGerenciaAutorizacion" + id);
 
                 if (form.data('submitted')) return;
-
                 form.data('submitted', true);
 
-                var formDataArray = form.serializeArray();
-
-                var estado, observaciones, destinatario;
-
-                formDataArray.forEach(function(input) {
-
-                    if (input.name === "Estado") {
-                        estado = input.value;
-                    } 
-                    else if (input.name === "Observaciones") {
-                        observaciones = input.value;
-                    }
-                    else if (input.name === "Destinatario") {
-                        destinatario = input.value;
-                    }
-                });
+                // ✅ DETECTAR EL ÚLTIMO RADIO SELECCIONADO SOLO EN ESTE FORM
+                var estado = form.find('input[name="Estado"]:checked').val();
+                var observaciones = form.find('input[name="Observaciones"]').val();
+                var destinatario = form.find('input[name="Destinatario"]').val();
 
                 console.log("Estado:", estado, "Observaciones:", observaciones, "Destinatario:", destinatario);
 
-                if (typeof estado === 'undefined') {
+                if (!estado) {
                     alert('Por favor, seleccione un estado.');
                     form.data('submitted', false);
                     return;
@@ -2702,8 +2717,8 @@
                     success: function(response) {
                         if (response) {
                             $(`#exampleModal_${id}`).modal('hide');
-                            const currentPage = table.page();
 
+                            const currentPage = table.page();
                             table.ajax.reload(function () {
                                 const pageInfo = table.page.info();
 
@@ -2712,6 +2727,7 @@
                                 }
                             }, false);
 
+                            // 🔒 SWAL.FIRE INTACTO (IGUAL AL TUYO)
                             Swal.fire({
                                 icon: 'success',
                                 title: "¡ACTUALIZADO!",
@@ -2723,9 +2739,11 @@
                     },
                     error: function(error) {
                         console.log('Error', error);
+                        form.data('submitted', false);
                     }
                 });
             }
+
 
 
 

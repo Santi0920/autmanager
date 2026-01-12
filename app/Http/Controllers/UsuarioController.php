@@ -2080,6 +2080,7 @@ class UsuarioController extends Controller
                 ->limit(200)
                 ->orderByDesc('B.ID')
                 ->where('H.Bloqueado', '!=', '1')
+                ->where('H.Estado', '!=', 'ANULADO')
                 ->select([
                     'A.ID AS IDPersona',
                     'A.Score',
