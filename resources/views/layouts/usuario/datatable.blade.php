@@ -820,6 +820,7 @@
                                                 row.UltimoEstado !== 'PROCEDER' &&
                                                 row.UltimoEstado !== 'SOLUCIONAR' &&
                                                 row.UltimoEstado !== 'QUE PASO' &&
+                                                row.UltimoEstado !== 'CORREGIR' &&
                                                 (
                                                     item.ID === row.historialEstadosUnicos.at(-1)?.ID ||
                                                     item.Estado === 'VALIDADO' ||
