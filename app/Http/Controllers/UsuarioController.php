@@ -2260,6 +2260,8 @@ class UsuarioController extends Controller
                 'RECIBIDOCONFIRMADO',
                 'RECIBIDO',
                 'VENCIDO',
+                'REMITIDO',
+                'REMITIDOCONFIRMADO',
             ])
             ->select([
                 'A.ID AS IDPersona',
