@@ -906,7 +906,7 @@
                                             )
                                             && item.Estado !== 'CORREGIR'
                                             && item.Estado !== 'VALIDADOCONFIRMADO'
-                                            && item.Estado !== 'BLOQUEADO'
+                                 
                                             && item.Estado !== 'DESBLOQUEADO'
                                             && item.Estado !== 'REMITIDOCONFIRMADO'
                                             && item.Estado !== 'STAND BY'
