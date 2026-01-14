@@ -813,6 +813,13 @@
                                                 row.UltimoEstado !== 'TERMINADO' &&
                                                 row.UltimoEstado !== 'ENTERADO' &&
                                                 row.UltimoEstado !== 'VENCIDO' &&
+                                                row.UltimoEstado !== 'ENVIADO' &&
+                                                row.UltimoEstado !== 'RECIBIDO' &&
+                                                row.UltimoEstado !== 'ACLARAR' &&
+                                                row.UltimoEstado !== 'ENCARGARSE' &&
+                                                row.UltimoEstado !== 'PROCEDER' &&
+                                                row.UltimoEstado !== 'SOLUCIONAR' &&
+                                                row.UltimoEstado !== 'QUE PASO' &&
                                                 (
                                                     item.ID === row.historialEstadosUnicos.at(-1)?.ID ||
                                                     item.Estado === 'VALIDADO' ||
