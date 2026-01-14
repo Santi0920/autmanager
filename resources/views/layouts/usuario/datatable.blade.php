@@ -821,6 +821,7 @@
                                                 row.UltimoEstado !== 'SOLUCIONAR' &&
                                                 row.UltimoEstado !== 'QUE PASO' &&
                                                 row.UltimoEstado !== 'CORREGIR' &&
+                                                row.UltimoEstado !== 'BLOQUEADO' &&
                                                 (
                                                     item.ID === row.historialEstadosUnicos.at(-1)?.ID ||
                                                     item.Estado === 'VALIDADO' ||
