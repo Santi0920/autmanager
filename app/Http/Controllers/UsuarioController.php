@@ -1017,7 +1017,6 @@ class UsuarioController extends Controller
     {
 
         $tipovalidacion = $request->Estado;
-        Log::info($tipovalidacion. "siu");
         //fecha de la solicitud de la jefatura corregida
         $fechadeSolicitud = Carbon::now('America/Bogota');
         Carbon::setLocale('es');
@@ -1352,7 +1351,7 @@ class UsuarioController extends Controller
 
         }else{
             if(($tipovalidacion == null || $request->Cedulamodal != null)){
-                               
+                         
                 $cedula = $request->Cedulamodal;
 
                 $documentos = DB::select('SELECT ID, DocumentoSoporte, NumArea FROM historialestado WHERE ID_Autorizacion = ?', [$id]);
@@ -1371,6 +1370,7 @@ class UsuarioController extends Controller
                     $estado = "DONE";
                 }
                 if ($ultimoDocumento) {
+
                     DB::table('historialestado')
                     ->where('ID', $ultimoDocumento->ID)
                     ->update(['Estado' => $estado]);
@@ -1402,6 +1402,7 @@ class UsuarioController extends Controller
                     $file->move(public_path('Storage/files/soporteautorizaciones'), $filename);
                 }
 
+                
 
                 $tipoautorizacion = $request->CodigoAutorizacion;
                 $convencion = null;
@@ -1419,6 +1420,7 @@ class UsuarioController extends Controller
                     $idconcepto = $existingConcepto[0]->ID;
                 }
 
+
                 //DISPOSICIONES
                 if($tipoautorizacion == '41'){
 
@@ -1429,6 +1431,7 @@ class UsuarioController extends Controller
                     do {
                         try {
                             $response = Http::get($url . 'nombre/' . $cedula);
+
                             $data = $response->json();
                         // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
                             break;
@@ -1441,15 +1444,19 @@ class UsuarioController extends Controller
                     if ($estado == '200') {
                         $nombre = $data['asociado']['NOMBRES'];
                         $cuenta = $data['asociado']['CUENTA'];
-                    }else{
-                        return back()->with("incorrecto", "¡PERSONA NO EXISTE EN AS400!");
                     }
 
                     $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
 
                     if(empty($existingPerson)){
-                        $nombre = $data['asociado']['NOMBRES'];
-                        $cuenta = $data['asociado']['CUENTA'];
+                        if(isset($response)){
+                            $nombre = $request->Nombremodal;
+                            $cuenta = $request->Cuentamodal;
+                        }else{
+                            $nombre = $data['asociado']['NOMBRES'];
+                            $cuenta = $data['asociado']['CUENTA'];
+                        }
+
                     }else{
                         //traer el ID
                         $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
@@ -1578,6 +1585,7 @@ class UsuarioController extends Controller
                     // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
                     return response()->json(['message' => 'Datos recibidos correctamente']);
                 }else{
+
                     $id_insertadohistorial = DB::table('historialestado')
                     ->insertGetId([
                         'Cedula' => $cedula,
