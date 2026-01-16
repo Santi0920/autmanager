@@ -1277,6 +1277,8 @@ class UsuarioController extends Controller
                 if($ultimoEstado->Estado == "TRÁMITE"){
                     DB::table('historialestado')
                         ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
+                        ->where('Estado', 'TRÁMITE')
+                        ->orwhere('Estado', 'DONE')
                         ->update(['Observaciones' => 'NADA']);
                 }
 

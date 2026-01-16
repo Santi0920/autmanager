@@ -133,7 +133,7 @@
 
 
                             var Contenido = `
-                                ${row.Concepto}
+                                ${row.UltimoConcepto}
                                 <div class="fw-bold text-primary">
                                     ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
                                 </div>
@@ -200,7 +200,7 @@
                             }
 
                             var Contenido = `
-                                ${row.Concepto}
+                                ${row.UltimoConcepto}
                                 <div class="fw-bold text-primary">
                                     ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
                                     <div>${textoEstado}</div>
