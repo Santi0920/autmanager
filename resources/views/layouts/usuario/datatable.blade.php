@@ -590,10 +590,19 @@
                                                         @csrf
                                                         <div class="row g-0">
                                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark ${row.UltimoEstado === 'TRÁMITE' ? 'bg-dark-subtle' : ''}">
+                                                                ${row.UltimoConceptoID == '17' ?
+                                                                `<label class="label">
+                                                                    <input value="INFORMADO" type="radio" name="Estado" required>
+                                                                    <span>INFORMADO</span>
+                                                                </label>`
+                                                                :
+                                                                `
                                                                 <label class="label">
                                                                     <input value="VALIDADO" type="radio" name="Estado" required>
                                                                     <span>VALIDAR</span>
                                                                 </label>
+                                                                `
+                                                                }
                                                                 <label class="label">
                                                                     <input 
                                                                         type="radio" 
