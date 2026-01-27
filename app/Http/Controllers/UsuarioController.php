@@ -537,7 +537,6 @@ class UsuarioController extends Controller
 
             $ultimoConceptoID = DB::table('historialestado')
                 ->where('ID_Autorizacion', $aut->IDAutorizacion)
-                ->where('ID_Concepto', '=', '17')
                 ->orderByDesc('ID')
                 ->first();
 
