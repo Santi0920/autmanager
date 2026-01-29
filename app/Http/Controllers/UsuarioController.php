@@ -537,12 +537,11 @@ class UsuarioController extends Controller
 
             $ultimoConceptoID = DB::table('historialestado')
                 ->where('ID_Autorizacion', $aut->IDAutorizacion)
-                ->orderByDesc('ID')
-                ->first();
+                ->whereNotNull('ID_Concepto')   // 👈 clave
+                ->orderByDesc('ID')           
+                ->value('ID_Concepto');          // trae directo el valor
 
-            $aut->UltimoConceptoID = $ultimoConceptoID
-                ? $ultimoConceptoID->ID_Concepto
-                : null;
+            $aut->UltimoConceptoID = $ultimoConceptoID;
 
             $ultimoEnviadoa = DB::table('historialestado')
                 ->where('ID_Autorizacion', $aut->IDAutorizacion)
