@@ -916,7 +916,8 @@ class UsuarioController extends Controller
                     'QUE PASO',
                     'TERMINADO',
                     'ACLARAR',
-                    'ENCARGARSE'
+                    'ENCARGARSE',
+                    'VENCIDO',
 
                 ])
                 ->select([
