@@ -851,7 +851,6 @@ class UsuarioController extends Controller
                                 'VALIDADO',
                                 'BLOQUEADO',
                                 'DESBLOQUEADO',
-                                'VENCIDO',
                             ])
                             ->whereExists(function ($sub) use ($idsFiltro) {
                                 $sub->select(DB::raw(1))
