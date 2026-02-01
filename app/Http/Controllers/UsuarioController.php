@@ -824,8 +824,9 @@ class UsuarioController extends Controller
                         $sub->select(DB::raw(1))
                             ->from('historialestado AS HT')
                             ->whereColumn('HT.ID_Autorizacion', 'B.ID')
-                            ->where('HT.Estado', 'TERMINADO');
+                            ->whereIn('HT.Estado', ['TERMINADO', 'VENCIDO']);
                     })
+
                     // 🔹 LÓGICA DE VISIBILIDAD
                     ->where(function ($q) use ($idsFiltro, $userId) {
 
