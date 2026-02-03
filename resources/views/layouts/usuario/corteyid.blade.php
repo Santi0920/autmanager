@@ -165,4 +165,16 @@
         opacity: 1;
         transform: translateX(-50%) translateY(-5px);
     }
+
+    @media (max-width: 600px) {
+
+        .tooltip-custom {
+            cursor: default; 
+        }
+
+        .tooltip-custom::after {
+            display: none !important; 
+        }
+    }
+
 </style>

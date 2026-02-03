@@ -234,7 +234,7 @@
                         data: 'UltimoEstado',
                         render: function(data, type, row) {
                             ultimoEstado = row.UltimoEstado
-                            if (ultimoEstado == "REMITIDO" || ultimoEstado == "VALIDADO") {
+                            if (ultimoEstado == "REMITIDO" || ultimoEstado == "VALIDADO" || ultimoEstado == "INFORMADO") {
                                 var Estado =
                                     '<div class="btn btn-info shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;"><span class="d-none">1</span>REMITIDO A GERENCIA</div>';
                             }else if (ultimoEstado == "CORREGIR") {
@@ -592,8 +592,8 @@
                                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex flex-column align-items-center align-items-lg-start justify-content-start border p-3 border-dark ${row.UltimoEstado === 'TRÁMITE' ? 'bg-dark-subtle' : ''}">
                                                                 ${row.UltimoConceptoID == '17' ?
                                                                 `<label class="label">
-                                                                    <input value="VALIDADO" type="radio" name="Estado" required>
-                                                                    <span>VALIDAR</span>
+                                                                    <input value="INFORMADO" type="radio" name="Estado" required>
+                                                                    <span>INFORMADO</span>
                                                                 </label>`
                                                                 :
                                                                 `
@@ -768,7 +768,7 @@
                                                     return `
                                         <div class="row g-0 text-center">
                                             <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center ${
-                                                item.Estado === 'VALIDADO' ? 'bg-success-subtle' :
+                                                item.Estado === 'VALIDADO' || item.Estado === 'INFORMADO' || item.Estado === 'INFORMADOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'RECIBIDOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'VALIDADOCONFIRMADO' ? 'bg-success-subtle' :
                                                 item.Estado === 'REMITIDOCONFIRMADO' ? 'bg-warning-subtle' :
@@ -786,6 +786,8 @@
                                                     <span class="fs-5 fw-normal">
                                                         ${item.Estado == "VALIDADOCONFIRMADO" 
                                                             ? "VALIDADO" 
+                                                            : item.Estado == "INFORMADOCONFIRMADO" 
+                                                            ? "INFORMADO" 
                                                             : item.Estado == "REMITIDOCONFIRMADO" 
                                                             ? "REMITIDO" 
                                                             : item.Estado == "ENVIADO" 
@@ -1255,7 +1257,7 @@
                                                                                 '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">AN - ANULADO</button>' :
                                                                                 row.UltimoEstado == "STAND BY" ?
                                                                                 '<button class="btn btn-dark shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">STAND BY</button>' :
-                                                                                row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" ?
+                                                                                row.UltimoEstado == "REMITIDO" || row.UltimoEstado == "VALIDADO" || row.UltimoEstado == "INFORMADO" ?
                                                                                 '<button class="btn btn-info shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">REMITIDO A GERENCIA</button>' :
                                                                                 row.UltimoEstado == "DESBLOQUEADO" ?
                                                                                 '<button class="btn btn-secondary shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%; font-weight: 600; font-size: 14px;">DESBLOQUEADO</button>' :
@@ -1655,7 +1657,7 @@
                                                             return `
                                                 <div class="row g-0 text-center">
                                                     <div class="col-sm-12 col-md-12 col-lg-2 d-flex align-items-center justify-content-center ${
-                                                        item.Estado === 'VALIDADO' ? 'bg-success-subtle' :
+                                                        item.Estado === 'VALIDADO' || item.Estado === 'INFORMADO' || item.Estado === 'INFORMADOCONFIRMADO' ? 'bg-success-subtle' :
                                                         item.Estado === 'RECIBIDOCONFIRMADO' ? 'bg-success-subtle' :
                                                         item.Estado === 'VALIDADOCONFIRMADO' ? 'bg-success-subtle' :
                                                         item.Estado === 'REMITIDOCONFIRMADO' ? 'bg-warning-subtle' :
@@ -1672,6 +1674,8 @@
                                                             <span class="fs-5 fw-normal">
                                                                 ${item.Estado == "VALIDADOCONFIRMADO" 
                                                                     ? "VALIDADO" 
+                                                                    : item.Estado == "INFORMADOCONFIRMADO"
+                                                                    ? "INFORMADO"
                                                                     : item.Estado == "REMITIDOCONFIRMADO" 
                                                                     ? "REMITIDO" 
                                                                     : item.Estado == "ENVIADO" 
@@ -2000,7 +2004,7 @@
                                                     </div>
 
                                                     `
-                                                    :   (((row.UltimoEstado === 'TRÁMITE' && row.NumArea != 'Jefatura') || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO') && '{{ session('rol') }}' === 'Gerencia')
+                                                    :   (((row.UltimoEstado === 'TRÁMITE' && row.NumArea != 'Jefatura') || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO' || row.UltimoEstado == 'INFORMADO') && '{{ session('rol') }}' === 'Gerencia')
 
                                                         ? `
                                                         <div class="text-center p-3">
@@ -2058,7 +2062,7 @@
                                                     (
                                                         // row.ultimoEnviadoa === '{{ session("name") }}' &&
                                                         ('{{ session("rol") }}' !== 'Gerencia' &&
-                                                        row.UltimoEstado !== 'RECIBIDO' && row.UltimoEstado !== 'TERMINADO') &&
+                                                        row.UltimoEstado !== 'RECIBIDO' && row.UltimoEstado !== 'TERMINADO' && row.UltimoEstado !== 'INFORMADO') &&
                                                         (('{{ session("rol") }}' !== 'Gerencia' && '{{ session("rol") }}' !== 'Consultante') && row.UltimoEstado !== 'CORREGIR' && row.UltimoEstado !== 'REMITIDO' && row.UltimoEstado !== 'VALIDADO')
                                                     )
                                                         ? `

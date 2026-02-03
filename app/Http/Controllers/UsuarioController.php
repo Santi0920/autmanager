@@ -852,6 +852,7 @@ class UsuarioController extends Controller
                                 'VALIDADO',
                                 'BLOQUEADO',
                                 'DESBLOQUEADO',
+                                'INFORMADO',
                             ])
                             ->whereExists(function ($sub) use ($idsFiltro) {
                                 $sub->select(DB::raw(1))
@@ -899,7 +900,8 @@ class UsuarioController extends Controller
                             $sub->where('H2.Estado', 'VALIDADO')
                                 ->orWhere('H2.Estado', 'REMITIDO')
                                 ->orWhere('H2.Estado', 'RECIBIDO')
-                                ->orWhere('H2.Estado', 'DESBLOQUEADO');
+                                ->orWhere('H2.Estado', 'DESBLOQUEADO')
+                                ->orWhere('H2.Estado', 'INFORMADO');
                         });
                 })
                 ->where('H.Bloqueado', '!=', '1')
@@ -967,7 +969,7 @@ class UsuarioController extends Controller
                         WHERE H3.ID_Autorizacion = B.ID
                         ORDER BY H3.ID DESC
                         LIMIT 1
-                    ))) NOT IN ("aprobado", "stand by", "anulado", "TERMINADO", "enterado", "vencido")')
+                    ))) NOT IN ("aprobado", "stand by", "anulado", "TERMINADO", "enterado", "vencido", "informado")')
                     ->whereExists(function ($query) {
                         $query->select(DB::raw(1))
                             ->from('historialestado AS H2')
@@ -1042,6 +1044,7 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'STAND BY')
                         ->orWhere('Estado', 'ANULADO')
                         ->orWhere('Estado', 'CORREGIR')
+                        ->orWhere('Estado', 'INFORMADO')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
                 ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
@@ -1226,7 +1229,7 @@ class UsuarioController extends Controller
 
             }else if ($tipovalidacion == 'ENTERADO') {
 
-                $estado = "VALIDADOCONFIRMADO";
+                $estado = "INFORMADOCONFIRMADO";
 
                 if($ultimoEstado->Estado != "REMITIDO"){
                     if ($ultimoEstado) {

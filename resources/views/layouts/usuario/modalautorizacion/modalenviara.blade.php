@@ -111,7 +111,6 @@ let autorizacionActual = null;
         document.querySelectorAll('.destinatarios').forEach(cb => cb.checked = false);
 
         const modal = new bootstrap.Modal(modalEl, {
-            backdrop: 'static',
             keyboard: false,
             focus: true
         });
@@ -179,24 +178,31 @@ let autorizacionActual = null;
 
             if (response.success) {
 
+                const modalEl = document.getElementById('modalEnviarA');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
                 Swal.fire({
                     icon: 'success',
                     title: 'ENVIADO CORRECTAMENTE',
                     html: response.message,
                     confirmButtonText: 'ACEPTAR',
-                    customClass: { confirmButton: 'swal-confirm-dark' }
+                    customClass: { confirmButton: 'swal-confirm-dark' },
+                    didClose: () => {
+                        // 🔥 RESTAURACIÓN COMPLETA
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+                        document.body.style.paddingRight = '';
+
+                        document.querySelectorAll('.modal-backdrop')
+                            .forEach(el => el.remove());
+                    }
                 });
 
                 $('#personas').DataTable().ajax.reload(null, false);
-
-                $('.modal-backdrop').remove();
-                $('body').removeClass('modal-open');
-                $('body').css('overflow', 'auto');
-
-                bootstrap.Modal.getInstance(
-                    document.getElementById('modalEnviarA')
-                ).hide();
-
             } else {
                 Swal.fire({
                     icon: 'error',
