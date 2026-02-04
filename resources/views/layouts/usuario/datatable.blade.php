@@ -1624,7 +1624,7 @@
                                                                                     name="Estado"
                                                                                     id="estado_enviara_${id}"
                                                                                     onclick="abrirModalEnviarDesdeRadio(event, ${id})">
-                                                                                    <span>ENVIAR As</span>
+                                                                                    <span>ENVIAR A</span>
                                                                                 </label>
 
                                                                             </div>

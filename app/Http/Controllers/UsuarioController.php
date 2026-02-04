@@ -25,7 +25,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
 
         // Traemos todo ordenado
-        $user = DB::select("SELECT * FROM concepto_autorizaciones ORDER BY No ASC, Letra ASC");
+        $user = DB::select("SELECT * FROM concepto_autorizaciones WHERE Activo = 1 ORDER BY No ASC, Letra ASC");
 
         // Agrupar por No
         $grupos = [];
