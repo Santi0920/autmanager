@@ -1044,6 +1044,7 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'STAND BY')
                         ->orWhere('Estado', 'ANULADO')
                         ->orWhere('Estado', 'CORREGIR')
+                        ->orWhere('Estado', 'VENCIDO')
                         ->orWhere('Estado', 'INFORMADO')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
@@ -4253,6 +4254,7 @@ class UsuarioController extends Controller
                     ->whereNotIn('H.Estado', ['STAND BY', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO', 'RECIBIDO'])
                     ->limit(200)
                     ->orderByDesc('B.ID')
+                    ->where('H.Estado', '!=', 'ANULADO')
                     ->select([
                         'A.ID AS IDPersona',
                         'A.Score',
@@ -4303,6 +4305,7 @@ class UsuarioController extends Controller
                         ->whereIn('H2.Estado', ['VENCIDO']);
                 })
                 ->where('H.Bloqueado', '!=', '1')
+                ->where('H.Estado', '!=', 'ANULADO')
                 ->limit(200)
                 ->orderByDesc('B.ID')
                 ->select([
@@ -4355,6 +4358,7 @@ class UsuarioController extends Controller
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
+                ->where('H.Estado', '!=', 'ANULADO')
                 ->limit(200)
                 ->orderByDesc('B.ID')
                 ->select([

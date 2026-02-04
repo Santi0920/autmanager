@@ -291,7 +291,7 @@
         @include('layouts.tooltipstyle')
 
         <!-- Notificacion inferior -->
-        <!-- @include('layouts.notification') -->
+        <!--  -->
 
         <!-- Solicitar celular si la cuenta no tiene vinculado un numero -->
         @include('layouts.celular')

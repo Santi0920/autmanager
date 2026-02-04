@@ -1281,7 +1281,7 @@ if (valorSeleccionado == "41") {
     </style>
     @include('layouts.tooltipstyle')
     </div>
-    @include('layouts.notification')
+    
     @include('layouts.celular')
     @include('layouts.footer')
     @include('layouts.retornar')

@@ -99,7 +99,7 @@
     </div>
     @if (session('rol') == 'Gerencia')
     @else
-        @include('layouts.notification')
+        
     @endif
     @include('layouts.celular')
     @include('layouts.footer')

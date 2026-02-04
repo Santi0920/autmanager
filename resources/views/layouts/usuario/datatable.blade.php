@@ -654,30 +654,34 @@
 
                                                                         ${row.UltimoConceptoID == '17' ?
                                                                         `<label class="label">
-                                                                            <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                            <input value="ENTERADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>ENTERADO</span>
                                                                         </label>` :
                                                                         `<label class="label">
-                                                                            <input value="APROBADO" type="radio" name="Estado" required>
+                                                                            <input value="APROBADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>APROBAR</span>
                                                                         </label>`
                                                                         }
 
                                                                         <label class="label">
-                                                                            <input value="CORREGIR" type="radio" name="Estado" required>
+                                                                            <input value="CORREGIR" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>RECHAZAR</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="BLOQUEADO" type="radio" name="Estado" required>
+                                                                            <input value="BLOQUEADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>BLOQUEAR</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="STAND BY" type="radio" name="Estado" required>
+                                                                            <input value="STAND BY" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>STAND BY</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" onclick="abrirModalEnviar(${id})" required>
-                                                                            <span>ENVIAR A</span>
+                                                                            <input value="ENVIAR A"
+                                                                            type="radio"
+                                                                            name="Estado"
+                                                                            id="estado_enviara_${id}"
+                                                                            onclick="abrirModalEnviarDesdeRadio(event, ${id})">
+                                                                            <span>ENVIAR As</span>
                                                                         </label>
 
                                                                     </div>
@@ -701,11 +705,11 @@
                                                                         <input 
                                                                             class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
                                                                             style="resize: horizontal;" 
-                                                                            id="Observaciones" 
+                                                                            id="Observaciones_${id}" 
                                                                             name="Observaciones" 
                                                                             onkeydown="return event.key != 'Enter';" 
                                                                             placeholder="Escribe aquí tu Observación." 
-                                                                            required
+                                                                            disabled
                                                                         >
                                                                     </div>
                                                                 </div>
@@ -849,28 +853,32 @@
                                                                     <div class="estado-container" id="radios_${id}">
                                                                         ${row.UltimoConceptoID == '17' ?
                                                                             `<label class="label">
-                                                                                <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                                <input value="ENTERADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                 <span>ENTERADO</span>
                                                                             </label>` :
                                                                             `<label class="label">
-                                                                                <input value="APROBADO" type="radio" name="Estado" required>
+                                                                                <input value="APROBADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                 <span>APROBAR</span>
                                                                             </label>`
                                                                         }
                                                                         <label class="label">
-                                                                            <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" required>
+                                                                            <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>RECHAZAR</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="1" type="radio" name="Estado" id="estado_bloquear" required>
+                                                                            <input value="1" type="radio" name="Estado" id="estado_bloquear" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>BLOQUEAR</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="STAND BY" type="radio" name="Estado" id="estado_standby" required>
+                                                                            <input value="STAND BY" type="radio" name="Estado" id="estado_standby" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>STAND BY</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" onclick="abrirModalEnviar(${id})" required>
+                                                                            <input value="ENVIAR A"
+                                                                            type="radio"
+                                                                            name="Estado"
+                                                                            id="estado_enviara_${id}"
+                                                                            onclick="abrirModalEnviarDesdeRadio(event, ${id})">
                                                                             <span>ENVIAR A</span>
                                                                         </label>
                                                                     </div>
@@ -892,11 +900,11 @@
                                                                         <input 
                                                                             class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
                                                                             style="resize: horizontal;" 
-                                                                            id="Observaciones" 
+                                                                            id="Observaciones_${id}" 
                                                                             name="Observaciones" 
                                                                             onkeydown="return event.key != 'Enter';" 
                                                                             placeholder="Escribe aquí tu Observación." 
-                                                                            required
+                                                                            disabled
                                                                         >
                                                                     </div>  
                                                                 </div>
@@ -914,10 +922,18 @@
                                                 || row.UltimoEstado === 'STAND BY'
                                                 || row.UltimoEstado === 'CORREGIR'
                                                 || row.UltimoEstado === 'APROBADO'
+                                                || row.UltimoEstado === 'VENCIDO'
                                             )
-                                            && item.Estado !== 'CORREGIR'
+                     
                                             && item.Estado !== 'VALIDADOCONFIRMADO'
-                                 
+                                            && item.Estado !== 'ENVIADO'
+                                            && item.Estado !== 'RECIBIDO'
+                                            && item.Estado !== 'RECIBIDOCONFIRMADO'
+                                            && item.Estado !== 'ACLARAR'
+                                            && item.Estado !== 'PROCEDER'
+                                            && item.Estado !== 'ENCARGARSE'
+                                            && item.Estado !== 'SOLUCIONAR'
+                                            && item.Estado !== 'QUE PASO'
                                             && item.Estado !== 'DESBLOQUEADO'
                                             && item.Estado !== 'REMITIDOCONFIRMADO'
                                             && item.Estado !== 'STAND BY'
@@ -1581,30 +1597,34 @@
 
                                                                                 ${row.UltimoConceptoID == '17' ?
                                                                                 `<label class="label">
-                                                                                    <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                                    <input value="ENTERADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>ENTERADO</span>
                                                                                 </label>` :
                                                                                 `<label class="label">
-                                                                                    <input value="APROBADO" type="radio" name="Estado" required>
+                                                                                    <input value="APROBADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>APROBAR</span>
                                                                                 </label>`
                                                                                 }
 
                                                                                 <label class="label">
-                                                                                    <input value="CORREGIR" type="radio" name="Estado" required>
+                                                                                    <input value="CORREGIR" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>RECHAZAR</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="BLOQUEADO" type="radio" name="Estado" required>
+                                                                                    <input value="BLOQUEADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>BLOQUEAR</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="STAND BY" type="radio" name="Estado" required>
+                                                                                    <input value="STAND BY" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>STAND BY</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}"  onclick="abrirModalEnviar(${id})" required>
-                                                                                    <span>ENVIAR A</span>
+                                                                                    <input value="ENVIAR A"
+                                                                                    type="radio"
+                                                                                    name="Estado"
+                                                                                    id="estado_enviara_${id}"
+                                                                                    onclick="abrirModalEnviarDesdeRadio(event, ${id})">
+                                                                                    <span>ENVIAR As</span>
                                                                                 </label>
 
                                                                             </div>
@@ -1628,11 +1648,11 @@
                                                                                 <input 
                                                                                     class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
                                                                                     style="resize: horizontal;" 
-                                                                                    id="Observaciones" 
+                                                                                    id="Observaciones_${id}" 
                                                                                     name="Observaciones" 
                                                                                     onkeydown="return event.key != 'Enter';" 
                                                                                     placeholder="Escribe aquí tu Observación." 
-                                                                                    required
+                                                                                    disabled
                                                                                 >
                                                                             </div>
     
@@ -1715,29 +1735,33 @@
                                                                             <div class="estado-container" id="radios_${id}">
                                                                                 ${row.UltimoConceptoID == '17' ?
                                                                                     `<label class="label">
-                                                                                        <input value="ENTERADO" type="radio" name="Estado" required>
+                                                                                        <input value="ENTERADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                         <span>ENTERADO</span>
                                                                                     </label>` :
                                                                                     `<label class="label">
-                                                                                        <input value="APROBADO" type="radio" name="Estado" required>
+                                                                                        <input value="APROBADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                         <span>APROBAR</span>
                                                                                     </label>`
                                                                                 }
                                                                                 <label class="label">
-                                                                                    <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" required>
+                                                                                    <input value="CORREGIR" type="radio" name="Estado" id="estado_rechazar" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>RECHAZAR</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="1" type="radio" name="Estado" id="estado_bloquear" required>
+                                                                                    <input value="1" type="radio" name="Estado" id="estado_bloquear" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>BLOQUEAR</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="STAND BY" type="radio" name="Estado" id="estado_standby" required>
+                                                                                    <input value="STAND BY" type="radio" name="Estado" id="estado_standby" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>STAND BY</span>
                                                                                 </label>
                                                                                 <label class="label">
-                                                                                    <input value="ENVIAR A" type="radio" name="Estado" id="estado_enviara_${id}" onclick="abrirModalEnviar(${id})" required>
-                                                                                    <span>ENVIAR A</span>
+                                                                                    <input value="ENVIAR A"
+                                                                                    type="radio"
+                                                                                    name="Estado"
+                                                                                    id="estado_enviara_${id}"
+                                                                                    onclick="abrirModalEnviarDesdeRadio(event, ${id})">
+                                                                                    <span>ENVIAR As</span>
                                                                                 </label>
                                                                             </div>
                                                                         </div>
@@ -1758,11 +1782,11 @@
                                                                                 <input 
                                                                                     class="fs-5 col-md-12 d-flex text-start border p-3 w-100" 
                                                                                     style="resize: horizontal;" 
-                                                                                    id="Observaciones" 
+                                                                                    id="Observaciones_${id}" 
                                                                                     name="Observaciones" 
                                                                                     onkeydown="return event.key != 'Enter';" 
                                                                                     placeholder="Escribe aquí tu Observación." 
-                                                                                    required
+                                                                                    disabled
                                                                                 >
                                                                             </div>
                                                                             
@@ -2004,7 +2028,7 @@
                                                     </div>
 
                                                     `
-                                                    :   (((row.UltimoEstado === 'TRÁMITE' && row.NumArea != 'Jefatura') || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO' || row.UltimoEstado == 'INFORMADO') && '{{ session('rol') }}' === 'Gerencia')
+                                                    :   (((row.UltimoEstado === 'TRÁMITE' && row.NumArea != 'Jefatura') || row.UltimoEstado === 'APROBADO' || row.UltimoEstado === 'VENCIDO' || row.UltimoEstado === 'REMITIDO' || row.UltimoEstado === 'VALIDADO' || row.UltimoEstado == 'CORREGIR' || row.UltimoEstado == 'STAND BY' || row.UltimoEstado == 'BLOQUEADO' || row.UltimoEstado == 'DESBLOQUEADO' || row.UltimoEstado == 'INFORMADO') && '{{ session('rol') }}' === 'Gerencia')
 
                                                         ? `
                                                         <div class="text-center p-3">
@@ -2054,6 +2078,7 @@
                                                         row.UltimoEstado !== "VALIDADO" &&
                                                         row.UltimoEstado !== "DONE" &&
                                                         row.UltimoEstado !== "ANULADO" &&
+                                                        row.UltimoEstado !== "VENCIDO" &&
                                                         row.UltimoEstado !== "ENVIADO" &&
                                                         row.UltimoEstado !== "TERMINADO" && row.NumArea === 'Jefatura' && '{{ session('rol') }}' !== 'Jefatura' && '{{ session('rol') }}' !== 'Coordinacion'
                                                         

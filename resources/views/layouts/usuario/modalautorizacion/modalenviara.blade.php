@@ -93,7 +93,8 @@ let autorizacionActual = null;
 
     function abrirModalEnviar(id) {
 
-        autorizacionActual = id;
+        let autorizacionActual = null;
+        let formActivo = null;
 
         const modalEl = document.getElementById('modalEnviarA');
 
@@ -119,8 +120,65 @@ let autorizacionActual = null;
     }
 
 
+    function abrirModalEnviarDesdeRadio(event, id) {
 
+        event.preventDefault();
+        event.stopPropagation();
 
+        autorizacionActual = id;
+        formActivo = document.getElementById(`formValidarGerenciaAutorizacion${id}`);
+
+        // ❌ desmarcar todos los radios
+        if (formActivo) {
+            formActivo.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        }
+
+        // 🔒 deshabilitar observaciones
+        const obs = document.getElementById(`Observaciones_${id}`);
+        if (obs) {
+            obs.value = '';
+            obs.disabled = true;
+            obs.removeAttribute('required');
+        }
+
+        abrirModalEnviar(id);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const modalEl = document.getElementById('modalEnviarA');
+
+        modalEl.addEventListener('hidden.bs.modal', () => {
+
+            if (!formActivo) return;
+
+            // ❌ solo limpiamos radios (seguridad visual)
+            formActivo.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+            // ❌ NO tocar Observaciones aquí
+
+            autorizacionActual = null;
+            formActivo = null;
+        });
+        
+
+    });
+
+    function manejarEstadoSeleccionado(id, tipo) {
+
+        const inputObs = document.getElementById(`Observaciones_${id}`);
+        if (!inputObs) return;
+
+        if (tipo === 'ENVIAR_A') {
+            inputObs.value = '';
+            inputObs.disabled = true;
+            inputObs.removeAttribute('required');
+        } else {
+            inputObs.disabled = false;
+            inputObs.setAttribute('required', 'required');
+            inputObs.focus();
+        }
+    }
     function filtrarUsuarios(texto) {
         texto = texto.toLowerCase();
         let visibles = 0;
@@ -134,6 +192,47 @@ let autorizacionActual = null;
         document.getElementById('sinResultados')
             .classList.toggle('d-none', visibles > 0);
     }
+    //SE RESETEEA EL FILTRO AL SELECCIONAR UN CHECKBOX
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const modalEl = document.getElementById('modalEnviarA');
+
+        // Cuando se selecciona un checkbox
+        modalEl.addEventListener('change', (e) => {
+
+            if (!e.target.classList.contains('destinatarios')) return;
+
+            const filtro = modalEl.querySelector('input[onkeyup^="filtrarUsuarios"]');
+            if (!filtro) return;
+
+            filtro.value = '';
+            filtrarUsuarios('');
+        });
+
+    });
+    //SE RESETEEA EL MODAL AL CERRARLO
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const modalEl = document.getElementById('modalEnviarA');
+
+        modalEl.addEventListener('hidden.bs.modal', () => {
+
+            // 🔄 limpiar filtro
+            const filtro = modalEl.querySelector('input[onkeyup^="filtrarUsuarios"]');
+            if (filtro) filtro.value = '';
+            filtrarUsuarios('');
+
+            // ❌ desmarcar checks
+            modalEl.querySelectorAll('.destinatarios')
+                .forEach(cb => cb.checked = false);
+
+            // ❌ ocultar sin resultados
+            const sinResultados = document.getElementById('sinResultados');
+            if (sinResultados) sinResultados.classList.add('d-none');
+        });
+
+    });
+
 
     function enviarAjax() {
 
@@ -220,6 +319,7 @@ let autorizacionActual = null;
         });
     }
 
+    
 
 </script>
 

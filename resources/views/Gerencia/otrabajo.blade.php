@@ -343,6 +343,7 @@
                         noRecordsMessage.style.fontWeight = 'bold';
                     }
                 },
+                
                 "language": {
                     "lengthMenu": "Mostrar _MENU_ registros por página",
                     "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen ordenes de trabajo disponibles!</span>",
@@ -354,8 +355,76 @@
                         "next": "Siguiente",
                         "previous": "Anterior"
                     }
+                },
+                initComplete: function () {
+                    initCustomButtons(this.api());
                 }
             });
+            
+            function initCustomButtons(table) {
+
+                if ($('#customFilters').length) return; // ⛔ evita duplicados
+
+                var buttonsHtml = `
+                <div id="customFilters" class="d-flex flex-wrap align-items-center gap-2 mb-3 ms-auto d-none">
+                            <button id="btnR" class="btn btn-danger fw-bold btn-filter">PERMANENTE</button>
+                            <button id="btnTramite" class="btn btn-primary fw-bold btn-filter">TEMPORAL</button>
+                            <button id="btnTramite" class="btn btn-warning fw-bold btn-filter">LABOR A CUMPLIR</button>
+                            <button id="btnTramite" class="btn btn-secondary fw-bold btn-filter">APLAZADO</button>
+                            <button id="btnTramite" class="btn btn-warning fw-bold btn-filter">DEROGADO</button>
+                            <button id="btnTramite" class="btn btn-dark fw-bold btn-filter">APLAZADO</button>
+                            <button id="btnAnulado" class="btn btn-info fw-bold btn-filter">ANULADOS</button>
+                            <button id="btnTerminados" class="btn btn-success fw-bold btn-filter">TERMINADOS</button>
+
+                </div>`;
+
+                $(buttonsHtml).prependTo('#personas_filter');
+
+                initButtonActions(table);
+            }
+
+            function initButtonActions(table) {
+
+                let lastAjaxUrl = '{{ route("data.solicitudes") }}';
+
+                function setActiveButton(id) {
+                    $('.btn-filter').removeClass('active');
+                    $(id).addClass('active');
+                }
+
+                const routes = {
+                    '#btnT': '{{ route("data.solicitudes") }}',
+                    '#btnC9': '{{ route("data.c9") }}',
+                    '#btnA': '{{ route("data.aprobados") }}',
+                    '#btnR': '{{ route("data.rechazados") }}',
+                    '#btnTramite': '{{ route("data.tramite") }}',
+                    '#btnBloqueado': '{{ route("data.bloqueados") }}',
+                    '#btnAnulado': '{{ route("data.anulados") }}',
+                    '#btnStandBy': '{{ route("data.standby") }}',
+                    '#btnEnviados': '{{ route("data.enviado") }}',
+                    '#btnTerminados': '{{ route("data.terminado") }}',
+                    '#btnReportes': '{{ route("data.reporte") }}',
+                    '#btnVencidos': '{{ route("data.vencido") }}',
+                };
+
+                Object.keys(routes).forEach(btn => {
+                    $(document).on('click', btn, function () {
+                        lastAjaxUrl = routes[btn];
+                        table.ajax.url(lastAjaxUrl).load();
+                        setActiveButton(btn);
+                    });
+                });
+
+                $('#personas_filter input').on('keyup', function () {
+                    const val = this.value.trim();
+
+                    if (!val) {
+                        table.ajax.url(lastAjaxUrl).load();
+                    } else {
+                        table.ajax.url(`{{ route("data.solicitudes") }}?search=${encodeURIComponent(val)}`).load();
+                    }
+                });
+            }
 
             // var formData = $('#form-actualizar-datos').serialize();
             // $.ajax({

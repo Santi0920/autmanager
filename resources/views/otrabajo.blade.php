@@ -2,7 +2,7 @@
 
 <body class="antialiased">
     @include('layouts/nav')
-    @include('layouts.notification')
+    
     @include('layouts.retornar')
     @if (session('correcto'))
         <div>
