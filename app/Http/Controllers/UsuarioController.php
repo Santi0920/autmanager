@@ -603,12 +603,15 @@ class UsuarioController extends Controller
             
             $ultimoUsuario = DB::table('historialestado')
                 ->where('ID_Autorizacion', $aut->IDAutorizacion)
-                ->where('Estado', '=', 'DONE')
+                ->where(function ($query) {
+                    $query->where('Estado', 'DONE')
+                        ->orWhere('Estado', 'TRÁMITE')
+                        ->orWhere('Estado', 'REMITIDO');
+                })
                 ->orderByDesc('ID')
                 ->first();
-   
 
-            $aut->ultimoUsuario = $ultimoUsuario ? $ultimoUsuario->Nombre : null;
+            $aut->ultimoUsuario = $ultimoUsuario?->Nombre;
 
             // Resultado final
             $aut->historialEstadosUnicos = $desdeClave;
