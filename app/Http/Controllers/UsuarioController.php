@@ -600,8 +600,20 @@ class UsuarioController extends Controller
             //traeria la ultima SEC asignada una vez que se aprueba.
             $aut->UltimaSECautorizacion = $ultimoSec ? $ultimoSec : null;
 
+            
+            $ultimoUsuario = DB::table('historialestado')
+                ->where('ID_Autorizacion', $aut->IDAutorizacion)
+                ->where('Estado', '=', 'DONE')
+                ->orderByDesc('ID')
+                ->first();
+   
+
+            $aut->ultimoUsuario = $ultimoUsuario ? $ultimoUsuario->Nombre : null;
+
             // Resultado final
             $aut->historialEstadosUnicos = $desdeClave;
+
+
     }
 
 
