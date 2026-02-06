@@ -606,6 +606,7 @@ class UsuarioController extends Controller
                 ->where(function ($query) {
                     $query->where('Estado', 'DONE')
                         ->orWhere('Estado', 'TRÁMITE')
+                        ->orWhere('Estado', 'REMITIDOCORREGIR')
                         ->orWhere('Estado', 'REMITIDO');
                 })
                 ->orderByDesc('ID')
