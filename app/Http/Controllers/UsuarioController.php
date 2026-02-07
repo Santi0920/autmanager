@@ -1738,6 +1738,7 @@ class UsuarioController extends Controller
                             ->orWhere('Estado', 'STAND BY')
                             ->orWhere('Estado', 'ANULADO')
                             ->orWhere('Estado', 'CORREGIR')
+                            ->orWhere('Estado', 'INFORMADO')
                             ->orWhere('Estado', 'DESBLOQUEADO');
                     })
                     ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
