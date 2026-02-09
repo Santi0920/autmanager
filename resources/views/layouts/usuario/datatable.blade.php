@@ -1177,7 +1177,7 @@
                                                     <!-- Información secundaria -->
                                                     <!-- Desktop / Tablet -->
                                                     <div class="d-none d-md-block" style="font-size: 20px; font-weight: 600; color: #ffd700;">
-                                                        Fecha: ${row.FechaStringEstado} | Área: ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} | Solicitado Por: ${row.ultimoUsuario}
+                                                        Fecha: ${row.ultimaFecha} | Área: ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} | Solicitado Por: ${row.ultimoUsuario}
                                                     </div>
 
                                                     <!-- Móvil -->

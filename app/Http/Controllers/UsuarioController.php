@@ -607,11 +607,13 @@ class UsuarioController extends Controller
                     $query->where('Estado', 'DONE')
                         ->orWhere('Estado', 'TRÁMITE')
                         ->orWhere('Estado', 'REMITIDOCORREGIR')
+                        ->orWhere('Estado', 'REMITIDOCONFIRMADO')
                         ->orWhere('Estado', 'REMITIDO');
                 })
                 ->orderByDesc('ID')
                 ->first();
 
+            $aut->ultimaFecha = $ultimoUsuario?->FechaString;
             $aut->ultimoUsuario = $ultimoUsuario?->Nombre;
 
             // Resultado final
@@ -1062,6 +1064,7 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'CORREGIR')
                         ->orWhere('Estado', 'VENCIDO')
                         ->orWhere('Estado', 'INFORMADO')
+                        ->orWhere('Estado', 'REMITIDOCONFIRMADO')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
                 ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
