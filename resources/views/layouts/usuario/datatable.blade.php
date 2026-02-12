@@ -11,6 +11,7 @@
                         d.search_term = $('#personas_filter input').val();
                     },
                 },
+                
                 processing: true,
 
 
@@ -681,7 +682,7 @@
                                                                             name="Estado"
                                                                             id="estado_enviara_${id}"
                                                                             onclick="abrirModalEnviarDesdeRadio(event, ${id})">
-                                                                            <span>ENVIAR As</span>
+                                                                            <span>ENVIAR A</span>
                                                                         </label>
 
                                                                     </div>
@@ -1761,7 +1762,7 @@
                                                                                     name="Estado"
                                                                                     id="estado_enviara_${id}"
                                                                                     onclick="abrirModalEnviarDesdeRadio(event, ${id})">
-                                                                                    <span>ENVIAR As</span>
+                                                                                    <span>ENVIAR A</span>
                                                                                 </label>
                                                                             </div>
                                                                         </div>
@@ -2462,8 +2463,7 @@
                     setActiveButton('#btnVencidos');
                 });
 
-
-
+            
                 // Evitar que aprueba directamente
                 document.getElementById('btnAprobarTodos').addEventListener('click', function(e) {
                     e.preventDefault(); // Evita que se vaya directo al enlace
@@ -2505,6 +2505,35 @@
                 // ],
 
             });
+            // 🔥 LIMPIEZA AUTOMÁTICA CUANDO DATATABLE RECARGA
+            $('#personas').on('preXhr.dt', function () {
+                forceCloseModals();
+            });
+
+            // 🔥 LIMPIEZA DESPUÉS DE QUE TERMINA DE DIBUJAR
+            $('#personas').on('draw.dt', function () {
+                forceCloseModals();
+            });
+            function forceCloseModals() {
+
+                // Cerrar cualquier modal activo
+                document.querySelectorAll('.modal.show').forEach(modalEl => {
+                    try {
+                        const instance = bootstrap.Modal.getInstance(modalEl) 
+                                    || new bootstrap.Modal(modalEl);
+                        instance.hide();
+                    } catch (e) {}
+                });
+
+                // Eliminar cualquier backdrop pegado
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+                // Limpiar clases del body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }
+
 
             document.addEventListener('click', (e) => {
                 const btn = e.target.closest('.btn-scroll');
