@@ -2060,7 +2060,7 @@ class UsuarioController extends Controller
                     ->whereRaw('LOWER(TRIM(H.Estado)) IN ("aprobado")')
                     // 🚫 Excluir otros estados no deseados (por seguridad)
                     ->whereNotIn('H.Estado', ['STAND BY', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO', 'RECIBIDO'])
-                    ->limit(200)
+                    ->limit(100)
                     ->orderByDesc('B.ID')
                     ->select([
                         'A.ID AS IDPersona',
@@ -2111,7 +2111,7 @@ class UsuarioController extends Controller
                         ->whereRaw('H2.ID_Autorizacion = B.ID')
                         ->whereIn('H2.Estado', ['APROBADO']);
                 })
-                ->limit(200)
+                ->limit(100)
                 ->orderByDesc('B.ID')
                 ->where('H.Bloqueado', '!=', '1')
                 ->where('H.Estado', '!=', 'ANULADO')
@@ -2165,7 +2165,7 @@ class UsuarioController extends Controller
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
-                ->limit(200)
+                ->limit(100)
                 ->orderByDesc('B.ID')
                 ->select([
                     'A.ID AS IDPersona',
@@ -2767,7 +2767,7 @@ class UsuarioController extends Controller
                     ->whereRaw('LOWER(TRIM(H.Estado)) = "anulado"')
                     // 🚫 Excluir otros estados no deseados (por seguridad)
                     ->whereNotIn('H.Estado', ['APROBADO', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO'])
-                    ->limit(200)
+                    ->limit(100)
                     ->orderByDesc('B.ID')
                     ->select([
                         'A.ID AS IDPersona',
@@ -2822,7 +2822,7 @@ class UsuarioController extends Controller
             ->where('H.Estado', '!=', "VALIDADO")
             ->where('H.Estado', '!=', "CORREGIR")
             ->where('H.Estado', '!=', "ENVIADO")
-            ->limit(200)
+            ->limit(100)
             ->orderByDesc('B.ID')
             ->select([
                 'A.ID AS IDPersona',
@@ -2875,7 +2875,7 @@ class UsuarioController extends Controller
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
-                ->limit(200)
+                ->limit(100)
                 ->orderByDesc('B.ID')
                 ->select([
                     'A.ID AS IDPersona',
@@ -4272,7 +4272,7 @@ class UsuarioController extends Controller
                     ->whereRaw('LOWER(TRIM(H.Estado)) IN ("vencido")')
                     // 🚫 Excluir otros estados no deseados (por seguridad)
                     ->whereNotIn('H.Estado', ['STAND BY', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO', 'RECIBIDO'])
-                    ->limit(200)
+                    ->limit(100)
                     ->orderByDesc('B.ID')
                     ->where('H.Estado', '!=', 'ANULADO')
                     ->select([
@@ -4326,7 +4326,7 @@ class UsuarioController extends Controller
                 })
                 ->where('H.Bloqueado', '!=', '1')
                 ->where('H.Estado', '!=', 'ANULADO')
-                ->limit(200)
+                ->limit(100)
                 ->orderByDesc('B.ID')
                 ->select([
                     'A.ID AS IDPersona',
@@ -4379,7 +4379,7 @@ class UsuarioController extends Controller
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
                 ->where('H.Estado', '!=', 'ANULADO')
-                ->limit(200)
+                ->limit(100)
                 ->orderByDesc('B.ID')
                 ->select([
                     'A.ID AS IDPersona',
