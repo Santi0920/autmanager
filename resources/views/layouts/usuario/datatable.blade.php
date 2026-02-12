@@ -135,7 +135,7 @@
                             var Contenido = `
                                 ${row.UltimoConcepto}
                                 <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
+                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
                                 </div>
                                 ${demoracoord}
                                 ${demoradireccion}
@@ -202,7 +202,7 @@
                             var Contenido = `
                                 ${row.UltimoConcepto}
                                 <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
+                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
                                     <div>${textoEstado}</div>
                                 </div>
                             `;
@@ -210,7 +210,7 @@
 
 
                         }else{
-                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.Usuario}
+                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
                                     <div>
                                         <span class="text-dark" title="Fecha Solicitud">
                                         ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
@@ -1182,7 +1182,7 @@
 
                                                     <!-- Móvil -->
                                                     <div class="d-block d-md-none" style="font-size: 14px; font-weight: 600; color: #ffd700;">
-                                                        Solicitado por: ${row.Usuario}
+                                                        Solicitado por: ${row.ultimoUsuario}
                                                     </div>
                                                 </div>
                                             </div>
@@ -2007,8 +2007,8 @@
                                                                 onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
                                                                 
                                                                 <i class="fa-solid fa-floppy-disk"></i>
-                                                                <span class="d-none d-md-inline ms-2">Guardar Cambios</span>
-                                                                <span class="d-inline d-md-none ms-1">Guardar</span>
+                                                                <span class="d-none d-md-inline ms-2">Autorizar</span>
+                                                                <span class="d-inline d-md-none ms-1">Autorizar</span>
                                                             </button>
 
                                                             <!-- DESPLAZAR ARRIBA -->
