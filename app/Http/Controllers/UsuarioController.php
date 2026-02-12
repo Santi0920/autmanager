@@ -2530,6 +2530,7 @@ class UsuarioController extends Controller
             ->where('H.Estado', '!=', "VALIDADO")
             ->where('H.Estado', '!=', "CORREGIR")
             ->where('H.Estado', '!=', "ANULADO")
+            ->where('H.Estado', '!=', "VENCIDO")
             ->select([
                 'A.ID AS IDPersona',
                 'A.Score',
