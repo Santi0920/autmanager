@@ -2044,8 +2044,8 @@
                                                                     onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
                                                                     
                                                                     <i class="fa-solid fa-floppy-disk"></i>
-                                                                    <span class="d-none d-md-inline ms-2">Guardar Cambios</span>
-                                                                    <span class="d-inline d-md-none ms-1">Guardar</span>
+                                                                    <span class="d-none d-md-inline ms-2">Autorizar</span>
+                                                                    <span class="d-inline d-md-none ms-1">Autorizar</span>
                                                                 </button>
 
                                                                 <!-- DESPLAZAR ARRIBA -->
@@ -2141,8 +2141,8 @@
                                                                         onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
                                                                         
                                                                         <i class="fa-solid fa-floppy-disk"></i>
-                                                                        <span class="d-none d-md-inline ms-2">Guardar Cambios</span>
-                                                                        <span class="d-inline d-md-none ms-1">Guardar</span>
+                                                                        <span class="d-none d-md-inline ms-2">Autorizar</span>
+                                                                        <span class="d-inline d-md-none ms-1">Autorizar</span>
                                                                     </button>
 
                                                                     <!-- DESPLAZAR ARRIBA -->
