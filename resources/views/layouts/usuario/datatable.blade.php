@@ -2008,8 +2008,8 @@
                                                                 onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
                                                                 
                                                                 <i class="fa-solid fa-floppy-disk"></i>
-                                                                <span class="d-none d-md-inline ms-2">Autorizar</span>
-                                                                <span class="d-inline d-md-none ms-1">Autorizar</span>
+                                                                <span class="d-none d-md-inline ms-2">Validar</span>
+                                                                <span class="d-inline d-md-none ms-1">Validar</span>
                                                             </button>
 
                                                             <!-- DESPLAZAR ARRIBA -->
@@ -2045,8 +2045,8 @@
                                                                     onclick="formValidarGerenciaAutorizacion(${row.IDAutorizacion}, event)">
                                                                     
                                                                     <i class="fa-solid fa-floppy-disk"></i>
-                                                                    <span class="d-none d-md-inline ms-2">Autorizar</span>
-                                                                    <span class="d-inline d-md-none ms-1">Autorizar</span>
+                                                                    <span class="d-none d-md-inline ms-2">Validar</span>
+                                                                    <span class="d-inline d-md-none ms-1">Validar</span>
                                                                 </button>
 
                                                                 <!-- DESPLAZAR ARRIBA -->
@@ -2142,8 +2142,8 @@
                                                                         onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">
                                                                         
                                                                         <i class="fa-solid fa-floppy-disk"></i>
-                                                                        <span class="d-none d-md-inline ms-2">Autorizar</span>
-                                                                        <span class="d-inline d-md-none ms-1">Autorizar</span>
+                                                                        <span class="d-none d-md-inline ms-2">Validar</span>
+                                                                        <span class="d-inline d-md-none ms-1">Validar</span>
                                                                     </button>
 
                                                                     <!-- DESPLAZAR ARRIBA -->
