@@ -1026,7 +1026,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-3">
                 <div class="modal-header">
-                    <h5 class="modal-title text-light fw-bold" id="editPerfilModalLabel">Editar Perfil</h5>
+                    <h5 class="modal-title text-dark fw-bold" id="editPerfilModalLabel">Editar Perfil</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form method="POST" action="{{ route('perfil.update') }}">
