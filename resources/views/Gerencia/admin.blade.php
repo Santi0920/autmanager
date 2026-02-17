@@ -674,6 +674,8 @@
                                                 <div class="modal-body">
                                                     <form action="{{route('editarusuario')}}" method="POST" id="dynamicForm_${id}">
                                                         @csrf
+                                                        <input type="hidden" name="id" value="${id}">
+
 
                                                                 ${row.NameAgencia != null ?
                                                                 `
@@ -1227,8 +1229,6 @@
 
                     },
             });
-
-
 
             function csesion() {
                 var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")

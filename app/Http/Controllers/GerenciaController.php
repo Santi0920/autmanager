@@ -1034,11 +1034,14 @@ class GerenciaController extends Controller
 
 
         $validacioncorreo = DB::select('select * from users WHERE email = ?',[$correo]);
+        $validacionnombre = DB::select('select * from users WHERE name = ?',[$nombre]);
 
         if (!empty($validacionnombre) || !empty($validacioncorreo)) {
 
             if (!empty($validacioncorreo) && isset($validacioncorreo[0]->email)) {
                 return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario vinculado al correo <b>".$correo."</b></span>");
+            }else{
+                return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario con el nombre <b>".$nombre."</b></span>");
             }
         }
 
@@ -1374,9 +1377,20 @@ class GerenciaController extends Controller
         $nombreConcepto = $request->concepto;
         $area = $request->area;
         $codigoArea = $request->codigoarea;
-
+        
         $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
 
+        $consultaNombre = DB::select(
+            "SELECT * FROM users WHERE name = ? AND id != ?", 
+            [$nombre, $id]
+        );
+        
+        if (count($consultaNombre) >= 1) {
+            return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario con el nombre <b>".$nombre."</b>. Por favor, elija otro nombre.</span>");
+
+        }
+
+        
             if ($area != null || $nombreConcepto != null) {
                         $consultaConcepto = DB::table("concepto_autorizaciones")
                             ->where("Concepto", $nombreConcepto)
