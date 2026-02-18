@@ -1153,321 +1153,518 @@ class GerenciaController extends Controller
 
     }
 
-    public function eliminarUsuario($id){
+    public function eliminarUsuario($id, Request $request)
+    {
+        $tipo = $request->input('tipo');
 
+        $nombreauditoria = session('name'); 
+        $rol = session('rol'); 
+        date_default_timezone_set('America/Bogota'); 
+        $fechaHoraActual = date('Y-m-d H:i:s'); 
+        $ip = $_SERVER['REMOTE_ADDR']; 
+        $agencia = session('agenciau'); 
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeEliminoUsuarioenelpaneladmin', ?, ?, ?, ?)", [ null, $nombreauditoria, $rol, $agencia, $fechaHoraActual, $id, null, $ip ]);
 
-        $nombreauditoria = session('name');
-        $rol = session('rol');
-        date_default_timezone_set('America/Bogota');
-        $fechaHoraActual = date('Y-m-d H:i:s');
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = session('agenciau');
-        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeEliminoUsuarioenelpaneladmin', ?, ?, ?, ?)", [
-            null,
-            $nombreauditoria,
-            $rol,
-            $agencia,
-            $fechaHoraActual,
-            $id,
-            null,
-            $ip
-        ]);
-        $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->count();
-        $existeConcepto = DB::table('concepto_autorizaciones')->where('ID', $id)->count();
+        try {
+            $result = DB::transaction(function () use ($tipo, $id) {
 
-        $usuarioRol = DB::select("SELECT agenciau, name from users WHERE id = ?",[$id]);
+                switch ($tipo) {
+                    case 'concepto': {
+                        $concepto = DB::table('concepto_autorizaciones')->where('ID', $id)->first();
 
-        if($existeConcepto>0){
-            $existeConcepto = DB::table('concepto_autorizaciones')->where('ID', $id)->get();
+                        if (!$concepto) {
+                            return [
+                                'ok' => false,
+                                'message' => "No existe el concepto.",
+                                'tipo' => $tipo,
+                                'id' => $id
+                            ];
+                        }
 
-            DB::table('concepto_autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'activo' => 0
-            ]);
-            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el concepto (<span class='fw-bold'>".$existeConcepto[0]->Concepto."</span>).</span>");
-        }else if($existeAgencia>0){
-            $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->get();
-            $idagencia = $existeAgencia[0]->NumAgencia;
+                        DB::table('concepto_autorizaciones')->where('ID', $id)->update(['activo' => 0]);
 
-            DB::table('users')
-            ->where('agenciau', $id)
-            ->update([
-                'password' => bcrypt("bloqueada")
-            ]);
+                        return [
+                            'ok' => true,
+                            'message' => "Se eliminó satisfactoriamente el concepto: {$concepto->Concepto}.",
+                            'tipo' => $tipo,
+                            'id' => $id,
+                            // Si en el front quieres remover fila, sirve devolver rowId
+                        ];
+                    }
 
+                    case 'agencia': {
+                        $agencia = DB::table('agencias')->where('NameAgencia', $id)->first();
 
-            DB::table('agencias')
-                ->where('NameAgencia', $id)
-                ->update([
-                    'activo' => 0
-                ]);
+                        if (!$agencia) {
+                            return [
+                                'ok' => false,
+                                'message' => "No existe la agencia.",
+                                'tipo' => $tipo,
+                                'id' => $id
+                            ];
+                        }
 
+                        $idagencia = $agencia->NumAgencia;
 
-            DB::table('users')
-            ->whereJsonContains('agencias_id', $idagencia)
-            ->update([
-                'agencias_id' => DB::raw("JSON_REMOVE(agencias_id, JSON_UNQUOTE(JSON_SEARCH(agencias_id, 'one', '$idagencia')))")
-            ]);
-            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente la agencia<br>(<span class='badge bg-primary fw-bold'>".$id."</span>).</span>");
-        }else{
+                        DB::table('users')
+                            ->where('agenciau', $id)
+                            ->update(['password' => bcrypt("bloqueada")]);
 
-            DB::table('users')
-            ->where('id', $id)
-            ->update([
-                'activo' => 0
-            ]);
+                        DB::table('agencias')
+                            ->where('NameAgencia', $id)
+                            ->update(['activo' => 0]);
 
-            $grupos = DB::table('grupos_otrabajo')
-            ->whereRaw("JSON_SEARCH(integrantes, 'one', ?) IS NOT NULL", [$id])
-            ->get();
+                        DB::table('users')
+                            ->whereJsonContains('agencias_id', $idagencia)
+                            ->update([
+                                'agencias_id' => DB::raw(
+                                    "JSON_REMOVE(agencias_id, JSON_UNQUOTE(JSON_SEARCH(agencias_id, 'one', {$idagencia})))"
+                                )
+                            ]);
 
+                        return [
+                            'ok' => true,
+                            'message' => "Se eliminó satisfactoriamente la agencia: {$id}.",
+                            'tipo' => $tipo,
+                            'id' => $id
+                        ];
+                    }
 
+                    case 'usuario': {
+                        $usuario = DB::table('users')->select('id', 'name', 'agenciau')->where('id', $id)->first();
 
+                        if (!$usuario) {
+                            return [
+                                'ok' => false,
+                                'message' => "No existe el usuario.",
+                                'tipo' => $tipo,
+                                'id' => $id
+                            ];
+                        }
 
-            foreach ($grupos as $grupo) {
-                $integrantes = json_decode($grupo->integrantes, true);
+                        DB::table('users')->where('id', $id)->update(['activo' => 0]);
 
-                if (($key = array_search($id, $integrantes)) !== false) {
-                    unset($integrantes[$key]);
+                        $grupos = DB::table('grupos_otrabajo')
+                            ->whereRaw("JSON_SEARCH(integrantes, 'one', ?) IS NOT NULL", [$id])
+                            ->get();
+
+                        foreach ($grupos as $grupo) {
+                            $integrantes = json_decode($grupo->integrantes, true) ?: [];
+
+                            $key = array_search((string)$id, array_map('strval', $integrantes), true);
+                            if ($key !== false) unset($integrantes[$key]);
+
+                            DB::table('grupos_otrabajo')
+                                ->where('id', $grupo->id)
+                                ->update(['integrantes' => json_encode(array_values($integrantes))]);
+                        }
+
+                        return [
+                            'ok' => true,
+                            'message' => "Se eliminó satisfactoriamente el usuario: {$usuario->name}.",
+                            'tipo' => $tipo,
+                            'id' => $id
+                        ];
+                    }
+
+                    default:
+                        return [
+                            'ok' => false,
+                            'message' => "Tipo inválido para eliminar.",
+                            'tipo' => $tipo,
+                            'id' => $id
+                        ];
                 }
+            });
 
+            return response()->json($result, $result['ok'] ? 200 : 422);
 
-                $nuevoIntegrantes = array_values($integrantes);
-                $nuevoJson = json_encode($nuevoIntegrantes);
-
-                DB::table('grupos_otrabajo')
-                    ->where('id', $grupo->id)
-                    ->update(['integrantes' => $nuevoJson]);
-            }
-
-
-            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el usuario <b>".$usuarioRol[0]->name."</b> <br>(<b>Rol:</b> <span class='badge bg-primary fw-bold'>".$usuarioRol[0]->agenciau."</span>).</span>");
+        } catch (\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error interno al procesar la eliminación.',
+                'debug' => app()->environment('production') ? null : $e->getMessage(),
+            ], 500);
         }
-
-
-
     }
 
-    public function activarCSuspendida($id){
-
-        $nombreauditoria = session('name');
-        $rol = session('rol');
-        date_default_timezone_set('America/Bogota');
-        $fechaHoraActual = date('Y-m-d H:i:s');
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $agencia = session('agenciau');
-        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeActivoCuentaSuspendida - $id', ?, ?, ?, ?)", [
-            null,
-            $nombreauditoria,
-            $rol,
-            $agencia,
-            $fechaHoraActual,
-            $id,
-            null,
-            $ip
-        ]);
-
-        $user = DB::table('users')
-                ->where('id', $id)
-                ->first();
-
-        // Activar la cuenta
-        DB::table('users')
-            ->where('id', $id)
-            ->update([
-                'activo' => 1
-            ]);
-
-        // Responder mostrando el email
-        return back()->with(
-            "correcto",
-            "<span class='fs-4'>Se habilitó satisfactoriamente la cuenta<br>(<span class='badge bg-primary fw-bold'>".$user->email."</span>).</span>"
-        );
-
-
-
-
-
-    }
-
-    public function eliminarConcepto($id, $area)
+    public function activarCSuspendida($id, Request $request)
     {
         $nombreauditoria = session('name');
         $rol = session('rol');
         date_default_timezone_set('America/Bogota');
         $fechaHoraActual = date('Y-m-d H:i:s');
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = $request->ip(); // ✅
         $agencia = session('agenciau');
-        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'SeEliminoConceptoenelpaneladmin', ?, ?, ?, ?)", [
-            null,
-            $nombreauditoria,
-            $rol,
-            $agencia,
-            $fechaHoraActual,
-            $id,
-            null,
-            $ip
-        ]);
 
+        try {
+            $res = DB::transaction(function () use ($id, $nombreauditoria, $rol, $agencia, $fechaHoraActual, $ip) {
 
-        DB::table('concepto_autorizaciones')
-            ->where('Areas', $area)
-            ->update([
-                'Areas' => 'GLOBAL',
-                'No' => 00,
-            ]);
-        return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el ÁREA (<span class='fw-bold'>".$area."</span>).</span>");
+                DB::insert(
+                    "INSERT INTO auditoria
+                    (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    [null, $nombreauditoria, $rol, $agencia, "SeActivoCuentaSuspendida - $id", $fechaHoraActual, $id, null, $ip]
+                );
+
+                $user = DB::table('users')->where('id', $id)->first();
+
+                if (!$user) {
+                    return [
+                        'ok' => false,
+                        'message' => 'No existe el usuario.'
+                    ];
+                }
+
+                DB::table('users')
+                    ->where('id', $id)
+                    ->update(['activo' => 1]);
+
+                return [
+                    'ok' => true,
+                    'message' => "Se habilitó satisfactoriamente la cuenta ({$user->email})."
+                ];
+            });
+
+            return response()->json($res, $res['ok'] ? 200 : 422);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error interno al habilitar la cuenta.',
+                'debug' => app()->environment('production') ? null : $e->getMessage(),
+            ], 500);
+        }
     }
 
+    public function eliminarConcepto($id, $area, Request $request)
+    {
+        $nombreauditoria = session('name');
+        $rol = session('rol');
+        date_default_timezone_set('America/Bogota');
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $ip = $request->ip();
+        $agencia = session('agenciau');
+
+        try {
+            $res = DB::transaction(function () use ($id, $area, $nombreauditoria, $rol, $agencia, $fechaHoraActual, $ip) {
+
+                // 1) Auditoría
+                DB::insert(
+                "INSERT INTO auditoria
+                (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    null,
+                    $nombreauditoria,
+                    $rol,
+                    $agencia,
+                    'SeEliminoConceptoenelpaneladmin',
+                    $fechaHoraActual,
+                    $id,
+                    null,
+                    $ip
+                ]
+                );
+
+                // 2) Update
+                $updated = DB::table('concepto_autorizaciones')
+                    ->where('Areas', $area)
+                    ->update([
+                        'Areas' => 'GLOBAL',
+                        'No' => 0,
+                    ]);
+
+                // Esto NO es error, pero te ayuda a ver si realmente encontró filas
+                if ($updated === 0) {
+                    return [
+                        'ok' => false,
+                        'message' => "No se actualizó ningún registro. Verifica si existe el área '{$area}'."
+                    ];
+                }
+
+                return [
+                    'ok' => true,
+                    'message' => "Se eliminó satisfactoriamente el ÁREA ({$area})."
+                ];
+            });
+
+            return response()->json($res, $res['ok'] ? 200 : 422);
+
+        } catch (\Throwable $e) {
+
+            // ✅ Log completo (míralo en storage/logs/laravel.log)
+            Log::error('Error eliminarConcepto', [
+                'id' => $id,
+                'area' => $area,
+                'ip' => $ip,
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            // ✅ Debug visible SIEMPRE mientras estás probando
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error interno al eliminar el área.',
+                'debug' => $e->getMessage(),   // <- AQUÍ ya verás el error real
+                'code' => $e->getCode(),
+            ], 500);
+        }
+    }
     public function guardarcoordinacion(Request $request)
     {
-        $integrantesJson = json_encode($request->members);
+        try {
 
+            $members = $request->members ?? [];
 
-        $validarnombre = DB::select('SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?', [$request->name]);
+            // 1️⃣ Buscar el usuario Coordinacion dentro de los miembros
+            $coordinador = DB::table('users')
+                ->select('id', 'rol', 'agenciau')
+                ->whereIn('id', $members)
+                ->where('rol', 'Coordinacion')
+                ->first();
 
-        if (empty($validarnombre)) {
-            $consultantes = DB::select('SELECT id FROM users WHERE rol = ?', ['D. de Agencia']);
-
-
-            $consultantesArray = [];
-            foreach ($consultantes as $consultante) {
-                $consultantesArray[] = $consultante->id;
+            if (!$coordinador) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'No se encontró un usuario con rol Coordinacion dentro de los integrantes.'
+                ], 422);
             }
 
+            // 2️⃣ Extraer número de "Coordinacion X"
+            $agenciaU = (string) $coordinador->agenciau; // ej: "Coordinacion 4"
 
-            $integrantesArray = array_merge($request->members, $consultantesArray);
+            if (!preg_match('/(\d+)\s*$/', $agenciaU, $m)) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => "No se pudo determinar el número de la coordinación desde '{$agenciaU}'."
+                ], 422);
+            }
 
+            $num = (int) $m[1];          // 4
+            $codigo = '11' . ($num * 10);  // 11.40
+            
+            // 3️⃣ ACTUALIZAR ese usuario en tabla users
+            DB::table('users')
+                ->where('id', $coordinador->id)
+                ->update([
+                    'codigo' => $codigo
+                ]);
 
-            $integrantesJson = json_encode($integrantesArray);
+            // 4️⃣ TU LÓGICA ORIGINAL (guardar grupo)
+            $integrantesJson = json_encode($members);
 
+            $validarnombre = DB::select(
+                'SELECT * FROM grupos_otrabajo WHERE nombregrupo = ?',
+                [$request->name]
+            );
 
-            $id_insertado = DB::table('grupos_otrabajo')->insertGetId([
-                'nombregrupo' => $request->name,
-                'integrantes' => $integrantesJson,
+            if (empty($validarnombre)) {
+
+                $consultantes = DB::select(
+                    'SELECT id FROM users WHERE rol = ?',
+                    ['D. de Agencia']
+                );
+
+                $consultantesArray = [];
+                foreach ($consultantes as $consultante) {
+                    $consultantesArray[] = $consultante->id;
+                }
+
+                $integrantesArray = array_merge($members, $consultantesArray);
+                $integrantesJson = json_encode($integrantesArray);
+
+                $id_insertado = DB::table('grupos_otrabajo')->insertGetId([
+                    'nombregrupo' => $request->name,
+                    'integrantes' => $integrantesJson,
+                ]);
+
+                return response()->json([
+                    'ok' => true,
+                    'mode' => 'created',
+                    'id' => $id_insertado,
+                    'codigo_asignado' => $codigo
+                ]);
+            } else {
+                Log::info("El grupo");
+                $grupoExistente = $validarnombre[0];
+                $integrantesExistentes = json_decode($grupoExistente->integrantes, true) ?: [];
+                $nuevosIntegrantes = json_decode($integrantesJson, true) ?: [];
+
+                $integrantesCombinados = array_values(
+                    array_unique(array_merge($integrantesExistentes, $nuevosIntegrantes))
+                );
+
+                DB::table('grupos_otrabajo')
+                    ->where('nombregrupo', $request->name)
+                    ->update([
+                        'integrantes' => json_encode($integrantesCombinados)
+                    ]);
+
+                return response()->json([
+                    'ok' => true,
+                    'mode' => 'updated',
+                    'codigo_asignado' => $codigo
+                ]);
+            }
+
+        } catch (\Throwable $e) {
+            Log::error('Error guardarcoordinacion', [
+                'message' => $e->getMessage()
             ]);
-            return response()->json(['success' => true, 'id' => $id_insertado]);
-        } else {
-            $grupoExistente = $validarnombre[0];
-            $integrantesExistentes = json_decode($grupoExistente->integrantes, true);
-            $nuevosIntegrantes = json_decode($integrantesJson, true);
 
-            $integrantesCombinados = array_unique(array_merge($integrantesExistentes, $nuevosIntegrantes));
-
-            DB::table('grupos_otrabajo')->where('nombregrupo', $request->name)->update([
-                'integrantes' => json_encode($integrantesCombinados)
-            ]);
-
-            return response()->json(['success2' => true]);
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error interno al guardar coordinación.',
+                'debug' => $e->getMessage()
+            ], 500);
         }
     }
+    public function editarusuario(Request $request)
+    {
+        try {
 
+            $nombre         = $request->nombre;
+            $agencia        = $request->agencia;
+            $celular        = $request->celular;
+            $contrasena     = $request->contrasena;
+            $correo         = $request->correo;
 
-    public function editarusuario(Request $request){
-        $nombre = $request->nombre;
-        $agencia = $request->agencia;
-        $celular= $request->celular;
-        $contrasena= $request->contrasena;
-        $correo = $request->correo;
-        $agencianame = $request->agencianame;
-        $centrocosto = $request->cc;
-        $id = $request->id;
-        $nombreConcepto = $request->concepto;
-        $area = $request->area;
-        $codigoArea = $request->codigoarea;
-        
-        $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
+            $agencianame    = $request->agencianame;
+            $centrocosto    = $request->cc;
 
-        $consultaNombre = DB::select(
-            "SELECT * FROM users WHERE name = ? AND id != ?", 
-            [$nombre, $id]
-        );
-        
-        if (count($consultaNombre) >= 1) {
-            return back()->with("incorrecto", "<span class='fs-4'>Ya existe un usuario con el nombre <b>".$nombre."</b>. Por favor, elija otro nombre.</span>");
+            $id             = $request->id;
 
-        }
+            $nombreConcepto = $request->concepto;
+            $area           = $request->area;
+            $codigoArea     = $request->codigoarea;
 
-        
+            // -------- VALIDACIONES GENERALES --------
+            $consultaRol = DB::select("SELECT * FROM users WHERE email = ?", [$correo]);
+
+            $consultaNombre = DB::select(
+                "SELECT * FROM users WHERE name = ? AND id != ?",
+                [$nombre, $id]
+            );
+
+            if (count($consultaNombre) >= 1) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => "Ya existe un usuario con el nombre {$nombre}. Por favor, elija otro nombre."
+                ], 422);
+            }
+
+            // -------- 1) EDITAR CONCEPTO --------
             if ($area != null || $nombreConcepto != null) {
-                        $consultaConcepto = DB::table("concepto_autorizaciones")
-                            ->where("Concepto", $nombreConcepto)
-                            ->first();
 
-                        if ($consultaConcepto && $nombreConcepto != $consultaConcepto->Concepto) {
-                            return back()->with("incorrecto", "<span class='fs-4'>El concepto <b>" . $nombreConcepto . "</b> ya existe!</span>");
-                        } else {
+                $consultaConcepto = DB::table("concepto_autorizaciones")
+                    ->where("Concepto", $nombreConcepto)
+                    ->first();
 
-
-                        //CONTINUAR Y LUEGO FALTA CLICK CUANDO LE DEL SE VAYA A LA VALIDACION
-                            $existeConcepto = DB::table('concepto_autorizaciones')
-                                ->where('Areas', $area)
-                                ->get();
-
-
-                            if ($codigoArea != null){
-                                $existeCodigoArea = DB::table('concepto_autorizaciones')
-                                    ->where('No', $codigoArea)
-                                    ->get();
-
-                                if ($existeCodigoArea->isNotEmpty()) {
-                                    return back()->with("incorrecto", "<span class='fs-4'>Ya existe un <b>ÁREA</b> con el código <b>" . $codigoArea . "</b> vinculado a: <b>" . $existeCodigoArea[0]->Areas . "</b></span>");
-                                }
-                            }
-
-
-                            if ($existeConcepto->isNotEmpty()) {
-                                $codigoArea = $existeConcepto[0]->No;
-                            }else{
-                                $codigoArea = 00;
-                            }
-
-                            if($area == 'OTRO'){
-                                $area = $request->otroArea;
-                                $codigoArea = $request->codigoarea;
-                            }
-
-
-
-                            DB::table('concepto_autorizaciones')
-                            ->where('ID', $id)
-                            ->update([
-                            'Concepto' => $nombreConcepto,
-                            'Areas' => $area,
-                            'No' => $codigoArea,
-                    ]);
-                    return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente el concepto(<b>".$nombreConcepto."</b>).</span>");
+                // (Tu validación estaba rara: si existe, siempre va a ser igual)
+                // Lo dejo coherente: si existe y no es el mismo ID, error
+                if ($consultaConcepto && (string)$consultaConcepto->ID !== (string)$id) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => "El concepto {$nombreConcepto} ya existe!"
+                    ], 422);
                 }
-            }else if($agencianame != null || $centrocosto != null){
-            $consultaagencia = DB::table("agencias")->where("NameAgencia", $agencianame)->where("activo", 1)->count();
-            $consultacentrocosto = DB::table("agencias")->where("NumAgencia", $centrocosto)->where("activo", 1)->count();
 
+                // Buscar si ya existe el área
+                $existeConcepto = DB::table('concepto_autorizaciones')
+                    ->where('Areas', $area)
+                    ->get();
 
-            if ($consultaagencia > 0) {
-                return back()->with("incorrecto", "<span class='fs-4'>La agencia <b>" . $agencianame . "</b> ya existe!</span>");
-            }else if($consultacentrocosto > 0){
-                return back()->with("incorrecto", "<span class='fs-4'>El centro de costo <b>" . $centrocosto . "</b> ya existe!</span>");
+                if ($codigoArea != null) {
+                    $existeCodigoArea = DB::table('concepto_autorizaciones')
+                        ->where('No', $codigoArea)
+                        ->get();
+
+                    if ($existeCodigoArea->isNotEmpty()) {
+                        return response()->json([
+                            'ok' => false,
+                            'message' => "Ya existe un ÁREA con el código {$codigoArea} vinculado a: {$existeCodigoArea[0]->Areas}"
+                        ], 422);
+                    }
+                }
+
+                if ($existeConcepto->isNotEmpty()) {
+                    $codigoArea = $existeConcepto[0]->No;
+                } else {
+                    $codigoArea = 0;
+                }
+
+                if ($area == 'OTRO') {
+                    $area = $request->otroArea;
+                    $codigoArea = $request->codigoarea;
+                }
+
+                DB::table('concepto_autorizaciones')
+                    ->where('ID', $id)
+                    ->update([
+                        'Concepto' => $nombreConcepto,
+                        'Areas'    => $area,
+                        'No'       => $codigoArea,
+                    ]);
+
+                return response()->json([
+                    'ok' => true,
+                    'message' => "Se actualizó satisfactoriamente el concepto ({$nombreConcepto})."
+                ]);
             }
 
+            // -------- 2) EDITAR AGENCIA --------
+            if ($agencianame != null || $centrocosto != null) {
 
-            DB::table('agencias')
-            ->where('ID', $id)
-            ->update([
-                'NameAgencia' => $agencianame,
-                'NumAgencia' => $centrocosto,
-            ]);
+                $consultaagencia = DB::table("agencias")
+                    ->where("NameAgencia", $agencianame)
+                    ->where("activo", 1)
+                    ->count();
 
-            return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente la agencia <br>(<span class='badge bg-primary fw-bold'>".$agencianame." - ".$centrocosto."</span>).</span>");
-        }else{
-            $rol = $consultaRol[0]->rol;
+                $consultacentrocosto = DB::table("agencias")
+                    ->where("NumAgencia", $centrocosto)
+                    ->where("activo", 1)
+                    ->count();
+
+                if ($consultaagencia > 0) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => "La agencia {$agencianame} ya existe!"
+                    ], 422);
+                } else if ($consultacentrocosto > 0) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => "El centro de costo {$centrocosto} ya existe!"
+                    ], 422);
+                }
+
+                DB::table('agencias')
+                    ->where('ID', $id)
+                    ->update([
+                        'NameAgencia' => $agencianame,
+                        'NumAgencia'  => $centrocosto,
+                    ]);
+
+                return response()->json([
+                    'ok' => true,
+                    'message' => "Se actualizó satisfactoriamente la agencia ({$agencianame} - {$centrocosto})."
+                ]);
+            }
+
+            // -------- 3) EDITAR USUARIO --------
+            if (empty($consultaRol)) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => "No se encontró el usuario por correo {$correo}."
+                ], 422);
+            }
+
+            $rolUser = $consultaRol[0]->rol;
             $codigodpto = null;
-            if($rol == 'Jefatura'){
-                $agencia = $request->jefatura;
-                $codigodpto = $request->codigodpto;
-            }else if($rol == 'Coordinacion'){
-                $agencia = $request->coordinacion2;
-            }
+
+
 
             $agenciasConCodigos = [
                 'Reporte Bogota' => 13,
@@ -1491,45 +1688,73 @@ class GerenciaController extends Controller
                 'Ficidet' => 2500,
             ];
 
+            if ($rolUser == 'Jefatura') {
 
+                $agencia = $request->jefatura;
+                $codigodpto = $request->codigodpto;
+
+            } else if ($rolUser == 'Coordinacion') {
+
+                $agencia = $request->coordinacion2; 
+
+            
+                if (preg_match('/(\d+)\s*$/', $agencia, $match)) {
+
+                    $numero = (int) $match[1]; 
+
+                    $codigodpto = '11' . ($numero * 10);
+
+                } else {
+                    $codigodpto = null; 
+                }
+            } else if ($rolUser == 'Consultante') {
+                $codigodpto = $consultaRol[0]->codigo;
+            }
+
+
+  
             foreach ($agenciasConCodigos as $nombreAgencia => $codigo) {
                 DB::table('users')
                     ->where('agenciau', $nombreAgencia)
                     ->update(['codigo' => $codigo]);
             }
+            // Update base
+            $updateData = [
+                'name'       => $nombre,
+                'agenciau'   => $agencia,
+                'codigo'     => $codigodpto,
+                'celular'    => $celular,
+                'agencias_id'=> $request->agencias_hidden ?: null,
+            ];
 
-            if($contrasena == null){
-                DB::table('users')
-                ->where('email', $correo)
-                ->update([
-                    'name' => $nombre,
-                    'agenciau' => $agencia,
-                    'codigo' => $codigodpto ?: null,
-                    'celular' => $celular,
-                    'password' => bcrypt($contrasena),
-                    'agencias_id' => $request->agencias_hidden ?: null
-                ]);
-            }else{
-                DB::table('users')
-                ->where('email', $correo)
-                ->update([
-                    'name' => $nombre,
-                    'agenciau' => $agencia,
-                    'codigo' => $codigodpto ?: null,
-                    'celular' => $celular,
-                    'password' => bcrypt($contrasena),
-                    'agencias_id' => $request->agencias_hidden ?: null
-                ]);
-            }
-                return back()->with("correcto", "<span class='fs-4'>Se actualizó satisfactoriamente el usuario <br>(<span class='badge bg-primary fw-bold'>".$nombre." - ".$agencia."</span>).</span>");
+            // ✅ Solo actualiza password si viene una nueva
+            if (!empty($contrasena)) {
+                $updateData['password'] = bcrypt($contrasena);
             }
 
+            DB::table('users')
+                ->where('email', $correo)
+                ->update($updateData);
 
+            return response()->json([
+                'ok' => true,
+                'message' => "Se actualizó satisfactoriamente el usuario ({$nombre} - {$agencia})."
+            ]);
 
+        } catch (\Throwable $e) {
+            Log::error('Error editarusuario', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
 
-
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error interno al editar.',
+                'debug' => $e->getMessage(),
+            ], 500);
+        }
     }
-
 
 
     public function contarsolicitudesotrabajo(Request $request)

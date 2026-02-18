@@ -537,119 +537,204 @@
                         {
                     data:null,
                             render: function(data, type, row) {
+                                $(document).on('click', '.delete-btn', function (e) {
+                                        e.preventDefault();
 
+                                        const $btn    = $(this);
+                                        const url     = $btn.data('url');       
+                                        const tipo    = $btn.data('tipo');     
+                                        const action  = $btn.data('action');    
+                                        const id      = $btn.data('id');      
+                                        const name    = $btn.data('name') || '';
+                                        const area    = $btn.data('area') || '';
+                                        const email   = $btn.data('email') || '';
+                                        const activo  = Number($btn.data('activo')); 
 
-                                $(document).on('click', '.delete-btn', function(e) {
-                                    e.preventDefault();
+                                        const csrf = $('meta[name="csrf-token"]').attr('content');
+                                        const table = $('#personas').DataTable();
 
+                                        function reloadDT() {
+                                            table.ajax.reload(null, false); 
+                                        }
 
-                                    var url = $(this).data('url');
-                                    var id = $(this).data('id');
-                                    var name = $(this).data('name');
-                                    var concepto = $(this).data('concepto');
-                                    var area = $(this).data('area');
-                                    var email = $(this).data('email');
+                                        function postAjax(postUrl, data, onOk) {
+                                            $.ajax({
+                                            url: postUrl,
+                                            method: 'POST',
+                                            data: data,
+                                            headers: { 'X-CSRF-TOKEN': csrf },
+                                            success: function (res) {
+                                                if (res && res.ok) {
+                                                Swal.fire('Listo', res.message || 'Operación exitosa.', 'success');
+                                                if (typeof onOk === 'function') onOk(res);
+                                                } else {
+                                                Swal.fire('Atención', res?.message || 'No se pudo completar.', 'warning');
+                                                }
+                                            },
+                                            error: function (xhr) {
+                                                Swal.fire('Error', xhr.responseJSON?.message || 'Ocurrió un error.', 'error');
+                                            }
+                                            });
+                                        }
 
+                                        if (action === 'activar') {
+                                            Swal.fire({
+                                            title: `¿Habilitar cuenta suspendida?`,
+                                            html: `<p>Cuenta: <strong>${email || id}</strong></p>`,
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#28a745',
+                                            cancelButtonColor: '#3085d6',
+                                            confirmButtonText: 'Sí, habilitar',
+                                            cancelButtonText: 'Cancelar',
+                                            }).then((result) => {
+                                            if (!result.isConfirmed) return;
 
-                                    if(row.NameAgencia != null){
-                                        var name = $(this).data('name');
-                                    }
+                    
+                                            postAjax(url, {}, () => reloadDT());
+                                            });
 
-                                    if(row.Concepto != null){
-                                        var name = $(this).data('concepto');
-                                        Swal.fire({
-                                            title: `¿Qué desea eliminar?`,
+                                            return;
+                                        }
+
+                                        if (tipo === 'concepto') {
+                                            Swal.fire({
+                                            title: '¿Qué desea eliminar?',
                                             html: `
-                                                <p class="mb-3">Ha seleccionado: <strong>${name}</strong></p>
-                                                <p class="mb-3">Área: <strong>${area}</strong></p>
+                                                <p class="mb-2">Concepto: <strong>${name}</strong></p>
+                                                <p class="mb-2">Área: <strong>${area || '-'}</strong></p>
                                                 <p class="text-muted">Elija si quiere eliminar el concepto completo o solo el área asociada.</p>
                                             `,
                                             icon: 'warning',
                                             showCancelButton: true,
                                             showDenyButton: true,
                                             confirmButtonText: '🗑️ Eliminar concepto',
-                                            denyButtonText: '📂 Eliminar área de la lista',
+                                            denyButtonText: '📂 Eliminar área',
                                             cancelButtonText: 'Cancelar',
                                             confirmButtonColor: '#d33',
                                             denyButtonColor: '#f39c12',
                                             cancelButtonColor: '#3085d6',
-                                            customClass: {
-                                                confirmButton: 'btn-confirm swal2-btn-lg',
-                                                denyButton: 'btn-deny swal2-btn-lg',
-                                                cancelButton: 'btn-cancel swal2-btn-lg'
-                                            }
-                                        }).then((result) => {
+                                            }).then((result) => {
+
+                            
                                             if (result.isConfirmed) {
-                                                // 🔴 Ruta para eliminar concepto (usuario)
-                                                window.location.href = `admin/eliminar/${id}`;
-                                            } else if (result.isDenied) {
-                                                // 🟠 Ruta para eliminar área
-                                                window.location.href = `admin/eliminararea/${id}/${area}`;
+                                                postAjax(url, { tipo: 'concepto' }, () => reloadDT());
+                                                return;
                                             }
-                                        });
 
-
-                                    }else if(row.activo == 0){
-                                        
-                                            Swal.fire({
-                                            title: `¿Está seguro de habilitar la cuenta suspendida ${email}?`,
-                                            text: "Esta acción no se puede deshacer.",
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonColor: '#d33',
-                                            cancelButtonColor: '#3085d6',
-                                            confirmButtonText: 'Sí, habilitar',
-                                            cancelButtonText: 'Cancelar',
-                                            customClass: {
-                                                confirmButton: 'btn-confirm',
-                                                cancelButton: 'btn-cancel'
+                                            if (result.isDenied) {
+                                                const urlArea = `admin/eliminararea/${encodeURIComponent(id)}/${encodeURIComponent(area)}`;
+                                                postAjax(urlArea, {}, () => reloadDT());
                                             }
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                window.location.href = url;
-                                            }
-                                        });
-                                        
-                                    }else{
+                                            });
 
-                                            Swal.fire({
+                                            return;
+                                        }
+
+        
+                                        Swal.fire({
                                             title: `¿Está seguro de eliminar a ${name}?`,
-                                            text: "Esta acción no se puede deshacer.",
+                                            text: 'Esta acción no se puede deshacer.',
                                             icon: 'warning',
                                             showCancelButton: true,
                                             confirmButtonColor: '#d33',
                                             cancelButtonColor: '#3085d6',
                                             confirmButtonText: 'Sí, eliminar',
                                             cancelButtonText: 'Cancelar',
-                                            customClass: {
-                                                confirmButton: 'btn-confirm',
-                                                cancelButton: 'btn-cancel'
-                                            }
                                         }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                window.location.href = url;
-                                            }
+                                            if (!result.isConfirmed) return;
+
+            
+                                            postAjax(url, { tipo }, () => reloadDT());
                                         });
-                                    }
-
                                 });
-                                var id = row.id;
-                                var name = row.name;
-                                if(row.NameAgencia != null){
-                                    name = row.NameAgencia
-                                    id = row.NameAgencia
+
+                                let id = row.id;
+                                let tipo  = 'usuario';
+                                let delId = row.id;          
+                                let label = row.name;  
+
+                                if (row.NameAgencia != null) {
+                                    tipo = 'agencia';
+                                    delId = row.NameAgencia;   
+                                    label = row.NameAgencia;  
+                                    id = row.NameAgencia;         
                                 }
 
-                                if(row.Concepto != null){
-                                    name = row.Concepto
-                                    id = row.ConceptoID
+                                if (row.Concepto != null) {
+                                    tipo = 'concepto';
+                                    delId = row.ConceptoID;   
+                                    label = row.Concepto;
+
+                                    id = row.ConceptoID;  
                                 }
 
 
-                                var url = `admin/eliminar/${id}`;
+                                const urlEliminar = `admin/eliminar/${encodeURIComponent(delId)}?tipo=${encodeURIComponent(tipo)}`;
+
+                                $(document).on('click', `#createButton-${id}`, function (e) {
+                                    e.preventDefault();
+
+                                    const $form = $(this).closest('form'); // ✅ aquí sí
+                                    const actionUrl = $form.attr('action');
+                                    const formData = $form.serialize();
+                                    const csrf = $('meta[name="csrf-token"]').attr('content');
+
+                                    $.ajax({
+                                        url: actionUrl,
+                                        method: 'POST',
+                                        data: formData,
+                                        headers: { 'X-CSRF-TOKEN': csrf },
+                                        success: function (res) {
+                                        if (res && res.ok) {
+                                            Swal.fire('Listo', res.message || 'Actualizado.', 'success');
+
+                                            // cerrar modal actual
+                                            const $modal = $form.closest('.modal');
+                                            $modal.modal('hide');
+
+                                            // recargar datatable en misma página
+                                            $('#personas').DataTable().ajax.reload(null, false);
+                                        } else {
+                                            Swal.fire('Atención', res?.message || 'No se pudo completar.', 'warning');
+                                        }
+                                        },
+                                        error: function (xhr) {
+                                        const msg = xhr.responseJSON?.message || 'Ocurrió un error.';
+                                        Swal.fire('Error', msg, 'error');
+                                        }
+                                    });
+                                });
+
+                                function guardarCoordinacionAjax(name, members) {
+                                    const csrf = $('meta[name="csrf-token"]').attr('content');
+
+                                    $.ajax({
+                                        url: 'admin/guardarcoordinacion', // <- cambia a tu ruta real
+                                        method: 'POST',
+                                        data: { name, members },
+                                        headers: { 'X-CSRF-TOKEN': csrf },
+                                        success: function (res) {
+                                        if (res.ok) {
+                                            const msg = (res.mode === 'created')
+                                            ? 'Grupo creado correctamente.'
+                                            : 'Grupo actualizado correctamente.';
+
+                                            Swal.fire('Listo', msg, 'success');
+
+                                            $('#personas').DataTable().ajax.reload(null, false);
+                                        } else {
+                                            Swal.fire('Atención', res.message || 'No se pudo guardar.', 'warning');
+                                        }
+                                        },
+                                        error: function (xhr) {
+                                        Swal.fire('Error', xhr.responseJSON?.message || 'Ocurrió un error.', 'error');
+                                        }
+                                    });
+                                }
 
 
-
+   
 
                                 var ModalInfo = `
                                     <a type="button" class="btn btn-outline-secondary" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}" data-id="${id}">
@@ -672,7 +757,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{route('editarusuario')}}" method="POST" id="dynamicForm_${id}">
+                                                    <form action="{{ route('editarusuario') }}" method="POST">
                                                         @csrf
                                                         <input type="hidden" name="id" value="${id}">
 
@@ -692,7 +777,7 @@
                                                                             <label for="contraseña" class="form-label fw-bold fs-4">Centro de costo de la agencia:</label>
                                                                             <input type="number" id="contraseña" class="form-control mb-3 fs-4 border-dark border-3" placeholder="Ingrese el centro de costo" autocomplete="off"  name="cc" value="${row.NumAgencia}">
                                                                             <div class="text-danger" id="error-contraseña"></div>
-                                                                            <input type="hidden" name="id" value="${row.ID}">
+                                                                            <input type="hidden" name="id" value="${id}">
                                                                         </div>
                                                                     </div>
                                                                 `
@@ -873,7 +958,7 @@
 
 
                                                         <div class="text-end modal-footer">
-                                                            <button id="createButton" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
+                                                            <button id="createButton-${id}" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -884,22 +969,30 @@
 
 
 
-                                    <a type="button"
+                                    <a href="#"
                                         class="btn btn-outline-danger delete-btn"
-                                        data-url="${url}"
-                                        data-id="${id}"
-                                        data-name="${name}"
-                                        ${row.Concepto != null ? `data-concepto="${row.Concepto}" data-area="${row.Areas}"` : ``}>
+                                        data-url="${urlEliminar}"
+                                        data-id="${delId}"
+                                        data-tipo="${tipo}"
+                                        data-name="${label}"
+                                        data-area="${row.Areas ?? row.area ?? ''}"
+                                        data-email="${row.email ?? ''}"
+                                        data-activo="${row.activo ?? 1}">
                                         <i class="fa-solid fa-trash fs-5"></i>
                                     </a>
 
+                                    <input type="hidden" name="tipo" value="usuario">
+                                                   
                                 `;
 
                                 if(row.activo == 0){
                                     var ModalInfo = `                                    
-                                        <a type="button"
+                                        <a href="#"
                                             class="btn btn-outline-warning delete-btn"
-                                            data-url="admin/suspendida/${id}" data-email="${row.email}">
+                                            data-action="activar"
+                                            data-url="admin/suspendida/${id}"
+                                            data-email="${row.email}"
+                                            data-id="${id}">
                                             <i class="fa-solid fa-user-slash fs-5"></i>
                                         </a>
                                     `

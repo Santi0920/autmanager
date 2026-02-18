@@ -333,13 +333,13 @@ Route::middleware(['session.expired'])->group(function () {
         Route::post('/admin/editar', [GerenciaController::class, 'editarusuario'])
         ->name('editarusuario');
 
-        Route::get('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
+        Route::post('/admin/eliminar/{id}', [GerenciaController::class, 'eliminarUsuario'])
         ->name('eliminarusuario');
 
-        Route::get('/admin/suspendida/{id}', [GerenciaController::class, 'activarCSuspendida'])
+        Route::post('/admin/suspendida/{id}', [GerenciaController::class, 'activarCSuspendida'])
         ->name('activarcsuspendida');
 
-                Route::get('/admin/eliminararea/{id}/{area}', [GerenciaController::class, 'eliminarConcepto'])
+        Route::post('/admin/eliminararea/{id}/{area}', [GerenciaController::class, 'eliminarConcepto'])
         ->name('eliminararea');
 
         Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
