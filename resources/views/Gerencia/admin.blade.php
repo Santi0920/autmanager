@@ -658,7 +658,7 @@
                                     tipo = 'agencia';
                                     delId = row.NameAgencia;   
                                     label = row.NameAgencia;  
-                                    id = row.NameAgencia;         
+                                    id = row.ID_Agencia;         
                                 }
 
                                 if (row.Concepto != null) {
@@ -672,39 +672,52 @@
 
                                 const urlEliminar = `admin/eliminar/${encodeURIComponent(delId)}?tipo=${encodeURIComponent(tipo)}`;
 
-                                $(document).on('click', `#createButton-${id}`, function (e) {
-                                    e.preventDefault();
+                                $(document)
+                                    .off('submit', '.js-edit-user-form') // ✅ evita duplicados
+                                    .on('submit', '.js-edit-user-form', function (e) {
+                                        e.preventDefault();
 
-                                    const $form = $(this).closest('form'); // ✅ aquí sí
-                                    const actionUrl = $form.attr('action');
-                                    const formData = $form.serialize();
-                                    const csrf = $('meta[name="csrf-token"]').attr('content');
+                                        const $form = $(this);
+                                        const actionUrl = $form.attr('action');
+                                        const formData = $form.serialize();
+                                        const csrf = $('meta[name="csrf-token"]').attr('content');
 
-                                    $.ajax({
+                                        const $btn = $form.find('.js-save-user');
+
+                                        // ✅ evitar doble submit
+                                        if ($btn.data('loading')) return;
+                                        $btn.data('loading', true).prop('disabled', true);
+
+                                        $.ajax({
                                         url: actionUrl,
                                         method: 'POST',
                                         data: formData,
-                                        headers: { 'X-CSRF-TOKEN': csrf },
+                                        headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+                                        dataType: 'json',
                                         success: function (res) {
-                                        if (res && res.ok) {
+                                            // ✅ si se llegó a abrir otro swal por error, ciérralo
+                                            if (Swal.isVisible()) Swal.close();
+
+                                            if (res && res.ok) {
                                             Swal.fire('Listo', res.message || 'Actualizado.', 'success');
 
-                                            // cerrar modal actual
-                                            const $modal = $form.closest('.modal');
-                                            $modal.modal('hide');
-
-                                            // recargar datatable en misma página
+                                            $form.closest('.modal').modal('hide');
                                             $('#personas').DataTable().ajax.reload(null, false);
-                                        } else {
+                                            } else {
                                             Swal.fire('Atención', res?.message || 'No se pudo completar.', 'warning');
-                                        }
+                                            }
                                         },
                                         error: function (xhr) {
-                                        const msg = xhr.responseJSON?.message || 'Ocurrió un error.';
-                                        Swal.fire('Error', msg, 'error');
+                                            if (Swal.isVisible()) Swal.close();
+                                            const msg = xhr.responseJSON?.message || 'Ocurrió un error.';
+                                            Swal.fire('Error', msg, 'error');
+                                        },
+                                        complete: function () {
+                                            $btn.data('loading', false).prop('disabled', false);
                                         }
-                                    });
+                                        });
                                 });
+
 
                                 function guardarCoordinacionAjax(name, members) {
                                     const csrf = $('meta[name="csrf-token"]').attr('content');
@@ -757,7 +770,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('editarusuario') }}" method="POST">
+                                                    <form action="{{ route('editarusuario') }}" method="POST" class="js-edit-user-form">
                                                         @csrf
                                                         <input type="hidden" name="id" value="${id}">
 
@@ -958,7 +971,7 @@
 
 
                                                         <div class="text-end modal-footer">
-                                                            <button id="createButton-${id}" type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
+                                                            <button type="submit" class="fs-4 btn btn-warning fw-bold w-50">Guardar</button>
                                                         </div>
                                                     </form>
                                                 </div>

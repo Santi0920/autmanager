@@ -1003,12 +1003,25 @@ class GerenciaController extends Controller
         if (session('email') == null) {
             return redirect()->route('login');
         }
-        $solicitudes = DB::select("SELECT * FROM agencias WHERE activo = 1 ORDER BY NameAgencia ASC");
 
+        $solicitudes = DB::table('agencias')
+            ->select('ID', 'NameAgencia', 'NumAgencia')
+            ->where('activo', 1)
+            ->orderBy('NameAgencia', 'ASC')
+            ->get();
 
+    
+        $data = $solicitudes->map(function ($a) {
+            return [
+                'ID_Agencia'   => $a->ID,
+                'NameAgencia'      => $a->NameAgencia,
+                'NumAgencia' => $a->NumAgencia,
+            ];
+        });
 
-        return datatables()->of($solicitudes)->toJson();
+        return datatables()->of($data)->toJson();
     }
+
 
     //compact
     public function cargaragencias(Request $request)
