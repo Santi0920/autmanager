@@ -111,7 +111,7 @@ class UsuarioController extends Controller
         $idpersona = 7323;
         $url = "http://srv-owncloud.coopserp.com/conexion_s400/api/";
 
-
+        
         //fecha de la solicitud del director
         $fechadeSolicitud = Carbon::now('America/Bogota');
         Carbon::setLocale('es');

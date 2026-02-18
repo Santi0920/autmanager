@@ -1180,13 +1180,12 @@ class GerenciaController extends Controller
         if($existeConcepto>0){
             $existeConcepto = DB::table('concepto_autorizaciones')->where('ID', $id)->get();
 
-
             DB::table('concepto_autorizaciones')
                 ->where('ID', $id)
                 ->update([
                     'activo' => 0
             ]);
-            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el concepto (<span class='fw-bold'>".$id."</span>).</span>");
+            return back()->with("correcto", "<span class='fs-4'>Se eliminó satisfactoriamente el concepto (<span class='fw-bold'>".$existeConcepto[0]->Concepto."</span>).</span>");
         }else if($existeAgencia>0){
             $existeAgencia = DB::table('agencias')->where('NameAgencia', $id)->get();
             $idagencia = $existeAgencia[0]->NumAgencia;
