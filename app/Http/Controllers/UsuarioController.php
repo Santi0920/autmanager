@@ -1196,7 +1196,8 @@ class UsuarioController extends Controller
                 }
 
             }else if ($tipovalidacion == 'ANULADO') {
-
+                Log::info($ultimoEstado);
+                Log::info($tipovalidacion);
                 $primerHistorial = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
                     ->orderBy('ID', 'asc')

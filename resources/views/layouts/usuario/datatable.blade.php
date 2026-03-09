@@ -951,12 +951,15 @@
                                                                     `<label class="label">
                                                                         <input value="DESBLOQUEADO" type="radio" name="Estado" id="estado_desbloquear" required>
                                                                         <span>DESBLOQUEAR</span>
-                                                                    </label>`:``}
- 
+                                                                    </label>`:`
                                                                     <label class="label">
                                                                         <input value="ANULADO" type="radio" name="Estado" id="estado_anular" required>
                                                                         <span>ANULAR</span>
                                                                     </label>
+                                                                    
+                                                                    `}
+ 
+
                                                                 </div>
 
                                                                 <div class="col-sm-12 col-md-12 col-lg-10">
