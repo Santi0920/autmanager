@@ -1043,6 +1043,7 @@ class UsuarioController extends Controller
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
         $nombre = session('name');
         $destinatario = null;
+
         if(session('rol') == "Gerencia"){
 
 
@@ -1060,9 +1061,9 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'QUE PASO')
                         ->orWhere('Estado', 'RECIBIDO')
                         ->orWhere('Estado', 'STAND BY')
-                        ->orWhere('Estado', 'ANULADO')
                         ->orWhere('Estado', 'CORREGIR')
                         ->orWhere('Estado', 'VENCIDO')
+                        ->orWhere('Estado', 'ANULADO')
                         ->orWhere('Estado', 'INFORMADO')
                         ->orWhere('Estado', 'REMITIDOCONFIRMADO')
                         ->orWhere('Estado', 'DESBLOQUEADO');
@@ -1196,8 +1197,6 @@ class UsuarioController extends Controller
                 }
 
             }else if ($tipovalidacion == 'ANULADO') {
-                Log::info($ultimoEstado);
-                Log::info($tipovalidacion);
                 $primerHistorial = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
                     ->orderBy('ID', 'asc')
