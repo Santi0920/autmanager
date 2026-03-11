@@ -4408,6 +4408,8 @@ class UsuarioController extends Controller
                 'C.Areas',
                 'D.FechaInsercion'
             ])
+            ->orderBy('IDAutorizacion', 'desc')
+            ->limit(540)
             ->get();
 
         foreach ($autorizaciones as $aut) {
