@@ -183,15 +183,14 @@ Route::middleware(['session.expired'])->group(function () {
 
 
     //COORDINACION
-        Route::get('/filtrarconcepto', function () {
-            Cookie::forget('laravel_session');
-            Cache::flush();
-            return view('Coordinacion/filtrarconcepto');
+        Route::get('filtrarconcepto', function () {
+            return view('Usuario.Coordinacion.filtrarconcepto');
         });
 
-        Route::get('filtrarconcepto/datatable', [CoordinacionController::class, 'filtrarconcepto'])->name('datacoor.filtrarconcepto');
+        Route::get('filtrarconcepto/datatable', [UsuarioController::class, 'filtrarconcepto'])->name('datacoor.filtrarconcepto');
 
-        Route::get('/filtrarconcepto', [CoordinacionController::class, 'data2']);
+        Route::get('filtrarconcepto', [UsuarioController::class, 'datafiltrarconcepto']);
+        
 
 
     //GERENCIA
@@ -345,6 +344,8 @@ Route::middleware(['session.expired'])->group(function () {
         Route::get('/admin/obtener-agencias/{id}', [GerenciaController::class, 'obtenerAgencias']);
 
         Route::get('/admin/obtener-agencias-select/{id}', [GerenciaController::class, 'obtenerAgenciasSelect']);
+
+
 
     //TODOS LOS PERFILES
 

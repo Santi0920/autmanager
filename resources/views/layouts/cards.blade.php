@@ -42,11 +42,11 @@
                     </script>
                     <h4 class="text-uppercase fw-bold fs-2 text-end"><button class="custom-btn me-2 fs-4" title="ACTUALIZAR ESTADÍSTICAS" onclick="reloadPage()"><i class="fa-solid fa-rotate-right"></i></button>Estadísticas AUTORIZACIONES</h4>
                     <p class="text-center fw-bold fs-1">
-                        TOTAL: <span class="btn btn-secondary shadow value fs-1" style="padding: 0rem 0.8rem; border-radius: 10%; font-weight: 600; font-size: 25px;" akhi="{{$total}}" id="total"><b>0</b></span>
+                        ULTIMO ID: <span class="btn btn-secondary shadow value fs-1" style="padding: 0rem 0.8rem; border-radius: 10%; font-weight: 600; font-size: 25px;" akhi="{{$total}}" id="total"><b>0</b></span>
                     </p>
                 </div>
 
-                <span class="fs-2 fw-bold">Filtrar por:</span>
+                <!-- <span class="fs-2 fw-bold">Filtrar por:</span>
                 <form action="d-inline" class="d-flex align-items-center" id="form-actualizar-datos">
                     <input class="input1 ms-3 mb-3 p-2 btn btn-outline-secondary text-dark fw-bold" style="width: 9em;" type="date" id="start" name="start" value="" min="2024-03-01" max="{{ now()->format('Y-m-d') }}" title="Mes Inicial"/>
 
@@ -55,13 +55,13 @@
                     <div class="select ms-3 mb-3 d-none" id="agencia">
                         <select name="agencia"  class="fw-semibold">
                             <option selected disabled class="fw-bold" style="font-size: 19px">Agencia</option>
-                            @foreach ($nombresAgencia as $agencia)
-                                <option style="font-size: 19px" value="{{ $agencia->NomAgencia }}">{{ $agencia->NomAgencia }}</option>
+                            @foreach ($nombresArea as $agencia)
+                                <option style="font-size: 19px" value="{{ $agencia->NumArea }}">{{ $agencia->NumArea }}</option>
                             @endforeach
                         </select>
                     </div>
 
-                </form>
+                </form> -->
 
 
                 {{-- <div class="select ms-3 mb-3">

@@ -175,98 +175,98 @@ class GerenciaController extends Controller
 
     public function contarsolicitudes(Request $request)
     {
-        $directorestramite = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 2)
-        ->get()
-        ->count();
-
-        $coordinadorestramite = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 6)
-        ->get()
-        ->count();
-
-        //ESTE ESTADO YA NO SE UTILIZA PERO SE SUMA PORQUE EN LAS PRIMERAS VERSIONES, ALGUNAS AUTORIZACIONES QUEDARON CON ESE ESTADO
-        $coordinadorestramitecorregir = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 3)
-        ->get()
-        ->count();
-
-        //sumatoria de todos los que estan en tramite
-        $tramite = ($directorestramite + $coordinadorestramite + $coordinadorestramitecorregir);
+        $base = DB::table('autorizaciones_2 AS B')
+            ->join(DB::raw('(
+                SELECT
+                    ID_Autorizacion,
+                    MAX(ID) AS UltimoHistorialID
+                FROM historialestado
+                GROUP BY ID_Autorizacion
+            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID');
 
 
 
-        $validadocoordinadores = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 1)
-        ->get()
-        ->count();
+        // En trámite
+        $tramite = (clone $base)
+            ->whereIn('H.Estado', [
+                'TRÁMITE',
+            ])
+            ->count();
+
+        // Validados
+        $validadocoordinadores = (clone $base)
+            ->where('H.Estado', 'VALIDADO')
+            ->count();
+
+        // Rechazados
+        $rechazados = (clone $base)
+            ->whereIn('H.Estado', [
+                'CORREGIR',
+            ])
+            ->count();
+
+        // Aprobados
+        $aprobadogerencia = (clone $base)
+            ->where('H.Estado', 'APROBADO')
+            ->count();
+
+        // Anulados
+        $anuladosgerencia = (clone $base)
+            ->where('H.Estado', 'ANULADO')
+            ->count();
 
 
-        $rechazadogerencia = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 5)
-        ->get()
-        ->count();
+        $total = DB::table('autorizaciones_2')->max('ID');
 
-        $rechazadocoordinacion = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 0)
-        ->get()
-        ->count();
-
-        $rechazados = $rechazadocoordinacion + $rechazadogerencia;
-
-        $aprobadogerencia = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 4)
-        ->get()
-        ->count();
-
-        $anuladosgerencia = DB::table('autorizaciones')
-        ->select('autorizaciones.Estado as EstadoAutorizacion')
-        ->where('autorizaciones.Estado', 7)
-        ->get()
-        ->count();
-
-        $total = $tramite + $validadocoordinadores + $rechazados + $aprobadogerencia + $anuladosgerencia;
-
-        $nombresAgencia = DB::table('autorizaciones')
-        ->select('NomAgencia')
-        ->distinct()
-        ->orderBy('NomAgencia', 'asc')
-        ->get();
-
-        $year = DB::table('autorizaciones')
-        ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
-        ->distinct()
-        ->orderBy('year', 'asc')
-        ->get();
+        $nombresArea = DB::table('historialestado')
+            ->select('NomArea', 'NumArea')
+            ->whereNotNull('NomArea')
+            ->where('NomArea', '!=', '')
+            ->distinct()
+            ->orderBy('NomArea', 'asc')
+            ->get();
 
 
+        $year = DB::table('historialestado')
+            ->select(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(Fecha, ' ', -1), '-', 1) AS year"))
+            ->whereNotNull('Fecha')
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->get();
 
-        //esto se hace con el fin de que se rellene los circulo de forma dinamica
-        $porcentaje_tramite = ($tramite != 0) ? ($tramite / $total * 100) : 0;
+
+        $porcentaje_tramite = ($total != 0) ? ($tramite / $total * 100) : 0;
         $porcentaje_tramite_con_decimales = round($porcentaje_tramite, 2);
 
-        $porcentajevalidos = ($validadocoordinadores != 0) ? ($validadocoordinadores / $total * 100) : 0;
+        $porcentajevalidos = ($total != 0) ? ($validadocoordinadores / $total * 100) : 0;
         $decimalvalidados = round($porcentajevalidos, 2);
 
-        $porcentajerechazados = ($rechazados != 0) ? ($rechazados / $total * 100) : 0;
+        $porcentajerechazados = ($total != 0) ? ($rechazados / $total * 100) : 0;
         $decimalrechazados = round($porcentajerechazados, 2);
 
-        $porcentajeaprobados = ($aprobadogerencia != 0) ? ($aprobadogerencia / $total * 100) : 0;
+        $porcentajeaprobados = ($total != 0) ? ($aprobadogerencia / $total * 100) : 0;
         $decimalaprobados = round($porcentajeaprobados, 2);
 
-        $porcentajeanulados = ($anuladosgerencia != 0) ? ($anuladosgerencia / $total * 100) : 0;
+        $porcentajeanulados = ($total != 0) ? ($anuladosgerencia / $total * 100) : 0;
         $decimalanulados = round($porcentajeanulados, 2);
 
-
-        return view('Gerencia/estadisticas', ['porcentajeanulados' => $porcentajeanulados,'anuladosgerencia' => $anuladosgerencia,'decimalanulados' => $decimalanulados,'decimalaprobados' => $decimalaprobados, 'decimalrechazados' => $decimalrechazados, 'decimalvalidados' => $decimalvalidados, 'porcentajetramite' => $porcentaje_tramite_con_decimales, 'tramite' => $tramite, 'validadocoordinadores' => $validadocoordinadores, 'rechazados' => $rechazados, 'aprobadogerencia' => $aprobadogerencia, 'total' => $total, 'nombresAgencia' => $nombresAgencia, 'year' => $year]);
-
+        return view('Gerencia/estadisticas', [
+            'porcentajeanulados' => $porcentajeanulados,
+            'anuladosgerencia' => $anuladosgerencia,
+            'decimalanulados' => $decimalanulados,
+            'decimalaprobados' => $decimalaprobados,
+            'decimalrechazados' => $decimalrechazados,
+            'decimalvalidados' => $decimalvalidados,
+            'porcentajetramite' => $porcentaje_tramite_con_decimales,
+            'tramite' => $tramite,
+            'validadocoordinadores' => $validadocoordinadores,
+            'rechazados' => $rechazados,
+            'aprobadogerencia' => $aprobadogerencia,
+            'total' => $total,
+            'nombresArea' => $nombresArea,
+            'year' => $year
+        ]);
     }
 
 

@@ -2325,11 +2325,16 @@
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3 ms-auto">
 
                     <!-- BOTÓN ACTUALIZAR -->
-                    <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
-                            title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
-                        <i class="fa-solid fa-rotate-right"></i>
-                        <span class="d-none d-md-inline">ACTUALIZAR</span>
-                    </button>
+                    ${
+                        ('{{ session('rol') }}' === 'Coordinacion') ? `
+                            <a href="filtrarconcepto"><button id="btnT" class="btn btn-secondary fw-bold mb-2 mb-lg-1" title="Filtrar por concepto">FILTRAR POR CONCEPTO</button></a>
+                    `:``}
+                            
+                            <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
+                                    title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span class="d-none d-md-inline">ACTUALIZAR</span>
+                            </button>
 
                     ${
                         ('{{ session('rol') }}' === 'Gerencia') ? `
@@ -2379,13 +2384,15 @@
                 $(".btn-filter").removeClass("active"); // Quita la clase a todos
                 $(btnId).addClass("active"); // Activa solo el seleccionado
             }
-            $('#personas_filter input').on('keyup').on('keyup', function() {
+            $('#personas_filter input').off('keyup').on('keyup', function() {
                 var searchValue = $(this).val().trim();
 
-                if(searchValue === '') {
+                table.search('').draw(false);
+
+                if (searchValue === '') {
                     table.ajax.url(lastAjaxUrl).load();
                 } else {
-                    table.ajax.url('{{ route("data.solicitudes") }}?search=' + encodeURIComponent(searchValue)).load();
+                    table.ajax.url(lastAjaxUrl + '?search_term=' + encodeURIComponent(searchValue)).load();
                 }
 
                 console.log('Valor enviado al servidor:', searchValue);
