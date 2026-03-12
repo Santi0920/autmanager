@@ -828,7 +828,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = trim($request->search_term ?? '');
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -1911,7 +1911,7 @@ class UsuarioController extends Controller
 
         $agenciaU = session('agenciau');
         $rol = session('rol');
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -2111,7 +2111,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -2198,7 +2198,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -2286,7 +2286,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -2356,7 +2356,7 @@ class UsuarioController extends Controller
         $rol = session('rol');
 
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -2560,7 +2560,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -2946,7 +2946,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -3018,7 +3018,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -3148,7 +3148,7 @@ class UsuarioController extends Controller
 
         $agenciaU = session('agenciau');
         $rol = session('rol');
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -3341,7 +3341,7 @@ class UsuarioController extends Controller
 
         $agenciaU = session('agenciau');
         $rol = session('rol');
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 
@@ -3544,7 +3544,7 @@ class UsuarioController extends Controller
         $agenciaU = session('agenciau');
         $rol = session('rol');
 
-        $autorizacion = $request->search_term;
+        $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
 
         if (!empty($autorizacion)) {
 

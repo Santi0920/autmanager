@@ -2327,14 +2327,14 @@
                     <!-- BOTÓN ACTUALIZAR -->
                     ${
                         ('{{ session('rol') }}' === 'Coordinacion') ? `
-                            <a href="filtrarconcepto"><button id="btnT" class="btn btn-secondary fw-bold mb-2 mb-lg-1" title="Filtrar por concepto">FILTRAR POR CONCEPTO</button></a>
+                            <a href="filtrarconcepto"><button id="" class="btn btn-secondary fw-bold mb-2 mb-lg-1" title="Filtrar por concepto">FILTRAR POR CONCEPTO</button></a>
                     `:``}
-                            
-                            <button id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
-                                    title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
-                                <i class="fa-solid fa-rotate-right"></i>
-                                <span class="d-none d-md-inline">ACTUALIZAR</span>
-                            </button>
+                                                
+                    <button type="button" id="btnT" class="btn btn-primary shadow-sm fw-bold d-flex align-items-center justify-content-center gap-1 btn-filter"
+                        title="ACTUALIZAR INFORMACIÓN" style="transition: transform 0.2s;">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span class="d-none d-md-inline">ACTUALIZAR</span>
+                    </button>
 
                     ${
                         ('{{ session('rol') }}' === 'Gerencia') ? `
@@ -2378,25 +2378,27 @@
                 </div>`
 
 
-            var lastAjaxUrl = '{{ route("data.solicitudes") }}';
-
-            function setActiveButton(btnId) {
-                $(".btn-filter").removeClass("active"); // Quita la clase a todos
-                $(btnId).addClass("active"); // Activa solo el seleccionado
-            }
-            $('#personas_filter input').off('keyup').on('keyup', function() {
-                var searchValue = $(this).val().trim();
-
-                table.search('').draw(false);
-
-                if (searchValue === '') {
-                    table.ajax.url(lastAjaxUrl).load();
-                } else {
-                    table.ajax.url(lastAjaxUrl + '?search_term=' + encodeURIComponent(searchValue)).load();
+                
+                function setActiveButton(btnId) {
+                    $(".btn-filter").removeClass("active"); // Quita la clase a todos
+                    $(btnId).addClass("active"); // Activa solo el seleccionado
                 }
 
-                console.log('Valor enviado al servidor:', searchValue);
-            });
+                var lastAjaxUrl = '{{ route("data.solicitudes") }}';
+
+                $('#personas_filter input').off().on('keyup search input', function (e) {
+                    var searchValue = $(this).val().trim();
+
+                    table.search('');
+
+                    if (searchValue === '') {
+                        table.ajax.url(lastAjaxUrl).load();
+                    } else {
+                        table.ajax.url(lastAjaxUrl + '?search_term=' + encodeURIComponent(searchValue)).load();
+                    }
+
+                    console.log('Evento:', e.type, 'Valor enviado al servidor:', searchValue);
+                });
 
             
             $(buttonsHtml).prependTo('.dataTables_filter');
@@ -2406,7 +2408,6 @@
                     table.ajax.url(lastAjaxUrl).load();
                     setActiveButton('#btnT');
                 });
-
                 $('#btnC9').on('click', function() {
                     lastAjaxUrl = '{{ route("data.c9") }}';
                     table.ajax.url(lastAjaxUrl).load();
