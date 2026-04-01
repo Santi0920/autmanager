@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         ->when(function () {
             return Carbon::now('America/Bogota')->isLastOfMonth();
         })
-        ->dailyAt('17:00');
+        ->dailyAt('21:00');
     
     }
 
