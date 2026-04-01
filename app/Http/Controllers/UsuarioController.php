@@ -41,21 +41,18 @@ class UsuarioController extends Controller
         $name = $userFiltrado->name;
         $celular = $userFiltrado->celular;
         Carbon::setLocale('es');
-        // Mes anterior
-        $mesAnterior = Carbon::now('America/Bogota')->subMonth();
+
+        $mesAnterior = Carbon::now('America/Bogota')->subMonthNoOverflow();
         $mesActual = Carbon::now('America/Bogota');
-        // Fecha de corte = último día del mes anterior
+
         $fechaCorteMesAnterior = $mesAnterior->copy()->endOfMonth();
-        $fechaCorteTexto = $fechaCorteMesAnterior->translatedFormat('M d Y');
         $temp = $fechaCorteMesAnterior->translatedFormat('M d Y');
         $fechaCorteTexto = ucfirst(str_replace('.', '', $temp));
 
         $fechaCorteMesActual = $mesActual->copy()->endOfMonth();
-        $fechaCorteActualTexto = $fechaCorteMesActual->translatedFormat('M d Y');
         $temp2 = $fechaCorteMesActual->translatedFormat('M d Y');
         $fechaCorteActualTexto = ucfirst(str_replace('.', '', $temp2));
 
-        // Buscar el último ID (consecutivo) del mes anterior en historialestado
         $ultimoConsecutivoMesAnterior = DB::table('historialestado')
             ->whereMonth('Fecha', $mesAnterior->month)
             ->whereYear('Fecha', $mesAnterior->year)
