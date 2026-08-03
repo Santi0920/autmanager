@@ -467,7 +467,12 @@
                     data: null,
                     render: function(data, type, row, meta) {
                         var numeroRegistro = `<span class='text-danger fw-bold'>${meta.row + 1}</span>`;
-                        return numeroRegistro;
+                        if(row.Concepto != null){
+                                return `<span class='text-danger fw-bold'>${row.ConceptoID}</span>`;
+                        }else{
+                                return numeroRegistro;
+                        }
+                        
                     },
                     createdCell: function(td, cellData, rowData, row, col) {
                         $(td).css({

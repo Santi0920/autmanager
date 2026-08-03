@@ -245,7 +245,16 @@ class UsuarioController extends Controller
             if($consultabloqueado[0]->total > 0){
                 return response()->json([
                     'success' => false,
-                    'message' => "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID_Autorizacion."</span> se encuentra <span class='text-danger fw-bold'>BLOQUEADA</span>. Por favor contactar con <span class='fw-bold'>Dirección General</span>.</span>"
+                    'message' => "
+                    <span class='fs-4'>
+                        La autorización No. 
+                        <span class='badge bg-primary fw-bold'>".$consultabloqueado[0]->ID_Autorizacion."</span>
+                        se encuentra 
+                        <span class='text-danger fw-bold'>BLOQUEADA</span>.
+                        Esto puede deberse a información pendiente.<br>
+                        Por favor, contactar a 
+                        <span class='fw-bold'>Dirección General</span>.
+                    </span>"
                 ]);
             }
         }
@@ -321,7 +330,20 @@ class UsuarioController extends Controller
         $id_insertado = DB::table('autorizaciones_2')->insertGetId([
         ]);
 
+        $numeroReporte = null;
+
+        if ($tipoautorizacion == '17') {
+
+            $ultimoReporte = DB::table('historialestado')
+                ->where('ID_Concepto', 17)
+                ->max('Numero_Reporte');
+
+            $numeroReporte = ($ultimoReporte ?? 0) + 1;
+
+        }
+
         $id_insertadohistorial = DB::table('historialestado')->insertGetId([
+            'Numero_Reporte' => $numeroReporte, 
             'Cedula' => $cedula,
             'CuentaAsociado' => $cuenta,
             'NombrePersona' => $nombre,
@@ -428,8 +450,10 @@ class UsuarioController extends Controller
                 ->select([
                     'H.*',
                     'A.Score',
+                    'A.TipoProveedor',
                     'D.FechaInsercion',
                     'C.Concepto',
+                    'C.ID AS ConceptoID',
                     'U.name AS NombreUsuario',
                     'U.codigo AS CodigoUsuario'
                 ])
@@ -445,6 +469,7 @@ class UsuarioController extends Controller
 
                 $aut->CodigoUsuario = $primer->CodigoUsuario;
                 $aut->Concepto = $primer->Concepto;
+                $aut->ConceptoID = $primer->ConceptoID;
                 $aut->Score = $primer->Score;
                 $aut->FechaInsercion = $primer->FechaInsercion;
                 $aut->Fecha = $primer->Fecha;
@@ -453,6 +478,8 @@ class UsuarioController extends Controller
                 $aut->NumArea = $primer->NumArea;
                 $aut->NomArea = $primer->NomArea;
                 $aut->PrimerEstado = $primer->Estado;
+                $aut->RazonSocial = $primer->NombrePersona;
+                $aut->TipoProveedor = $primer->TipoProveedor;
             } else {
                 $aut->Score = null;
                 $aut->FechaInsercion = null;
@@ -462,6 +489,10 @@ class UsuarioController extends Controller
                 $aut->NumArea = null;
                 $aut->NomArea = null;
                 $aut->PrimerEstado = null;
+                $aut->RazonSocial = null;
+                $aut->TipoProveedor = null;
+                $aut->ConceptoID = null;
+
             }
             // 🔹 Inicializamos en null
             $ultimoConceptoNombre = null;
@@ -624,193 +655,370 @@ class UsuarioController extends Controller
     private function buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU)
     {
         if ($rol == "Gerencia") {
-                return DB::table('autorizaciones_2 AS B')
-                    ->join(DB::raw('(
-                        SELECT
-                            ID_Autorizacion,
-                            MAX(ID) AS UltimoHistorialID
-                        FROM historialestado
-                        GROUP BY ID_Autorizacion
-                    ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-                    ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-                    ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                    ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-                    ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-                    ->when($autorizacion !== '', function ($q) use ($autorizacion) {
-                        $q->where(function ($sub) use ($autorizacion) {
+            
+            return DB::table('autorizaciones_2 AS B')
+
+                // Último historial (estado actual)
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MAX(ID) AS UltimoHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+
+                // Primer historial (datos originales)
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MIN(ID) AS PrimerHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMIN'), 'HMIN.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS HI', 'HI.ID', '=', 'HMIN.PrimerHistorialID')
+
+                ->leftJoin('persona AS A', 'A.ID', '=', 'HI.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'HI.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+                ->when($autorizacion !== '', function ($q) use ($autorizacion) {
+
+                    $busqueda = strtoupper(trim($autorizacion));
+
+                    $q->where(function ($sub) use ($busqueda, $autorizacion) {
+
+                        // Buscar por REP-#
+                        if (preg_match('/^REP-(\d+)$/', $busqueda, $matches)) {
+
+                            $numeroReporte = (int) $matches[1];
+
+                            $sub->whereExists(function ($exists) use ($numeroReporte) {
+                                $exists->select(DB::raw(1))
+                                    ->from('historialestado AS HR')
+                                    ->whereRaw('HR.ID_Autorizacion = B.ID')
+                                    ->where('HR.Numero_Reporte', $numeroReporte);
+                            });
+
+                        } else {
+
+                            // Buscar por ID de autorización
                             $sub->where('B.ID', $autorizacion)
-                                ->orWhereExists(function ($exists) use ($autorizacion) {
-                                    $exists->select(DB::raw(1))
-                                        ->from('historialestado AS H2')
-                                        ->whereRaw('H2.ID_Autorizacion = B.ID')
-                                        ->where(function ($w) use ($autorizacion) {
-                                            $w->where('H2.NombrePersona', 'like', '%' . $autorizacion . '%');
-                                        });
+
+                                // Buscar por nombre (excepto reportes)
+                                ->orWhere(function ($nombre) use ($autorizacion) {
+                                    $nombre->where('HI.ID_Concepto', '!=', 17)
+                                        ->where('HI.NombrePersona', 'like', '%' . $autorizacion . '%');
                                 });
-                        });
-                    })
-                    ->select([
-                        'A.ID AS IDPersona',
-                        'A.Score',
-                        'A.CuentaAsociada',
-                        'A.Nombre',
-                        'A.Apellidos',
-                        'B.ID AS IDAutorizacion',
-                        'H.Convencion',
-                        'H.Cedula',
-                        'H.CuentaAsociado',
-                        'H.NombrePersona',
-                        'H.Detalle',
-                        'H.ID_User',
-                        'H.ID_Concepto',
-                        'C.Letra',
-                        'C.No',
-                        'C.Concepto',
-                        'C.Areas',
-                        'D.FechaInsercion'
-                    ])
-                    ->get();
+
+                        }
+
+                    });
+
+                })
+
+                ->select([
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+
+                    'B.ID AS IDAutorizacion',
+
+                    'HI.Convencion',
+                    'HI.Cedula',
+                    'HI.CuentaAsociado',
+                    'HI.NombrePersona',
+                    'HI.Detalle',
+                    'HI.Numero_Reporte',
+                    'HI.ID_Concepto',
+
+                    'H.ID_User',
+                    'H.Estado',
+                    'H.Bloqueado',
+
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+
+                    'D.FechaInsercion'
+                ])
+                ->get();
         } elseif ($rol == "Coordinacion") {
-                $id = session('id');
+            $id = session('id');
 
-                $coordinaciones = DB::select(
-                    "SELECT DISTINCT agenciau, agencias_id FROM users WHERE agenciau = ? AND id = ?",
-                    [$agenciaU, $id]
-                );
+            $coordinaciones = DB::select(
+                "SELECT DISTINCT agenciau, agencias_id FROM users WHERE agenciau = ? AND id = ?",
+                [$agenciaU, $id]
+            );
 
-                if (empty($coordinaciones)) {
-                    return collect();
-                }
+            if (empty($coordinaciones)) {
+                return collect();
+            }
 
-                $agenciasIdArray = json_decode($coordinaciones[0]->agencias_id, true);
-                if ($agenciasIdArray === null) {
-                    $agenciasIdArray = [];
-                }
+            $agenciasIdArray = json_decode($coordinaciones[0]->agencias_id, true);
 
-                $numero = preg_replace('/[^0-9]/', '', $coordinaciones[0]->agenciau);
-                $coordinacionVariable = null;
+            if ($agenciasIdArray === null) {
+                $agenciasIdArray = [];
+            }
 
-                if (session('agenciau') == "Coordinacion $numero") {
-                    $coordinacionVariable = "C" . $numero;
-                }
+            $numero = preg_replace('/[^0-9]/', '', $coordinaciones[0]->agenciau);
 
-                $idsFiltro = $agenciasIdArray;
-                if ($coordinacionVariable) {
-                    $idsFiltro[] = $coordinacionVariable;
-                }
+            $coordinacionVariable = null;
 
-                if (count($idsFiltro) === 0) {
-                    return collect();
-                }
+            if (session('agenciau') == "Coordinacion $numero") {
+                $coordinacionVariable = "C" . $numero;
+            }
 
-                return DB::table('autorizaciones_2 AS B')
-                    ->join(DB::raw('(
-                        SELECT
-                            ID_Autorizacion,
-                            MAX(ID) AS UltimoHistorialID
-                        FROM historialestado
-                        GROUP BY ID_Autorizacion
-                    ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-                    ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-                    ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                    ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-                    ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-                    ->whereExists(function ($sub) use ($idsFiltro) {
-                        $sub->select(DB::raw(1))
-                            ->from('historialestado AS H2')
-                            ->whereColumn('H2.ID_Autorizacion', 'B.ID')
-                            ->whereIn('H2.NumArea', $idsFiltro);
-                    })
-                    ->when($autorizacion !== '', function ($q) use ($autorizacion) {
-                        $q->where(function ($sub) use ($autorizacion) {
+            $idsFiltro = $agenciasIdArray;
+
+            if ($coordinacionVariable) {
+                $idsFiltro[] = $coordinacionVariable;
+            }
+
+            if (count($idsFiltro) === 0) {
+                return collect();
+            }
+
+
+            return DB::table('autorizaciones_2 AS B')
+
+                // Último historial (estado actual)
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MAX(ID) AS UltimoHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+
+
+                // Primer historial (datos originales)
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MIN(ID) AS PrimerHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMIN'), 'HMIN.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS HI', 'HI.ID', '=', 'HMIN.PrimerHistorialID')
+
+
+                // Datos originales
+                ->leftJoin('persona AS A', 'A.ID', '=', 'HI.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'HI.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+
+                // Filtro agencias
+                ->whereExists(function ($sub) use ($idsFiltro) {
+                    $sub->select(DB::raw(1))
+                        ->from('historialestado AS H2')
+                        ->whereColumn('H2.ID_Autorizacion', 'B.ID')
+                        ->whereIn('H2.NumArea', $idsFiltro);
+                })
+
+
+                // Solo concepto 17
+                ->where('HI.ID_Concepto', 17)
+
+
+                // Estados actuales permitidos
+                ->whereIn(DB::raw('TRIM(H.Estado)'), [
+                    'TRÁMITE',
+                    'ENTERADO',
+                    'REMITIDO',
+                    'REMITIDOCONFIRMADO'
+                ])
+
+
+                ->when($autorizacion !== '', function ($q) use ($autorizacion) {
+
+                    $busqueda = strtoupper(trim($autorizacion));
+
+                    $q->where(function ($sub) use ($busqueda, $autorizacion) {
+
+                        if (preg_match('/^REP-(\d+)$/', $busqueda, $matches)) {
+
+                            $numeroReporte = (int) $matches[1];
+
+                            $sub->whereExists(function ($exists) use ($numeroReporte) {
+                                $exists->select(DB::raw(1))
+                                    ->from('historialestado AS HR')
+                                    ->whereRaw('HR.ID_Autorizacion = B.ID')
+                                    ->where('HR.Numero_Reporte', $numeroReporte);
+                            });
+
+                        } else {
+
                             $sub->where('B.ID', $autorizacion)
-                                ->orWhereExists(function ($exists) use ($autorizacion) {
-                                    $exists->select(DB::raw(1))
-                                        ->from('historialestado AS H3')
-                                        ->whereRaw('H3.ID_Autorizacion = B.ID')
-                                        ->where(function ($w) use ($autorizacion) {
-                                            $w->where('H3.NombrePersona', 'like', '%' . $autorizacion . '%');
-                                        });
-                                });
-                        });
-                    })
-                    ->select([
-                        'A.ID AS IDPersona',
-                        'A.Score',
-                        'A.CuentaAsociada',
-                        'A.Nombre',
-                        'A.Apellidos',
-                        'B.ID AS IDAutorizacion',
-                        'H.Convencion',
-                        'H.Cedula',
-                        'H.CuentaAsociado',
-                        'H.NombrePersona',
-                        'H.Detalle',
-                        'H.ID_User',
-                        'H.ID_Concepto',
-                        'C.Letra',
-                        'C.No',
-                        'C.Concepto',
-                        'C.Areas',
-                        'D.FechaInsercion'
-                    ])
-                    ->distinct()
-                    ->get();
+                                ->orWhere('HI.NombrePersona', 'like', '%' . $autorizacion . '%');
+
+                        }
+
+                    });
+
+                })
+
+
+                ->select([
+
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+
+                    'B.ID AS IDAutorizacion',
+
+                    'HI.Convencion',
+                    'HI.Cedula',
+                    'HI.CuentaAsociado',
+                    'HI.NombrePersona',
+                    'HI.Detalle',
+                    'HI.Numero_Reporte',
+                    'HI.ID_Concepto',
+
+                    'H.ID_User',
+                    'H.Estado',
+                    'H.Bloqueado',
+
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+
+                    'D.FechaInsercion'
+                ])
+
+                ->distinct()
+                ->get();
+                    
         } else {
                 return DB::table('autorizaciones_2 AS B')
+
+                    // Último historial de la agencia actual
                     ->join(DB::raw('(
                         SELECT H1.*
                         FROM historialestado AS H1
                         INNER JOIN (
-                            SELECT ID_Autorizacion, MAX(ID) AS MaxID
+                            SELECT 
+                                ID_Autorizacion, 
+                                MAX(ID) AS MaxID
                             FROM historialestado
                             WHERE NomArea = "' . addslashes($agenciaU) . '"
                             GROUP BY ID_Autorizacion
                         ) AS Ultimo
                         ON H1.ID = Ultimo.MaxID
                     ) AS H'), 'H.ID_Autorizacion', '=', 'B.ID')
-                    ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                    ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-                    ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+
+                    // Primer historial real
+                    ->join(DB::raw('(
+                        SELECT 
+                            ID_Autorizacion,
+                            MIN(ID) AS MinID
+                        FROM historialestado
+                        GROUP BY ID_Autorizacion
+                    ) AS HMIN'), 'HMIN.ID_Autorizacion', '=', 'B.ID')
+
+
+                    ->join('historialestado AS HI', 'HI.ID', '=', 'HMIN.MinID')
+
+
+                    // Datos originales
+                    ->leftJoin('persona AS A', 'A.ID', '=', 'HI.ID_Persona')
+
+                    ->leftJoin('concepto_autorizaciones AS C', 'C.ID', '=', 'HI.ID_Concepto')
+
+                    ->leftJoin('documentosintesis AS D', 'D.ID_Persona', '=', 'A.ID')
+
+
                     ->whereExists(function ($query) {
                         $query->select(DB::raw(1))
                             ->from('historialestado AS H2')
-                            ->whereRaw('H2.ID_Autorizacion = B.ID');
+                            ->whereColumn('H2.ID_Autorizacion', 'B.ID');
                     })
+
+
                     ->when($autorizacion !== '', function ($q) use ($autorizacion) {
-                        $q->where(function ($sub) use ($autorizacion) {
-                            $sub->where('B.ID', $autorizacion)
-                                ->orWhereExists(function ($exists) use ($autorizacion) {
+
+                        $busqueda = strtoupper(trim($autorizacion));
+
+                        $q->where(function ($sub) use ($busqueda, $autorizacion) {
+
+                            // Buscar por REP-123
+                            if (preg_match('/^REP-(\d+)$/', $busqueda, $matches)) {
+
+                                $numeroReporte = (int) $matches[1];
+
+                                $sub->whereExists(function ($exists) use ($numeroReporte) {
+
                                     $exists->select(DB::raw(1))
-                                        ->from('historialestado AS H3')
-                                        ->whereRaw('H3.ID_Autorizacion = B.ID')
-                                        ->where(function ($w) use ($autorizacion) {
-                                            $w->where('H3.NombrePersona', 'like', '%' . $autorizacion . '%');
-                                        });
+                                        ->from('historialestado AS HR')
+                                        ->whereColumn('HR.ID_Autorizacion', 'B.ID')
+                                        ->where('HR.Numero_Reporte', $numeroReporte);
+
                                 });
+
+                            } else {
+
+                                // Buscar por ID autorización
+                                $sub->where('B.ID', $autorizacion)
+
+                                    // Buscar por nombre persona
+                                    ->orWhereExists(function ($exists) use ($autorizacion) {
+
+                                        $exists->select(DB::raw(1))
+                                            ->from('historialestado AS H3')
+                                            ->whereColumn('H3.ID_Autorizacion', 'B.ID')
+                                            ->where('H3.NombrePersona', 'like', '%' . $autorizacion . '%');
+
+                                    });
+
+                            }
+
                         });
+
                     })
+
+
                     ->select([
+
                         'A.ID AS IDPersona',
                         'A.Score',
                         'A.CuentaAsociada',
                         'A.Nombre',
                         'A.Apellidos',
+
                         'B.ID AS IDAutorizacion',
-                        'H.Convencion',
-                        'H.Cedula',
-                        'H.CuentaAsociado',
-                        'H.NombrePersona',
-                        'H.Detalle',
+
+                        'HI.Convencion',
+                        'HI.Cedula',
+                        'HI.CuentaAsociado',
+                        'HI.NombrePersona',
+                        'HI.Detalle',
+                        'HI.Numero_Reporte',
+                        'HI.ID_Concepto',
+
                         'H.Estado',
                         'H.ID_User',
-                        'H.ID_Concepto',
+
                         'C.Letra',
                         'C.No',
                         'C.Concepto',
                         'C.Areas',
+
                         'D.FechaInsercion'
                     ])
+
                     ->distinct()
                     ->get();
         }
@@ -924,10 +1132,11 @@ class UsuarioController extends Controller
                             });
                         });
                     })
-
+                    ->whereNull('H.Numero_Reporte')
                     ->select([
                         'B.ID AS IDAutorizacion',
                         'H.Estado',
+                        'H.Numero_Reporte',
                         'H.NumArea',
                         'H.ID_User',
                         'A.Nombre',
@@ -944,68 +1153,98 @@ class UsuarioController extends Controller
         }elseif($rol == "Gerencia"){
 
             $autorizaciones = DB::table('autorizaciones_2 AS B')
-                ->join(DB::raw('(SELECT
-                                    ID_Autorizacion,
-                                    MAX(ID) AS UltimoHistorialID
-                                FROM historialestado
-                                GROUP BY ID_Autorizacion
-                                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-                ->whereExists(function ($query) {
-                    $query->select(DB::raw(1))
-                        ->from('historialestado AS H2')
-                        ->whereRaw('H2.ID_Autorizacion = B.ID')
-                        ->where(function ($sub) {
-                            $sub->where('H2.Estado', 'VALIDADO')
-                                ->orWhere('H2.Estado', 'REMITIDO')
-                                ->orWhere('H2.Estado', 'RECIBIDO')
-                                ->orWhere('H2.Estado', 'DESBLOQUEADO')
-                                ->orWhere('H2.Estado', 'INFORMADO');
-                        });
-                })
-                ->where('H.Bloqueado', '!=', '1')
-                ->whereNotIn('H.Estado', [
-                    'APROBADO',
-                    'STAND BY',
-                    'ANULADO',
-                    'ENTERADO',
-                    'CORREGIR',
-                    'TRÁMITE',
-                    'ENVIADO',
-                    'BLOQUEADO',
-                    'PROCEDER',
-                    'SOLUCIONAR',
-                    'QUE PASO',
-                    'TERMINADO',
-                    'ACLARAR',
-                    'ENCARGARSE',
-                    'VENCIDO',
 
-                ])
-                ->select([
-                    'A.ID AS IDPersona',
-                    'A.Score',
-                    'A.CuentaAsociada',
-                    'A.Nombre',
-                    'A.Apellidos',
-                    'B.ID AS IDAutorizacion',
-                    'H.Convencion',
-                    'H.Cedula',
-                    'H.CuentaAsociado',
-                    'H.NombrePersona',
-                    'H.Detalle',
-                    'H.ID_User',
-                    'H.ID_Concepto',
-                    'C.Letra',
-                    'C.No',
-                    'C.Concepto',
-                    'C.Areas',
-                    'D.FechaInsercion'
-                ])
-                ->get();
+            // Último estado
+            ->join(DB::raw('(
+                SELECT
+                    ID_Autorizacion,
+                    MAX(ID) AS UltimoHistorialID
+                FROM historialestado
+                GROUP BY ID_Autorizacion
+            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
+            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+
+
+            // Primer registro con la información original
+            ->join(DB::raw('(
+                SELECT
+                    ID_Autorizacion,
+                    MIN(ID) AS PrimerHistorialID
+                FROM historialestado
+                GROUP BY ID_Autorizacion
+            ) AS HMIN'), 'HMIN.ID_Autorizacion', '=', 'B.ID')
+
+            ->join('historialestado AS HI', 'HI.ID', '=', 'HMIN.PrimerHistorialID')
+
+
+            ->leftJoin('persona AS A', 'A.ID', '=', 'HI.ID_Persona')
+            ->leftJoin('concepto_autorizaciones AS C', 'HI.ID_Concepto', '=', 'C.ID')
+            ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('historialestado AS H2')
+                    ->whereRaw('H2.ID_Autorizacion = B.ID')
+                    ->where(function ($sub) {
+                        $sub->where('H2.Estado', 'VALIDADO')
+                            ->orWhere('H2.Estado', 'REMITIDO')
+                            ->orWhere('H2.Estado', 'RECIBIDO')
+                            ->orWhere('H2.Estado', 'DESBLOQUEADO')
+                            ->orWhere('H2.Estado', 'INFORMADO');
+                    });
+            })
+
+
+            ->where('H.Bloqueado', '!=', '1')
+
+            ->whereNotIn('H.Estado', [
+                'APROBADO',
+                'STAND BY',
+                'ANULADO',
+                'ENTERADO',
+                'CORREGIR',
+                'TRÁMITE',
+                'ENVIADO',
+                'BLOQUEADO',
+                'PROCEDER',
+                'SOLUCIONAR',
+                'QUE PASO',
+                'TERMINADO',
+                'ACLARAR',
+                'ENCARGARSE',
+                'VENCIDO',
+            ])
+
+
+            ->select([
+                'A.ID AS IDPersona',
+                'A.Score',
+                'A.CuentaAsociada',
+                'A.Nombre',
+                'A.Apellidos',
+
+                'B.ID AS IDAutorizacion',
+
+                'HI.Convencion',
+                'HI.Cedula',
+                'HI.CuentaAsociado',
+                'HI.Numero_Reporte',
+                'HI.NombrePersona',
+                'HI.Detalle',
+
+                'H.ID_User',
+                'HI.ID_Concepto',
+
+                'C.Letra',
+                'C.No',
+                'C.Concepto',
+                'C.Areas',
+
+                'D.FechaInsercion'
+            ])
+            ->get();
 
         }else{
                 // 🔹 Traer solo las autorizaciones relacionadas con la agencia
@@ -1037,15 +1276,18 @@ class UsuarioController extends Controller
                             ->from('historialestado AS H2')
                             ->whereRaw('H2.ID_Autorizacion = B.ID');
                     })
+                    ->whereNull('H.Numero_Reporte')
                     ->select([
                         'A.ID AS IDPersona',
                         'A.Score',
                         'A.CuentaAsociada',
                         'A.Nombre',
                         'A.Apellidos',
+                        'A.TipoProveedor',
                         'B.ID AS IDAutorizacion',
                         'H.Convencion',
                         'H.Cedula',
+                        'H.Numero_Reporte',
                         'H.CuentaAsociado',
                         'H.NombrePersona',
                         'H.Detalle',
@@ -2114,76 +2356,84 @@ class UsuarioController extends Controller
 
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
 
+        } else {
+
+            $autorizaciones = DB::table('autorizaciones_2 AS B')
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MAX(ID) AS UltimoHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+
+                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('historialestado AS H2')
+                        ->whereRaw('H2.ID_Autorizacion = B.ID')
+                        ->whereIn('H2.Estado', ['CORREGIR', 'REMITIDOCORREGIR']);
+                })
+
+                ->whereNotIn('H.Estado', [
+                    'APROBADO',
+                    'BLOQUEADO',
+                    'VALIDADO',
+                    'TRÁMITE',
+                    'ANULADO',
+                    'ENTERADO',
+                    'RECIBIDO',
+                    'ENVIADO',
+                    'TERMINADO',
+                    'ACLARAR',
+                    'ENCARGARSE',
+                    'PROCEDER',
+                    'SOLUCIONAR',
+                    'QUE PASO',
+                    'RECIBIDOCONFIRMADO',
+                    'RECIBIDO',
+                    'VENCIDO',
+                    'REMITIDO',
+                    'REMITIDOCONFIRMADO',
+                    'DESBLOQUEADO',
+                ])
+
+                ->select([
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+                    'B.ID AS IDAutorizacion',
+                    'H.Convencion',
+                    'H.Cedula',
+                    'H.CuentaAsociado',
+                    'H.NombrePersona',
+                    'H.Detalle',
+                    'H.ID_User',
+                    'H.ID_Concepto',
+                    'H.Numero_Reporte',
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+                    'D.FechaInsercion'
+                ])
+                ->get();
         }
 
-        $autorizaciones = DB::table('autorizaciones_2 AS B')
-            ->join(DB::raw('(SELECT
-                                ID_Autorizacion,
-                                MAX(ID) AS UltimoHistorialID
-                            FROM historialestado
-                            GROUP BY ID_Autorizacion
-                            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-            ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-            ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-            ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('historialestado AS H2')
-                    ->whereRaw('H2.ID_Autorizacion = B.ID')
-                    ->whereIn('H2.Estado', ['CORREGIR', 'REMITIDOCORREGIR']);
-            })
-            ->whereNotIn('H.Estado', [
-                'APROBADO',
-                'BLOQUEADO',
-                'VALIDADO',
-                'TRÁMITE',
-                'ANULADO',
-                'ENTERADO',
-                'RECIBIDO',
-                'ENVIADO',
-                'TERMINADO',
-                'ACLARAR',
-                'ENCARGARSE',
-                'PROCEDER',
-                'SOLUCIONAR',
-                'QUE PASO',
-                'RECIBIDOCONFIRMADO',
-                'RECIBIDO',
-                'VENCIDO',
-                'REMITIDO',
-                'REMITIDOCONFIRMADO',
-                'DESBLOQUEADO',
-            ])
-            ->select([
-                'A.ID AS IDPersona',
-                'A.Score',
-                'A.CuentaAsociada',
-                'A.Nombre',
-                'A.Apellidos',
-                'B.ID AS IDAutorizacion',
-                'H.Convencion',
-                'H.Cedula',
-                'H.CuentaAsociado',
-                'H.NombrePersona',
-                'H.Detalle',
-                'H.ID_User',
-                'H.ID_Concepto',
-                'C.Letra',
-                'C.No',
-                'C.Concepto',
-                'C.Areas',
-                'D.FechaInsercion'
-            ])
-            ->get();
-
-            // 🔹 Agregar historial completo + fecha del primer estado
         foreach ($autorizaciones as $aut) {
             $this->procesarAutorizacion($aut);
         }
 
-
-        return response()->json(['data' => $autorizaciones]);
+        return response()->json([
+            'data' => $autorizaciones
+        ]);
     }
 
     public function bloqueados(Request $request)
@@ -2201,70 +2451,70 @@ class UsuarioController extends Controller
 
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
 
+        }else{
+
+            $autorizaciones = DB::table('autorizaciones_2 AS B')
+                ->join(DB::raw('(SELECT
+                                    ID_Autorizacion,
+                                    MAX(ID) AS UltimoHistorialID
+                                FROM historialestado
+                                GROUP BY ID_Autorizacion
+                                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('historialestado AS H2')
+                        ->whereRaw('H2.ID_Autorizacion = B.ID')
+                        ->whereIn('H2.Estado', ['BLOQUEADO']);
+                })
+                ->whereNotIn('H.Estado', [
+                    'APROBADO',
+                    'CORREGIR',
+                    'REMITIDOCORREGIR',
+                    'TRÁMITE',
+                    'ANULADO',
+                    'ENTERADO',
+                    'RECIBIDO',
+                    'ENVIADO',
+                    'TERMINADO',
+                    'ACLARAR',
+                    'ENCARGARSE',
+                    'PROCEDER',
+                    'SOLUCIONAR',
+                    'QUE PASO',
+                    'RECIBIDOCONFIRMADO',
+                    'RECIBIDO',
+                    'VENCIDO',
+                    'DESBLOQUEADO',
+                    'DONE',
+                    'VALIDADO',
+                    'VALIDADOCONFIRMADO',
+                ])
+                ->select([
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+                    'B.ID AS IDAutorizacion',
+                    'H.Convencion',
+                    'H.Cedula',
+                    'H.CuentaAsociado',
+                    'H.NombrePersona',
+                    'H.Detalle',
+                    'H.ID_User',
+                    'H.ID_Concepto',
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+                    'D.FechaInsercion'
+                ])
+                ->get();
         }
-
-        $autorizaciones = DB::table('autorizaciones_2 AS B')
-            ->join(DB::raw('(SELECT
-                                ID_Autorizacion,
-                                MAX(ID) AS UltimoHistorialID
-                            FROM historialestado
-                            GROUP BY ID_Autorizacion
-                            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-            ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-            ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-            ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('historialestado AS H2')
-                    ->whereRaw('H2.ID_Autorizacion = B.ID')
-                    ->whereIn('H2.Estado', ['BLOQUEADO']);
-            })
-            ->whereNotIn('H.Estado', [
-                'APROBADO',
-                'CORREGIR',
-                'REMITIDOCORREGIR',
-                'TRÁMITE',
-                'ANULADO',
-                'ENTERADO',
-                'RECIBIDO',
-                'ENVIADO',
-                'TERMINADO',
-                'ACLARAR',
-                'ENCARGARSE',
-                'PROCEDER',
-                'SOLUCIONAR',
-                'QUE PASO',
-                'RECIBIDOCONFIRMADO',
-                'RECIBIDO',
-                'VENCIDO',
-                'DESBLOQUEADO',
-                'DONE',
-                'VALIDADO',
-                'VALIDADOCONFIRMADO',
-            ])
-            ->select([
-                'A.ID AS IDPersona',
-                'A.Score',
-                'A.CuentaAsociada',
-                'A.Nombre',
-                'A.Apellidos',
-                'B.ID AS IDAutorizacion',
-                'H.Convencion',
-                'H.Cedula',
-                'H.CuentaAsociado',
-                'H.NombrePersona',
-                'H.Detalle',
-                'H.ID_User',
-                'H.ID_Concepto',
-                'C.Letra',
-                'C.No',
-                'C.Concepto',
-                'C.Areas',
-                'D.FechaInsercion'
-            ])
-            ->get();
-
             // 🔹 Agregar historial completo + fecha del primer estado
         foreach ($autorizaciones as $aut) {
             $this->procesarAutorizacion($aut);
@@ -2288,52 +2538,53 @@ class UsuarioController extends Controller
         if (!empty($autorizacion)) {
 
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
+        }else{
+            
+
+            $autorizaciones = DB::table('autorizaciones_2 AS B')
+                ->join(DB::raw('(SELECT
+                                    ID_Autorizacion,
+                                    MAX(ID) AS UltimoHistorialID
+                                FROM historialestado
+                                GROUP BY ID_Autorizacion
+                                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('historialestado AS H2')
+                        ->whereRaw('H2.ID_Autorizacion = B.ID')
+                        ->whereIn('H2.Estado', ['TRÁMITE']);
+                })
+                ->where('H.Estado', '!=', "APROBADO")
+                ->where('H.Estado', '!=', "VALIDADO")
+                ->where('H.Estado', '!=', "CORREGIR")
+                ->where('H.Estado', '!=', "ANULADO")
+                ->where('H.Estado', '!=', "VENCIDO")
+                ->select([
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+                    'B.ID AS IDAutorizacion',
+                    'H.Convencion',
+                    'H.Cedula',
+                    'H.CuentaAsociado',
+                    'H.NombrePersona',
+                    'H.Detalle',
+                    'H.ID_User',
+                    'H.ID_Concepto',
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+                    'D.FechaInsercion'
+                ])
+                ->get();
         }
-
-        $autorizaciones = DB::table('autorizaciones_2 AS B')
-            ->join(DB::raw('(SELECT
-                                ID_Autorizacion,
-                                MAX(ID) AS UltimoHistorialID
-                            FROM historialestado
-                            GROUP BY ID_Autorizacion
-                            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-            ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-            ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-            ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('historialestado AS H2')
-                    ->whereRaw('H2.ID_Autorizacion = B.ID')
-                    ->whereIn('H2.Estado', ['TRÁMITE']);
-            })
-            ->where('H.Estado', '!=', "APROBADO")
-            ->where('H.Estado', '!=', "VALIDADO")
-            ->where('H.Estado', '!=', "CORREGIR")
-            ->where('H.Estado', '!=', "ANULADO")
-            ->where('H.Estado', '!=', "VENCIDO")
-            ->select([
-                'A.ID AS IDPersona',
-                'A.Score',
-                'A.CuentaAsociada',
-                'A.Nombre',
-                'A.Apellidos',
-                'B.ID AS IDAutorizacion',
-                'H.Convencion',
-                'H.Cedula',
-                'H.CuentaAsociado',
-                'H.NombrePersona',
-                'H.Detalle',
-                'H.ID_User',
-                'H.ID_Concepto',
-                'C.Letra',
-                'C.No',
-                'C.Concepto',
-                'C.Areas',
-                'D.FechaInsercion'
-            ])
-            ->get();
-
             // 🔹 Agregar historial completo + fecha del primer estado
         foreach ($autorizaciones as $aut) {
             $this->procesarAutorizacion($aut);
@@ -2949,54 +3200,54 @@ class UsuarioController extends Controller
 
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
 
+        }else{
+
+            $autorizaciones = DB::table('autorizaciones_2 AS B')
+                ->join(DB::raw('(SELECT
+                                    ID_Autorizacion,
+                                    MAX(ID) AS UltimoHistorialID
+                                FROM historialestado
+                                GROUP BY ID_Autorizacion
+                                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('historialestado AS H2')
+                        ->whereRaw('H2.ID_Autorizacion = B.ID')
+                        ->whereIn('H2.Estado', ['ENVIADO']);
+                })
+                ->where('H.Estado', '!=', "RECIBIDO")
+                ->where('H.Estado', '!=', "TERMINADO")
+                ->where('H.Estado', '!=', "APROBADO")
+                ->where('H.Estado', '!=', "VALIDADO")
+                ->where('H.Estado', '!=', "CORREGIR")
+                ->where('H.Estado', '!=', "VENCIDO")
+                ->where('H.Estado', '!=', "ANULADO")
+                ->select([
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+                    'B.ID AS IDAutorizacion',
+                    'H.Convencion',
+                    'H.Cedula',
+                    'H.CuentaAsociado',
+                    'H.NombrePersona',
+                    'H.Detalle',
+                    'H.ID_User',
+                    'H.ID_Concepto',
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+                    'D.FechaInsercion'
+                ])
+                ->get();
         }
-
-        $autorizaciones = DB::table('autorizaciones_2 AS B')
-            ->join(DB::raw('(SELECT
-                                ID_Autorizacion,
-                                MAX(ID) AS UltimoHistorialID
-                            FROM historialestado
-                            GROUP BY ID_Autorizacion
-                            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-            ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-            ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-            ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('historialestado AS H2')
-                    ->whereRaw('H2.ID_Autorizacion = B.ID')
-                    ->whereIn('H2.Estado', ['ENVIADO']);
-            })
-            ->where('H.Estado', '!=', "RECIBIDO")
-            ->where('H.Estado', '!=', "TERMINADO")
-            ->where('H.Estado', '!=', "APROBADO")
-            ->where('H.Estado', '!=', "VALIDADO")
-            ->where('H.Estado', '!=', "CORREGIR")
-            ->where('H.Estado', '!=', "VENCIDO")
-            ->where('H.Estado', '!=', "ANULADO")
-            ->select([
-                'A.ID AS IDPersona',
-                'A.Score',
-                'A.CuentaAsociada',
-                'A.Nombre',
-                'A.Apellidos',
-                'B.ID AS IDAutorizacion',
-                'H.Convencion',
-                'H.Cedula',
-                'H.CuentaAsociado',
-                'H.NombrePersona',
-                'H.Detalle',
-                'H.ID_User',
-                'H.ID_Concepto',
-                'C.Letra',
-                'C.No',
-                'C.Concepto',
-                'C.Areas',
-                'D.FechaInsercion'
-            ])
-            ->get();
-
             // 🔹 Agregar historial completo + fecha del primer estado
         foreach ($autorizaciones as $aut) {
             $this->procesarAutorizacion($aut);
@@ -3020,9 +3271,7 @@ class UsuarioController extends Controller
         if (!empty($autorizacion)) {
 
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
-        }
-
-        if($rol == "Gerencia"){
+        }else if($rol == "Gerencia"){
             $autorizaciones = DB::table('autorizaciones_2 AS B')
                 ->join(DB::raw('(
                     SELECT H1.*
@@ -3170,7 +3419,7 @@ class UsuarioController extends Controller
 
             if (count($agenciasIdArray) > 0) {
                 //APARECEN RECHAZADOS AQUI Y FALTARIA BLOQUEADO
-
+        
                 $idsFiltro = array_merge($agenciasIdArray, [$coordinacionVariable]);
 
 
@@ -3187,12 +3436,17 @@ class UsuarioController extends Controller
                             ->whereColumn('H2.ID_Autorizacion', 'B.ID')
                             ->whereIn('H2.NumArea', $idsFiltro);
                     })
-                    // ✅ Solo el último estado de cada autorización
-                    ->whereRaw('H.ID = (SELECT MAX(H3.ID) FROM historialestado AS H3 WHERE H3.ID_Autorizacion = B.ID)')
-                    // ✅ Filtrar únicamente las que están aprobadas
-                    ->whereRaw('LOWER(TRIM(H.Estado)) IN ("enterado")')
-                    // 🚫 Excluir otros estados no deseados (por seguridad)
-                    ->whereNotIn('H.Estado', ['STAND BY', 'TRÁMITE', 'REMITIDO', 'REMITIDOCONFIRMADO', 'RECIBIDO'])
+
+                    ->where('H.ID_Concepto', 17)
+
+                    // ✅ Solo estos estados
+                    ->whereIn(DB::raw('TRIM(H.Estado)'), [
+                        'TRÁMITE',
+                        'ENTERADO',
+                        'REMITIDO',
+                        'REMITIDOCONFIRMADO'
+                    ])
+
                     ->select([
                         'A.ID AS IDPersona',
                         'A.Score',
@@ -3202,6 +3456,7 @@ class UsuarioController extends Controller
                         'B.ID AS IDAutorizacion',
                         'H.Convencion',
                         'H.Cedula',
+                        'H.Numero_Reporte',
                         'H.CuentaAsociado',
                         'H.NombrePersona',
                         'H.Detalle',
@@ -3217,52 +3472,82 @@ class UsuarioController extends Controller
                     ->get();
 
 
-
-
             }
 
 
 
         }elseif($rol == "Gerencia"){
-
             $autorizaciones = DB::table('autorizaciones_2 AS B')
-                ->join(DB::raw('(SELECT
-                                    ID_Autorizacion,
-                                    MAX(ID) AS UltimoHistorialID
-                                FROM historialestado
-                                GROUP BY ID_Autorizacion
-                                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
+                // Último estado
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MAX(ID) AS UltimoHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
                 ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
+
+
+                // Primer registro donde están los datos de la solicitud
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MIN(ID) AS PrimerHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMIN'), 'HMIN.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS HI', 'HI.ID', '=', 'HMIN.PrimerHistorialID')
+
+
+                ->leftJoin('persona AS A', 'A.ID', '=', 'HI.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'HI.ID_Concepto', '=', 'C.ID')
                 ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID')
-                        ->whereIn('H2.Estado', ['ENTERADO']);
+                        ->where('H2.Estado', 'ENTERADO');
                 })
+
+
+
+
+
                 ->where('H.Bloqueado', '!=', '1')
+
+
                 ->select([
                     'A.ID AS IDPersona',
                     'A.Score',
                     'A.CuentaAsociada',
                     'A.Nombre',
                     'A.Apellidos',
+
                     'B.ID AS IDAutorizacion',
-                    'H.Convencion',
-                    'H.Cedula',
-                    'H.CuentaAsociado',
-                    'H.NombrePersona',
-                    'H.Detalle',
+
+                    'HI.Convencion',
+                    'HI.Cedula',
+                    'HI.CuentaAsociado',
+                    'HI.Numero_Reporte',
+                    'HI.NombrePersona',
+                    'HI.Detalle',
                     'H.ID_User',
-                    'H.ID_Concepto',
+                    'HI.ID_Concepto',
+
                     'C.Letra',
                     'C.No',
                     'C.Concepto',
                     'C.Areas',
+
                     'D.FechaInsercion'
                 ])
+         
                 ->get();
 
         }else{
@@ -3287,12 +3572,13 @@ class UsuarioController extends Controller
                     WHERE H3.ID_Autorizacion = B.ID
                     ORDER BY H3.ID DESC
                     LIMIT 1
-                ))) IN ("enterado")')
+                ))) IN ("enterado", "TRÁMITE")')
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('historialestado AS H2')
                         ->whereRaw('H2.ID_Autorizacion = B.ID');
                 })
+                ->whereNotNull('H.Numero_Reporte')
                 ->select([
                     'A.ID AS IDPersona',
                     'A.Score',
@@ -3302,6 +3588,7 @@ class UsuarioController extends Controller
                     'B.ID AS IDAutorizacion',
                     'H.Convencion',
                     'H.Cedula',
+                    'H.Numero_Reporte',
                     'H.CuentaAsociado',
                     'H.NombrePersona',
                     'H.Detalle',
@@ -3547,55 +3834,63 @@ class UsuarioController extends Controller
 
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
 
+        } else {
+
+            $autorizaciones = DB::table('autorizaciones_2 AS B')
+                ->join(DB::raw('(
+                    SELECT
+                        ID_Autorizacion,
+                        MAX(ID) AS UltimoHistorialID
+                    FROM historialestado
+                    GROUP BY ID_Autorizacion
+                ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
+
+                ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
+
+                ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
+                ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
+                ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
+
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('historialestado AS H2')
+                        ->whereRaw('H2.ID_Autorizacion = B.ID')
+                        ->where('H2.Estado', 'TRÁMITE');
+                })
+
+                ->where('H.NumArea', 'Jefatura')
+
+                ->select([
+                    'A.ID AS IDPersona',
+                    'A.Score',
+                    'A.CuentaAsociada',
+                    'A.Nombre',
+                    'A.Apellidos',
+                    'B.ID AS IDAutorizacion',
+                    'H.Convencion',
+                    'H.Cedula',
+                    'H.CuentaAsociado',
+                    'H.Numero_Reporte',
+                    'H.NombrePersona',
+                    'H.Detalle',
+                    'H.ID_User',
+                    'H.ID_Concepto',
+                    'C.Letra',
+                    'C.No',
+                    'C.Concepto',
+                    'C.Areas',
+                    'D.FechaInsercion'
+                ])
+                ->get();
         }
 
-        $autorizaciones = DB::table('autorizaciones_2 AS B')
-            ->join(DB::raw('(SELECT
-                                ID_Autorizacion,
-                                MAX(ID) AS UltimoHistorialID
-                            FROM historialestado
-                            GROUP BY ID_Autorizacion
-                            ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
-            ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
-            ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
-            ->leftJoin('concepto_autorizaciones AS C', 'H.ID_Concepto', '=', 'C.ID')
-            ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('historialestado AS H2')
-                    ->whereRaw('H2.ID_Autorizacion = B.ID')
-                    ->whereIn('H2.Estado', ['TRÁMITE']);
-            })
-            ->where('H.NumArea', '=', "Jefatura")
-            ->select([
-                'A.ID AS IDPersona',
-                'A.Score',
-                'A.CuentaAsociada',
-                'A.Nombre',
-                'A.Apellidos',
-                'B.ID AS IDAutorizacion',
-                'H.Convencion',
-                'H.Cedula',
-                'H.CuentaAsociado',
-                'H.NombrePersona',
-                'H.Detalle',
-                'H.ID_User',
-                'H.ID_Concepto',
-                'C.Letra',
-                'C.No',
-                'C.Concepto',
-                'C.Areas',
-                'D.FechaInsercion'
-            ])
-            ->get();
-
-            // 🔹 Agregar historial completo + fecha del primer estado
         foreach ($autorizaciones as $aut) {
             $this->procesarAutorizacion($aut);
         }
 
-
-        return response()->json(['data' => $autorizaciones]);
+        return response()->json([
+            'data' => $autorizaciones
+        ]);
     }
 
     public function buscarautorizacion(Request $request){

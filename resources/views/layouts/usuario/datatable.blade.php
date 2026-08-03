@@ -23,12 +23,20 @@
                 ],
                 scrollY: 440,
 
-                "columns": [{
+                "columns": [
+                    {
                         data: 'IDAutorizacion',
                         render: function(data, type, row) {
-                            var ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`
 
-                            return ID
+                            var ID = '';
+
+                            if (row.UltimoConceptoID == 17 && row.Numero_Reporte != null) {
+                                ID = `<span class='text-danger fw-bold'>REP-${row.Numero_Reporte}</span>`;
+                            } else {
+                                ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`;
+                            }
+
+                            return ID;
                         },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
@@ -38,7 +46,6 @@
                             });
                         }
                     },
-
                     {   
                         data: 'Fecha',
                         render: function(data, type, row) {
@@ -132,15 +139,34 @@
 
 
 
+                        var Contenido = `
+                            <span class="fw-bold">${row.ConceptoID} - </span>${row.UltimoConcepto}
 
-                            var Contenido = `
-                                ${row.UltimoConcepto}
-                                <div class="fw-bold text-primary">
-                                    ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
+                            ${row.UltimoConceptoID == 1 ? `
+                                <div class="mt-1">
+                                    <span class="fw-bold text-dark">
+                                        ${row.RazonSocial}
+                                    </span>
+
+                                    ${row.TipoProveedor ? `
+                                        <span class="badge bg-light text-primary border ms-1" style="pointer-events: none;">
+                                            ${row.TipoProveedor == 'PJ' 
+                                                ? 'Jurídico' 
+                                                : row.TipoProveedor == 'PN' 
+                                                    ? 'Natural' 
+                                                    : 'Natural ó Jurídico'}
+                                        </span>
+                                    ` : ''}
                                 </div>
-                                ${demoracoord}
-                                ${demoradireccion}
-                            `;
+                            ` : ''}
+
+                            <div class="fw-bold text-primary">
+                                ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
+                            </div>
+
+                            ${demoracoord}
+                            ${demoradireccion}
+                        `;
 
                         }else if('{{ session('rol') }}' == 'Coordinacion'){
 
@@ -201,7 +227,25 @@
                             }
 
                             var Contenido = `
-                                ${row.UltimoConcepto}
+                                <span class="fw-bold">${row.ConceptoID} - </span>${row.UltimoConcepto}
+        
+                                ${row.UltimoConceptoID == 1
+                                        ? `
+                                            <div class="mt-1">
+                                                <span class="fw-bold text-dark">
+                                                    ${row.RazonSocial}
+                                                </span>
+                                                <span class="badge bg-light text-primary border ms-1" style="pointer-events: none;">
+                                                    ${row.TipoProveedor == 'PJ' 
+                                                        ? 'Jurídico' 
+                                                        : row.TipoProveedor == 'PN' 
+                                                            ? 'Natural' 
+                                                            : 'Natural ó Jurídico'}
+                                                </span>
+                                            </div>
+                                        `
+                                        : ''
+                                }
                                 <div class="fw-bold text-primary">
                                     ${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
                                     <div>${textoEstado}</div>
@@ -210,15 +254,41 @@
 
 
 
-                        }else{
-                            var Contenido = `${row.UltimoConcepto}<div class="fw-bold text-primary">${row.NumArea} - ${row.NomArea}${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''} - ${row.ultimoUsuario}
+                        } else {
+
+                            var Contenido = `
+                                <span class="fw-bold">${row.ConceptoID} - </span>${row.UltimoConcepto}
+                  
+                                    ${row.UltimoConceptoID == 1
+                                            ? `
+                                                <div class="mt-1">
+                                                    <span class="fw-bold text-dark">
+                                                        ${row.RazonSocial}
+                                                    </span>
+                                                    <span class="badge bg-light text-primary border ms-1" style="pointer-events: none;">
+                                                        ${row.TipoProveedor == 'PJ' 
+                                                            ? 'Jurídico' 
+                                                            : row.TipoProveedor == 'PN' 
+                                                                ? 'Natural' 
+                                                                : 'Natural ó Jurídico'}
+                                                    </span>
+                                                </div>
+                                            `
+                                            : ''
+                                    }
+
+                                <div class="fw-bold text-primary">
+                                    ${row.NumArea} - ${row.NomArea}
+                                    ${row.CodigoUsuario ? `(${row.CodigoUsuario})` : ''}
+                                    - ${row.ultimoUsuario}
+
                                     <div>
                                         <span class="text-dark" title="Fecha Solicitud">
-                                        ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
+                                            ${row.FechaStringEstado.charAt(0).toUpperCase() + row.FechaStringEstado.slice(1)}
                                         </span>
                                     </div>
                                 </div>
-                            `
+                            `;
                         }
                             return Contenido
                         },
@@ -449,7 +519,15 @@
 
                                                                     </div>
 
-                                                                ` : `<span class="fs-5">${item.Concepto} - @include('layouts.optionvercodigo')</span>`}
+                                                                ` : `
+                                                                    <span class="fs-5">
+                                                                        ${item.ID_Concepto} - ${item.Concepto} 
+                                                                        ${row.UltimoConceptoID == '1' 
+                                                                            ? `- <span class="fw-bold">Empresa: ${item.NombrePersona}</span> - <span>${row.TipoProveedor == 'PJ' ? 'Jurídico' : row.TipoProveedor == 'PN' ? 'Natural' : row.TipoProveedor}</span>`
+                                                                            : ''
+                                                                        }
+                                                                    </span>&nbsp;&nbsp; @include('layouts.optionvercodigo')
+                                                                    `}
                                                             </div>
                                                             <div class="col-sm-6 col-md-3 col-lg-3 d-flex align-items-center justify-content-center border p-3">
                                                                 ${item.ID_Concepto == 41 ? `<span class="fs-5 fw-bold mb-0">@include('layouts.optionverconvenciones') - ${item.Convencion}</span>` : ``}
@@ -669,9 +747,15 @@
                                                                             <span>RECHAZAR</span>
                                                                         </label>
                                                                         <label class="label">
-                                                                            <input value="BLOQUEADO" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
+                                                                            <input value="1" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>BLOQUEAR</span>
                                                                         </label>
+
+                                                                        <label class="label">
+                                                                            <input value="1" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
+                                                                            <span>FALTA INFORMACION</span>
+                                                                        </label>
+
                                                                         <label class="label">
                                                                             <input value="STAND BY" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>STAND BY</span>
@@ -869,6 +953,10 @@
                                                                         <label class="label">
                                                                             <input value="1" type="radio" name="Estado" id="estado_bloquear" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                             <span>BLOQUEAR</span>
+                                                                        </label>
+                                                                        <label class="label">
+                                                                            <input value="1" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
+                                                                            <span>FALTA INFORMACION</span>
                                                                         </label>
                                                                         <label class="label">
                                                                             <input value="STAND BY" type="radio" name="Estado" id="estado_standby" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
@@ -1143,8 +1231,12 @@
                             <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true" data-id="${id}">
                                 <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div class="modal-header row w-100 m-0 align-items-center p-3" style="border-bottom: 2px solid #00bfff; border-radius: 8px 8px 0 0;">
-
+                                        <div class=" row w-100 m-0 align-items-center p-3"
+                                                style="
+                                                    background-color: ${row.UltimoConceptoID == '17' ? '#cc1c2ecb' : '#3f464c'};
+                                                    border-bottom: 2px solid ${row.UltimoConceptoID == '17' ? '#dc3545' : '#00bfff'};
+                                                    border-radius: 8px 8px 0 0;
+                                        ">
                                             <!-- Detalle de Autorización -->
                                             <div class="col-12 col-md-6 mb-2 mb-md-0">
                                                 <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -1152,7 +1244,7 @@
                                                     <div class="d-none d-md-block"
                                                         style="font-size: ${row.UltimoConceptoID == '17' ? '26px' : '31px'};
                                                                 font-weight: 800;
-                                                                color: #D5DBDB;
+                                                                color: ${row.UltimoConceptoID == '17' ? 'white' : 'white'};
                                                                 text-shadow: 2px 2px 6px rgba(0,0,0,0.4);">
                                                         
                                                         ${row.UltimoConceptoID == '17'
@@ -1160,7 +1252,8 @@
                                                             : 'SOLICITUD DE AUTORIZACIONES'}
                                                         <br>
                                                         <span style="font-size: 40px; color: #00bfff;">
-                                                            No. ${row.IDAutorizacion} ${row.UltimaSECautorizacion ? ' | SEC: ' + row.UltimaSECautorizacion : ''}
+                                                            ${row.UltimoConceptoID == '17' && row.Numero_Reporte != null ? 'REP-' + row.Numero_Reporte : `No. ${row.IDAutorizacion}`}
+                                                             ${row.UltimaSECautorizacion ? ' | SEC: ' + row.UltimaSECautorizacion : ''}
                                                         </span>
                                                     </div>
 
@@ -1754,6 +1847,10 @@
                                                                                 <label class="label">
                                                                                     <input value="1" type="radio" name="Estado" id="estado_bloquear" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
                                                                                     <span>BLOQUEAR</span>
+                                                                                </label>
+                                                                                <label class="label">
+                                                                                    <input value="1" type="radio" name="Estado" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
+                                                                                    <span>FALTA INFORMACION</span>
                                                                                 </label>
                                                                                 <label class="label">
                                                                                     <input value="STAND BY" type="radio" name="Estado" id="estado_standby" onclick="manejarEstadoSeleccionado(${id}, 'NORMAL')" required>
@@ -2581,7 +2678,7 @@
                 return respuesta
             }
 
-            //ajax
+            //ajax PARA D AGENCIA
             function formEditarAutorizacion(id, event) {
                 var _token = $('input[name="_token"]').val();
                 var CodigoAutorizacion = $(`#autorizacionesmodal${id}`).val();
@@ -2690,145 +2787,255 @@
             }
 
             //AJAX PARA COORDINADOR
-
             function formValidarAutorizacion(id, event) {
 
+                event.preventDefault();
+
                 var form = $("#formValidarAutorizacion" + id);
-                // Verificar si el formulario ya ha sido enviado
+
+                // Evitar doble envío
                 if (form.data('submitted')) {
-                    // Si el formulario ya ha sido enviado, no hacer nada
                     return;
                 }
 
-                // Marcar el formulario como enviado
                 form.data('submitted', true);
+
+
+                var estado;
+                var observaciones;
 
                 var formDataArray = form.serializeArray();
 
-                // Almacenar los valores en variables
-                var estado, observaciones;
-
-
-                // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
                 formDataArray.forEach(function(input) {
+
                     if (input.name === "Estado") {
                         estado = input.value;
-                    } else if (input.name == "Observaciones") {
+                    }
+
+                    if (input.name === "Observaciones") {
                         observaciones = input.value;
-                        event.preventDefault();
                     }
 
                 });
-                console.log(estado + ' ' + observaciones);
+
+
                 if (typeof estado === 'undefined') {
-                    // Mostrar un mensaje de error o resaltar los campos de estado
+
                     alert('Por favor, seleccione un estado.');
 
-                    // Permitir que el formulario se envíe nuevamente
                     form.data('submitted', false);
 
                     return;
                 }
 
-                // Realizar la solicitud AJAX para actualizar la autorización
+
                 $.ajax({
+
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
                     type: "POST",
+
                     data: {
                         Observaciones: observaciones,
                         Estado: estado,
                         _token: $('input[name="_token"]').val()
                     },
+
+
                     success: function(response) {
+
                         if (response) {
-                            $(`#exampleModal_${id}`).modal('hide');
+
+
                             console.log('¡Éxito!');
-                            const currentPage = table.page();
 
-                            table.ajax.reload(function () {
-                                const pageInfo = table.page.info();
 
-                                if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
-                                    table.page(pageInfo.pages - 1).draw(false);
-                                }
-                            }, false);
+                            // Deshabilitar botón Validar
+                            $(`#boton${id}`)
+                                .prop('disabled', true)
+                                .addClass('disabled')
+                                .css({
+                                    'opacity': '0.6',
+                                    'cursor': 'not-allowed'
+                                });
+
+
+
+                            // Cambiar diseño del modal según estado nuevo
+                            if (estado == "17") {
+
+                                $(`#exampleModal_${id} .modal-header`).css({
+                                    "background-color": "#dc3545",
+                                    "border-bottom": "2px solid #dc3545"
+                                });
+
+                                $(`#exampleModal_${id} .titulo-autorizacion`).text(
+                                    "REPORTE DE INFORMACIÓN ADMINISTRATIVA"
+                                );
+
+                            }
+
+
 
                             Swal.fire({
+
                                 icon: 'success',
+
                                 title: "¡ACTUALIZADO!",
+
                                 html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
                                     id + "</span></span>",
-                                confirmButtonColor: '#646464'
-                            });
-                        }
-                    },
-                    error: function(error) {
-                        console.log('Error');
-                    }
-                });
-            }
 
+                                confirmButtonColor: '#646464'
+
+                            });
+
+
+
+                            // Cuando cierre el modal, ahí sí recargar DataTable
+                            $(`#exampleModal_${id}`)
+                                .off('hidden.bs.modal')
+                                .on('hidden.bs.modal', function () {
+
+
+                                    const currentPage = table.page();
+
+
+                                    table.ajax.reload(function () {
+
+
+                                        const pageInfo = table.page.info();
+
+
+                                        if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
+
+                                            table.page(pageInfo.pages - 1).draw(false);
+
+                                        }
+
+
+                                    }, false);
+
+
+                                });
+
+
+
+                            form.data('submitted', false);
+
+                        }
+
+                    },
+
+
+                    error: function(error) {
+
+                        console.log('Error', error);
+
+                        form.data('submitted', false);
+
+                    }
+
+                });
+
+            }
 
             //AJAX PARA GERENCIA
             function formValidarGerenciaAutorizacion(id, event) {
 
-                event.preventDefault();
+                        event.preventDefault();
 
-                var form = $("#formValidarGerenciaAutorizacion" + id);
+                        var form = $("#formValidarGerenciaAutorizacion" + id);
 
-                if (form.data('submitted')) return;
-                form.data('submitted', true);
+                        if (form.data('submitted')) return;
+                        form.data('submitted', true);
 
-                // ✅ DETECTAR EL ÚLTIMO RADIO SELECCIONADO SOLO EN ESTE FORM
-                var estado = form.find('input[name="Estado"]:checked').val();
-                var observaciones = form.find('input[name="Observaciones"]').val();
-                var destinatario = form.find('input[name="Destinatario"]').val();
+                        var estado = form.find('input[name="Estado"]:checked').val();
+                        var observaciones = form.find('input[name="Observaciones"]').val();
+                        var destinatario = form.find('input[name="Destinatario"]').val();
 
-                console.log("Estado:", estado, "Observaciones:", observaciones, "Destinatario:", destinatario);
-
-                if (!estado) {
-                    alert('Por favor, seleccione un estado.');
-                    form.data('submitted', false);
-                    return;
-                }
-
-                $.ajax({
-                    url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                    type: "POST",
-                    data: {
-                        Observaciones: observaciones,
-                        Estado: estado,
-                        Destinatario: destinatario,
-                        _token: $('input[name="_token"]').val()
-                    },
-                    success: function(response) {
-                        if (response) {
-                            $(`#exampleModal_${id}`).modal('hide');
-
-                            const currentPage = table.page();
-                            table.ajax.reload(function () {
-                                const pageInfo = table.page.info();
-
-                                if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
-                                    table.page(pageInfo.pages - 1).draw(false);
-                                }
-                            }, false);
-
-                            // 🔒 SWAL.FIRE INTACTO (IGUAL AL TUYO)
-                            Swal.fire({
-                                icon: 'success',
-                                title: "¡ACTUALIZADO!",
-                                html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                    id + "</span></span>",
-                                confirmButtonColor: '#646464'
-                            });
+                        if (!estado) {
+                            alert('Por favor, seleccione un estado.');
+                            form.data('submitted', false);
+                            return;
                         }
+
+                        $.ajax({
+                            url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                            type: "POST",
+                            data: {
+                                Observaciones: observaciones,
+                                Estado: estado,
+                                Destinatario: destinatario,
+                                _token: $('input[name="_token"]').val()
+                            },
+                        success: function(response) {
+
+                            if (response) {
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: "¡ACTUALIZADO!",
+                                    html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
+                                        id + "</span></span>",
+                                    confirmButtonColor: '#646464'
+                                });
+
+
+                                // Deshabilitar botón Validar
+                                $(`#boton${id}`)
+                                    .prop('disabled', true)
+                                    .addClass('disabled')
+                                    .css({
+                                        'opacity': '0.6',
+                                        'cursor': 'not-allowed'
+                                    });
+
+
+                                // Cambiar visualmente el modal según el nuevo estado
+                                if (estado == "17") {
+
+                                    $(`#exampleModal_${id} .modal-header`).css({
+                                        "background-color": "#dc3545",
+                                        "border-bottom": "2px solid #dc3545"
+                                    });
+
+                                    $(`#exampleModal_${id} .titulo-autorizacion`).text(
+                                        "REPORTE DE INFORMACIÓN ADMINISTRATIVA"
+                                    );
+
+                                }
+
+
+                                // Recargar tabla solo cuando cierre el modal
+                                $(`#exampleModal_${id}`)
+                                    .off('hidden.bs.modal')
+                                    .on('hidden.bs.modal', function () {
+
+                                        const currentPage = table.page();
+
+                                        table.ajax.reload(function () {
+
+                                            const pageInfo = table.page.info();
+
+                                            if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
+                                                table.page(pageInfo.pages - 1).draw(false);
+                                            }
+
+                                        }, false);
+
+                                    });
+
+
+                                form.data('submitted', false);
+
+                            }
+
                     },
-                    error: function(error) {
-                        console.log('Error', error);
-                        form.data('submitted', false);
-                    }
-                });
+                            error: function(error) {
+                                console.log('Error', error);
+                                form.data('submitted', false);
+                            }
+                        });
             }
 
 
