@@ -1320,13 +1320,11 @@
                                                     <span class="d-none d-md-inline ms-1">Desplazar al Final</span>
                                                 </button>
 
-
                                                 <button 
                                                     type="button" 
-                                                    class="btn-close fs-5" 
+                                                    class="btn-close btn-close-white fs-5 shadow-sm" 
                                                     data-bs-dismiss="modal" 
-                                                    aria-label="Close"
-                                                    style="outline: none; border: none; font-size: 20px;">
+                                                    aria-label="Close">
                                                 </button>
                                  
 
