@@ -760,32 +760,40 @@ class UsuarioController extends Controller
                 return collect();
             }
 
+
             $agenciasIdArray = json_decode($coordinaciones[0]->agencias_id, true);
 
             if ($agenciasIdArray === null) {
                 $agenciasIdArray = [];
             }
 
+
             $numero = preg_replace('/[^0-9]/', '', $coordinaciones[0]->agenciau);
 
             $coordinacionVariable = null;
+
 
             if (session('agenciau') == "Coordinacion $numero") {
                 $coordinacionVariable = "C" . $numero;
             }
 
+
             $idsFiltro = $agenciasIdArray;
+
 
             if ($coordinacionVariable) {
                 $idsFiltro[] = $coordinacionVariable;
             }
+
 
             if (count($idsFiltro) === 0) {
                 return collect();
             }
 
 
+
             return DB::table('autorizaciones_2 AS B')
+
 
                 // Último historial (estado actual)
                 ->join(DB::raw('(
@@ -796,10 +804,12 @@ class UsuarioController extends Controller
                     GROUP BY ID_Autorizacion
                 ) AS HMAX'), 'HMAX.ID_Autorizacion', '=', 'B.ID')
 
+
                 ->join('historialestado AS H', 'H.ID', '=', 'HMAX.UltimoHistorialID')
 
 
-                // Primer historial (datos originales)
+
+                // Primer historial (donde está Numero_Reporte)
                 ->join(DB::raw('(
                     SELECT
                         ID_Autorizacion,
@@ -808,97 +818,153 @@ class UsuarioController extends Controller
                     GROUP BY ID_Autorizacion
                 ) AS HMIN'), 'HMIN.ID_Autorizacion', '=', 'B.ID')
 
+
                 ->join('historialestado AS HI', 'HI.ID', '=', 'HMIN.PrimerHistorialID')
 
 
-                // Datos originales
+
                 ->leftJoin('persona AS A', 'A.ID', '=', 'HI.ID_Persona')
+
                 ->leftJoin('concepto_autorizaciones AS C', 'HI.ID_Concepto', '=', 'C.ID')
+
                 ->leftJoin('documentosintesis AS D', 'A.ID', '=', 'D.ID_Persona')
 
 
-                // Filtro agencias
+
+                // Filtro de coordinación
                 ->whereExists(function ($sub) use ($idsFiltro) {
+
                     $sub->select(DB::raw(1))
+
                         ->from('historialestado AS H2')
-                        ->whereColumn('H2.ID_Autorizacion', 'B.ID')
+
+                        ->whereRaw('H2.ID_Autorizacion = B.ID')
+
                         ->whereIn('H2.NumArea', $idsFiltro);
+
                 })
 
 
-                // Solo concepto 17
-                ->where('HI.ID_Concepto', 17)
 
-
-                // Estados actuales permitidos
-                ->whereIn(DB::raw('TRIM(H.Estado)'), [
-                    'TRÁMITE',
-                    'ENTERADO',
-                    'REMITIDO',
-                    'REMITIDOCONFIRMADO'
-                ])
-
-
+                // Filtro búsqueda
                 ->when($autorizacion !== '', function ($q) use ($autorizacion) {
+
 
                     $busqueda = strtoupper(trim($autorizacion));
 
+
                     $q->where(function ($sub) use ($busqueda, $autorizacion) {
 
+
+                        // Buscar REP-12345
                         if (preg_match('/^REP-(\d+)$/', $busqueda, $matches)) {
+
 
                             $numeroReporte = (int) $matches[1];
 
+
                             $sub->whereExists(function ($exists) use ($numeroReporte) {
+
+
                                 $exists->select(DB::raw(1))
+
                                     ->from('historialestado AS HR')
+
                                     ->whereRaw('HR.ID_Autorizacion = B.ID')
+
                                     ->where('HR.Numero_Reporte', $numeroReporte);
+
+
                             });
+
 
                         } else {
 
+
+                            // Buscar por ID autorización
                             $sub->where('B.ID', $autorizacion)
-                                ->orWhere('HI.NombrePersona', 'like', '%' . $autorizacion . '%');
+
+
+                                // Buscar por nombre
+                                ->orWhere(function ($nombre) use ($autorizacion) {
+
+
+                                    $nombre->where('HI.NombrePersona', 'like', '%' . $autorizacion . '%');
+
+
+                                });
+
 
                         }
 
+
                     });
 
+
                 })
+
 
 
                 ->select([
 
+
                     'A.ID AS IDPersona',
+
                     'A.Score',
+
                     'A.CuentaAsociada',
+
                     'A.Nombre',
+
                     'A.Apellidos',
+
 
                     'B.ID AS IDAutorizacion',
 
+
+                    // Datos originales
                     'HI.Convencion',
+
                     'HI.Cedula',
+
                     'HI.CuentaAsociado',
+
                     'HI.NombrePersona',
-                    'HI.Detalle',
+
                     'HI.Numero_Reporte',
+
+                    'HI.Detalle',
+
                     'HI.ID_Concepto',
 
+
+
+                    // Estado actual
                     'H.ID_User',
+
                     'H.Estado',
+
                     'H.Bloqueado',
 
+
+
                     'C.Letra',
+
                     'C.No',
+
                     'C.Concepto',
+
                     'C.Areas',
 
+
+
                     'D.FechaInsercion'
+
+
                 ])
 
                 ->distinct()
+
                 ->get();
                     
         } else {
@@ -1032,11 +1098,11 @@ class UsuarioController extends Controller
 
         $agenciaU = session('agenciau');
         $rol = session('rol');
-
+           
         $autorizacion = trim($request->input('search_term', $request->input('search.value', '')));
-
+        
         if (!empty($autorizacion)) {
-
+            
             $autorizaciones = $this->buscarAutorizacionesPorRol($rol, $autorizacion, $agenciaU);
 
         }else if($rol == "Coordinacion"){
