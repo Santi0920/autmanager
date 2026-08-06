@@ -1350,7 +1350,8 @@
                                                                     </div>
                                                                     <div class="col-md-5 col-lg-3">
                                                                     <div class="row g-0 justify-content-center border p-2">
-                                                                        <span class="h3 fw-bold mb-0 text-danger">No.${row.IDAutorizacion}</span>
+                                                                    
+                                                                        <span class="h3 fw-bold mb-0 text-danger">${row.UltimoConceptoID == '17' && row.Numero_Reporte != null ? 'REP-' + row.Numero_Reporte : `No. ${row.IDAutorizacion}`}</span>
                                                                     </div>
 
                                                                         <div class="row g-0 align-items-center justify-content-center border p-2">
