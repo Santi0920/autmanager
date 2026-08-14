@@ -2848,14 +2848,6 @@
                             console.log('¡Éxito!');
 
 
-                            // Deshabilitar botón Validar
-                            $(`#boton${id}`)
-                                .prop('disabled', true)
-                                .addClass('disabled')
-                                .css({
-                                    'opacity': '0.6',
-                                    'cursor': 'not-allowed'
-                                });
 
 
 
@@ -2890,32 +2882,26 @@
 
 
 
-                            // Cuando cierre el modal, ahí sí recargar DataTable
-                            $(`#exampleModal_${id}`)
-                                .off('hidden.bs.modal')
-                                .on('hidden.bs.modal', function () {
+                                $(`#exampleModal_${id}`)
+                                    .off('hidden.bs.modal')
+                                    .on('hidden.bs.modal', function () {
 
+                                        const currentPage = table.page();
 
-                                    const currentPage = table.page();
+                                        table.ajax.reload(function () {
 
+                                            const pageInfo = table.page.info();
 
-                                    table.ajax.reload(function () {
+                                            if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
+                                                table.page(pageInfo.pages - 1).draw(false);
+                                            }
 
+                                        }, false);
 
-                                        const pageInfo = table.page.info();
+                                    });
 
-
-                                        if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
-
-                                            table.page(pageInfo.pages - 1).draw(false);
-
-                                        }
-
-
-                                    }, false);
-
-
-                                });
+                                // CERRAR EL MODAL
+                                $(`#exampleModal_${id}`).modal('hide');
 
 
 
@@ -2980,14 +2966,6 @@
                                 });
 
 
-                                // Deshabilitar botón Validar
-                                $(`#boton${id}`)
-                                    .prop('disabled', true)
-                                    .addClass('disabled')
-                                    .css({
-                                        'opacity': '0.6',
-                                        'cursor': 'not-allowed'
-                                    });
 
 
                                 // Cambiar visualmente el modal según el nuevo estado
@@ -3023,6 +3001,9 @@
                                         }, false);
 
                                     });
+
+                                // CERRAR EL MODAL
+                                $(`#exampleModal_${id}`).modal('hide');
 
 
                                 form.data('submitted', false);
