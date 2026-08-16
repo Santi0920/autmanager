@@ -151,10 +151,10 @@
                                     ${row.TipoProveedor ? `
                                         <span class="badge bg-light text-primary border ms-1" style="pointer-events: none;">
                                             ${row.TipoProveedor == 'PJ' 
-                                                ? 'Jurídico' 
+                                                ? 'PJ' 
                                                 : row.TipoProveedor == 'PN' 
-                                                    ? 'Natural' 
-                                                    : 'Natural ó Jurídico'}
+                                                    ? 'PN' 
+                                                    : 'PN ó PJ'}
                                         </span>
                                     ` : ''}
                                 </div>
@@ -237,10 +237,10 @@
                                                 </span>
                                                 <span class="badge bg-light text-primary border ms-1" style="pointer-events: none;">
                                                     ${row.TipoProveedor == 'PJ' 
-                                                        ? 'Jurídico' 
+                                                        ? 'PJ' 
                                                         : row.TipoProveedor == 'PN' 
-                                                            ? 'Natural' 
-                                                            : 'Natural ó Jurídico'}
+                                                            ? 'PN' 
+                                                            : 'PN ó PJ'}
                                                 </span>
                                             </div>
                                         `
@@ -267,10 +267,10 @@
                                                     </span>
                                                     <span class="badge bg-light text-primary border ms-1" style="pointer-events: none;">
                                                         ${row.TipoProveedor == 'PJ' 
-                                                            ? 'Jurídico' 
+                                                            ? 'PJ' 
                                                             : row.TipoProveedor == 'PN' 
-                                                                ? 'Natural' 
-                                                                : 'Natural ó Jurídico'}
+                                                                ? 'PN' 
+                                                                : 'PN ó PJ'}
                                                     </span>
                                                 </div>
                                             `
@@ -523,7 +523,7 @@
                                                                     <span class="fs-5">
                                                                         ${item.ID_Concepto} - ${item.Concepto} 
                                                                         ${row.UltimoConceptoID == '1' 
-                                                                            ? `- <span class="fw-bold">Empresa: ${item.NombrePersona}</span> - <span>${row.TipoProveedor == 'PJ' ? 'Jurídico' : row.TipoProveedor == 'PN' ? 'Natural' : row.TipoProveedor}</span>`
+                                                                            ? `- <span class="fw-bold">Empresa: ${item.NombrePersona}</span> - <span>${row.TipoProveedor == 'PJ' ? 'PJ' : row.TipoProveedor == 'PN' ? 'PN' : row.TipoProveedor}</span>`
                                                                             : ''
                                                                         }
                                                                     </span>&nbsp;&nbsp; @include('layouts.optionvercodigo')
