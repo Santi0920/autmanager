@@ -446,6 +446,7 @@
                                     ];
 
                                     const fechainsercion = item.FechaInsercion;
+
                                     // Convertir fechainsercion a un objeto Date
                                     const fechaInsercionDate = new Date(fechainsercion);
 
@@ -456,16 +457,28 @@
                                     const diferenciaMilisegundos = fechaActual - fechaInsercionDate;
 
                                     // Convertir la diferencia de milisegundos a días
-                                    const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+                                    const diferenciaDias = Math.floor(
+                                        diferenciaMilisegundos / (1000 * 60 * 60 * 24)
+                                    );
 
-                                    // Verificar si la diferencia supera los 180 días
-                                    const estado = fechainsercion == null || fechainsercion === undefined
-                                    ? `<span class="fs-2">⚪⚪⚪</span>`
-                                    : diferenciaDias > 179
-                                        ? `<span class="fs-2">⚪⚪🔴</span>`
-                                        : diferenciaDias > 169
-                                            ? `<span class="fs-2">⚪🟡⚪</span>`
-                                            : `<span class="fs-2">🟢⚪⚪</span>`;
+                                    // Verificar el semáforo
+                                    const estado = item.Semaforo == null
+                                        ? (
+                                            fechainsercion == null || fechainsercion === undefined
+                                                ? `<span class="fs-2">⚪⚪⚪</span>`
+                                                : diferenciaDias > 179
+                                                    ? `<span class="fs-2">⚪⚪🔴</span>`
+                                                    : diferenciaDias > 169
+                                                        ? `<span class="fs-2">⚪🟡⚪</span>`
+                                                        : `<span class="fs-2">🟢⚪⚪</span>`
+                                        )
+                                        : item.Semaforo.toLowerCase() === 'verde'
+                                            ? `<span class="fs-2">🟢⚪⚪</span>`
+                                            : item.Semaforo.toLowerCase() === 'amarillo'
+                                                ? `<span class="fs-2">⚪🟡⚪</span>`
+                                                : item.Semaforo.toLowerCase() === 'rojo'
+                                                    ? `<span class="fs-2">⚪⚪🔴</span>`
+                                                    : `<span class="fs-2">⚪⚪⚪</span>`;
 
 
                                     const dia = fechaInsercionDate.getDate();
@@ -584,13 +597,19 @@
                                                                                 <span class="fs-5">${item.Cedula}
                                                                                     ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
                                                                                     - ${item.NombrePersona} -
-                                                                                    ${
-                                                                                        item.Score >= 650
-                                                                                            ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
-                                                                                            : (item.Score === 'S/E'
-                                                                                                ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
-                                                                                    }
+                                                                                        ${
+                                                                                            item.ScoreAS == null
+                                                                                                ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                : (
+                                                                                                    item.ScoreAS >= 650
+                                                                                                        ? `<span class="badge bg-success text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                        : (
+                                                                                                            item.ScoreAS === 'NO'
+                                                                                                                ? `<span class="badge bg-warning text-dark fw-bold">NO TIENE</span> - ${estado}`
+                                                                                                                : `<span class="badge bg-danger text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                        )
+                                                                                                )
+                                                                                        }
                                                                                 </span>
                                                                             </div>
                                                                         </div>
@@ -604,11 +623,17 @@
                                                                                 ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
                                                                                 - ${item.NombrePersona} -
                                                                                 ${
-                                                                                    item.Score >= 650
-                                                                                        ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
-                                                                                        : (item.Score === 'S/E'
-                                                                                            ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
-                                                                                            : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
+                                                                                    item.ScoreAS == null
+                                                                                        ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                        : (
+                                                                                            item.ScoreAS >= 650
+                                                                                                ? `<span class="badge bg-success text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                : (
+                                                                                                    item.ScoreAS === 'NO'
+                                                                                                        ? `<span class="badge bg-warning text-dark fw-bold">NO TIENE</span> - ${estado}`
+                                                                                                        : `<span class="badge bg-danger text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                )
+                                                                                        )
                                                                                 }
                                                                             </span>
                                                                         </div>
@@ -1554,11 +1579,17 @@
                                                                                                 ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
                                                                                                 - ${item.NombrePersona} -
                                                                                                 ${
-                                                                                                    item.Score >= 650
-                                                                                                        ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                        : (item.Score === 'S/E'
-                                                                                                            ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                            : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
+                                                                                                    item.ScoreAS == null
+                                                                                                        ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                        : (
+                                                                                                            item.ScoreAS >= 650
+                                                                                                                ? `<span class="badge bg-success text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                                : (
+                                                                                                                    item.ScoreAS === 'NO'
+                                                                                                                        ? `<span class="badge bg-warning text-dark fw-bold">NO TIENE</span> - ${estado}`
+                                                                                                                        : `<span class="badge bg-danger text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                                )
+                                                                                                        )
                                                                                                 }
                                                                                             </span>
                                                                                         </div>
@@ -1573,11 +1604,17 @@
                                                                                             ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
                                                                                             - ${item.NombrePersona} -
                                                                                             ${
-                                                                                                item.Score >= 650
-                                                                                                    ? `<span class="badge bg-success text-light fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                    : (item.Score === 'S/E'
-                                                                                                        ? `<span class="badge bg-warning text-dark fw-bold">${item.Score}</span> - ${estado}`
-                                                                                                        : `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`)
+                                                                                                item.ScoreAS == null
+                                                                                                    ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
+                                                                                                    : (
+                                                                                                        item.ScoreAS >= 650
+                                                                                                            ? `<span class="badge bg-success text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                            : (
+                                                                                                                item.ScoreAS === 'NO'
+                                                                                                                    ? `<span class="badge bg-warning text-dark fw-bold">NO TIENE</span> - ${estado}`
+                                                                                                                    : `<span class="badge bg-danger text-light fw-bold">${item.ScoreAS}</span> - ${estado}`
+                                                                                                            )
+                                                                                                    )
                                                                                             }
                                                                                         </span>
                                                                                     </div>
@@ -2785,7 +2822,10 @@
                 });
             }
 
-            //AJAX PARA COORDINADOR
+
+            // ============================================================
+            // AJAX PARA COORDINADOR
+            // ============================================================
             function formValidarAutorizacion(id, event) {
 
                 event.preventDefault();
@@ -2798,7 +2838,6 @@
                 }
 
                 form.data('submitted', true);
-
 
                 var estado;
                 var observaciones;
@@ -2817,7 +2856,6 @@
 
                 });
 
-
                 if (typeof estado === 'undefined') {
 
                     alert('Por favor, seleccione un estado.');
@@ -2828,9 +2866,28 @@
                 }
 
 
+                // ============================================================
+                // BOTÓN QUE SE PRESIONÓ
+                // ============================================================
+
+                var boton = $(event.currentTarget);
+
+                // Guardar texto original del botón
+                var textoOriginal = boton.html();
+
+                // Deshabilitar botón y mostrar loader
+                boton
+                    .prop('disabled', true)
+                    .html(`
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Cargando...
+                    `);
+
+
                 $.ajax({
 
                     url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+
                     type: "POST",
 
                     data: {
@@ -2844,11 +2901,7 @@
 
                         if (response) {
 
-
                             console.log('¡Éxito!');
-
-
-
 
 
                             // Cambiar diseño del modal según estado nuevo
@@ -2866,43 +2919,54 @@
                             }
 
 
-
                             Swal.fire({
 
                                 icon: 'success',
 
                                 title: "¡ACTUALIZADO!",
 
-                                html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                    id + "</span></span>",
+                                html: `
+                                    <span class='fw-semibold'>
+                                        Se actualizó correctamente la autorización No.
+                                        <span class='badge bg-primary fw-bold'>
+                                            ${id}
+                                        </span>
+                                    </span>
+                                `,
 
                                 confirmButtonColor: '#646464'
 
                             });
 
 
+                            // Recargar tabla solo cuando cierre el modal
+                            $(`#exampleModal_${id}`)
+                                .off('hidden.bs.modal')
+                                .on('hidden.bs.modal', function() {
 
-                                $(`#exampleModal_${id}`)
-                                    .off('hidden.bs.modal')
-                                    .on('hidden.bs.modal', function () {
+                                    const currentPage = table.page();
 
-                                        const currentPage = table.page();
+                                    table.ajax.reload(function() {
 
-                                        table.ajax.reload(function () {
+                                        const pageInfo = table.page.info();
 
-                                            const pageInfo = table.page.info();
+                                        if (
+                                            currentPage >= pageInfo.pages &&
+                                            pageInfo.pages > 0
+                                        ) {
 
-                                            if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
-                                                table.page(pageInfo.pages - 1).draw(false);
-                                            }
+                                            table
+                                                .page(pageInfo.pages - 1)
+                                                .draw(false);
+                                        }
 
-                                        }, false);
+                                    }, false);
 
-                                    });
+                                });
 
-                                // CERRAR EL MODAL
-                                $(`#exampleModal_${id}`).modal('hide');
 
+                            // Cerrar modal
+                            $(`#exampleModal_${id}`).modal('hide');
 
 
                             form.data('submitted', false);
@@ -2916,7 +2980,24 @@
 
                         console.log('Error', error);
 
+                        // Restaurar botón
+                        boton
+                            .prop('disabled', false)
+                            .html(textoOriginal);
+
                         form.data('submitted', false);
+
+                        Swal.fire({
+
+                            icon: 'error',
+
+                            title: 'Error',
+
+                            text: 'No fue posible actualizar la autorización. Intente nuevamente.',
+
+                            confirmButtonColor: '#646464'
+
+                        });
 
                     }
 
@@ -2924,99 +3005,181 @@
 
             }
 
-            //AJAX PARA GERENCIA
+
+
+            // ============================================================
+            // AJAX PARA GERENCIA
+            // ============================================================
             function formValidarGerenciaAutorizacion(id, event) {
 
-                        event.preventDefault();
+                event.preventDefault();
 
-                        var form = $("#formValidarGerenciaAutorizacion" + id);
+                var form = $("#formValidarGerenciaAutorizacion" + id);
 
-                        if (form.data('submitted')) return;
-                        form.data('submitted', true);
+                // Evitar doble envío
+                if (form.data('submitted')) {
+                    return;
+                }
 
-                        var estado = form.find('input[name="Estado"]:checked').val();
-                        var observaciones = form.find('input[name="Observaciones"]').val();
-                        var destinatario = form.find('input[name="Destinatario"]').val();
+                form.data('submitted', true);
 
-                        if (!estado) {
-                            alert('Por favor, seleccione un estado.');
-                            form.data('submitted', false);
-                            return;
-                        }
 
-                        $.ajax({
-                            url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                            type: "POST",
-                            data: {
-                                Observaciones: observaciones,
-                                Estado: estado,
-                                Destinatario: destinatario,
-                                _token: $('input[name="_token"]').val()
-                            },
-                        success: function(response) {
+                var estado = form.find('input[name="Estado"]:checked').val();
 
-                            if (response) {
+                var observaciones = form.find('input[name="Observaciones"]').val();
 
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: "¡ACTUALIZADO!",
-                                    html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" +
-                                        id + "</span></span>",
-                                    confirmButtonColor: '#646464'
+                var destinatario = form.find('input[name="Destinatario"]').val();
+
+
+                if (!estado) {
+
+                    alert('Por favor, seleccione un estado.');
+
+                    form.data('submitted', false);
+
+                    return;
+                }
+
+
+                // ============================================================
+                // BOTÓN QUE SE PRESIONÓ
+                // ============================================================
+
+                var boton = $(event.currentTarget);
+
+                // Guardar texto original
+                var textoOriginal = boton.html();
+
+                // Deshabilitar y mostrar loader
+                boton
+                    .prop('disabled', true)
+                    .html(`
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Cargando...
+                    `);
+
+
+                $.ajax({
+
+                    url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+
+                    type: "POST",
+
+                    data: {
+                        Observaciones: observaciones,
+                        Estado: estado,
+                        Destinatario: destinatario,
+                        _token: $('input[name="_token"]').val()
+                    },
+
+
+                    success: function(response) {
+
+                        if (response) {
+
+                            Swal.fire({
+
+                                icon: 'success',
+
+                                title: "¡ACTUALIZADO!",
+
+                                html: `
+                                    <span class='fw-semibold'>
+                                        Se actualizó correctamente la autorización No.
+                                        <span class='badge bg-primary fw-bold'>
+                                            ${id}
+                                        </span>
+                                    </span>
+                                `,
+
+                                confirmButtonColor: '#646464'
+
+                            });
+
+
+                            // Cambiar visualmente el modal según el nuevo estado
+                            if (estado == "17") {
+
+                                $(`#exampleModal_${id} .modal-header`).css({
+                                    "background-color": "#dc3545",
+                                    "border-bottom": "2px solid #dc3545"
+                                });
+
+                                $(`#exampleModal_${id} .titulo-autorizacion`).text(
+                                    "REPORTE DE INFORMACIÓN ADMINISTRATIVA"
+                                );
+
+                            }
+
+
+                            // Recargar tabla solo cuando cierre el modal
+                            $(`#exampleModal_${id}`)
+                                .off('hidden.bs.modal')
+                                .on('hidden.bs.modal', function() {
+
+                                    const currentPage = table.page();
+
+                                    table.ajax.reload(function() {
+
+                                        const pageInfo = table.page.info();
+
+                                        if (
+                                            currentPage >= pageInfo.pages &&
+                                            pageInfo.pages > 0
+                                        ) {
+
+                                            table
+                                                .page(pageInfo.pages - 1)
+                                                .draw(false);
+                                        }
+
+                                    }, false);
+
                                 });
 
 
+                            // Cerrar modal
+                            $(`#exampleModal_${id}`).modal('hide');
 
 
-                                // Cambiar visualmente el modal según el nuevo estado
-                                if (estado == "17") {
+                            form.data('submitted', false);
 
-                                    $(`#exampleModal_${id} .modal-header`).css({
-                                        "background-color": "#dc3545",
-                                        "border-bottom": "2px solid #dc3545"
-                                    });
-
-                                    $(`#exampleModal_${id} .titulo-autorizacion`).text(
-                                        "REPORTE DE INFORMACIÓN ADMINISTRATIVA"
-                                    );
-
-                                }
-
-
-                                // Recargar tabla solo cuando cierre el modal
-                                $(`#exampleModal_${id}`)
-                                    .off('hidden.bs.modal')
-                                    .on('hidden.bs.modal', function () {
-
-                                        const currentPage = table.page();
-
-                                        table.ajax.reload(function () {
-
-                                            const pageInfo = table.page.info();
-
-                                            if (currentPage >= pageInfo.pages && pageInfo.pages > 0) {
-                                                table.page(pageInfo.pages - 1).draw(false);
-                                            }
-
-                                        }, false);
-
-                                    });
-
-                                // CERRAR EL MODAL
-                                $(`#exampleModal_${id}`).modal('hide');
-
-
-                                form.data('submitted', false);
-
-                            }
+                        }
 
                     },
-                            error: function(error) {
-                                console.log('Error', error);
-                                form.data('submitted', false);
-                            }
+
+
+                    error: function(error) {
+
+                        console.log('Error', error);
+
+                        // Restaurar botón
+                        boton
+                            .prop('disabled', false)
+                            .html(textoOriginal);
+
+                        form.data('submitted', false);
+
+
+                        Swal.fire({
+
+                            icon: 'error',
+
+                            title: 'Error',
+
+                            text: 'No fue posible actualizar la autorización. Intente nuevamente.',
+
+                            confirmButtonColor: '#646464'
+
                         });
+
+                    }
+
+                });
+
             }
+
+
 
 
 

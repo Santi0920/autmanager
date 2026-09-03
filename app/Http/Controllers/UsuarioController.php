@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\File;
 use App\Models\User;
 use App\Models\BugReport;
+
+
 class UsuarioController extends Controller
 {
     //ENVIAR DATOS A LA VISTA, PARA CARGAR SELECTS DINAMICAMENTE
@@ -125,7 +127,46 @@ class UsuarioController extends Controller
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
         $idconcepto = $existingConcepto[0]->ID;
 
+        $nit = trim($cedula);
 
+        $score = 'NO';
+        $semaforo = 'N/A';
+
+        try {
+
+            $responseScore = Http::timeout(10)->get(
+                'http://190.66.10.150:10100/conexion_s400/api/score/' . $nit
+            );
+
+            if ($responseScore->successful()) {
+
+                $scoreData = $responseScore->json();
+
+                if (
+                    isset($scoreData['status']) &&
+                    $scoreData['status'] == 200
+                ) {
+                    $score = !empty($scoreData['score'])
+                        ? $scoreData['score']
+                        : 'NO';
+
+                    $semaforo = !empty($scoreData['semaforo'])
+                        ? $scoreData['semaforo']
+                        : 'N/A';
+                }
+            }
+
+        } catch (\Exception $e) {
+
+            // Si la API falla, NO se bloquea la autorización
+            $score = 'NO';
+            $semaforo = 'N/A';
+
+            \Log::warning('No fue posible consultar el score', [
+                'nit' => $nit,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         //si es igual a director
         $rol = session('rol');
@@ -360,6 +401,10 @@ class UsuarioController extends Controller
             'Fecha' => $fechadeSolicitud,
             'FechaString' => $fechaStringfechadeSolicitud,
             'ID_Autorizacion' => $id_insertado,
+
+            // SCORE
+            'ScoreAS' => $score,
+            'Semaforo' => $semaforo,
         ]);
 
         // PROCESO PARA SUBIR ARCHIVO SOPORTE********
@@ -1385,19 +1430,26 @@ class UsuarioController extends Controller
     }
 
 
+
+
     public function actualizardetalle(Request $request, $id)
     {
-
         $tipovalidacion = $request->Estado;
-        //fecha de la solicitud de la jefatura corregida
+
+        // Fecha de la solicitud
         $fechadeSolicitud = Carbon::now('America/Bogota');
         Carbon::setLocale('es');
         $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
+
         $nombre = session('name');
         $destinatario = null;
 
-        if(session('rol') == "Gerencia"){
-
+        /*
+        |--------------------------------------------------------------------------
+        | GERENCIA
+        |--------------------------------------------------------------------------
+        */
+        if (session('rol') == "Gerencia") {
 
             $ultimoEstado = DB::table('historialestado')
                 ->where('ID_Autorizacion', $id)
@@ -1420,27 +1472,97 @@ class UsuarioController extends Controller
                         ->orWhere('Estado', 'REMITIDOCONFIRMADO')
                         ->orWhere('Estado', 'DESBLOQUEADO');
                 })
-                ->orderByDesc('ID') // o 'Fecha' si ese campo representa el orden cronológico
+                ->orderByDesc('ID')
                 ->first();
 
             $NumArea = 'DR';
             $NomArea = 'DIRECCIÓN GENERAL';
 
+            /*
+            |--------------------------------------------------------------------------
+            | SCORE - GERENCIA
+            |--------------------------------------------------------------------------
+            | Se obtiene la cédula de la autorización y se consulta nuevamente
+            | el score para actualizar ScoreAS y Semaforo.
+            |--------------------------------------------------------------------------
+            */
+
+            $cedulaScore = null;
+            $score = 'NO';
+            $semaforo = 'N/A';
+
+            $registroCedula = DB::table('historialestado')
+                ->where('ID_Autorizacion', $id)
+                ->whereNotNull('Cedula')
+                ->orderBy('ID', 'asc')
+                ->first();
+
+            if ($registroCedula) {
+                $cedulaScore = trim($registroCedula->Cedula);
+            }
+
+            if (!empty($cedulaScore)) {
+
+                try {
+
+                    $responseScore = Http::timeout(10)->get(
+                        'http://190.66.10.150:10100/conexion_s400/api/score/' . $cedulaScore
+                    );
+
+                    if ($responseScore->successful()) {
+
+                        $scoreData = $responseScore->json();
+
+                        if (
+                            isset($scoreData['status']) &&
+                            $scoreData['status'] == 200
+                        ) {
+
+                            $score = !empty($scoreData['score'])
+                                ? $scoreData['score']
+                                : 'NO';
+
+                            $semaforo = !empty($scoreData['semaforo'])
+                                ? $scoreData['semaforo']
+                                : 'N/A';
+                        }
+                    }
+
+                } catch (\Exception $e) {
+
+                    $score = 'NO';
+                    $semaforo = 'N/A';
+
+                    Log::warning('No fue posible consultar el score en actualizardetalle - Gerencia', [
+                        'id_autorizacion' => $id,
+                        'cedula' => $cedulaScore,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | CORREGIR
+            |--------------------------------------------------------------------------
+            */
             if ($tipovalidacion == 'CORREGIR') {
+
                 $estado = "TRÁMITE";
 
-                // Buscar el último registro con estado DONE para esa autorización
                 $ultimoDone = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
                     ->where('Estado', 'DONE')
                     ->orderByDesc('ID')
                     ->first();
 
-                //SI LO ENCUENTRA LO PASA A ESTADO TRAMITE CON EL FIN SE QUE LO CORRIJA
                 if ($ultimoDone) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoDone->ID)
-                        ->update(['Estado' => $estado, 'Observaciones' => 'NADA']);
+                        ->update([
+                            'Estado' => $estado,
+                            'Observaciones' => 'NADA'
+                        ]);
                 }
 
                 $ultimoRemitido = DB::table('historialestado')
@@ -1450,10 +1572,13 @@ class UsuarioController extends Controller
                     ->first();
 
                 $estado = "REMITIDOCORREGIR";
+
                 if ($ultimoRemitido) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoRemitido->ID)
-                        ->update(['Estado' => $estado]);
+                        ->update([
+                            'Estado' => $estado
+                        ]);
                 }
 
                 $ultimoValidado = DB::table('historialestado')
@@ -1467,13 +1592,20 @@ class UsuarioController extends Controller
                 if ($ultimoValidado) {
                     DB::table('historialestado')
                         ->where('ID', $ultimoValidado->ID)
-                        ->update(['Estado' => $estado]);
+                        ->update([
+                            'Estado' => $estado
+                        ]);
                 }
 
+            /*
+            |--------------------------------------------------------------------------
+            | APROBADO
+            |--------------------------------------------------------------------------
+            */
             } else if ($tipovalidacion == 'APROBADO') {
+
                 $estado = "VALIDADOCONFIRMADO";
 
-                //estado para buscar a cual se le asigna la SEC en caso tal sea tramite o remitido
                 $primerEstado = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
                     ->where(function ($query) {
@@ -1483,59 +1615,92 @@ class UsuarioController extends Controller
                     })
                     ->orderByDesc('ID')
                     ->first();
-                $primerEstado_id = $primerEstado->ID;
-                //logica para asignar la secuencia
-                $ultimoSec = DB::table('historialestado')
-                    ->max('SEC');
 
-                $nuevoSec = $ultimoSec ? $ultimoSec + 1 : 1;
+                if ($primerEstado) {
 
-                DB::table('historialestado')
-                    ->where('ID', $primerEstado_id)
-                    ->update([
-                        'SEC' => $nuevoSec
-                    ]);
+                    $primerEstado_id = $primerEstado->ID;
 
-                if($ultimoEstado->Estado != "REMITIDO"){
-                    if($ultimoEstado->Estado == "DESBLOQUEADO" || $ultimoEstado->Estado == "VALIDADO"){
+                    $ultimoSec = DB::table('historialestado')
+                        ->max('SEC');
 
-                    }else if($ultimoEstado->Estado == "STAND BY"){
+                    $nuevoSec = $ultimoSec ? $ultimoSec + 1 : 1;
+
+                    DB::table('historialestado')
+                        ->where('ID', $primerEstado_id)
+                        ->update([
+                            'SEC' => $nuevoSec
+                        ]);
+                }
+
+                if ($ultimoEstado && $ultimoEstado->Estado != "REMITIDO") {
+
+                    if (
+                        $ultimoEstado->Estado == "DESBLOQUEADO" ||
+                        $ultimoEstado->Estado == "VALIDADO"
+                    ) {
+
+                    } else if ($ultimoEstado->Estado == "STAND BY") {
+
                         $estado = "STAND BY";
-                    }else if ($ultimoEstado) {
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
+
+                    } else {
+
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update([
+                                'Estado' => $estado
+                            ]);
                     }
-                }else{
+
+                } else {
+
                     if ($ultimoEstado) {
-                    $estado = "REMITIDOCONFIRMADO";
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
+
+                        $estado = "REMITIDOCONFIRMADO";
+
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update([
+                                'Estado' => $estado
+                            ]);
                     }
                 }
- 
 
-            } /*bloqueado */else if ($tipovalidacion == "1") {
+            /*
+            |--------------------------------------------------------------------------
+            | BLOQUEADO
+            |--------------------------------------------------------------------------
+            */
+            } else if ($tipovalidacion == "1") {
+
                 $estado = "VALIDADOCONFIRMADO";
 
-                if($ultimoEstado->Estado != "REMITIDO"){
-                    if($ultimoEstado->Estado == "DESBLOQUEADO"){
+                if ($ultimoEstado) {
 
-                    }else if ($ultimoEstado) {
-                        DB::table('historialestado')
-                            ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado]);
-                    }
-                }else if($ultimoEstado->Estado == "REMITIDO"){
-                    if ($ultimoEstado) {
+                    if ($ultimoEstado->Estado != "REMITIDO") {
+
+                        if ($ultimoEstado->Estado == "DESBLOQUEADO") {
+
+                        } else {
+
+                            DB::table('historialestado')
+                                ->where('ID', $ultimoEstado->ID)
+                                ->update([
+                                    'Estado' => $estado
+                                ]);
+                        }
+
+                    } else {
+
                         $estado = "REMITIDOCONFIRMADO";
+
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado]);
+                            ->update([
+                                'Estado' => $estado
+                            ]);
                     }
                 }
-
 
                 $primerHistorial = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
@@ -1543,48 +1708,89 @@ class UsuarioController extends Controller
                     ->first();
 
                 if ($primerHistorial) {
+
                     DB::table('historialestado')
                         ->where('ID', $primerHistorial->ID)
-                        ->update(['Bloqueado' => 1]);
+                        ->update([
+                            'Bloqueado' => 1
+                        ]);
                 }
 
-            }else if ($tipovalidacion == 'ANULADO') {
+            /*
+            |--------------------------------------------------------------------------
+            | ANULADO
+            |--------------------------------------------------------------------------
+            */
+            } else if ($tipovalidacion == 'ANULADO') {
+
                 $primerHistorial = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
                     ->orderBy('ID', 'asc')
                     ->first();
-                //LINEA PARA QUE SI EL ULTIMO ESTADO ES TRAMITE LE QUITE EL BOTON
-                if($ultimoEstado->Estado == "TRÁMITE" && $primerHistorial->Observaciones != "NADA"){
+
+                if (
+                    $ultimoEstado &&
+                    $ultimoEstado->Estado == "TRÁMITE" &&
+                    $primerHistorial &&
+                    $primerHistorial->Observaciones != "NADA"
+                ) {
+
                     DB::table('historialestado')
                         ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
-                        ->update(['Observaciones' => 'NADA']);
+                        ->update([
+                            'Observaciones' => 'NADA'
+                        ]);
                 }
 
                 if ($primerHistorial) {
+
                     DB::table('historialestado')
                         ->where('ID', $primerHistorial->ID)
-                        ->update(['Bloqueado' => 0, 'Estado' => 'DONE']);
+                        ->update([
+                            'Bloqueado' => 0,
+                            'Estado' => 'DONE'
+                        ]);
                 }
 
-            }else if ($tipovalidacion == 'STAND BY') {
-                $estado = "VALIDADOCONFIRMADO";
-                if($ultimoEstado->Estado == "DESBLOQUEADO"){
+            /*
+            |--------------------------------------------------------------------------
+            | STAND BY
+            |--------------------------------------------------------------------------
+            */
+            } else if ($tipovalidacion == 'STAND BY') {
 
-                }elseif($ultimoEstado->Estado != "REMITIDO"){
-                    if ($ultimoEstado) {
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
-                    }
-                }else if($ultimoEstado->Estado == "REMITIDO"){
-                    if ($ultimoEstado) {
-                        $estado = "REMITIDOCONFIRMADO";
+                $estado = "VALIDADOCONFIRMADO";
+
+                if ($ultimoEstado) {
+
+                    if ($ultimoEstado->Estado == "DESBLOQUEADO") {
+
+                    } elseif ($ultimoEstado->Estado != "REMITIDO") {
+
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado]);
+                            ->update([
+                                'Estado' => $estado
+                            ]);
+
+                    } else {
+
+                        $estado = "REMITIDOCONFIRMADO";
+
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update([
+                                'Estado' => $estado
+                            ]);
                     }
                 }
-            }else if ($tipovalidacion == 'DESBLOQUEADO') {
+
+            /*
+            |--------------------------------------------------------------------------
+            | DESBLOQUEADO
+            |--------------------------------------------------------------------------
+            */
+            } else if ($tipovalidacion == 'DESBLOQUEADO') {
 
                 $primerHistorial = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
@@ -1592,96 +1798,153 @@ class UsuarioController extends Controller
                     ->first();
 
                 if ($primerHistorial) {
+
                     DB::table('historialestado')
                         ->where('ID', $primerHistorial->ID)
-                        ->update(['Bloqueado' => 0]);
+                        ->update([
+                            'Bloqueado' => 0
+                        ]);
                 }
 
-
-
-            }else if ($tipovalidacion == 'ENTERADO') {
+            /*
+            |--------------------------------------------------------------------------
+            | ENTERADO
+            |--------------------------------------------------------------------------
+            */
+            } else if ($tipovalidacion == 'ENTERADO') {
 
                 $estado = "INFORMADOCONFIRMADO";
 
-                if($ultimoEstado->Estado != "REMITIDO"){
-                    if ($ultimoEstado) {
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
-                    }
-                }else{
-                    if ($ultimoEstado) {
-                    $estado = "REMITIDOCONFIRMADO";
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['Estado' => $estado]);
+                if ($ultimoEstado) {
+
+                    if ($ultimoEstado->Estado != "REMITIDO") {
+
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update([
+                                'Estado' => $estado
+                            ]);
+
+                    } else {
+
+                        $estado = "REMITIDOCONFIRMADO";
+
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update([
+                                'Estado' => $estado
+                            ]);
                     }
                 }
 
-
-
-
-            }else if ($tipovalidacion == 'TERMINADO' || $tipovalidacion == 'ACLARAR' || $tipovalidacion == 'ENCARGARSE' || $tipovalidacion == 'PROCEDER' || $tipovalidacion == 'SOLUCIONAR' || $tipovalidacion == 'QUE PASO') {
+            /*
+            |--------------------------------------------------------------------------
+            | TERMINADO / ACLARAR / ETC
+            |--------------------------------------------------------------------------
+            */
+            } else if (
+                $tipovalidacion == 'TERMINADO' ||
+                $tipovalidacion == 'ACLARAR' ||
+                $tipovalidacion == 'ENCARGARSE' ||
+                $tipovalidacion == 'PROCEDER' ||
+                $tipovalidacion == 'SOLUCIONAR' ||
+                $tipovalidacion == 'QUE PASO'
+            ) {
 
                 $estado = "RECIBIDOCONFIRMADO";
 
-                $destinatario = $ultimoEstado->ID_User;
+                if ($ultimoEstado) {
 
-                if($ultimoEstado->Estado == "RECIBIDO"){
-                    if ($ultimoEstado) {
-                    DB::table('historialestado')
-                        ->where('ID', $ultimoEstado->ID)
-                        ->update(['ID_User' => $ultimoEstado->ID_User, 'Estado' => $estado]);
-                    }
-                }
+                    $destinatario = $ultimoEstado->ID_User;
 
+                    if ($ultimoEstado->Estado == "RECIBIDO") {
 
-            } else{
-                
-                $estado = "DONE";
-                if($tipovalidacion !== "CORREGIRJEFATURA"){
-                    if ($ultimoEstado) {
                         DB::table('historialestado')
                             ->where('ID', $ultimoEstado->ID)
-                            ->update(['Estado' => $estado]);
+                            ->update([
+                                'ID_User' => $ultimoEstado->ID_User,
+                                'Estado' => $estado
+                            ]);
                     }
                 }
 
-                
-                if($ultimoEstado->Estado == "TRÁMITE"){
-                    DB::table('historialestado')
-                        ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
-                        ->where('Estado', 'TRÁMITE')
-                        ->orwhere('Estado', 'DONE')
-                        ->update(['Observaciones' => 'NADA']);
+            /*
+            |--------------------------------------------------------------------------
+            | RESTO DE ESTADOS
+            |--------------------------------------------------------------------------
+            */
+            } else {
+
+                $estado = "DONE";
+
+                if ($tipovalidacion !== "CORREGIRJEFATURA") {
+
+                    if ($ultimoEstado) {
+
+                        DB::table('historialestado')
+                            ->where('ID', $ultimoEstado->ID)
+                            ->update([
+                                'Estado' => $estado
+                            ]);
+                    }
                 }
 
-                if($tipovalidacion == "CORREGIRJEFATURA"){
+                if ($ultimoEstado && $ultimoEstado->Estado == "TRÁMITE") {
+
+                    DB::table('historialestado')
+                        ->where('ID_Autorizacion', $ultimoEstado->ID_Autorizacion)
+                        ->where(function ($query) {
+                            $query->where('Estado', 'TRÁMITE')
+                                ->orWhere('Estado', 'DONE');
+                        })
+                        ->update([
+                            'Observaciones' => 'NADA'
+                        ]);
+                }
+
+                if ($tipovalidacion == "CORREGIRJEFATURA") {
+
                     $NumArea = 'C9';
                     $NomArea = 'Coordinacion 9';
                     $tipovalidacion = 'CORREGIR';
-                }else if($tipovalidacion == "VALIDADO"){
+
+                } else if ($tipovalidacion == "VALIDADO") {
+
                     $NumArea = 'C9';
                     $NomArea = 'Coordinacion 9';
-                }else{
+
+                } else {
+
                     $tipovalidacion = $tipovalidacion;
-
                 }
-
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | ESTADO FINAL
+            |--------------------------------------------------------------------------
+            */
 
-            if($tipovalidacion == 1){
+            if ($tipovalidacion == 1) {
+
                 $estado = "BLOQUEADO";
-            }else if($tipovalidacion == 'ENVIAR A'){
+
+            } else if ($tipovalidacion == 'ENVIAR A') {
+
                 $estado = 'ENVIADO';
-            }else{
+
+            } else {
+
                 $estado = $tipovalidacion;
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | INSERTAR NUEVO HISTORIAL - GERENCIA
+            |--------------------------------------------------------------------------
+            */
 
-            $update = DB::table('historialestado')
-            ->insert([
+            DB::table('historialestado')->insert([
                 'NumArea' => $NumArea,
                 'NomArea' => $NomArea,
                 'Observaciones' => $request->Observaciones,
@@ -1690,254 +1953,504 @@ class UsuarioController extends Controller
                 'Fecha' => $fechadeSolicitud,
                 'FechaString' => $fechaStringfechadeSolicitud,
                 'ID_User' => $destinatario,
-                'ID_Autorizacion' => $id
+                'ID_Autorizacion' => $id,
+
+                // SCORE
+                'ScoreAS' => $score,
+                'Semaforo' => $semaforo,
             ]);
 
-            // $consultatelefono = DB::table('historialestado AS H')
-            //     ->join('users AS U', 'U.id', '=', 'H.ID_User')
-            //     ->where('H.ID_Autorizacion', $id)
-            //     ->select(
-            //         'U.*',
-            //         'H.*'
-            //     )
-            //     ->first();
+            return response()->json([
+                'success' => true
+            ]);
+        }
 
-            // $phone = '57'.$consultatelefono->celular;
-            // if (!empty($phone)) {
-            //     try {
-            //         Http::timeout(1)          // tiempo TOTAL máximo
-            //             ->connectTimeout(1)  // tiempo máximo para conectar
-            //             ->post('http://localhost:3001/send', [
-            //                 'phone' => $phone,
-            //                 'name' => $consultatelefono->name,
-            //                 'consecutivo' => $id,
-            //                 'fecha' => $fechaStringfechadeSolicitud,
-            //                 'estado' => $estado,
-            //                 'aprobado_por' => $nombre,
-            //                 'observaciones' => $request->Observaciones,
-            //             ]);
+        /*
+        |--------------------------------------------------------------------------
+        | JEFATURA / ACTUALIZACIÓN CON DOCUMENTO
+        |--------------------------------------------------------------------------
+        */
 
-            //     } catch (\Throwable $e) {
-                    
-            //     }
-            // }
+        else {
 
-            return response()->json(['success' => true]);
+            if (($tipovalidacion == null || $request->Cedulamodal != null)) {
 
-        }else{
-            if(($tipovalidacion == null || $request->Cedulamodal != null)){
-                         
                 $cedula = $request->Cedulamodal;
 
-                $documentos = DB::select('SELECT ID, DocumentoSoporte, NumArea FROM historialestado WHERE ID_Autorizacion = ?', [$id]);
+                /*
+                |--------------------------------------------------------------------------
+                | DOCUMENTOS
+                |--------------------------------------------------------------------------
+                */
+
+                $documentos = DB::select(
+                    'SELECT ID, DocumentoSoporte, NumArea FROM historialestado WHERE ID_Autorizacion = ?',
+                    [$id]
+                );
+
                 $inputName = 'Soporte_' . $id;
 
-                // Encontrar el último documento con nombre y actualizar su Estado
                 $ultimoDocumento = null;
+
                 foreach ($documentos as $doc) {
+
                     if ($doc->DocumentoSoporte) {
-                        $ultimoDocumento = $doc; // siempre queda el último que tiene documento
+                        $ultimoDocumento = $doc;
                     }
                 }
-                if(session('rol') == "Coordinacion"){
+
+                if (session('rol') == "Coordinacion") {
                     $estado = "REMITIDOCONFIRMADO";
-                }else{
+                } else {
                     $estado = "DONE";
                 }
+
                 if ($ultimoDocumento) {
 
                     DB::table('historialestado')
-                    ->where('ID', $ultimoDocumento->ID)
-                    ->update(['Estado' => $estado]);
+                        ->where('ID', $ultimoDocumento->ID)
+                        ->update([
+                            'Estado' => $estado
+                        ]);
                 }
+
+                /*
+                |--------------------------------------------------------------------------
+                | ARCHIVO
+                |--------------------------------------------------------------------------
+                */
+
+                $filename = null;
 
                 if ($request->hasFile($inputName)) {
 
                     $file = $request->file($inputName);
 
-                    // Buscar las versiones existentes
                     $versiones = [];
+
                     foreach ($documentos as $doc) {
+
                         if ($doc->DocumentoSoporte) {
-                            if (preg_match('/Soporte-' . $id . '(?:\.(\d+))?\.pdf$/', $doc->DocumentoSoporte, $matches)) {
-                                $versiones[] = isset($matches[1]) ? (int)$matches[1] : 0;
+
+                            if (
+                                preg_match(
+                                    '/Soporte-' . $id . '(?:\.(\d+))?\.pdf$/',
+                                    $doc->DocumentoSoporte,
+                                    $matches
+                                )
+                            ) {
+
+                                $versiones[] = isset($matches[1])
+                                    ? (int) $matches[1]
+                                    : 0;
                             }
                         }
                     }
 
-                    // Determinar la siguiente versión
-                    $siguienteVersion = !empty($versiones) ? max($versiones) + 1 : 1;
+                    $siguienteVersion = !empty($versiones)
+                        ? max($versiones) + 1
+                        : 1;
 
-                    // Crear nombre del archivo
-                    $filename = 'Soporte-' . $id . '.' . $siguienteVersion . '.' . $file->getClientOriginalExtension();
+                    $filename =
+                        'Soporte-' .
+                        $id .
+                        '.' .
+                        $siguienteVersion .
+                        '.' .
+                        $file->getClientOriginalExtension();
 
-                    Log::info('Nombre archivo: ' . $filename . ' | Version: ' . $siguienteVersion);
+                    Log::info(
+                        'Nombre archivo: ' .
+                        $filename .
+                        ' | Version: ' .
+                        $siguienteVersion
+                    );
 
-                    // Mover archivo
-                    $file->move(public_path('Storage/files/soporteautorizaciones'), $filename);
+                    $file->move(
+                        public_path('Storage/files/soporteautorizaciones'),
+                        $filename
+                    );
                 }
 
-                
+                /*
+                |--------------------------------------------------------------------------
+                | INFORMACIÓN BASE
+                |--------------------------------------------------------------------------
+                */
 
                 $tipoautorizacion = $request->CodigoAutorizacion;
                 $convencion = null;
                 $cuenta = null;
                 $idpersona = 7323;
+
                 $url = "http://190.66.10.150:10100/conexion_s400/api/";
+
                 $idconcepto = null;
                 $observaciones = null;
 
+                /*
+                |--------------------------------------------------------------------------
+                | SCORE
+                |--------------------------------------------------------------------------
+                */
 
+                $score = 'NO';
+                $semaforo = 'N/A';
 
-                //concepto traer el id
-                $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
-                if(!empty($existingConcepto)){
+                $nitScore = trim($cedula);
+
+                if (!empty($nitScore)) {
+
+                    try {
+
+                        $responseScore = Http::timeout(10)->get(
+                            $url . 'score/' . $nitScore
+                        );
+
+                        if ($responseScore->successful()) {
+
+                            $scoreData = $responseScore->json();
+
+                            if (
+                                isset($scoreData['status']) &&
+                                $scoreData['status'] == 200
+                            ) {
+
+                                $score = !empty($scoreData['score'])
+                                    ? $scoreData['score']
+                                    : 'NO';
+
+                                $semaforo = !empty($scoreData['semaforo'])
+                                    ? $scoreData['semaforo']
+                                    : 'N/A';
+                            }
+                        }
+
+                    } catch (\Exception $e) {
+
+                        $score = 'NO';
+                        $semaforo = 'N/A';
+
+                        Log::warning(
+                            'No fue posible consultar el score en actualizardetalle',
+                            [
+                                'id_autorizacion' => $id,
+                                'cedula' => $nitScore,
+                                'error' => $e->getMessage()
+                            ]
+                        );
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | CONCEPTO
+                |--------------------------------------------------------------------------
+                */
+
+                $existingConcepto = DB::select(
+                    'SELECT ID FROM concepto_autorizaciones WHERE ID = ?',
+                    [$tipoautorizacion]
+                );
+
+                if (!empty($existingConcepto)) {
+
                     $idconcepto = $existingConcepto[0]->ID;
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | DISPOSICIONES
+                |--------------------------------------------------------------------------
+                */
 
-                //DISPOSICIONES
-                if($tipoautorizacion == '41'){
+                if ($tipoautorizacion == '41') {
 
                     $attempts = 0;
-                    $maxAttempts = 3; // INTENTOS MÁXIMOS
-                    $retryDelay = 500; // Milisegundos
+                    $maxAttempts = 3;
+                    $retryDelay = 500;
+
+                    $data = null;
+                    $response = null;
 
                     do {
+
                         try {
-                            $response = Http::get($url . 'nombre/' . $cedula);
+
+                            $response = Http::get(
+                                $url . 'nombre/' . $cedula
+                            );
 
                             $data = $response->json();
-                        // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+
                             break;
+
                         } catch (\Exception $e) {
+
                             $attempts++;
+
                             usleep($retryDelay * 1000);
                         }
+
                     } while ($attempts < $maxAttempts);
-                    $estado = $data['status'];
-                    if ($estado == '200') {
+
+                    $estadoApi = $data['status'] ?? null;
+
+                    if ($estadoApi == '200') {
+
                         $nombre = $data['asociado']['NOMBRES'];
                         $cuenta = $data['asociado']['CUENTA'];
                     }
 
-                    $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
+                    $existingPerson = DB::select(
+                        'SELECT * FROM persona WHERE Cedula = ?',
+                        [$cedula]
+                    );
 
-                    if(empty($existingPerson)){
-                        if(isset($response)){
+                    if (empty($existingPerson)) {
+
+                        if (isset($response)) {
+
                             $nombre = $request->Nombremodal;
                             $cuenta = $request->Cuentamodal;
-                        }else{
-                            $nombre = $data['asociado']['NOMBRES'];
-                            $cuenta = $data['asociado']['CUENTA'];
+
+                        } else {
+
+                            $nombre = $data['asociado']['NOMBRES'] ?? $request->Nombremodal;
+                            $cuenta = $data['asociado']['CUENTA'] ?? $request->Cuentamodal;
                         }
 
-                    }else{
-                        //traer el ID
-                        $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
+                    } else {
+
+                        $existingID = DB::select(
+                            'SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?',
+                            [$cedula]
+                        );
+
                         $idpersona = $existingID[0]->ID;
+
                         $nombres = $existingID[0]->Nombre;
                         $apellidos = $existingID[0]->Apellidos;
-                        $nombre = $nombres . ' '.$apellidos;
+
+                        $nombre = $nombres . ' ' . $apellidos;
                     }
 
                     $convencion = $request->Convencionmodal;
 
-                    //< 1 AÑO
-                }else if($tipoautorizacion == '22'){
-                    //NOMBRE EMPRESA
+                } else if ($tipoautorizacion == '22') {
+
                     $nombre = "COOPSERP";
                     $cedula = "805.004.034";
                     $cuenta = 9;
                     $idpersona = 14920;
-                }else{
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ACTUALIZAR SCORE PARA COOPSERP
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $score = 'NO';
+                    $semaforo = 'N/A';
+
+                    try {
+
+                        $responseScore = Http::timeout(10)->get(
+                            $url . 'score/' . trim($cedula)
+                        );
+
+                        if ($responseScore->successful()) {
+
+                            $scoreData = $responseScore->json();
+
+                            if (
+                                isset($scoreData['status']) &&
+                                $scoreData['status'] == 200
+                            ) {
+
+                                $score = !empty($scoreData['score'])
+                                    ? $scoreData['score']
+                                    : 'NO';
+
+                                $semaforo = !empty($scoreData['semaforo'])
+                                    ? $scoreData['semaforo']
+                                    : 'N/A';
+                            }
+                        }
+
+                    } catch (\Exception $e) {
+
+                        Log::warning(
+                            'No fue posible consultar score de COOPSERP',
+                            [
+                                'id_autorizacion' => $id,
+                                'cedula' => $cedula,
+                                'error' => $e->getMessage()
+                            ]
+                        );
+                    }
+
+                } else {
 
                     $cedulaSinPuntos = str_replace('.', '', $cedula);
+
                     $proveedores = DB::table('proveedor')
-                    ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
-                    ->get();
-                    if(!$proveedores->isEmpty()){
+                        ->where(
+                            'NIT',
+                            'LIKE',
+                            '%' . $cedulaSinPuntos . '%'
+                        )
+                        ->get();
+
+                    if (!$proveedores->isEmpty()) {
+
                         $idpersona = $proveedores[0]->ID_Persona;
                         $nombre = $proveedores[0]->RazonSocial;
 
-                    }else{
-                        $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$cedula]);
+                    } else {
 
+                        $existingPerson = DB::select(
+                            'SELECT * FROM persona WHERE Cedula = ?',
+                            [$cedula]
+                        );
 
-                        if(empty($existingPerson)){
-                            //NOMBRE EMPRESA
+                        if (empty($existingPerson)) {
+
                             $nombre = $request->Nombremodal;
-                        }else{
-                            //traer el ID
-                            $existingID = DB::select('SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?', [$cedula]);
+
+                        } else {
+
+                            $existingID = DB::select(
+                                'SELECT ID, Nombre, Apellidos FROM persona WHERE Cedula = ?',
+                                [$cedula]
+                            );
+
                             $idpersona = $existingID[0]->ID;
 
                             $nombres = $existingID[0]->Nombre;
                             $apellidos = $existingID[0]->Apellidos;
-                            $nombre = $nombres . ' '.$apellidos;
+
+                            $nombre = $nombres . ' ' . $apellidos;
                         }
                     }
 
                     $cuenta = $request->Cuentamodal;
-
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | PROVEEDOR
+                |--------------------------------------------------------------------------
+                */
 
                 $cedulaSinPuntos = str_replace('.', '', $cedula);
+
                 $proveedores = DB::table('proveedor')
-                ->where('NIT', 'LIKE', '%' . $cedulaSinPuntos . '%')
-                ->get();
-                if(!$proveedores->isEmpty()){
+                    ->where(
+                        'NIT',
+                        'LIKE',
+                        '%' . $cedulaSinPuntos . '%'
+                    )
+                    ->get();
+
+                if (!$proveedores->isEmpty()) {
+
                     $idpersona = $proveedores[0]->ID_Persona;
                     $nombre = $proveedores[0]->RazonSocial;
-
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | AUDITORIA
+                |--------------------------------------------------------------------------
+                */
 
-                //AUDITORIA
                 $nombreauditoria = session('name');
                 $rol = session('rol');
+
                 date_default_timezone_set('America/Bogota');
+
                 $fechaHoraActual = date('Y-m-d H:i:s');
+
                 $ip = $_SERVER['REMOTE_ADDR'];
+
                 $agencia = session('agenciau');
-                $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)", [
-                    null,
-                    $nombreauditoria,
-                    $rol,
-                    $agencia,
-                    $fechaHoraActual,
-                    $id . ' '.$cedula,
-                    null,
-                    $ip
-                ]);
 
+                DB::insert(
+                    "INSERT INTO auditoria
+                    (
+                        Hora_login,
+                        Usuario_nombre,
+                        Usuario_Rol,
+                        AgenciaU,
+                        Acción_realizada,
+                        Hora_Accion,
+                        Cedula_Registrada,
+                        cerro_sesion,
+                        IP
+                    )
+                    VALUES (?, ?, ?, ?, 'CreoAutorizacionJefatura', ?, ?, ?, ?)",
+                    [
+                        null,
+                        $nombreauditoria,
+                        $rol,
+                        $agencia,
+                        $fechaHoraActual,
+                        $id . ' ' . $cedula,
+                        null,
+                        $ip
+                    ]
+                );
 
-                // Si el archivo se proporcionó y se movió correctamente, actualiza la base de datos
+                /*
+                |--------------------------------------------------------------------------
+                | ÚLTIMA ÁREA
+                |--------------------------------------------------------------------------
+                */
+
                 $ultimoNumArea = DB::table('historialestado')
-                ->where('ID_Autorizacion', $id)
-                ->orderByDesc('Fecha')
-                ->value('NumArea');
+                    ->where('ID_Autorizacion', $id)
+                    ->orderByDesc('Fecha')
+                    ->value('NumArea');
 
+                /*
+                |--------------------------------------------------------------------------
+                | ESTADO
+                |--------------------------------------------------------------------------
+                */
 
-                //para asignarle al actualizar
-                if(session('rol') == "Coordinacion"){
+                if (session('rol') == "Coordinacion") {
+
                     $estado = "REMITIDO";
-                }else if($tipovalidacion == 'RECIBIDO'){
+
+                } else if ($tipovalidacion == 'RECIBIDO') {
+
                     $estado = $tipovalidacion;
                     $observaciones = $request->Observaciones;
-                }else{
+
+                } else {
+
                     $estado = "TRÁMITE";
                 }
+
                 $agenciaU = session('agenciau');
-                $existeAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agenciaU]);
+
+                $existeAgencia = DB::select(
+                    'SELECT * FROM agencias WHERE NameAgencia = ?',
+                    [$agenciaU]
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | INSERTAR HISTORIAL CON SCORE
+                |--------------------------------------------------------------------------
+                */
 
                 if (isset($filename)) {
-                    // $existingCedula = DB::select('SELECT Cedula FROM autorizaciones WHERE ID = ?', [$id]);
-                    // $cedula = $existingCedula[0]->Cedula;
+
                     Log::info('Cedula: ' . $cedula);
-                    $id_insertadohistorial = DB::table('historialestado')
-                    ->insertGetId([
+
+                    DB::table('historialestado')->insertGetId([
                         'Cedula' => $cedula,
                         'CuentaAsociado' => $cuenta,
                         'NombrePersona' => $nombre,
@@ -1946,7 +2459,9 @@ class UsuarioController extends Controller
                         'ID_Persona' => $idpersona,
                         'ID_Concepto' => $idconcepto,
                         'ID_User' => session('id'),
-                        'NumArea' => !empty($existeAgencia) ? $existeAgencia[0]->NumAgencia : session('rol'),
+                        'NumArea' => !empty($existeAgencia)
+                            ? $existeAgencia[0]->NumAgencia
+                            : session('rol'),
                         'NomArea' => session('agenciau'),
                         'Estado' => $estado,
                         'Observaciones' => $observaciones,
@@ -1954,15 +2469,21 @@ class UsuarioController extends Controller
                         'Fecha' => $fechadeSolicitud,
                         'DocumentoSoporte' => $filename,
                         'FechaString' => $fechaStringfechadeSolicitud,
-                        'ID_Autorizacion' => $id
+                        'ID_Autorizacion' => $id,
+
+                        // SCORE
+                        'ScoreAS' => $score,
+                        'Semaforo' => $semaforo,
                     ]);
 
-                    // Devuelve un mensaje de éxito si se proporcionó un archivo y se actualizó la base de datos
-                    return response()->json(['message' => 'Datos recibidos correctamente']);
-                }else{
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Datos recibidos correctamente'
+                    ]);
 
-                    $id_insertadohistorial = DB::table('historialestado')
-                    ->insertGetId([
+                } else {
+
+                    DB::table('historialestado')->insertGetId([
                         'Cedula' => $cedula,
                         'CuentaAsociado' => $cuenta,
                         'NombrePersona' => $nombre,
@@ -1971,42 +2492,127 @@ class UsuarioController extends Controller
                         'ID_Persona' => $idpersona,
                         'ID_Concepto' => $idconcepto,
                         'ID_User' => session('id'),
-                        'NumArea' => !empty($existeAgencia) ? $existeAgencia[0]->NumAgencia : session('rol'),
+                        'NumArea' => !empty($existeAgencia)
+                            ? $existeAgencia[0]->NumAgencia
+                            : session('rol'),
                         'NomArea' => session('agenciau'),
                         'Estado' => $estado,
                         'Nombre' => session('name'),
                         'Observaciones' => $observaciones,
                         'Fecha' => $fechadeSolicitud,
-                        'DocumentoSoporte' => $ultimoDocumento->DocumentoSoporte,
+                        'DocumentoSoporte' => $ultimoDocumento
+                            ? $ultimoDocumento->DocumentoSoporte
+                            : null,
                         'FechaString' => $fechaStringfechadeSolicitud,
-                        'ID_Autorizacion' => $id
-                    ]);
-                    return response()->json(['message' => 'Datos recibidos correctamente']);
-                }
-            }else{
+                        'ID_Autorizacion' => $id,
 
-                //coordinacion
+                        // SCORE
+                        'ScoreAS' => $score,
+                        'Semaforo' => $semaforo,
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Datos recibidos correctamente'
+                    ]);
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | COORDINACIÓN
+            |--------------------------------------------------------------------------
+            */
+
+            else {
+
                 $nombre = session('name');
                 $noCoordinacion = session('agenciau');
                 $estadoautorizacion = $request->Estado;
 
                 if (preg_match('/Coordinacion (\d+)/', $noCoordinacion, $matches)) {
-                    $coordinacion = 'C' . $matches[1];
-                } else {
-                    $coordinacion = null; // O un valor por defecto
-                }
 
+                    $coordinacion = 'C' . $matches[1];
+
+                } else {
+
+                    $coordinacion = null;
+                }
 
                 $ultimoEstado = DB::table('historialestado')
                     ->where('ID_Autorizacion', $id)
-                    ->orderByDesc('ID') // o 'Fecha' si ese campo indica el orden cronológico
+                    ->orderByDesc('ID')
                     ->first();
 
+                /*
+                |--------------------------------------------------------------------------
+                | SCORE PARA COORDINACIÓN
+                |--------------------------------------------------------------------------
+                */
+
+                $score = 'NO';
+                $semaforo = 'N/A';
+
+                $cedulaScore = null;
+
+                if ($ultimoEstado && !empty($ultimoEstado->Cedula)) {
+
+                    $cedulaScore = trim($ultimoEstado->Cedula);
+                }
+
+                if (!empty($cedulaScore)) {
+
+                    try {
+
+                        $responseScore = Http::timeout(10)->get(
+                            'http://190.66.10.150:10100/conexion_s400/api/score/' . $cedulaScore
+                        );
+
+                        if ($responseScore->successful()) {
+
+                            $scoreData = $responseScore->json();
+
+                            if (
+                                isset($scoreData['status']) &&
+                                $scoreData['status'] == 200
+                            ) {
+
+                                $score = !empty($scoreData['score'])
+                                    ? $scoreData['score']
+                                    : 'NO';
+
+                                $semaforo = !empty($scoreData['semaforo'])
+                                    ? $scoreData['semaforo']
+                                    : 'N/A';
+                            }
+                        }
+
+                    } catch (\Exception $e) {
+
+                        $score = 'NO';
+                        $semaforo = 'N/A';
+
+                        Log::warning(
+                            'No fue posible consultar el score en actualizardetalle - Coordinacion',
+                            [
+                                'id_autorizacion' => $id,
+                                'cedula' => $cedulaScore,
+                                'error' => $e->getMessage()
+                            ]
+                        );
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | CORREGIR
+                |--------------------------------------------------------------------------
+                */
+
                 if ($request->input('Estado') == 'CORREGIR') {
+
                     $estado = "TRÁMITE";
 
-
-                    // Buscar el último registro con estado DONE para esa autorización
                     $ultimoDone = DB::table('historialestado')
                         ->where('ID_Autorizacion', $id)
                         ->where('Estado', 'TRÁMITE')
@@ -2014,12 +2620,17 @@ class UsuarioController extends Controller
                         ->first();
 
                     if ($ultimoDone) {
+
                         DB::table('historialestado')
                             ->where('ID', $ultimoDone->ID)
-                            ->update(['Estado' => $estado, 'Observaciones' => 'NADA']);
+                            ->update([
+                                'Estado' => $estado,
+                                'Observaciones' => 'NADA'
+                            ]);
                     }
-                    //aqui unicamente esta sirviendo cuando es aprobado pero para el director
+
                 } else {
+
                     $estado = "DONE";
 
                     $ultimoTramite = DB::table('historialestado')
@@ -2029,39 +2640,53 @@ class UsuarioController extends Controller
                         ->first();
 
                     if ($ultimoTramite) {
+
                         DB::table('historialestado')
                             ->where('ID', $ultimoTramite->ID)
-                            ->update(['Estado' => $estado]);
+                            ->update([
+                                'Estado' => $estado
+                            ]);
                     }
-
                 }
 
-                if($tipovalidacion == null){
+                if ($tipovalidacion == null) {
+
                     $tipovalidacion = 'REMITIDO';
-                }elseif($tipovalidacion == 'RECIBIDO'){
+
+                } elseif ($tipovalidacion == 'RECIBIDO') {
+
                     $tipovalidacion = 'RECIBIDO';
                 }
 
-                $update = DB::table('historialestado')
-                    ->insert([
-                        'NumArea' => $coordinacion,
-                        'NomArea' => $noCoordinacion,
-                        'Observaciones' => $request->Observaciones,
-                        'Estado' => $tipovalidacion,
-                        'Nombre' => $nombre,
-                        'ID_User' => session('id'),
-                        'Fecha' => $fechadeSolicitud,
-                        'FechaString' => $fechaStringfechadeSolicitud,
-                        'ID_Autorizacion' => $id
-                    ]);
+                /*
+                |--------------------------------------------------------------------------
+                | INSERTAR HISTORIAL COORDINACIÓN CON SCORE
+                |--------------------------------------------------------------------------
+                */
 
+                DB::table('historialestado')->insert([
+                    'NumArea' => $coordinacion,
+                    'NomArea' => $noCoordinacion,
+                    'Observaciones' => $request->Observaciones,
+                    'Estado' => $tipovalidacion,
+                    'Nombre' => $nombre,
+                    'ID_User' => session('id'),
+                    'Fecha' => $fechadeSolicitud,
+                    'FechaString' => $fechaStringfechadeSolicitud,
+                    'ID_Autorizacion' => $id,
 
+                    // SCORE
+                    'ScoreAS' => $score,
+                    'Semaforo' => $semaforo,
+                ]);
 
-                return response()->json(['success' => true]);
+                return response()->json([
+                    'success' => true
+                ]);
             }
         }
-
     }
+
 
 
 
