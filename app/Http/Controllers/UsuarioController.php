@@ -121,7 +121,20 @@ class UsuarioController extends Controller
         $nombreU = session('name');
         $rol = session('rol');
 
-
+         $meses = [
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
+        ];
 
         //concepto traer el id
         $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE ID = ?', [$tipoautorizacion]);
@@ -131,6 +144,9 @@ class UsuarioController extends Controller
 
         $score = 'NO';
         $semaforo = 'N/A';
+        $nendeudamiento = 'N/A';
+        $fechaconsulta = 'N/A';
+        $fechavencimiento = 'N/A';
 
         try {
 
@@ -153,6 +169,22 @@ class UsuarioController extends Controller
                     $semaforo = !empty($scoreData['semaforo'])
                         ? $scoreData['semaforo']
                         : 'N/A';
+
+                    $nendeudamiento = !empty($scoreData['nivel_endeudamiento'])
+                        ? $scoreData['nivel_endeudamiento']
+                        : 'N/A';
+
+                    $fechaconsulta = !empty($scoreData['fecha_score'])
+                        ? $meses[(int)date('m', strtotime($scoreData['fecha_score']))]
+                            . ' - ' . date('d', strtotime($scoreData['fecha_score']))
+                            . ' - ' . date('Y', strtotime($scoreData['fecha_score']))
+                        : 'N/A';
+
+                    $fechavencimiento = !empty($scoreData['fecha_vencimiento'])
+                        ? $meses[(int)date('m', strtotime($scoreData['fecha_vencimiento']))]
+                            . ' - ' . date('d', strtotime($scoreData['fecha_vencimiento']))
+                            . ' - ' . date('Y', strtotime($scoreData['fecha_vencimiento']))
+                        : 'N/A';
                 }
             }
 
@@ -161,12 +193,16 @@ class UsuarioController extends Controller
             // Si la API falla, NO se bloquea la autorización
             $score = 'NO';
             $semaforo = 'N/A';
+            $nendeudamiento = 'N/A';
+            $fechaconsulta = 'N/A';
+            $fechavencimiento = 'N/A';
 
             \Log::warning('No fue posible consultar el score', [
                 'nit' => $nit,
                 'error' => $e->getMessage()
             ]);
         }
+        Log::info($nendeudamiento);
 
         //si es igual a director
         $rol = session('rol');
@@ -405,6 +441,9 @@ class UsuarioController extends Controller
             // SCORE
             'ScoreAS' => $score,
             'Semaforo' => $semaforo,
+            'NivelEndeudamiento' => $nendeudamiento,
+            'FechaConsulta' => $fechaconsulta,
+            'FechaVencimiento' => $fechavencimiento
         ]);
 
         // PROCESO PARA SUBIR ARCHIVO SOPORTE********
@@ -1443,6 +1482,20 @@ class UsuarioController extends Controller
 
         $nombre = session('name');
         $destinatario = null;
+         $meses = [
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
+        ];
 
         /*
         |--------------------------------------------------------------------------
@@ -1490,6 +1543,9 @@ class UsuarioController extends Controller
             $cedulaScore = null;
             $score = 'NO';
             $semaforo = 'N/A';
+            $nendeudamiento = 'N/A';
+            $fechaconsulta = 'N/A';
+            $fechavencimiento = 'N/A';
 
             $registroCedula = DB::table('historialestado')
                 ->where('ID_Autorizacion', $id)
@@ -1525,13 +1581,32 @@ class UsuarioController extends Controller
                             $semaforo = !empty($scoreData['semaforo'])
                                 ? $scoreData['semaforo']
                                 : 'N/A';
-                        }
+
+                            $nendeudamiento = !empty($scoreData['nivel_endeudamiento'])
+                                ? $scoreData['nivel_endeudamiento']
+                                : 'N/A';
+
+                            $fechaconsulta = !empty($scoreData['fecha_score'])
+                                ? $meses[(int)date('m', strtotime($scoreData['fecha_score']))]
+                                    . ' - ' . date('d', strtotime($scoreData['fecha_score']))
+                                    . ' - ' . date('Y', strtotime($scoreData['fecha_score']))
+                                : 'N/A';
+
+                            $fechavencimiento = !empty($scoreData['fecha_vencimiento'])
+                                ? $meses[(int)date('m', strtotime($scoreData['fecha_vencimiento']))]
+                                    . ' - ' . date('d', strtotime($scoreData['fecha_vencimiento']))
+                                    . ' - ' . date('Y', strtotime($scoreData['fecha_vencimiento']))
+                                : 'N/A';
+                            }
                     }
 
                 } catch (\Exception $e) {
 
                     $score = 'NO';
                     $semaforo = 'N/A';
+                    $nendeudamiento = 'N/A';
+                    $fechaconsulta = 'N/A';
+                    $fechavencimiento = 'N/A';
 
                     Log::warning('No fue posible consultar el score en actualizardetalle - Gerencia', [
                         'id_autorizacion' => $id,
@@ -1958,6 +2033,9 @@ class UsuarioController extends Controller
                 // SCORE
                 'ScoreAS' => $score,
                 'Semaforo' => $semaforo,
+                'NivelEndeudamiento' => $nendeudamiento,
+                'FechaConsulta' => $fechaconsulta,
+                'FechaVencimiento' => $fechavencimiento
             ]);
 
             return response()->json([
@@ -2096,6 +2174,9 @@ class UsuarioController extends Controller
 
                 $score = 'NO';
                 $semaforo = 'N/A';
+                $nendeudamiento = 'N/A';
+                $fechaconsulta = 'N/A';
+                $fechavencimiento = 'N/A';
 
                 $nitScore = trim($cedula);
 
@@ -2123,6 +2204,22 @@ class UsuarioController extends Controller
                                 $semaforo = !empty($scoreData['semaforo'])
                                     ? $scoreData['semaforo']
                                     : 'N/A';
+
+                                $nendeudamiento = !empty($scoreData['nivel_endeudamiento'])
+                                    ? $scoreData['nivel_endeudamiento']
+                                    : 'N/A';
+
+                                $fechaconsulta = !empty($scoreData['fecha_score'])
+                                    ? $meses[(int)date('m', strtotime($scoreData['fecha_score']))]
+                                        . ' - ' . date('d', strtotime($scoreData['fecha_score']))
+                                        . ' - ' . date('Y', strtotime($scoreData['fecha_score']))
+                                    : 'N/A';
+
+                                $fechavencimiento = !empty($scoreData['fecha_vencimiento'])
+                                    ? $meses[(int)date('m', strtotime($scoreData['fecha_vencimiento']))]
+                                        . ' - ' . date('d', strtotime($scoreData['fecha_vencimiento']))
+                                        . ' - ' . date('Y', strtotime($scoreData['fecha_vencimiento']))
+                                    : 'N/A';
                             }
                         }
 
@@ -2130,6 +2227,9 @@ class UsuarioController extends Controller
 
                         $score = 'NO';
                         $semaforo = 'N/A';
+                        $nendeudamiento = 'N/A';
+                        $fechaconsulta = 'N/A';
+                        $fechavencimiento = 'N/A';
 
                         Log::warning(
                             'No fue posible consultar el score en actualizardetalle',
@@ -2252,6 +2352,9 @@ class UsuarioController extends Controller
 
                     $score = 'NO';
                     $semaforo = 'N/A';
+                    $nendeudamiento = 'N/A';
+                    $fechaconsulta = 'N/A';
+                    $fechavencimiento = 'N/A';
 
                     try {
 
@@ -2474,6 +2577,9 @@ class UsuarioController extends Controller
                         // SCORE
                         'ScoreAS' => $score,
                         'Semaforo' => $semaforo,
+                        'NivelEndeudamiento' => $nendeudamiento,
+                        'FechaConsulta' => $fechaconsulta,
+                        'FechaVencimiento' => $fechavencimiento
                     ]);
 
                     return response()->json([
@@ -2509,6 +2615,9 @@ class UsuarioController extends Controller
                         // SCORE
                         'ScoreAS' => $score,
                         'Semaforo' => $semaforo,
+                        'NivelEndeudamiento' => $nendeudamiento,
+                        'FechaConsulta' => $fechaconsulta,
+                        'FechaVencimiento' => $fechavencimiento
                     ]);
 
                     return response()->json([
@@ -2552,6 +2661,9 @@ class UsuarioController extends Controller
 
                 $score = 'NO';
                 $semaforo = 'N/A';
+                $nendeudamiento = 'N/A';
+                $fechaconsulta = 'N/A';
+                $fechavencimiento = 'N/A';
 
                 $cedulaScore = null;
 
@@ -2584,6 +2696,22 @@ class UsuarioController extends Controller
                                 $semaforo = !empty($scoreData['semaforo'])
                                     ? $scoreData['semaforo']
                                     : 'N/A';
+                                
+                                $nendeudamiento = !empty($scoreData['nivel_endeudamiento'])
+                                    ? $scoreData['nivel_endeudamiento']
+                                    : 'N/A';
+
+                                $fechaconsulta = !empty($scoreData['fecha_score'])
+                                    ? $meses[(int)date('m', strtotime($scoreData['fecha_score']))]
+                                        . ' - ' . date('d', strtotime($scoreData['fecha_score']))
+                                        . ' - ' . date('Y', strtotime($scoreData['fecha_score']))
+                                    : 'N/A';
+
+                                $fechavencimiento = !empty($scoreData['fecha_vencimiento'])
+                                    ? $meses[(int)date('m', strtotime($scoreData['fecha_vencimiento']))]
+                                        . ' - ' . date('d', strtotime($scoreData['fecha_vencimiento']))
+                                        . ' - ' . date('Y', strtotime($scoreData['fecha_vencimiento']))
+                                    : 'N/A';
                             }
                         }
 
@@ -2591,6 +2719,9 @@ class UsuarioController extends Controller
 
                         $score = 'NO';
                         $semaforo = 'N/A';
+                        $nendeudamiento = 'N/A';
+                        $fechaconsulta = 'N/A';
+                        $fechavencimiento = 'N/A';
 
                         Log::warning(
                             'No fue posible consultar el score en actualizardetalle - Coordinacion',
@@ -2678,6 +2809,9 @@ class UsuarioController extends Controller
                     // SCORE
                     'ScoreAS' => $score,
                     'Semaforo' => $semaforo,
+                    'NivelEndeudamiento' => $nendeudamiento,
+                    'FechaConsulta' => $fechaconsulta,
+                    'FechaVencimiento' => $fechavencimiento
                 ]);
 
                 return response()->json([

@@ -460,25 +460,33 @@
                                     const diferenciaDias = Math.floor(
                                         diferenciaMilisegundos / (1000 * 60 * 60 * 24)
                                     );
+                                    const endeudamiento = `
+                                        - <span class="ms-2 badge bg-light text-dark border pe-none">
+                                            <i class="fas fa-chart-line me-1"></i>
+                                            N.END: <strong>${item.NivelEndeudamiento ?? 'N/A'}</strong>
+                                        </span>
+                                    `;
+
+                                    const fechas = `title="Fecha de consulta: ${item.FechaConsulta} y Fecha de vencimiento: ${item.FechaVencimiento}"`;
 
                                     // Verificar el semáforo
                                     const estado = item.Semaforo == null
                                         ? (
                                             fechainsercion == null || fechainsercion === undefined
-                                                ? `<span class="fs-2">⚪⚪⚪</span>`
+                                                ? `<span class="fs-2">⚪⚪⚪</span>${endeudamiento}`
                                                 : diferenciaDias > 179
-                                                    ? `<span class="fs-2">⚪⚪🔴</span>`
+                                                    ? `<span class="fs-2" ${fechas}>⚪⚪🔴</span>${endeudamiento}`
                                                     : diferenciaDias > 169
-                                                        ? `<span class="fs-2">⚪🟡⚪</span>`
-                                                        : `<span class="fs-2">🟢⚪⚪</span>`
+                                                        ? `<span class="fs-2" ${fechas}>⚪🟡⚪</span>${endeudamiento}`
+                                                        : `<span class="fs-2" ${fechas}>🟢⚪⚪</span>${endeudamiento}`
                                         )
                                         : item.Semaforo.toLowerCase() === 'verde'
-                                            ? `<span class="fs-2">🟢⚪⚪</span>`
+                                            ? `<span class="fs-2" ${fechas}>🟢⚪⚪</span>${endeudamiento}`
                                             : item.Semaforo.toLowerCase() === 'amarillo'
-                                                ? `<span class="fs-2">⚪🟡⚪</span>`
+                                                ? `<span class="fs-2" ${fechas}>⚪🟡⚪</span>${endeudamiento}`
                                                 : item.Semaforo.toLowerCase() === 'rojo'
-                                                    ? `<span class="fs-2">⚪⚪🔴</span>`
-                                                    : `<span class="fs-2">⚪⚪⚪</span>`;
+                                                    ? `<span class="fs-2" ${fechas}>⚪⚪🔴</span>${endeudamiento}`
+                                                    : `<span class="fs-2" ${fechas}>⚪⚪⚪</span>${endeudamiento}`;
 
 
                                     const dia = fechaInsercionDate.getDate();
@@ -1511,10 +1519,10 @@
                                                             const estado = fechainsercion == null || fechainsercion === undefined
                                                             ? `<span class="fs-2">⚪⚪⚪</span>`
                                                             : diferenciaDias > 179
-                                                                ? `<span class="fs-2">⚪⚪🔴</span>`
+                                                                ? `<span class="fs-2" title="Fecha de consulta: ${item.FechaConsulta} y Fecha de vencimiento: ${item.FechaVencimiento}">⚪⚪🔴</span>`
                                                                 : diferenciaDias > 169
-                                                                    ? `<span class="fs-2">⚪🟡⚪</span>`
-                                                                    : `<span class="fs-2">🟢⚪⚪</span>`;
+                                                                    ? `<span class="fs-2" title="Fecha de consulta: ${item.FechaConsulta} y Fecha de vencimiento: ${item.FechaVencimiento}">⚪🟡⚪</span>`
+                                                                    : `<span class="fs-2" title="Fecha de consulta: ${item.FechaConsulta} y Fecha de vencimiento: ${item.FechaVencimiento}">🟢⚪⚪</span>`;
 
 
                                                             const dia = fechaInsercionDate.getDate();
@@ -3305,6 +3313,18 @@
                 btn.disabled = true;
                 btn.innerText = "Enviando...";
 
+                // Mostrar SweetAlert mientras se procesa
+                Swal.fire({
+                    title: 'Enviando...',
+                    html: 'Por favor, espera mientras procesamos la solicitud.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 fetch(form.action, {
                     method: 'POST',
                     body: formData,
@@ -3314,8 +3334,12 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+
                     btn.disabled = false;
                     btn.innerText = "Solicitar";
+
+                    // Cerrar el loader
+                    Swal.close();
 
                     if (data.dd) {
                         console.log('DD AJAX:', data.data);
@@ -3326,8 +3350,11 @@
                             html: `<pre style="text-align:left">${JSON.stringify(data.data, null, 2)}</pre>`
                         });
 
-                        return; // corta ejecución
-                    } else if (data.success) {
+                        return;
+                    }
+
+                    if (data.success) {
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Éxito',
@@ -3337,7 +3364,9 @@
                         form.reset();
                         document.getElementById('cuerpo').innerHTML = '';
                         $('#personas').DataTable().ajax.reload(null, false);
+
                     } else {
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -3346,13 +3375,17 @@
                     }
                 })
                 .catch(error => {
+
                     btn.disabled = false;
                     btn.innerText = "Solicitar";
+
+                    // Cerrar el loader
+                    Swal.close();
 
                     Swal.fire({
                         icon: 'error',
                         title: 'Error inesperado',
-                        text: data.message
+                        text: 'Ocurrió un error al procesar la solicitud.'
                     });
 
                     console.error(error);
