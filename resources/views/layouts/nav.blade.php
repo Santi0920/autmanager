@@ -96,7 +96,7 @@
             width: 20px;
             text-align: center;
         }
-        
+
         .navbar-nav .nav-link {
             font-size: 1rem;
             transition: all 0.3s ease-in-out;
@@ -231,13 +231,13 @@
             gap: 6px;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
-            box-shadow:             box-shadow: 
+            box-shadow:             box-shadow:
                 0 0 15px rgba(255, 77, 77, 0.7),
                 0 0 25px rgba(255, 26, 26, 0.5),
                 0 0 35px rgba(255, 0, 0, 0.4);
         }
 
-        
+
         .btn-version-nav {
             background: linear-gradient(135deg, #8e2de2, #4a00e0);
             color: #fff;
@@ -295,15 +295,15 @@
                         style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
                 </div>
 
-                
+
                 <div class="d-flex align-items-center">
 
                         <ul class="navbar-nav ms-0 align-items-center">
                             <li class="nav-item me-1">
                                 <a class="nav-link d-flex align-items-center text-light fw-bold" href="#" data-bs-toggle="modal" data-bs-target="#userInfoModal">
-                                    Bienvenido: 
+                                    Bienvenido:
                                     <span class="btn btn-warning ms-2 shadow fw-bold px-3 py-2 rounded-pill">
-                                        {{ $usuario['name'] }} -                           
+                                        {{ $usuario['name'] }} -
                                         @if(session('agenciau') == 'Gerencia General')
                                             Cali
                                         @else
@@ -319,8 +319,8 @@
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-th-large me-2"></i> MENÚ
                                 </a>
-                              
-  
+
+
                                 <div class="dropdown-menu dropdown-menu-dark shadow-lg p-4 rounded-4 animate__animated animate__fadeInDown"
                                     aria-labelledby="navbarDropdownModules"
                                     style="min-width: 520px;">
@@ -357,7 +357,7 @@
                                             </a>
                                         </div>
 
-                               
+
                                         <div class="col-md-6">
                                             <h6 class="text-info fw-bold mb-3">
                                                 <i class="fas fa-database me-2"></i>
@@ -377,7 +377,7 @@
                                             </a>
                                         </div>
 
-                              
+
                                         <div class="col-md-6">
                                             <h6 class="text-success fw-bold mb-3 mt-3">
                                                 <i class="fas fa-users me-2"></i>
@@ -418,8 +418,8 @@
 
                                     </div>
                                 </div>
-                            </li> 
-                            
+                            </li>
+
 
 
                             <!-- Dropdown Opciones Ultra Premium -->
@@ -428,9 +428,9 @@
                                     OPCIONES
 
                                 </a>
-                                
+
                                 <ul class="dropdown-menu dropdown-menu-dark shadow-lg rounded-3 animate__animated animate__fadeInDown" aria-labelledby="navbarDropdownOptions" style="min-width: 220px; border: 1px solid rgba(255,255,255,0.1);">
-                                    
+
                                     <!-- Sección Consultante / Jefatura / Coordinacion -->
                                     @if(session('rol') == 'Consultante' || session('rol') == 'Jefatura' || session('rol') == 'Coordinacion')
                                         <li>
@@ -505,8 +505,8 @@
                             </li>
 
                         </ul>
-    
-                    
+
+
 
                 </div>
 
@@ -526,7 +526,7 @@
                         <button class="btn-version-nav d-none d-md-inline ms-3 me-2"
                                 data-bs-toggle="modal" data-bs-target="#versionModal">
                             🚀 V <strong>2.0</strong>
-                            
+
                         </button>
 
                         <!-- Botón versión (solo móvil - solo 2.0) -->
@@ -543,7 +543,7 @@
                         </button>
 
 
-    
+
 
                         <!-- Botón Cerrar Sesión -->
                         <li class="nav-item">
@@ -579,7 +579,7 @@
                         <ol class="list-group list-group-numbered mb-4" style="border: none;">
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                Botón para reportar errores para ser solucionados lo más pronto posible, ubicado en la parte superior izquierda. 
+                                Botón para reportar errores para ser solucionados lo más pronto posible, ubicado en la parte superior izquierda.
                                 <span class="badge-new">🔥USARLO</span>
                             </li>
 
@@ -612,7 +612,7 @@
                             </li>
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                Se renovó la interfaz de login con diseño moderno e icono para mostrar/ocultar contraseña. 
+                                Se renovó la interfaz de login con diseño moderno e icono para mostrar/ocultar contraseña.
                             </li>
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
@@ -620,7 +620,7 @@
                             </li>
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                Se optimizó la interfaz de Director de Agencia, Coordinación y Dirección General: tablas, encabezados, botones y modales. 
+                                Se optimizó la interfaz de Director de Agencia, Coordinación y Dirección General: tablas, encabezados, botones y modales.
                             </li>
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
@@ -664,7 +664,7 @@
                             </li>
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
-                                Los Directores de Agencia pueden ver una nueva sección con todas sus solicitudes en Versión 1.0, incluyendo último consecutivo y fecha de último registro. 
+                                Los Directores de Agencia pueden ver una nueva sección con todas sus solicitudes en Versión 1.0, incluyendo último consecutivo y fecha de último registro.
                             </li>
 
                             <li class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-3">
@@ -725,10 +725,10 @@
 
                     <!-- Footer elegante -->
                     <div class="modal-footer border-0 p-4">
-                        
+
                         <div class="alert alert-info border-0 shadow-sm rounded-3 mt-3">
                             <h5 class="modal-title fw-bold fs-5 d-flex align-items-center">
-                                
+
                                     <strong>Versión 2.0  — 📅 </strong>Fecha de publicación: 03 DIC 2025 - 8:00AM
                             </h5>
                         </div>
@@ -801,7 +801,7 @@
         <!-- Animate.css CDN para efectos -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     </div>
-    
+
     <!-- Modal Profesional Avanzado -->
     <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -825,10 +825,10 @@
                                 style="width:150px; height:150px; object-fit: cover;">
                             <h4 class="fw-bold mt-3">{{ session('name') }}</h4>
                             <small class="text-muted">
-                                    {{ 
-                                        session('rol') === 'Gerencia' ? 'DIRECCIÓN GENERAL' : 
-                                        (session('rol') === 'Consultante' ? 'Director de Agencia' : 
-                                        (session('rol') === 'Coordinacion' ? 'Coordinación' : session('rol'))) 
+                                    {{
+                                        session('rol') === 'Gerencia' ? 'DIRECCIÓN GENERAL' :
+                                        (session('rol') === 'Consultante' ? 'Director de Agencia' :
+                                        (session('rol') === 'Coordinacion' ? 'Coordinación' : session('rol')))
                                     }}
                             </small>
 
@@ -860,12 +860,12 @@
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link TEX" id="permisos-tab" data-bs-toggle="tab" data-bs-target="#permisos" type="button" role="tab" aria-controls="permisos" aria-selected="false">
-                                    Permisos
+                                    Datacrédito
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link TEX" id="documentos-tab" data-bs-toggle="tab" data-bs-target="#documentos" type="button" role="tab" aria-controls="documentos" aria-selected="false">
-                                    Documentos
+                                    Otros
                                 </button>
                             </li>
                         </ul>
@@ -892,12 +892,12 @@
                                         <div class="col-6">
                                             <div class="card shadow-sm mb-2 p-2">
                                                 <strong>Coordinación Asignada:</strong> {{ session('coordasignadas') }}
-                                                
+
                                             </div>
                                         </div>
                                         @elseif(session('rol') == 'Coordinacion')
                                         <div class="col-6">
-                                            
+
                                             <div class="agencias-scroll">
                                                 <strong>Agencias Vinculadas:</strong>
                                                 {!! session('coordasignadas') !!}
@@ -975,7 +975,7 @@
                 <div class="mb-3 position-relative">
                     <label for="current_password" class="form-label fw-bold">Contraseña Actual</label>
                     <input type="password" name="current_password" id="current_password" class="form-control" required>
-                    <i class="fa-solid mt-3 fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" 
+                    <i class="fa-solid mt-3 fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
                     data-target="current_password" style="cursor:pointer;"></i>
                     @error('current_password')
                         <small class="text-danger">{{ $message }}</small>
@@ -985,7 +985,7 @@
                 <div class="mb-3 position-relative">
                     <label for="new_password" class="form-label fw-bold">Nueva Contraseña</label>
                     <input type="password" name="new_password" id="new_password" class="form-control" required>
-                    <i class="mt-3 fa-solid fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" 
+                    <i class="mt-3 fa-solid fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
                     data-target="new_password" style="cursor:pointer;"></i>
                     @error('new_password')
                         <small class="text-danger">{{ $message }}</small>
@@ -995,7 +995,7 @@
                 <div class="mb-3 position-relative">
                     <label for="new_password_confirmation" class="form-label fw-bold">Confirmar Nueva Contraseña</label>
                     <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="form-control" required>
-                    <i class="fa-solid mt-3 fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" 
+                    <i class="fa-solid mt-3 fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password"
                     data-target="new_password_confirmation" style="cursor:pointer;"></i>
                 </div>
 
