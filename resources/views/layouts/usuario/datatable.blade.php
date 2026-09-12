@@ -461,9 +461,9 @@
                                         diferenciaMilisegundos / (1000 * 60 * 60 * 24)
                                     );
                                     const endeudamiento = `
-                                         ${item.NivelEndeudamiento !== 'N/A' && item.NivelEndeudamiento !== null ? ` - <span class="ms-2 badge bg-light text-dark border pe-none">
+                                         ${item.NivelEndeudamiento !== 'N/A' && item.NivelEndeudamiento !== null ? ` <span class='fw-bold'>${item.FechaConsulta}</span> <span class="ms-2 badge bg-light text-dark border pe-none">
                                             <i class="fas fa-chart-line me-1"></i>
-                                            Nivel.Endeudamiento: <strong>${item.NivelEndeudamiento ?? 'N/A'}</strong>
+                                            : <strong>${item.NivelEndeudamiento ?? 'N/A'}</strong>
                                         </span>` : ``}
                                     `;
 
@@ -473,20 +473,20 @@
                                     const estado = item.Semaforo == null
                                         ? (
                                             fechainsercion == null || fechainsercion === undefined
-                                                ? `<span class="fs-2">⚪⚪⚪</span>${endeudamiento}`
+                                                ? `<span class="fs-2">⚪</span>${endeudamiento}`
                                                 : diferenciaDias > 179
-                                                    ? `<span class="fs-2" ${fechas}>⚪⚪🔴</span>${endeudamiento}`
+                                                    ? `<span class="fs-2" ${fechas}>🔴</span>${endeudamiento}`
                                                     : diferenciaDias > 169
-                                                        ? `<span class="fs-2" ${fechas}>⚪🟡⚪</span>${endeudamiento}`
-                                                        : `<span class="fs-2" ${fechas}>🟢⚪⚪</span>${endeudamiento}`
+                                                        ? `<span class="fs-2" ${fechas}>🟡</span>${endeudamiento}`
+                                                        : `<span class="fs-2" ${fechas}>🟢</span>${endeudamiento}`
                                         )
                                         : item.Semaforo.toLowerCase() === 'verde'
-                                            ? `<span class="fs-2" ${fechas}>🟢⚪⚪</span>${endeudamiento}`
+                                            ? `<span class="fs-2" ${fechas}>🟢</span>${endeudamiento}`
                                             : item.Semaforo.toLowerCase() === 'amarillo'
-                                                ? `<span class="fs-2" ${fechas}>⚪🟡⚪</span>${endeudamiento}`
+                                                ? `<span class="fs-2" ${fechas}>🟡</span>${endeudamiento}`
                                                 : item.Semaforo.toLowerCase() === 'rojo'
-                                                    ? `<span class="fs-2" ${fechas}>⚪⚪🔴</span>${endeudamiento}`
-                                                    : `<span class="fs-2" ${fechas}>⚪⚪⚪</span>${endeudamiento}`;
+                                                    ? `<span class="fs-2" ${fechas}>🔴</span>${endeudamiento}`
+                                                    : `<span class="fs-2" ${fechas}>⚪</span>${endeudamiento}`;
 
 
                                     const dia = fechaInsercionDate.getDate();
