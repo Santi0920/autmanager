@@ -461,10 +461,10 @@
                                         diferenciaMilisegundos / (1000 * 60 * 60 * 24)
                                     );
                                     const endeudamiento = `
-                                        - <span class="ms-2 badge bg-light text-dark border pe-none">
+                                         ${item.NivelEndeudamiento !== 'N/A' && item.NivelEndeudamiento !== null ? ` - <span class="ms-2 badge bg-light text-dark border pe-none">
                                             <i class="fas fa-chart-line me-1"></i>
-                                            N.END: <strong>${item.NivelEndeudamiento ?? 'N/A'}</strong>
-                                        </span>
+                                            Nivel.Endeudamiento: <strong>${item.NivelEndeudamiento ?? 'N/A'}</strong>
+                                        </span>` : ``}
                                     `;
 
                                     const fechas = `title="Fecha de consulta: ${item.FechaConsulta} y Fecha de vencimiento: ${item.FechaVencimiento}"`;
