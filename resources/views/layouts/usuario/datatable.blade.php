@@ -604,7 +604,7 @@
                                                                             <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
                                                                                 <span class="fs-5">${item.Cedula}
                                                                                     ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
-                                                                                    - ${item.NombrePersona} -
+                                                                                    - <span class="fw-bold text-dark">${item.NombrePersona}</span>${item.Edad == null || item.Edad == 'N/A' ? '' : `<span class="ms-2 px-2 py-1 rounded-2 fw-bold text-white d-inline-flex align-items-center justify-content-center" style="background-color: #6f42c1; min-width: 32px; height: 26px; font-size: 1.40rem;">${item.Edad}</span>`} - 
                                                                                         ${
                                                                                             item.ScoreAS == null
                                                                                                 ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
@@ -629,7 +629,7 @@
                                                                         <div class="col-md-12 d-flex justify-content-start border p-2">
                                                                             <span class="fs-5">${item.Cedula}
                                                                                 ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
-                                                                                - ${item.NombrePersona} -
+                                                                                - <span class="fw-bold text-dark">${item.NombrePersona}</span>${item.Edad == null || item.Edad == 'N/A' ? '' : `<span class="ms-2 px-2 py-1 rounded-2 fw-bold text-white d-inline-flex align-items-center justify-content-center" style="background-color: #6f42c1; min-width: 32px; height: 26px; font-size: 1.40rem;">${item.Edad}</span>`} - 
                                                                                 ${
                                                                                     item.ScoreAS == null
                                                                                         ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
@@ -1585,7 +1585,7 @@
                                                                                         <div class="col-md-12 d-flex justify-content-start border p-2" id="inputs${row.IDAutorizacion}">
                                                                                             <span class="fs-5">${item.Cedula}
                                                                                                 ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
-                                                                                                - ${item.NombrePersona} -
+                                                                                                - <span class="fw-bold text-dark">${item.NombrePersona}</span>${item.Edad == null || item.Edad == 'N/A' ? '' : `<span class="ms-2 px-2 py-1 rounded-2 fw-bold text-white d-inline-flex align-items-center justify-content-center" style="background-color: #6f42c1; min-width: 32px; height: 26px; font-size: 1.40rem;">${item.Edad}</span>`} - 
                                                                                                 ${
                                                                                                     item.ScoreAS == null
                                                                                                         ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
@@ -1610,7 +1610,7 @@
                                                                                     <div class="col-md-12 d-flex justify-content-start border p-2">
                                                                                         <span class="fs-5">${item.Cedula}
                                                                                             ${item.CuentaAsociado == null ? '- N/A' : `- ${item.CuentaAsociado}`}
-                                                                                            - ${item.NombrePersona} -
+                                                                                            - <span class="fw-bold text-dark">${item.NombrePersona}</span>${item.Edad == null || item.Edad == 'N/A' ? '' : `<span class="ms-2 px-2 py-1 rounded-2 fw-bold text-white d-inline-flex align-items-center justify-content-center" style="background-color: #6f42c1; min-width: 32px; height: 26px; font-size: 1.40rem;">${item.Edad}</span>`} - 
                                                                                             ${
                                                                                                 item.ScoreAS == null
                                                                                                     ? `<span class="badge bg-danger text-light fw-bold">${item.Score}</span> - ${estado}`
