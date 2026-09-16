@@ -733,6 +733,13 @@ class UsuarioController extends Controller
             $aut->ultimaFecha = $ultimoUsuario?->FechaString;
             $aut->ultimoUsuario = $ultimoUsuario?->Nombre;
 
+            $ultimoReporte = DB::table('historialestado')
+                ->where('ID_Autorizacion', $aut->IDAutorizacion)
+                ->whereNotNull('Numero_Reporte')
+                ->orderByDesc('ID')
+                ->first();
+            $aut->ultimoReporte = $ultimoReporte?->Numero_Reporte;
+
             // Resultado final
             $aut->historialEstadosUnicos = $desdeClave;
 
@@ -1287,7 +1294,7 @@ class UsuarioController extends Controller
                             });
                         });
                     })
-                    ->whereNull('H.Numero_Reporte')
+                    // ->whereNull('H.Numero_Reporte')
                     ->select([
                         'B.ID AS IDAutorizacion',
                         'H.Estado',
@@ -1431,7 +1438,7 @@ class UsuarioController extends Controller
                             ->from('historialestado AS H2')
                             ->whereRaw('H2.ID_Autorizacion = B.ID');
                     })
-                    ->whereNull('H.Numero_Reporte')
+                    // ->whereNull('H.Numero_Reporte')
                     ->select([
                         'A.ID AS IDPersona',
                         'A.Score',
@@ -1460,7 +1467,7 @@ class UsuarioController extends Controller
 
 
 
-            }
+        }
         // 🔹 Agregar historial completo + fecha del primer estado
         foreach ($autorizaciones as $aut) {
             $this->procesarAutorizacion($aut);
@@ -1501,6 +1508,19 @@ class UsuarioController extends Controller
             11 => 'Noviembre',
             12 => 'Diciembre'
         ];
+        $tipoautorizacion = $request->CodigoAutorizacion;
+
+        $numeroReporte = null;
+
+        if ($tipoautorizacion == '17') {
+
+            $ultimoReporte = DB::table('historialestado')
+                ->where('ID_Concepto', 17)
+                ->max('Numero_Reporte');
+
+            $numeroReporte = ($ultimoReporte ?? 0) + 1;
+
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -2568,12 +2588,15 @@ class UsuarioController extends Controller
                 | INSERTAR HISTORIAL CON SCORE
                 |--------------------------------------------------------------------------
                 */
+     
 
+            
                 if (isset($filename)) {
 
                     Log::info('Cedula: ' . $cedula);
 
                     DB::table('historialestado')->insertGetId([
+                        'Numero_Reporte' => $numeroReporte, 
                         'Cedula' => $cedula,
                         'CuentaAsociado' => $cuenta,
                         'NombrePersona' => $nombre,
@@ -2611,6 +2634,7 @@ class UsuarioController extends Controller
                 } else {
 
                     DB::table('historialestado')->insertGetId([
+                        'Numero_Reporte' => $numeroReporte, 
                         'Cedula' => $cedula,
                         'CuentaAsociado' => $cuenta,
                         'NombrePersona' => $nombre,
@@ -2822,7 +2846,10 @@ class UsuarioController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
+
+  
                 DB::table('historialestado')->insert([
+                    'Numero_Reporte' => $numeroReporte, 
                     'NumArea' => $coordinacion,
                     'NomArea' => $noCoordinacion,
                     'Observaciones' => $request->Observaciones,
@@ -4400,7 +4427,7 @@ class UsuarioController extends Controller
 
                     'D.FechaInsercion'
                 ])
-         
+                
                 ->get();
 
         }else{

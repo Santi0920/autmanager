@@ -30,8 +30,8 @@
 
                             var ID = '';
 
-                            if (row.UltimoConceptoID == 17 && row.Numero_Reporte != null) {
-                                ID = `<span class='text-danger fw-bold'>REP-${row.Numero_Reporte}</span>`;
+                            if (row.UltimoConceptoID == 17 && row.ultimoReporte != null) {
+                                ID = `<span class='text-danger fw-bold'>REP-${row.ultimoReporte}</span>`;
                             } else {
                                 ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`;
                             }
@@ -1285,7 +1285,7 @@
                                                             : 'SOLICITUD DE AUTORIZACIONES'}
                                                         <br>
                                                         <span style="font-size: 40px; color: #00bfff;">
-                                                            ${row.UltimoConceptoID == '17' && row.Numero_Reporte != null ? 'REP-' + row.Numero_Reporte : `No. ${row.IDAutorizacion}`}
+                                                            ${row.UltimoConceptoID == '17' && row.ultimoReporte != null ? 'REP-' + row.ultimoReporte : `No. ${row.IDAutorizacion}`}
                                                              ${row.UltimaSECautorizacion ? ' | SEC: ' + row.UltimaSECautorizacion : ''}
                                                         </span>
                                                     </div>
@@ -1384,7 +1384,7 @@
                                                                     <div class="col-md-5 col-lg-3">
                                                                     <div class="row g-0 justify-content-center border p-2">
                                                                     
-                                                                        <span class="h3 fw-bold mb-0 text-danger">${row.UltimoConceptoID == '17' && row.Numero_Reporte != null ? 'REP-' + row.Numero_Reporte : `No. ${row.IDAutorizacion}`}</span>
+                                                                        <span class="h3 fw-bold mb-0 text-danger">${row.UltimoConceptoID == '17' && row.ultimoReporte != null ? 'REP-' + row.ultimoReporte : `No. ${row.IDAutorizacion}`}</span>
                                                                     </div>
 
                                                                         <div class="row g-0 align-items-center justify-content-center border p-2">
@@ -2233,7 +2233,7 @@
                                                         // row.ultimoEnviadoa === '{{ session("name") }}' &&
                                                         ('{{ session("rol") }}' !== 'Gerencia' &&
                                                         row.UltimoEstado !== 'RECIBIDO' && row.UltimoEstado !== 'TERMINADO' && row.UltimoEstado !== 'INFORMADO') &&
-                                                        (('{{ session("rol") }}' !== 'Gerencia' && '{{ session("rol") }}' !== 'Consultante') && row.UltimoEstado !== 'CORREGIR' && row.UltimoEstado !== 'REMITIDO' && row.UltimoEstado !== 'VALIDADO')
+                                                        (('{{ session("rol") }}' !== 'Gerencia' && '{{ session("rol") }}' !== 'Consultante') && row.UltimoEstado !== 'CORREGIR' && row.UltimoEstado !== 'REMITIDO' && row.UltimoEstado !== 'VALIDADO' && (row.UltimoEstado !== 'TRÁMITE' && row.Observaciones && row.Observaciones !== null))
                                                     )
                                                         ? `
 
