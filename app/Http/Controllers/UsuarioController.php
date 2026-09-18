@@ -147,6 +147,7 @@ class UsuarioController extends Controller
         $nendeudamiento = 'N/A';
         $fechaconsulta = 'N/A';
         $fechavencimiento = 'N/A';
+        $edad = 'N/A';
 
         try {
 
@@ -201,7 +202,7 @@ class UsuarioController extends Controller
             $fechaconsulta = 'N/A';
             $fechavencimiento = 'N/A';
             $edad = 'N/A';
-            \Log::warning('No fue posible consultar el score', [
+            Log::warning('No fue posible consultar el score', [
                 'nit' => $nit,
                 'error' => $e->getMessage()
             ]);
