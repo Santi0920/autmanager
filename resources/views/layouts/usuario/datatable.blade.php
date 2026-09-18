@@ -2228,6 +2228,7 @@
                                                         row.UltimoEstado !== "TERMINADO" && row.NumArea === 'Jefatura' && '{{ session('rol') }}' !== 'Jefatura' && '{{ session('rol') }}' !== 'Coordinacion'
                                                         
                                                     )
+                                                    || row.UltimoEstado == 'ENVIADO' && '{{ session("rol") }}' !== 'Gerencia'
                                                     ||
                                                     (
                                                         // row.ultimoEnviadoa === '{{ session("name") }}' &&

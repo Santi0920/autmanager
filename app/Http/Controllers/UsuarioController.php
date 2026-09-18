@@ -1227,29 +1227,11 @@ class UsuarioController extends Controller
                     ->join('historialestado AS H', 'H.ID_Autorizacion', '=', 'B.ID')
                     ->leftJoin('persona AS A', 'A.ID', '=', 'H.ID_Persona')
 
-                    // 🔹 ÚLTIMO ESTADO CORRECTO
+                    // 🔹 TOMAR EL ÚLTIMO ESTADO QUE CORRESPONDA
                     ->whereRaw('H.ID = (
                         SELECT MAX(H3.ID)
                         FROM historialestado H3
                         WHERE H3.ID_Autorizacion = B.ID
-                        AND (
-                            -- CASO 1: EXISTE ESTADO NO ENVIADO → TOMAR ESE
-                            (
-                                H3.Estado <> "ENVIADO"
-                                AND NOT EXISTS (
-                                    SELECT 1
-                                    FROM historialestado HX
-                                    WHERE HX.ID_Autorizacion = B.ID
-                                    AND HX.Estado = "ENVIADO"
-                                )
-                            )
-
-                            -- CASO 2: SOLO ENVIADOS → TOMAR EL DEL USUARIO
-                            OR (
-                                H3.Estado = "ENVIADO"
-                                AND H3.ID_User = H.ID_User
-                            )
-                        )
                     )')
 
                     // 🔹 EXCLUIR ESTADOS FINALES
@@ -1263,14 +1245,14 @@ class UsuarioController extends Controller
                     // 🔹 LÓGICA DE VISIBILIDAD
                     ->where(function ($q) use ($idsFiltro, $userId) {
 
-                        // ✅ ENVIADO SOLO AL USUARIO
+                        // ✅ ENVIADO A MI USUARIO
                         $q->where(function ($a) use ($userId) {
                             $a->where('H.Estado', 'ENVIADO')
                             ->where('H.ID_User', $userId);
-                        });
+                        })
 
-                        // ✅ YA PASÓ POR MI ÁREA
-                        $q->orWhere(function ($b) use ($idsFiltro) {
+                        // ✅ ESTADOS QUE YA PASARON POR MI ÁREA
+                        ->orWhere(function ($b) use ($idsFiltro) {
                             $b->whereIn('H.Estado', [
                                 'RECIBIDO',
                                 'CORREGIR',
@@ -1293,9 +1275,20 @@ class UsuarioController extends Controller
                                     ->whereColumn('HX.ID_Autorizacion', 'B.ID')
                                     ->whereIn('HX.NumArea', $idsFiltro);
                             });
+                        })
+
+                        // ✅ ENVIADO POR OTRA AGENCIA HACIA MI ÁREA
+                        ->orWhere(function ($b) use ($idsFiltro) {
+                            $b->where('H.Estado', 'ENVIADO')
+                            ->whereExists(function ($sub) use ($idsFiltro) {
+                                $sub->select(DB::raw(1))
+                                    ->from('historialestado AS HX')
+                                    ->whereColumn('HX.ID_Autorizacion', 'B.ID')
+                                    ->whereIn('HX.NumArea', $idsFiltro);
+                            });
                         });
                     })
-                    // ->whereNull('H.Numero_Reporte')
+
                     ->select([
                         'B.ID AS IDAutorizacion',
                         'H.Estado',
@@ -1305,11 +1298,10 @@ class UsuarioController extends Controller
                         'A.Nombre',
                         'A.Apellidos',
                     ])
-                    ->distinct()
                     ->get();
 
 
-            }
+        }
 
 
 
