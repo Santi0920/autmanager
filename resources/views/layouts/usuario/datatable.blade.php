@@ -145,7 +145,7 @@
                             ${row.UltimoConceptoID == 1 ? `
                                 <div class="mt-1">
                                     <span class="fw-bold text-dark">
-                                        ${row.RazonSocial}
+                                        ${row.RazonSocial == row.ultimoNombrePersona ? row.RazonSocial : row.ultimoNombrePersona}
                                     </span>
 
                                     ${row.TipoProveedor ? `

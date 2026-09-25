@@ -741,6 +741,13 @@ class UsuarioController extends Controller
                 ->first();
             $aut->ultimoReporte = $ultimoReporte?->Numero_Reporte;
 
+            $ultimoNombrePersona = DB::table('historialestado')
+                ->where('ID_Autorizacion', $aut->IDAutorizacion)
+                ->whereNotNull('NombrePersona')
+                ->orderByDesc('ID')
+                ->first();
+            $aut->ultimoNombrePersona = $ultimoNombrePersona?->NombrePersona;
+
             // Resultado final
             $aut->historialEstadosUnicos = $desdeClave;
 
