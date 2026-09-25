@@ -544,7 +544,7 @@
                                                                     <span class="fs-5">
                                                                         ${item.ID_Concepto} - ${item.Concepto} 
                                                                         ${row.UltimoConceptoID == '1' 
-                                                                            ? `- <span class="fw-bold">Empresa: ${item.NombrePersona}</span> - <span>${row.TipoProveedor == 'PJ' ? 'PJ' : row.TipoProveedor == 'PN' ? 'PN' : row.TipoProveedor}</span>`
+                                                                            ? `- <span class="fw-bold">Empresa: ${item.NombrePersona}</span>  <span>${row.TipoProveedor == 'PJ' ? '- PJ' : row.TipoProveedor == 'PN' ? '- PN' : ''}</span>`
                                                                             : ''
                                                                         }
                                                                     </span>&nbsp;&nbsp; @include('layouts.optionvercodigo')
